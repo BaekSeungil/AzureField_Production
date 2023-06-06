@@ -15,7 +15,57 @@ MonoBehaviour:
   m_SharedTableData: {fileID: 11400000, guid: 27153e20147c06c4c8d1304d28104a87, type: 2}
   m_Tables:
   - {fileID: 11400000, guid: 2819ab3aa1c55f5438561e94d1c17c10, type: 2}
-  m_Extensions: []
-  m_Group: String Table
+  - {fileID: 11400000, guid: 3f0c37f640449a4458a3b51286453c14, type: 2}
+  - {fileID: 11400000, guid: eafd3d682dc54f142b94ed461431c27f, type: 2}
+  m_Extensions:
+  - rid: 5531855351879827693
+  m_Group: ExampleTable
   references:
-    version: 1
+    version: 2
+    RefIds:
+    - rid: 5531855351879827693
+      type: {class: CsvExtension, ns: UnityEditor.Localization.Plugins.CSV, asm: Unity.Localization.Editor}
+      data:
+        m_Collection: {fileID: 11400000}
+        m_ColumnsList:
+        - rid: 5531855351879827694
+        - rid: 5531855351879827695
+        - rid: 5531855351879827697
+        - rid: 5531855351879827727
+        m_ConnectedFile: 
+    - rid: 5531855351879827694
+      type: {class: KeyIdColumns, ns: UnityEditor.Localization.Plugins.CSV.Columns,
+        asm: Unity.Localization.Editor}
+      data:
+        m_IncludeId: 1
+        m_IncludeSharedComments: 1
+        m_KeyFieldName: Key
+        m_IdFieldName: Id
+        m_CommentFieldName: Shared Comments
+    - rid: 5531855351879827695
+      type: {class: LocaleColumns, ns: UnityEditor.Localization.Plugins.CSV.Columns,
+        asm: Unity.Localization.Editor}
+      data:
+        m_LocaleIdentifier:
+          m_Code: en
+        m_FieldName: English(en)
+        m_CommentFieldName: English(en) Comments
+        m_IncludeComments: 1
+    - rid: 5531855351879827697
+      type: {class: LocaleColumns, ns: UnityEditor.Localization.Plugins.CSV.Columns,
+        asm: Unity.Localization.Editor}
+      data:
+        m_LocaleIdentifier:
+          m_Code: es
+        m_FieldName: Spanish(es)
+        m_CommentFieldName: Spanish(es) Comments
+        m_IncludeComments: 1
+    - rid: 5531855351879827727
+      type: {class: LocaleColumns, ns: UnityEditor.Localization.Plugins.CSV.Columns,
+        asm: Unity.Localization.Editor}
+      data:
+        m_LocaleIdentifier:
+          m_Code: ko
+        m_FieldName: Korean(ko)
+        m_CommentFieldName: Korean(ko) Comments
+        m_IncludeComments: 1
