@@ -4,11 +4,6 @@ using UnityEngine;
 using System.IO;
 using ES3Internal;
 
-#if UNITY_VISUAL_SCRIPTING
-[Unity.VisualScripting.IncludeInSettings(true)]
-#elif BOLT_VISUAL_SCRIPTING
-[Ludiq.IncludeInSettings(true)]
-#endif
 public class ES3Spreadsheet
 {
 	private int cols = 0;

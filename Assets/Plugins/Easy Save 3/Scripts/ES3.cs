@@ -10,11 +10,6 @@ using UnityEngine.Networking;
 /// <summary>
 /// The main class for Easy Save methods. All methods in this class are static.
 /// </summary> 
-#if UNITY_VISUAL_SCRIPTING
-[Unity.VisualScripting.IncludeInSettings(true)]
-#elif BOLT_VISUAL_SCRIPTING
-[Ludiq.IncludeInSettings(true)]
-#endif
 public class ES3
 {
 	public enum Location 		{ File, PlayerPrefs, InternalMS, Resources, Cache };

@@ -4,11 +4,6 @@ using ES3Internal;
 using UnityEditor;
 #endif
 
-#if UNITY_VISUAL_SCRIPTING
-[Unity.VisualScripting.IncludeInSettings(true)]
-#elif BOLT_VISUAL_SCRIPTING
-[Ludiq.IncludeInSettings(true)]
-#endif
 public class ES3Settings : System.ICloneable
 {
 
