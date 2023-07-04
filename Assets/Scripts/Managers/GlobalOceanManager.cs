@@ -15,6 +15,8 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     }
 
     [SerializeField] private Material[] ReferencingMaterials;
+    [SerializeField] private LayerMask terrainFilter;
+
 
     [Title("GlobalWaveProperties")]
     [SerializeField,Range(0.0f,1.5f),DisableInPlayMode()] private float intensity;
@@ -42,6 +44,11 @@ public class GlobalOceanManager : SerializedMonoBehaviour
 
     private void OnEnable() {
         UpdateReferencingMaterials();
+        GameObject[] shorelines = GameObject.FindGameObjectsWithTag("Shoreline");
+        foreach(GameObject sh in shorelines)
+        {
+            sh.GetComponent<Terrain>();
+        }
     }
 
     private void UpdateReferencingMaterials()
@@ -140,9 +147,9 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
         float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
 
-        float x = -(amplitude/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
-        float y = Mathf.Cos(theta) * amplitude;
-        float z = -(amplitude/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
+        float x = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
+        float y = Mathf.Cos(theta) * amplitude * intensity;
+        float z = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
     
         return new Vector3(x,y,z);
     }
@@ -152,8 +159,8 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
         float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
 
-        float x = -(amplitude/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
-        float z = -(amplitude/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
+        float x = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
+        float z = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
     
         return new Vector3(x,0f,z);
     }
@@ -162,7 +169,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     {
         float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
         float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
-        return Mathf.Cos(theta) * amplitude;
+        return Mathf.Cos(theta) * amplitude * intensity;
     }
 
 }

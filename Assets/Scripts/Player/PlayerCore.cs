@@ -9,22 +9,23 @@ public class PlayerCore : SerializedMonoBehaviour
     #region Properties
 
     [Title("ControlProperties")]
-    [SerializeField] private float moveSpeed = 1.0f;
-    [ SerializeField] private float sprintSpeed = 2.0f;
-    [SerializeField] private float swimSpeed = 1.0f;
-    [SerializeField] private float jumpPower = 1.0f;
+    [SerializeField] private float moveSpeed = 1.0f;                                // 이동 속도
+    [ SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
+    [SerializeField] private float swimSpeed = 1.0f;                                // 수영시 속도
+    [SerializeField] private float jumpPower = 1.0f;                                // 점프시 수직 속도
 
 
     [Title("Physics")]
-    [SerializeField,Range(0f,1f)] private float horizontalDrag = 0.5f;
-    [SerializeField] private float groundCastDistance = 0.1f;
-    [SerializeField] private LayerMask groundIgnore;
-    [SerializeField] private float WatersinkTreshold = 0.8f;
-    [SerializeField] private LayerMask WaterLayer;
-    [SerializeField,Range(0f,0.8f)] private float WaterWalkDragging = 0.5f;
-    [SerializeField,ReadOnly] private bool grounding = false;
-    [SerializeField,ReadOnly] private float WaterSinkRate = 0f;
-    [SerializeField,ReadOnly] private Vector3 groundNormal = Vector3.up;
+    [SerializeField,Range(0f,1f)] private float horizontalDrag = 0.5f;              // 키 입력이 없을 때 수평 이동 마찰력
+    
+    [SerializeField,Range(20f,70f)] private float maxClimbSlope = 60f;              // 최고 이동가능 경사면
+    [SerializeField] private float groundCastDistance = 0.1f;                       // 바닥 인식 거리
+    [SerializeField] private LayerMask groundIgnore;                                // 바닥 인식 제외 레이어
+    [SerializeField,Range(0f,0.8f)] private float WaterWalkDragging = 0.5f;         // 물에서 걸을 때 받는 항력
+    [SerializeField] private float WaterRigidbodyDrag = 10.0f;                      // 수영모드 시 변경되는 리지드바디 Drag 값
+    [SerializeField] private float swimUpforce = 1.0f;                              // 수영시 적용되는 추가 부력
+    [SerializeField,ReadOnly] private bool grounding = false;                       // 디버그 : 바닥 체크
+    [SerializeField,ReadOnly] private Vector3 groundNormal = Vector3.up;            // 디버그 : 바닥 법선
 
 #if UNITY_EDITOR
     [SerializeField,ReadOnly,LabelText("CurrentMove")] private string current_move_debug = "";
@@ -33,6 +34,7 @@ public class PlayerCore : SerializedMonoBehaviour
 
     [Title("ChildReferences")]
     [SerializeField,Required] private Animator animator;
+    [SerializeField,Required] private BuoyantBehavior buoyant;
     [SerializeField,Required] private Transform RCO_foot;
     [SerializeField,Required] new CapsuleCollider collider;
 
@@ -43,6 +45,10 @@ public class PlayerCore : SerializedMonoBehaviour
 
     private bool sprinting = false;
     public bool Grounding { get { return grounding; } }
+
+    private const float slopeBoostForce = 100f;
+
+    private float initialRigidbodyDrag = 0f;
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -76,8 +82,14 @@ public class PlayerCore : SerializedMonoBehaviour
 
     }
 
+    private void Start() 
+    {
+        initialRigidbodyDrag = rBody.drag;
+    }
+
     private void Update() 
     {
+
         RaycastHit groundHit;
 
         if(Physics.Raycast(RCO_foot.position,-groundNormal,out groundHit,groundCastDistance,~groundIgnore))
@@ -98,27 +110,22 @@ public class PlayerCore : SerializedMonoBehaviour
             if(rBody.velocity.y > 0) animator.SetFloat("AirboneBlend",0f,0.5f,Time.deltaTime);
             else animator.SetFloat("AirboneBlend",1f,0.5f,Time.deltaTime);
         }
-
-        RaycastHit waterHit;
-
-        if(Physics.Raycast(transform.position + Vector3.up*collider.height*WatersinkTreshold, Vector3.down,out waterHit,WatersinkTreshold ,WaterLayer))
+     
+        if(buoyant.SubmergeRate < 0)
         {
-            WaterSinkRate = (WatersinkTreshold - waterHit.distance) / WatersinkTreshold;
+            rBody.drag = WaterRigidbodyDrag;
+            if( CurrentMovement.GetType() == typeof(Movement_Ground) && !grounding)
+            {
+                CurrentMovement = new Movement_Swimming();
+            }
         }
-        else
+        if(buoyant.SubmergeRate >= 0)
         {
-            WaterSinkRate = 0.0f;
-        }
-
-        var watered = Physics.OverlapSphere(transform.position + Vector3.up*collider.height*WatersinkTreshold,0f,WaterLayer);
-        
-        if(watered.Length != 0 && CurrentMovement.GetType() == typeof(Movement_Ground))
-        {
-            CurrentMovement = new Movement_Swimming();
-        }
-        if(watered.Length == 0 && CurrentMovement.GetType() == typeof(Movement_Swimming))
-        {
-            CurrentMovement = new Movement_Ground();
+            rBody.drag = initialRigidbodyDrag;
+            if( CurrentMovement.GetType() == typeof(Movement_Swimming) && grounding)
+            {
+                CurrentMovement = new Movement_Ground();
+            }
         }
 
         // =================== CURRENT MOVEMENT UPDATE =========================
@@ -155,17 +162,32 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             base.OnFixedUpdate(player);
 
+            if(player.buoyant.SubmergeRate < 0)
+            {
+                player.rBody.AddForce(Vector3.up * player.swimUpforce,ForceMode.Acceleration);
+            }
+        
             if(player.input.Player.Move.IsPressed())
             {
+                //forward velocity
                 Vector2 inputVector = player.input.Player.Move.ReadValue<Vector2>();
                 Vector3 lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(inputVector.x,0f,inputVector.y));
                 lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, Vector3.up).normalized;
                 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeed : player.moveSpeed;
                 Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector,player.groundNormal) * adjuestedScale;
-                Vector3 finalVelocity = (1f - player.WaterSinkRate * player.WaterWalkDragging)*slopedMoveVelocity;
+
+                Vector3 finalVelocity = (1f - player.buoyant.SubmergeRate * player.WaterWalkDragging)*slopedMoveVelocity;
                 player.rBody.velocity = new Vector3 (finalVelocity.x,player.rBody.velocity.y,finalVelocity.z);
 
+                //slope boost
+                float upSloping = Vector3.Dot(player.groundNormal,player.transform.forward) < 0f &&
+                                Vector3.Angle(player.groundNormal,Vector3.up) < player.maxClimbSlope
+                                ? 1.0f : 0.0f;
+
+                player.rBody.AddForce(Vector3.up * (1f-Vector3.Dot(Vector3.up,player.groundNormal)) * slopeBoostForce * upSloping);           
+
+                //rotation
                 bool LargeTurn = Quaternion.Angle(player.transform.rotation,Quaternion.LookRotation(lookTransformedVector,Vector3.up)) > 60f;
 
                 player.transform.rotation = Quaternion.RotateTowards(
@@ -178,7 +200,7 @@ public class PlayerCore : SerializedMonoBehaviour
             }
             else
             {
-                player.rBody.velocity = Vector3.Lerp(player.rBody.velocity,new Vector3(0f,player.rBody.velocity.y,0f),player.horizontalDrag);
+                player.rBody.velocity = Vector3.Lerp(player.rBody.velocity,new Vector3(0f,player.rBody.velocity.y,0f),player.horizontalDrag/0.2f);
                 player.animator.SetBool("MovementInput",false);
             }        
         }
@@ -197,21 +219,25 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             base.OnMovementEnter(player);
             player.animator.SetTrigger("Swimming_Enter");
-            player.rBody.useGravity = false;
         }
 
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
 
-              if(player.input.Player.Move.IsPressed())
+            if(player.buoyant.SubmergeRate < 0)
+            {
+                player.rBody.AddForce(Vector3.up * player.swimUpforce * (0.5f+Mathf.Sin(Time.time)*3f));
+            }
+
+            if(player.input.Player.Move.IsPressed())
             {
                 Vector2 inputVector = player.input.Player.Move.ReadValue<Vector2>();
                 Vector3 lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(inputVector.x,0f,inputVector.y));
                 lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, Vector3.up).normalized;
         
                 Vector3 finalVelocity = lookTransformedVector * player.moveSpeed;
-                player.rBody.velocity = new Vector3 (finalVelocity.x,0f,finalVelocity.z);
+                player.rBody.velocity = new Vector3 (finalVelocity.x,player.rBody.velocity.y,finalVelocity.z);
 
                 player.transform.rotation = Quaternion.RotateTowards(
                     player.transform.rotation,
@@ -222,7 +248,7 @@ public class PlayerCore : SerializedMonoBehaviour
             }
             else
             {
-                player.rBody.velocity = Vector3.Lerp(player.rBody.velocity,Vector3.zero,player.horizontalDrag);
+                player.rBody.velocity = Vector3.Lerp(player.rBody.velocity, new Vector3(0,player.rBody.velocity.y,0f),player.horizontalDrag);
                 player.animator.SetBool("Swimming_Move",false);
             }
         }
@@ -231,7 +257,6 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             base.OnMovementExit(player);
             player.animator.SetTrigger("Swimming_Exit");
-            player.rBody.useGravity = true;
         }
     }
 
@@ -241,10 +266,13 @@ public class PlayerCore : SerializedMonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        if(grounding)
+        if(CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
-            rBody.velocity += Vector3.up * jumpPower;
-            animator.SetFloat("AirboneBlend",0f);
+            if(Vector3.Angle(groundNormal,Vector3.up) < maxClimbSlope)
+            {
+                rBody.velocity += Vector3.up * jumpPower;
+                animator.SetFloat("AirboneBlend",0f);
+            }
         }
     }
 
