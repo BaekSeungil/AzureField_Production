@@ -15,7 +15,6 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     }
 
     [SerializeField] private Material[] ReferencingMaterials;
-    [SerializeField] private LayerMask terrainFilter;
 
 
     [Title("GlobalWaveProperties")]

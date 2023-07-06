@@ -80,6 +80,33 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ToggleSailboat"",
+                    ""type"": ""Button"",
+                    ""id"": ""2b55b7e9-bce0-482d-8f79-ff6df6562a6e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SailboatForward"",
+                    ""type"": ""Button"",
+                    ""id"": ""a04d3e4f-efd3-4fde-bf6d-638c9793027e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SailboatBackward"",
+                    ""type"": ""Button"",
+                    ""id"": ""3171b56e-e24a-4415-864b-7909325416ed"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -300,6 +327,39 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""87d067dc-30f7-44a7-badd-8e8bdbdc8d31"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ToggleSailboat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b40c763-5a00-44cf-b64c-45ab51a4be19"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatForward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""01dd6803-9e8a-42af-a3e7-67fba122c9a4"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SailboatBackward"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -798,6 +858,9 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_ToggleSailboat = m_Player.FindAction("ToggleSailboat", throwIfNotFound: true);
+        m_Player_SailboatForward = m_Player.FindAction("SailboatForward", throwIfNotFound: true);
+        m_Player_SailboatBackward = m_Player.FindAction("SailboatBackward", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -873,6 +936,9 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_ToggleSailboat;
+    private readonly InputAction m_Player_SailboatForward;
+    private readonly InputAction m_Player_SailboatBackward;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -883,6 +949,9 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        public InputAction @ToggleSailboat => m_Wrapper.m_Player_ToggleSailboat;
+        public InputAction @SailboatForward => m_Wrapper.m_Player_SailboatForward;
+        public InputAction @SailboatBackward => m_Wrapper.m_Player_SailboatBackward;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -910,6 +979,15 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
                 @Sprint.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                 @Sprint.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                 @Sprint.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
+                @ToggleSailboat.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleSailboat;
+                @ToggleSailboat.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleSailboat;
+                @ToggleSailboat.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleSailboat;
+                @SailboatForward.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatForward;
+                @SailboatForward.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatForward;
+                @SailboatForward.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatForward;
+                @SailboatBackward.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatBackward;
+                @SailboatBackward.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatBackward;
+                @SailboatBackward.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSailboatBackward;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -932,6 +1010,15 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @ToggleSailboat.started += instance.OnToggleSailboat;
+                @ToggleSailboat.performed += instance.OnToggleSailboat;
+                @ToggleSailboat.canceled += instance.OnToggleSailboat;
+                @SailboatForward.started += instance.OnSailboatForward;
+                @SailboatForward.performed += instance.OnSailboatForward;
+                @SailboatForward.canceled += instance.OnSailboatForward;
+                @SailboatBackward.started += instance.OnSailboatBackward;
+                @SailboatBackward.performed += instance.OnSailboatBackward;
+                @SailboatBackward.canceled += instance.OnSailboatBackward;
             }
         }
     }
@@ -1078,6 +1165,9 @@ public partial class @MainPlayerInputActions : IInputActionCollection2, IDisposa
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnToggleSailboat(InputAction.CallbackContext context);
+        void OnSailboatForward(InputAction.CallbackContext context);
+        void OnSailboatBackward(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
