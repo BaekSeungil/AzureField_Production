@@ -11,7 +11,8 @@ public class BuoyantBehavior : MonoBehaviour
     [SerializeField] Transform[] floatingPoint;
 
     [SerializeField,ReadOnly] private float submergeRate = 0.0f;
-    public float SubmergeRate { get {return Mathf.Clamp(submergeRate,float.NegativeInfinity,0.0f);}}
+    public float SubmergeRateZeroClamped { get {return Mathf.Clamp(submergeRate,float.NegativeInfinity,0.0f);}}
+    public float SubmergeRate { get { return submergeRate; } }
     private bool waterDetected = false;
     public bool WaterDetected { get {return waterDetected;}}
 

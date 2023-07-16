@@ -6,6 +6,8 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using UnityEditor.Searcher;
 using System.Globalization;
+using FMODUnity;
+using UnityEngine.Localization.SmartFormat.Utilities;
 
 public class PlayerCore : SerializedMonoBehaviour
 {
@@ -35,10 +37,13 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField] private float sailboatSlopeInfluenceForce = 20f;               // 조각배 수면 각도 영향력
     [SerializeField] private float sailboatFullDrag = 10.0f;                        // 조각배 완전 침수시 마찰력
     [SerializeField] private float sailboatMinimumDrag = 0.0f;                      // 조각배 최소 마찰력
-    [SerializeField] private float sailboatRotateControl = 1.0f;                    // 조각배 앞뒤 회전 컨트롤 수치
+    [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
+    [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
 #if UNITY_EDITOR
     [SerializeField, ReadOnly, LabelText("CurrentMove")] private string current_move_debug = "";
+    [SerializeField, ReadOnly, LabelText("velocity")] private Vector3 velocity_debug;
+    [SerializeField, ReadOnly, LabelText("velocity magnitude")] private float velocity_mag_debug;
 
 #endif
 
@@ -49,11 +54,14 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField, Required] new private CapsuleCollider collider;
     [SerializeField, Required] private SailboatBehavior sailboat;
     [SerializeField, Required] private Rig sailboatFootRig;
+    [SerializeField, Required] private StudioEventEmitter gustSound;
+    [SerializeField, Required] private StudioEventEmitter waterScratchSound;
 
     #endregion
 
     private Rigidbody rBody;
     private MainPlayerInputActions input;
+    private StudioEventEmitter sound;
 
     private bool sprinting = false;
     public bool Grounding { get { return grounding; } }
@@ -83,6 +91,7 @@ public class PlayerCore : SerializedMonoBehaviour
     private void Awake()
     {
         rBody = GetComponent<Rigidbody>();
+        sound = GetComponent<StudioEventEmitter>();
 
         input = new MainPlayerInputActions();
         input.Player.Enable();
@@ -100,9 +109,16 @@ public class PlayerCore : SerializedMonoBehaviour
         initialRigidbodyDrag = rBody.drag;
     }
 
+    private void FixedUpdate()
+    {
+        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+        CurrentMovement.OnFixedUpdate(this);
+        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+    }
+
     private void Update()
     {
-
+        // Raycast process
         RaycastHit groundHit;
 
         if (Physics.Raycast(RCO_foot.position, -groundNormal, out groundHit, groundCastDistance, ~groundIgnore))
@@ -124,14 +140,16 @@ public class PlayerCore : SerializedMonoBehaviour
             else animator.SetFloat("AirboneBlend", 1f, 0.5f, Time.deltaTime);
         }
 
-        if (buoyant.SubmergeRate < -0.1f)
+
+        // Movement state change condition
+        if (buoyant.SubmergeRateZeroClamped < -0.1f)
         {
             if (CurrentMovement.GetType() == typeof(Movement_Ground) && !grounding)
             {
                 CurrentMovement = new Movement_Swimming();
             }
         }
-        if (buoyant.SubmergeRate >= -0.1f)
+        if (buoyant.SubmergeRateZeroClamped >= -0.1f)
         {
             if (CurrentMovement.GetType() == typeof(Movement_Swimming))
             {
@@ -143,6 +161,28 @@ public class PlayerCore : SerializedMonoBehaviour
         CurrentMovement.OnUpdate(this);
         // =================== CURRENT MOVEMENT UPDATE =========================
 
+        // animation & audio controls
+        if(CurrentMovement.GetType() == typeof(Movement_Swimming))
+            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1.0f, 0.2f));
+        else 
+            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0.0f, 0.2f));
+
+        if (CurrentMovement.GetType() == typeof(Movement_Board))
+            animator.SetLayerWeight(2, Mathf.Lerp(animator.GetLayerWeight(2), 1.0f, 0.2f));
+        else
+        {
+            animator.SetLayerWeight(2, Mathf.Lerp(animator.GetLayerWeight(2), 0.0f, 0.2f));
+
+            float f;
+            gustSound.EventInstance.getParameterByName("Speed", out f);
+            gustSound.EventInstance.setParameterByName("Speed", Mathf.Lerp(f,0f,0.1f));
+            waterScratchSound.EventInstance.getParameterByName("BoardWaterScratch", out f);
+            waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.Lerp(f,0f,0.1f));
+        }
+
+
+
+
 #if UNITY_EDITOR
         if (CurrentMovement.GetType() == typeof(Movement_Ground)) current_move_debug = "GROUND";
         else if (CurrentMovement.GetType() == typeof(Movement_Swimming)) current_move_debug = "SWIMMING";
@@ -150,11 +190,12 @@ public class PlayerCore : SerializedMonoBehaviour
 #endif
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
-        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
-        CurrentMovement.OnFixedUpdate(this);
-        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+#if UNITY_EDITOR
+        velocity_debug = rBody.velocity;
+        velocity_mag_debug = rBody.velocity.magnitude;
+#endif
     }
 
     #region MovementStates
@@ -173,7 +214,7 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             base.OnFixedUpdate(player);
 
-            if (player.buoyant.SubmergeRate < 0)
+            if (player.buoyant.SubmergeRateZeroClamped < 0)
             {
                 player.rBody.AddForce(Vector3.up * player.swimUpforce, ForceMode.Acceleration);
             }
@@ -186,7 +227,12 @@ public class PlayerCore : SerializedMonoBehaviour
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeed : player.moveSpeed;
                 Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal) * adjuestedScale;
 
-                Vector3 finalVelocity = (1f - player.buoyant.SubmergeRate * player.WaterWalkDragging) * slopedMoveVelocity;
+                Vector3 finalVelocity = slopedMoveVelocity;
+                if (player.buoyant.WaterDetected)
+                {
+                    finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.WaterWalkDragging);
+                }
+
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
                 //slope boost
@@ -204,6 +250,11 @@ public class PlayerCore : SerializedMonoBehaviour
                     Quaternion.LookRotation(lookTransformedVector, Vector3.up),
                     LargeTurn ? 30f : 10f
                 );
+
+                if (player.buoyant.WaterDetected)
+                    player.animator.speed = 1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.WaterWalkDragging;
+                else 
+                    player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
             }
@@ -228,7 +279,7 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             player.rBody.drag = player.WaterRigidbodyDrag;
             base.OnMovementEnter(player);
-            player.animator.SetBool("Swimming",true);
+            player.animator.SetBool("Swimming", true);
             player.animator.SetTrigger("SwimmingEnter");
         }
 
@@ -236,9 +287,9 @@ public class PlayerCore : SerializedMonoBehaviour
         {
             base.OnFixedUpdate(player);
 
-            if (player.buoyant.SubmergeRate < 0)
+            if (player.buoyant.SubmergeRateZeroClamped < 0)
             {
-                player.rBody.AddForce(Vector3.up * player.swimUpforce * (0.5f + Mathf.Sin(Time.time) * 3f));
+                player.rBody.AddForce(Vector3.up * player.swimUpforce * (0.5f + Mathf.Sin(Time.time) / 2f));
             }
 
             if (player.input.Player.Move.IsPressed())
@@ -279,18 +330,20 @@ public class PlayerCore : SerializedMonoBehaviour
             player.sailboatFootRig.weight = 1.0f;
             player.buoyant.enabled = false;
             player.rBody.useGravity = false;
-            player.animator.SetBool("Boarding",true);
+            player.animator.SetBool("Boarding", true);
             player.animator.SetTrigger("BoardingEnter");
             player.animator.SetFloat("BoardBlend", 0.0f);
         }
 
         Vector3 directionCache = Vector3.forward;
+        float GustAmount = 0.0f;
 
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
 
             SailboatBehavior sailboat = player.sailboat;
+            GustAmount = Mathf.InverseLerp(player.gustStartVelocity, player.gustMaxVelocity, Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude);
 
             if (player.sailboat.SubmergeRate < -0.5f)
             {
@@ -317,36 +370,46 @@ public class PlayerCore : SerializedMonoBehaviour
             }
             else
             {
-                player.rBody.drag = player.sailboatMinimumDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate,0f,1f) * player.sailboatGravity, ForceMode.Acceleration);
-                if (player.input.Player.Move.IsPressed())
+                if (!player.Grounding)
                 {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                    player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce, ForceMode.Acceleration);
+                    player.rBody.drag = player.sailboatMinimumDrag;
+                    if (player.input.Player.Move.IsPressed())
+                    {
+                        Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                        player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce, ForceMode.Acceleration);
+                    }
                 }
+
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, 0f, 1f) * player.sailboatGravity, ForceMode.Acceleration);
             }
 
-            if (player.input.Player.Move.IsPressed() && Vector3.ProjectOnPlane(player.rBody.velocity,Vector3.up).magnitude > 2.0f)
+            if (player.input.Player.Move.IsPressed() && Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 2.0f)
             {
-                sailboat.transform.rotation = Quaternion.RotateTowards(
-                    sailboat.transform.rotation,
+                sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
                     Quaternion.LookRotation(player.rBody.velocity, sailboat.SurfacePlane.normal),
-                    5f);
+                    0.4f);
+
+                //sailboat.transform.rotation = Quaternion.RotateTowards(
+                //    sailboat.transform.rotation,
+                //    Quaternion.LookRotation(player.rBody.velocity, sailboat.SurfacePlane.normal),
+                //    5f);
 
                 directionCache = Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up);
             }
             else
             {
-                sailboat.transform.rotation = Quaternion.RotateTowards(
-                    sailboat.transform.rotation,
+                sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
                     Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal),
-                    3.0f
-                    );
+                    0.4f);
             }
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
             player.animator.SetFloat("BoardBlend", player.rBody.velocity.y);
+
+            player.waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.InverseLerp(0.5f, -0.5f, player.sailboat.SubmergeRate) * GustAmount * 1.5f);
+
+            player.gustSound.EventInstance.setParameterByName("Speed", GustAmount);
         }
 
         public override void OnMovementExit(PlayerCore player)
@@ -368,10 +431,10 @@ public class PlayerCore : SerializedMonoBehaviour
 
     private void OnToggleSailboat(InputAction.CallbackContext context)
     {
-        if(CurrentMovement.GetType() != typeof(Movement_Board))
+        if (CurrentMovement.GetType() != typeof(Movement_Board))
         {
-            if(buoyant.WaterDetected)
-            CurrentMovement = new Movement_Board();
+            if (buoyant.WaterDetected && buoyant.SubmergeRate < 0.5f)
+                CurrentMovement = new Movement_Board();
         }
         else
         {
@@ -387,6 +450,7 @@ public class PlayerCore : SerializedMonoBehaviour
             {
                 rBody.velocity += Vector3.up * jumpPower;
                 animator.SetFloat("AirboneBlend", 0f);
+                PlayFootstepSound();
             }
         }
     }
@@ -404,6 +468,12 @@ public class PlayerCore : SerializedMonoBehaviour
 
     #endregion
 
+    public void FootstepEvent()
+    {
+        if (CurrentMovement.GetType() == typeof(Movement_Ground))
+            PlayFootstepSound();
+    }
+
     private Vector3 GetLookMoveVector(Vector2 input, Vector3 up)
     {
         Vector3 lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
@@ -414,5 +484,57 @@ public class PlayerCore : SerializedMonoBehaviour
     private void OnGroundingEnter()
     {
 
+    }
+
+    private void PlayFootstepSound()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(RCO_foot.position, Vector3.down);
+        if (Physics.Raycast(RCO_foot.position, -groundNormal, out hit, groundCastDistance, ~groundIgnore))
+        {
+            SoundMaterialBehavior soundMaterialComp;
+            SoundMaterial soundMaterial = SoundMaterial.Default;
+
+            sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+
+            if (hit.collider.TryGetComponent(out soundMaterialComp))
+            {
+                soundMaterial = soundMaterialComp.GetSoundMaterial(RCO_foot.position);
+
+                switch (soundMaterial)
+                {
+                    case SoundMaterial.Default:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+                        break;
+                    case SoundMaterial.Sand:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Sand");
+                        break;
+                    case SoundMaterial.Water:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+                        break;
+                    case SoundMaterial.Grass:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Grass");
+                        break;
+                    case SoundMaterial.Wood:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Wood");
+                        break;
+
+                    default:
+                        sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+                        break;
+                }
+           
+                if(buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
+                {
+                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+                }
+                else if(buoyant.SubmergeRate <= 0.5f)
+                {
+                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
+                }
+            }
+
+            sound.Play();
+        }
     }
 }
