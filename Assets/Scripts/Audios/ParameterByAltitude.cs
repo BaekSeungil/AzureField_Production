@@ -17,7 +17,7 @@ public class ParameterByAltitude : MonoBehaviour
 
     private void Start()
     {
-        PlayerCore player = FindObjectOfType<PlayerCore>();
+        PlayerCore player = FindFirstObjectByType<PlayerCore>();
         hasEventComp = TryGetComponent<StudioEventEmitter>(out sound);
         if(player != null)
         {

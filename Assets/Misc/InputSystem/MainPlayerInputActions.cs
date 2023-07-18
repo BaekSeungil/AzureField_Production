@@ -440,6 +440,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Positive"",
+                    ""type"": ""Button"",
+                    ""id"": ""27ab0a7c-16f5-4b5b-846d-2ad58896a32b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -783,6 +792,39 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bd74b524-9bcd-49ae-b2c5-1aaf660e9b69"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a22a2ac6-e7ed-4f94-8b0d-77fed640e6b7"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4165dd2-e296-435f-a55a-fbf5f4c0ba32"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -871,6 +913,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
+        m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1050,6 +1093,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_ScrollWheel;
     private readonly InputAction m_UI_MiddleClick;
     private readonly InputAction m_UI_RightClick;
+    private readonly InputAction m_UI_Positive;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1062,6 +1106,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @ScrollWheel => m_Wrapper.m_UI_ScrollWheel;
         public InputAction @MiddleClick => m_Wrapper.m_UI_MiddleClick;
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
+        public InputAction @Positive => m_Wrapper.m_UI_Positive;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1095,6 +1140,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @RightClick.started += instance.OnRightClick;
             @RightClick.performed += instance.OnRightClick;
             @RightClick.canceled += instance.OnRightClick;
+            @Positive.started += instance.OnPositive;
+            @Positive.performed += instance.OnPositive;
+            @Positive.canceled += instance.OnPositive;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1123,6 +1171,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @RightClick.started -= instance.OnRightClick;
             @RightClick.performed -= instance.OnRightClick;
             @RightClick.canceled -= instance.OnRightClick;
+            @Positive.started -= instance.OnPositive;
+            @Positive.performed -= instance.OnPositive;
+            @Positive.canceled -= instance.OnPositive;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1207,5 +1258,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnScrollWheel(InputAction.CallbackContext context);
         void OnMiddleClick(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
+        void OnPositive(InputAction.CallbackContext context);
     }
 }

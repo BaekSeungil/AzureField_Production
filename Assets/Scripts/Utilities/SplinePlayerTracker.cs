@@ -11,7 +11,7 @@ public class SplinePlayerTracker : MonoBehaviour
 
     private void Start()
     {
-        var player = FindObjectOfType<PlayerCore>();
+        var player = FindFirstObjectByType<PlayerCore>();
         if (player != null)
             playerTF = player.transform;
     }

@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 65c08febac716fb40b6aa2b70c9d47bd
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -57,8 +57,27 @@ ModelImporter:
     animationImportWarnings: "\nClip 'PlayerBody|Swim_Move' has import animation
       warnings that might lower retargeting quality:\n\t'hand.L' has scale animation
       that will be discarded.\n"
-    animationRetargetingWarnings: 
-    animationDoRetargetingWarnings: 0
+    animationRetargetingWarnings: "\nRetargeting quality report for clip 'PlayerBody|Board_Fullcrouch':\n\tRetargeting
+      quality is good. No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Board_Stand':\n\tRetargeting quality is
+      good. No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Idle_Loop':\n\tRetargeting quality is good.
+      No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Jump_Down_Loop':\n\tRetargeting quality
+      is good. No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Jump_Start':\n\tRetargeting quality is
+      good. No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Jump_Up_Loop':\n\tLeftHand average position
+      error 0.3 mm and maximum position error 1.4 mm at time 0: 6 (30.0%) Frame 6\n\nRetargeting
+      quality report for clip 'PlayerBody|Run_Forward':\n\tLeftFoot average position
+      error 0.3 mm and maximum position error 5.4 mm at time 0:13 (65.0%) Frame 13\n\nRetargeting
+      quality report for clip 'PlayerBody|Swim_Idle':\n\tRetargeting quality is good.
+      No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Swim_Move':\n\tRetargeting quality is good.
+      No significant differences with original animation were found.\n\nRetargeting
+      quality report for clip 'PlayerBody|Tpose':\n\tRetargeting quality is good.
+      No significant differences with original animation were found.\n"
+    animationDoRetargetingWarnings: 1
     importAnimatedCustomProperties: 0
     importConstraints: 0
     animationCompression: 0
@@ -385,6 +404,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
@@ -401,7 +421,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
-    optimizeBones: 1
+    optimizeBones: 0
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -412,6 +432,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 180
     normalImportMode: 0
@@ -468,19 +489,19 @@ ModelImporter:
     - boneName: spine.001
       humanName: Spine
       limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        min: {x: -50, y: -40, z: -40}
+        max: {x: 50, y: 40, z: 40}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: spine.002
       humanName: Chest
       limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        min: {x: -40, y: -60, z: -40}
+        max: {x: 40, y: 60, z: 40}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: spine.003
       humanName: UpperChest
       limit:
@@ -1175,6 +1196,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 

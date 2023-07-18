@@ -37,8 +37,12 @@ public class GlobalOceanManager : SerializedMonoBehaviour
 
     private void Awake() 
     {
-        if(instance == null) instance = this;
-        else Destroy(gameObject);
+        if (instance == null) instance = this;
+        else
+        {
+            Debug.Log(gameObject.name + " : 중복된 싱글턴 인스턴스, 삭제됨.");
+            Destroy(gameObject);
+        }
     }
 
     private void OnEnable() {

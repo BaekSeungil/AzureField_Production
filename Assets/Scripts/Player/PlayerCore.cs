@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
-using UnityEditor.Searcher;
-using System.Globalization;
 using FMODUnity;
-using UnityEngine.Localization.SmartFormat.Utilities;
 
 public class PlayerCore : SerializedMonoBehaviour
 {
@@ -17,7 +14,7 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
     [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
-    [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 속도
+    [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 속도    
 
     [Title("Physics")]
     [SerializeField, Range(0f, 1f)] private float horizontalDrag = 0.5f;            // 키 입력이 없을 때 수평 이동 마찰력
@@ -40,10 +37,15 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
+    [Title("Others")]
+    [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
+
 #if UNITY_EDITOR
-    [SerializeField, ReadOnly, LabelText("CurrentMove")] private string current_move_debug = "";
-    [SerializeField, ReadOnly, LabelText("velocity")] private Vector3 velocity_debug;
-    [SerializeField, ReadOnly, LabelText("velocity magnitude")] private float velocity_mag_debug;
+    [Title("Info")]
+    [SerializeField, ReadOnly, LabelText("PlayerControl enabled")] private bool control_disabled_debug;
+    [SerializeField, ReadOnly, LabelText("Currentmove")] private string current_move_debug = "";
+    [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
+    [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
 
 #endif
 
@@ -53,15 +55,21 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField, Required] private Transform RCO_foot;
     [SerializeField, Required] new private CapsuleCollider collider;
     [SerializeField, Required] private SailboatBehavior sailboat;
+    [SerializeField, Required] private Transform headTarget;
+    [SerializeField, Required] private Rig headRig;
     [SerializeField, Required] private Rig sailboatFootRig;
     [SerializeField, Required] private StudioEventEmitter gustSound;
     [SerializeField, Required] private StudioEventEmitter waterScratchSound;
 
+
     #endregion
 
     private Rigidbody rBody;
-    private MainPlayerInputActions input;
     private StudioEventEmitter sound;
+    private Transform interestPoint;
+
+    private MainPlayerInputActions input;
+    public MainPlayerInputActions Input { get { return input; } }
 
     private bool sprinting = false;
     public bool Grounding { get { return grounding; } }
@@ -69,6 +77,8 @@ public class PlayerCore : SerializedMonoBehaviour
     private const float slopeBoostForce = 100f;
 
     private float initialRigidbodyDrag = 0f;
+
+    Vector3 headRigForward;
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -86,7 +96,6 @@ public class PlayerCore : SerializedMonoBehaviour
             }
         }
     }
-
 
     private void Awake()
     {
@@ -107,6 +116,7 @@ public class PlayerCore : SerializedMonoBehaviour
     private void Start()
     {
         initialRigidbodyDrag = rBody.drag;
+        headRigForward = headTarget.localPosition;
     }
 
     private void FixedUpdate()
@@ -181,12 +191,30 @@ public class PlayerCore : SerializedMonoBehaviour
         }
 
 
+        // etc.
 
+        if(interestPoint == null)
+        {
+            headTarget.parent = transform;
+            headTarget.localPosition = Vector3.Lerp(headTarget.localPosition, headRigForward,0.1f);
+        }
+        else
+        {
+            headTarget.parent = null;
+            headTarget.position = Vector3.Lerp(headTarget.position, interestPoint.position, 0.1f);
 
+            if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
+                interestPoint = null;
+        }
+
+        // info update
 #if UNITY_EDITOR
         if (CurrentMovement.GetType() == typeof(Movement_Ground)) current_move_debug = "GROUND";
         else if (CurrentMovement.GetType() == typeof(Movement_Swimming)) current_move_debug = "SWIMMING";
         else if (CurrentMovement.GetType() == typeof(Movement_Board)) current_move_debug = "SAILBOAT";
+
+        if (input.Player.enabled) control_disabled_debug = true;
+        else control_disabled_debug = false;
 #endif
     }
 
@@ -467,6 +495,21 @@ public class PlayerCore : SerializedMonoBehaviour
     }
 
     #endregion
+
+    public void SetInterestPoint(Transform target)
+    {
+        interestPoint = target;
+    }
+
+    public void DisableForSequence()
+    {
+        input.Disable();
+    }
+
+    public void EnableForSequence()
+    {
+         input.Enable();
+    }
 
     public void FootstepEvent()
     {
