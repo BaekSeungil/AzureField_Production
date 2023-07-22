@@ -25,7 +25,7 @@ public class Sequence_WaitForSeconds : Sequence_Base
 [System.Serializable]
 public class Sequence_Dialogue : Sequence_Base
 {
-    public DialogueData[] dialogues;
+    public LocalizedDialogueData[] dialogues;
 
     public override IEnumerator Sequence(SequenceInvoker invoker) 
     {

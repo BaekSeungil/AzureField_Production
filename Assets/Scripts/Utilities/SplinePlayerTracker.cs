@@ -7,6 +7,7 @@ using UnityEngine.Splines;
 public class SplinePlayerTracker : MonoBehaviour
 {
     [SerializeField] private SplineContainer track;
+    [SerializeField] private float maxTrackDistance = 100f;
     Transform playerTF;
 
     private void Start()
@@ -20,12 +21,16 @@ public class SplinePlayerTracker : MonoBehaviour
     {
         if (playerTF != null)
         {
-            float3 playerPoint = new float3(playerTF.position.x, playerTF.position.y, playerTF.position.z); ;
-            float3 nearPoint;
-            float t;
+            if (Vector3.Distance(playerTF.position, transform.position) < maxTrackDistance)
+            {
 
-            SplineUtility.GetNearestPoint(track.Spline, playerPoint, out nearPoint, out t);
-            transform.position = new Vector3(nearPoint.x, nearPoint.y, nearPoint.z);
+                float3 playerPoint = new float3(playerTF.position.x, playerTF.position.y, playerTF.position.z); ;
+                float3 nearPoint;
+                float t;
+
+                SplineUtility.GetNearestPoint(track.Spline, playerPoint, out nearPoint, out t);
+                transform.position = new Vector3(nearPoint.x, nearPoint.y, nearPoint.z);
+            }
         }
     }
 }

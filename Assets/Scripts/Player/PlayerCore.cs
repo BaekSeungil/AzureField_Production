@@ -41,12 +41,15 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
 
 #if UNITY_EDITOR
+#pragma warning disable CS0414
+
     [Title("Info")]
     [SerializeField, ReadOnly, LabelText("PlayerControl enabled")] private bool control_disabled_debug;
     [SerializeField, ReadOnly, LabelText("Currentmove")] private string current_move_debug = "";
     [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
 
+#pragma warning restore CS0414
 #endif
 
     [Title("ChildReferences")]

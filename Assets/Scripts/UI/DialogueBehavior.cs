@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
 [System.Serializable]
-public class DialogueData
+public class LocalizedDialogueData
 {
     public LocalizedString speecher;
     public LocalizedString context;
@@ -57,7 +57,7 @@ public class DialogueBehavior : MonoBehaviour
         dialogueProceed = true;
     }
 
-    public IEnumerator Cor_DialogueSequence(DialogueData[] dialogues)
+    public IEnumerator Cor_DialogueSequence(LocalizedDialogueData[] dialogues)
     {
         visualGroup.SetActive(true);
         ClearDialogue();
@@ -67,7 +67,7 @@ public class DialogueBehavior : MonoBehaviour
         visualGroup.SetActive(false);
     }
 
-    private IEnumerator Cor_TypeDialogue(DialogueData[] dialogues)
+    private IEnumerator Cor_TypeDialogue(LocalizedDialogueData[] dialogues)
     {
         for(int i = 0; i < dialogues.Length; i++)
         {

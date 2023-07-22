@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Unity.Jobs;
+using Unity.Collections;
+using UnityEngine.Rendering;
 
 public class GlobalOceanManager : SerializedMonoBehaviour
 {
@@ -16,24 +19,118 @@ public class GlobalOceanManager : SerializedMonoBehaviour
 
     [SerializeField] private Material[] ReferencingMaterials;
 
-
     [Title("GlobalWaveProperties")]
-    [SerializeField,Range(0.0f,1.5f),DisableInPlayMode()] private float intensity;
+    [SerializeField,Range(0.0f,1.5f)] private float intensity;
+
     [SerializeField,DisableInPlayMode()] private float depth;
     [SerializeField,DisableInPlayMode()] private float phase;
     [SerializeField,DisableInPlayMode()] private float gravity;
     [Title("")]
-    [SerializeField,ReadOnly()] private Vector3 Wave1_Vector;
-    [SerializeField,ReadOnly()] private float Wave1_Amplitude;
+    [SerializeField,DisableInPlayMode()] private Vector3 Wave1_Vector;
+    [SerializeField,DisableInPlayMode()] private float Wave1_Amplitude;
     [Title("")]
-    [SerializeField,ReadOnly()] private Vector3 Wave2_Vector;
-    [SerializeField,ReadOnly()] private float Wave2_Amplitude;
+    [SerializeField, DisableInPlayMode()] private Vector3 Wave2_Vector;
+    [SerializeField, DisableInPlayMode()] private float Wave2_Amplitude;
     [Title("")]
-    [SerializeField,ReadOnly()] private Vector3 Wave3_Vector;
-    [SerializeField,ReadOnly()] private float Wave3_Amplitude;
+    [SerializeField, DisableInPlayMode()] private Vector3 Wave3_Vector;
+    [SerializeField, DisableInPlayMode()] private float Wave3_Amplitude;
     [Title("")]
-    [SerializeField,ReadOnly()] private Vector3 Wave4_Vector;
-    [SerializeField,ReadOnly()] private float Wave4_Amplitude;
+    [SerializeField, DisableInPlayMode()] private Vector3 Wave4_Vector;
+    [SerializeField, DisableInPlayMode()] private float Wave4_Amplitude;
+
+    private struct WavePositionJob : IJob
+    {
+        public Vector3 input;
+        public Vector3 output;
+
+        public float intensity;
+        public float gravity;
+        public float depth;
+        public float phase;
+        public float time;
+
+        public NativeArray<Vector3> waveVectors;
+        public NativeArray<float> waveAmplitudes;
+
+        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude)
+        {
+            float freq = Mathf.Sqrt(gravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
+            float theta = (direction.x * position.x + direction.z * position.z) - freq * time - phase;
+
+            float x = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.x / direction.magnitude * Mathf.Sin(theta));
+            float y = Mathf.Cos(theta) * amplitude * intensity;
+            float z = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.z / direction.magnitude * Mathf.Sin(theta));
+
+            return new Vector3(x, y, z);
+        }
+
+        public void Execute()
+        {
+            Vector3 result = Vector3.zero;
+
+            if (waveVectors.Length != waveAmplitudes.Length) return; // failed for invalid arrayInput;
+
+            for (int i = 0; i < waveVectors.Length; i++)
+            {
+                result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i]);
+            }
+
+            output = result;
+        }
+
+    }
+
+    private struct WaveHeightJob : IJob
+    {
+        public Vector3 input;
+        public float output;
+
+        public float intensity;
+        public float gravity;
+        public float depth;
+        public float phase;
+        public float time;
+
+        public NativeArray<Vector3> waveVectors;
+        public NativeArray<float> waveAmplitudes;
+
+        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude, bool calculateY = true)
+        {
+            float freq = Mathf.Sqrt(gravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
+            float theta = (direction.x * position.x + direction.z * position.z) - freq * time - phase;
+
+            float x = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.x / direction.magnitude * Mathf.Sin(theta));
+            float y = 0f;
+            if (calculateY) y = Mathf.Cos(theta) * amplitude * intensity;
+            float z = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.z / direction.magnitude * Mathf.Sin(theta));
+
+            return new Vector3(x, y, z);
+        }
+
+        private Vector3 GetComlexWavePostion(Vector3 input,bool calculateY = true)
+        {
+            Vector3 result = Vector3.zero;
+
+            if (waveVectors.Length != waveAmplitudes.Length) return input; // failed for invalid arrayInput;
+
+            for (int i = 0; i < waveVectors.Length; i++)
+            {
+                result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i],calculateY);
+            }
+
+            return result;
+        }
+
+        public void Execute()
+        {
+            Vector3 pointXZ = new Vector3(input.x, 0f, input.z);
+            Vector3 iteration = pointXZ - GetComlexWavePostion(pointXZ,false);
+            iteration = pointXZ - GetComlexWavePostion(iteration,false);
+            iteration = pointXZ - GetComlexWavePostion(iteration,false);
+
+            output = GetComlexWavePostion(iteration,true).y;
+        }
+    }
 
     private void Awake() 
     {
@@ -47,11 +144,6 @@ public class GlobalOceanManager : SerializedMonoBehaviour
 
     private void OnEnable() {
         UpdateReferencingMaterials();
-        GameObject[] shorelines = GameObject.FindGameObjectsWithTag("Shoreline");
-        foreach(GameObject sh in shorelines)
-        {
-            sh.GetComponent<Terrain>();
-        }
     }
 
     private void UpdateReferencingMaterials()
@@ -71,11 +163,6 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             m.SetVector("_Direction4",Wave4_Vector);
             m.SetFloat("_Amplitude4",Wave4_Amplitude);
         }
-    }
-    private void SetIntensity(float value)
-    {
-        intensity = value;
-        UpdateReferencingMaterials();
     }
 
     #if UNITY_EDITOR
@@ -111,68 +198,73 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         UpdateReferencingMaterials();
     }
 
+    public Vector3 GetWavePosition(Vector3 point)
+    {
+        Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
+        float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
+
+        WavePositionJob job = new WavePositionJob()
+        {
+            input = point,
+            output = new Vector3(0, 0, 0),
+
+            intensity = this.intensity,
+            gravity = this.gravity,
+            depth = this.depth,
+            phase = this.phase,
+            time = Time.time,
+
+            waveVectors = new NativeArray<Vector3>(vecs, Allocator.Persistent),
+            waveAmplitudes = new NativeArray<float>(amps, Allocator.Persistent),
+        };
+
+        JobHandle handle = job.Schedule();
+        handle.Complete();
+
+        Vector3 result = job.output;
+
+        job.waveVectors.Dispose();
+        job.waveAmplitudes.Dispose();
+
+        return result;
+    }
+
     public float GetWaveHeight(Vector3 point)
     {
-        Vector3 pointXZ = new Vector3(point.x,0f,point.z);
-        Vector3 iteration = pointXZ - GetWavePositionXZ(pointXZ);
-        iteration = pointXZ - GetWavePositionXZ(iteration);
-        iteration = pointXZ - GetWavePositionXZ(iteration);
-        
-        return  GetWavePosition(iteration).y;
-    }
+        Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
+        float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
 
-    public Vector3 GetWavePosition(Vector3 input)
-    {
-        Vector3 result;
 
-        result = SingleGerstnerWavePosition(input,Wave1_Vector,Wave1_Amplitude);
-        result += SingleGerstnerWavePosition(input,Wave2_Vector,Wave2_Amplitude);
-        result += SingleGerstnerWavePosition(input,Wave3_Vector,Wave3_Amplitude);
-        result += SingleGerstnerWavePosition(input,Wave4_Vector,Wave4_Amplitude);
+        WaveHeightJob job = new WaveHeightJob()
+        {
+            input = point,
+            output = 0f,
+
+            intensity = this.intensity,
+            gravity = this.gravity,
+            depth = this.depth,
+            phase = this.phase,
+            time = Time.time,
+
+            waveVectors = new NativeArray<Vector3>(vecs, Allocator.Persistent),
+            waveAmplitudes = new NativeArray<float>(amps, Allocator.Persistent),
+        };
+
+
+        JobHandle handle = job.Schedule();
+        handle.Complete();
+
+        float result = job.output;
+
+        job.waveVectors.Dispose();
+        job.waveAmplitudes.Dispose();
 
         return result;
     }
 
-    public Vector3 GetWavePositionXZ(Vector3 input)
+    private void OnGUI()
     {
-        Vector3 result;
-
-        result = SingleGerstnerWavePositionXZ(input,Wave1_Vector,Wave1_Amplitude);
-        result += SingleGerstnerWavePositionXZ(input,Wave2_Vector,Wave2_Amplitude);
-        result += SingleGerstnerWavePositionXZ(input,Wave3_Vector,Wave3_Amplitude);
-        result += SingleGerstnerWavePositionXZ(input,Wave4_Vector,Wave4_Amplitude);
-
-        return result;
-    }
-
-    private Vector3 SingleGerstnerWavePosition(Vector3 position,Vector3 direction,float amplitude)
-    {
-        float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
-        float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
-
-        float x = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
-        float y = Mathf.Cos(theta) * amplitude * intensity;
-        float z = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
-    
-        return new Vector3(x,y,z);
-    }
-
-    private Vector3 SingleGerstnerWavePositionXZ(Vector3 position,Vector3 direction,float amplitude)
-    {
-        float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
-        float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
-
-        float x = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.x/direction.magnitude * Mathf.Sin(theta));
-        float z = -(amplitude * intensity/((float)(System.Math.Tanh(direction.magnitude*depth))) * direction.z/direction.magnitude * Mathf.Sin(theta));
-    
-        return new Vector3(x,0f,z);
-    }
-
-    private float SingleGerstnerWaveHeight(Vector3 position,Vector3 direction,float amplitude)
-    {
-        float freq = Mathf.Sqrt( gravity * direction.magnitude * (float)(System.Math.Tanh(depth*direction.magnitude)));
-        float theta = (direction.x * position.x + direction.z * position.z) - freq * Time.time - phase;
-        return Mathf.Cos(theta) * amplitude * intensity;
+        UpdateReferencingMaterials();
     }
 
 }
