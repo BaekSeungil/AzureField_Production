@@ -41,7 +41,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     private struct WavePositionJob : IJob
     {
         public Vector3 input;
-        public Vector3 output;
+        public NativeArray<Vector3> output;
 
         public float intensity;
         public float gravity;
@@ -75,7 +75,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
                 result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i]);
             }
 
-            output = result;
+            output[0] = result;
         }
 
     }
@@ -83,7 +83,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     private struct WaveHeightJob : IJob
     {
         public Vector3 input;
-        public float output;
+        public NativeArray<float> output;
 
         public float intensity;
         public float gravity;
@@ -128,7 +128,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             iteration = pointXZ - GetComlexWavePostion(iteration,false);
             iteration = pointXZ - GetComlexWavePostion(iteration,false);
 
-            output = GetComlexWavePostion(iteration,true).y;
+            output[0] = GetComlexWavePostion(iteration,true).y;
         }
     }
 
@@ -206,7 +206,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         WavePositionJob job = new WavePositionJob()
         {
             input = point,
-            output = new Vector3(0, 0, 0),
+            output = new NativeArray<Vector3>(1,Allocator.Persistent),
 
             intensity = this.intensity,
             gravity = this.gravity,
@@ -221,8 +221,9 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         JobHandle handle = job.Schedule();
         handle.Complete();
 
-        Vector3 result = job.output;
+        Vector3 result = job.output[0];
 
+        job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
 
@@ -234,11 +235,10 @@ public class GlobalOceanManager : SerializedMonoBehaviour
         Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
         float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
 
-
         WaveHeightJob job = new WaveHeightJob()
         {
             input = point,
-            output = 0f,
+            output = new NativeArray<float>(1,Allocator.TempJob),
 
             intensity = this.intensity,
             gravity = this.gravity,
@@ -246,16 +246,17 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             phase = this.phase,
             time = Time.time,
 
-            waveVectors = new NativeArray<Vector3>(vecs, Allocator.Persistent),
-            waveAmplitudes = new NativeArray<float>(amps, Allocator.Persistent),
+            waveVectors = new NativeArray<Vector3>(vecs, Allocator.TempJob),
+            waveAmplitudes = new NativeArray<float>(amps, Allocator.TempJob),
         };
 
 
         JobHandle handle = job.Schedule();
         handle.Complete();
 
-        float result = job.output;
+        float result = job.output[0];
 
+        job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
 

@@ -29,7 +29,8 @@ public class Sequence_Dialogue : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker) 
     {
-        if (invoker.Dialogue == null) yield break;
+        if (invoker.Dialogue == null)
+        { Debug.Log("Dialogue UI 인스턴스가 없습니다!"); yield break; }
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_DialogueSequence(dialogues));
     }
 }
