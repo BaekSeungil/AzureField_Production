@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
 
-[CreateAssetMenu(fileName = "NewItemData",menuName = "CreateNewItemData",order = 0)]
+[CreateAssetMenu(fileName = "NewItemData",menuName = "CreateNewItemData",order = 1)]
 public class ItemData : ScriptableObject
 {
     [SerializeField] private string itemID;
     public string ItemID { get { return itemID; } }
-    [SerializeField] private LocalizedString itemName;
-    public LocalizedString ItemName { get { return itemName; } }
+    [SerializeField] private string itemName;
+    public string ItemName { get { return itemName; } }
     [SerializeField] private Sprite itemImage;
     public Sprite ItemImage { get { return itemImage; } }
-    [SerializeField] private LocalizedString itemDiscription;
-    public LocalizedString ItemDiscription { get { return itemDiscription; } }
+    [SerializeField,TextArea()] private string itemDiscription;
+    public string ItemDiscription { get { return itemDiscription; } }
     [SerializeField] private string[] tags;
     public string[] Tags { get { return tags; } }
 

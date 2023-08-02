@@ -825,6 +825,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Positive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ee97b913-65d0-4ba9-b69e-9ab506b6fc97"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }

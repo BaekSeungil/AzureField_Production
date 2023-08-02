@@ -11,6 +11,8 @@ public class SequenceInvoker : MonoBehaviour
 
     private DialogueBehavior dialogue;
     public DialogueBehavior Dialogue { get { return dialogue; } }
+    private PlayerInventoryContainer inventoryContainer;
+    public PlayerInventoryContainer InventoryContainer { get { return inventoryContainer; } }
     private PlayableDirector playable;
     public PlayableDirector Playable { get { return playable; } }
 
@@ -23,8 +25,9 @@ public class SequenceInvoker : MonoBehaviour
             Destroy(this); 
         }
 
-        dialogue = FindAnyObjectByType<DialogueBehavior>();
+        dialogue = FindFirstObjectByType<DialogueBehavior>();
         playable = GetComponent<PlayableDirector>();
+        inventoryContainer = FindFirstObjectByType<PlayerInventoryContainer>();
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -42,24 +45,28 @@ public class SequenceInvoker : MonoBehaviour
     private IEnumerator Cor_StartSequenceChain(Sequence_Base[] sequenceChain)
     {
         sequenceRunning = true;
-
         PlayerCore player = FindObjectOfType<PlayerCore>();
-        bool playerDisabled = false;
+        player.DisableForSequence();
 
-        for(int i = 0; i < sequenceChain.Length; i++)
+        for (int i = 0; i < sequenceChain.Length; i++)
         {
-            if (sequenceChain[i].DisablePlayer)
-            {
-                player.DisableForSequence();
-                playerDisabled = true;
-            }
             yield return StartCoroutine(sequenceChain[i].Sequence(this));
         }
 
+        if(dialogue.DialogueOpened) { yield return dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
+
         yield return null;
-        if (playerDisabled) player.EnableForSequence();
+        player.EnableForSequence();
 
         sequenceRunning = false;
+    }
+
+    public IEnumerator Cor_RecurciveSequenceChain(Sequence_Base[] sequenceChain)
+    {
+        for (int i = 0; i < sequenceChain.Length; i++)
+        {
+            yield return StartCoroutine(sequenceChain[i].Sequence(this));
+        }
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)

@@ -2,6 +2,7 @@ using DG.Tweening;
 using FMODUnity;
 using RichTextSubstringHelper;
 using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -10,15 +11,18 @@ using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
 [System.Serializable]
-public class LocalizedDialogueData
+public class DialogueData
 {
-    public LocalizedString speecher;
-    public LocalizedString context;
+    public string speecher;
+    [TextArea]public string context;
 }
 
 public class DialogueBehavior : MonoBehaviour
 {
     [SerializeField] private float textInterval = 0.05f;
+    [SerializeField] private float answerSpawnSpace = 50f;
+    [SerializeField] private GameObject answerSinglePrefab;
+
     [Title("Sounds")]
     [SerializeField] private EventReference sound_open;
     [SerializeField] private EventReference sound_proceed;
@@ -29,12 +33,14 @@ public class DialogueBehavior : MonoBehaviour
     [SerializeField] private TextMeshProUGUI speecher;
     [SerializeField] private TextMeshProUGUI context;
     [SerializeField] private GameObject inputWaitObject;
-    [SerializeField] private DOTweenAnimation dotweenAnim;
-
+    [SerializeField] private Transform answerStartPosition;
+    [SerializeField] private DOTweenAnimation visualGroupAnim;
+    [SerializeField] private DOTweenAnimation dialogueAnswerAnimation;
 
     private MainPlayerInputActions input;
 
     private bool dialogueOpened = false;
+    public bool DialogueOpened { get { return dialogueOpened; } }
 
     bool dialogueProceed = false;
 
@@ -57,46 +63,45 @@ public class DialogueBehavior : MonoBehaviour
         dialogueProceed = true;
     }
 
-    public IEnumerator Cor_DialogueSequence(LocalizedDialogueData[] dialogues)
+    public IEnumerator Cor_DialogueSequence(DialogueData[] dialogues)
     {
         visualGroup.SetActive(true);
         ClearDialogue();
-        yield return StartCoroutine(Cor_OpenDialogue());
+        if (!dialogueOpened)
+        {
+            yield return StartCoroutine(Cor_OpenDialogue());
+        }
         yield return StartCoroutine(Cor_TypeDialogue(dialogues));
-        yield return StartCoroutine(Cor_CloseDialogue());
-        visualGroup.SetActive(false);
     }
 
-    private IEnumerator Cor_TypeDialogue(LocalizedDialogueData[] dialogues)
+    private IEnumerator Cor_TypeDialogue(DialogueData[] dialogues)
     {
-        for(int i = 0; i < dialogues.Length; i++)
+        for (int i = 0; i < dialogues.Length; i++)
         {
             inputWaitObject.SetActive(false);
             dialogueProceed = false;
 
-            if (!dialogues[i].speecher.IsEmpty) speecher.text = dialogues[i].speecher.GetLocalizedString();
-            else speecher.text = string.Empty;
+            if (dialogues[i].speecher == string.Empty) speecher.text = string.Empty;
+            else speecher.text = dialogues[i].speecher;
 
-            if (!dialogues[i].context.IsEmpty)
+            string ctx = dialogues[i].context;
+
+            for (int j = 0; j <= ctx.RichTextLength(); j++)
             {
-                string ctx = dialogues[i].context.GetLocalizedString();
-
-                for (int j = 0; j <= ctx.RichTextLength(); j++)
-                {
-                    if (dialogueProceed == true)
-                    { context.text = ctx; break; }
-                    context.text = ctx.RichTextSubString(j);
-                    RuntimeManager.PlayOneShot(sound_type);
-                    yield return new WaitForSeconds(textInterval);
-                }
-
-                dialogueProceed = false;
+                if (dialogueProceed == true)
+                { context.text = ctx; break; }
+                context.text = ctx.RichTextSubString(j);
+                RuntimeManager.PlayOneShot(sound_type);
+                yield return new WaitForSeconds(textInterval);
             }
-            else context.text = string.Empty;
+
+            dialogueProceed = false;
+
             inputWaitObject.SetActive(true);
             yield return new WaitForSeconds(0.5f);
-     
+
             yield return new WaitUntil(() => dialogueProceed);
+            inputWaitObject.SetActive(false);
             RuntimeManager.PlayOneShot(sound_proceed);
         }
     }
@@ -107,26 +112,108 @@ public class DialogueBehavior : MonoBehaviour
 
         RuntimeManager.PlayOneShot(sound_open);
 
-        dotweenAnim.DORestartById("DialogueFadein");
-        Tween openTw = dotweenAnim.GetTweens()[0];
+        visualGroupAnim.DORestartById("DialogueFadein");
+        Tween openTw = visualGroupAnim.GetTweens()[0];
 
         yield return openTw.WaitForCompletion();
         dialogueOpened = true;
     }
 
-    private IEnumerator Cor_CloseDialogue()
+    public IEnumerator Cor_CloseDialogue()
     {
         if (!dialogueOpened) yield break;
 
         RuntimeManager.PlayOneShot(sound_close);
         dialogueOpened = false;
-        dotweenAnim.DORestartById("DialogueFadeout");
-        Tween closeTw = dotweenAnim.GetTweens()[1];
+        visualGroupAnim.DORestartById("DialogueFadeout");
+        Tween closeTw = visualGroupAnim.GetTweens()[1];
         inputWaitObject.SetActive(false);
 
         yield return closeTw.WaitForCompletion();
-        
+
+        visualGroup.SetActive(false);
+
     }
+
+    private DialogueAnswerSingle[] answerObjects;
+
+    public IEnumerator Cor_Branch(string[] answerStrings,Action<int> outCallback)
+    {
+        if(!dialogueOpened)
+        {
+            yield return StartCoroutine(Cor_OpenDialogue());
+        }
+
+        dialogueAnswerAnimation.DORestartById("Branch_Open");
+        Tween tw = dialogueAnswerAnimation.GetTweens()[0];
+        yield return tw.WaitForCompletion();
+
+        answerObjects = new DialogueAnswerSingle[answerStrings.Length];
+
+        for(int i = 0; i < answerStrings.Length; i++)
+        {
+            GameObject newObject = Instantiate(answerSinglePrefab, answerStartPosition);
+            newObject.transform.localPosition = new Vector3(0f, i * answerSpawnSpace);
+            answerObjects[i] = newObject.GetComponent<DialogueAnswerSingle>();
+            answerObjects[i].Initialize(answerStrings[i]);
+        }
+
+        int index = 0;
+        answerObjects[0].OnSelected();
+        
+        while(!input.UI.Positive.WasPressedThisFrame())
+        {
+            if(input.UI.Navigate.WasPressedThisFrame())
+            {
+                Vector2 inp = input.UI.Navigate.ReadValue<Vector2>();
+                if (inp.y == 1f)
+                {
+                    RuntimeManager.PlayOneShot(sound_proceed);
+                    answerObjects[index].OnDeselected();
+                    if (index == answerObjects.Length-1)
+                    {
+                        index = 0;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                    answerObjects[index].OnSelected();
+                }
+                else if (inp.y == -1f)
+                {
+                    RuntimeManager.PlayOneShot(sound_proceed);
+                    answerObjects[index].OnDeselected();
+                    if(index == 0)
+                    {
+                        index = answerObjects.Length-1;
+                    }
+                    else
+                    {
+                        index--;
+                    }
+                    answerObjects[index].OnSelected();
+                }
+            }
+            yield return null;
+        }
+
+        RuntimeManager.PlayOneShot(sound_open);
+
+        for(int i = answerObjects.Length - 1; i >= 0; i--)
+        {
+            Destroy(answerObjects[i].gameObject);
+        }
+
+        answerObjects = null;
+
+        dialogueAnswerAnimation.DORestartById("Branch_Close");
+        tw = dialogueAnswerAnimation.GetTweens()[1];
+        yield return tw.WaitForCompletion();
+
+        outCallback(index);
+    }
+
 
     private void ClearDialogue()
     {

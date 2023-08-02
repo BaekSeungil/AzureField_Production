@@ -9,7 +9,8 @@ public class Interactable_TriggerZone : SerializedMonoBehaviour
 {
     [SerializeField] private bool interestPlayer = true;
     [SerializeField] private UnityEvent eventsOnStartInteract;
-    [SerializeField] private Sequence_Base[] sequences;
+    [SerializeField] private SequenceBundleAsset sequenceAsset;
+    //[SerializeField] private Sequence_Base[] sequences;
 
     MainPlayerInputActions input;
 
@@ -17,7 +18,7 @@ public class Interactable_TriggerZone : SerializedMonoBehaviour
     {
         eventsOnStartInteract.Invoke();
         if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-        SequenceInvoker.Instance.StartSequence(sequences);
+        SequenceInvoker.Instance.StartSequence(sequenceAsset.sequenceBundles);
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(transform);
     }
 

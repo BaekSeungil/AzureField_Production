@@ -1,16 +1,30 @@
 using JetBrains.Annotations;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Localization.SmartFormat.Utilities;
 
-public class PlayerInventoryContainer : MonoBehaviour
+public class PlayerInventoryContainer : SerializedMonoBehaviour
 {
-    private Dictionary<ItemData, int> inventoryData;
+    [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;
     public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }
 
-    private int money;
+    private Dictionary<ItemData, int> debug_items;
+
+    [SerializeField,ReadOnly] private int money;
     public int Money { get { return money; } }
+
+    private void Awake()
+    {
+        inventoryData = new Dictionary<ItemData, int>();
+        if(debug_items != null)
+        {
+            foreach(var item in debug_items)
+            {
+                inventoryData.Add(item.Key, item.Value);
+            }
+        }
+    }
 
     public void AddItem(ItemData item)
     {
@@ -22,6 +36,8 @@ public class PlayerInventoryContainer : MonoBehaviour
         {
             inventoryData.Add(item, 1);
         }
+
+        TryResetInventoryUI();
     }
 
     public void AddItem(ItemData item, int quantity)
@@ -36,6 +52,8 @@ public class PlayerInventoryContainer : MonoBehaviour
         {
             inventoryData.Add(item, quantity);
         }
+
+        TryResetInventoryUI();
     }
 
     public bool RemoveItem(ItemData item)
@@ -45,18 +63,22 @@ public class PlayerInventoryContainer : MonoBehaviour
             if (inventoryData[item] <= 1)
             {
                 inventoryData.Remove(item);
-                return true;
             }
             else
             {
                 inventoryData[item]--;
-                return true;
             }
+
+            TryResetInventoryUI();
+
+            return true;
         }
         else
         {
             return false;
         }
+
+
     }
 
     public bool RemoveItem(ItemData item, int quantity)
@@ -66,6 +88,7 @@ public class PlayerInventoryContainer : MonoBehaviour
             if (inventoryData[item] == quantity)
             {
                 inventoryData.Remove(item);
+                TryResetInventoryUI();
                 return true;
             }
             else if (inventoryData[item] < quantity)
@@ -75,6 +98,7 @@ public class PlayerInventoryContainer : MonoBehaviour
             else
             {
                 inventoryData[item] -= quantity;
+                TryResetInventoryUI();
                 return true;
             }
         }
@@ -97,12 +121,37 @@ public class PlayerInventoryContainer : MonoBehaviour
 
     public void AddMoney(int value)
     {
+        int le = money;
         money += value;
+
+        MoneyObtainInfo info = FindFirstObjectByType<MoneyObtainInfo>();
+        if (info != null) { info.MoneyChanged(le, value); return; }
     }
 
     public bool UseMoney(int value)
     {
         if (money < value) return false;
-        else return true;
+        else
+        {
+            int le = money;
+            money -= value;
+
+            MoneyObtainInfo info = FindFirstObjectByType<MoneyObtainInfo>();
+            if (info != null) { info.MoneyChanged(le, -value); }
+
+            TryResetInventoryUI();
+
+            return true;
+        }
+    }
+
+    private void TryResetInventoryUI()
+    {
+        InventoryBehavior uiInventory = FindAnyObjectByType<InventoryBehavior>();
+        if (uiInventory != null) 
+        { 
+            uiInventory.SetInventory(inventoryData);
+            uiInventory.SetMoney(money);
+        }
     }
 }
