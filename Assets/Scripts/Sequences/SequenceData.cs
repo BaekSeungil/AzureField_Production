@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 [CreateAssetMenu(fileName = "NewSequenceData", menuName = "CreateNewSequenceBundleAsset", order = 1)]
@@ -97,4 +96,17 @@ public class Sequence_GainMoney : Sequence_Base
         yield return null;
     }
     
+}
+
+[System.Serializable]
+public class Sequence_ObtainItem : Sequence_Base
+{
+    public ItemData item;
+    public int quantity = 1;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.InventoryContainer.AddItem(item, quantity);
+        yield return invoker.StartCoroutine(invoker.InventoryContainer.Cor_ItemWindow(item, quantity));
+    }
 }

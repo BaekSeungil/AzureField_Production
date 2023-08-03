@@ -107,6 +107,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenPlaymenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -362,6 +371,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SailboatBackward"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bab663ee-17b4-43ac-912a-c561b0ee5d07"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -445,6 +465,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""Positive"",
                     ""type"": ""Button"",
                     ""id"": ""27ab0a7c-16f5-4b5b-846d-2ad58896a32b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Close"",
+                    ""type"": ""Button"",
+                    ""id"": ""6842df42-01b3-46ae-9b59-059f6f277e11"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -795,17 +824,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""bd74b524-9bcd-49ae-b2c5-1aaf660e9b69"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Positive"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""a22a2ac6-e7ed-4f94-8b0d-77fed640e6b7"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -821,7 +839,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Positive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -832,8 +850,30 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5e082a3b-7513-4d0a-9258-e56c9d8f6ea5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""609d0ad2-be25-44b3-b109-c56276720fa8"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Close"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -914,6 +954,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_ToggleSailboat = m_Player.FindAction("ToggleSailboat", throwIfNotFound: true);
         m_Player_SailboatForward = m_Player.FindAction("SailboatForward", throwIfNotFound: true);
         m_Player_SailboatBackward = m_Player.FindAction("SailboatBackward", throwIfNotFound: true);
+        m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -925,6 +966,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
+        m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -995,6 +1037,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_ToggleSailboat;
     private readonly InputAction m_Player_SailboatForward;
     private readonly InputAction m_Player_SailboatBackward;
+    private readonly InputAction m_Player_OpenPlaymenu;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1008,6 +1051,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @ToggleSailboat => m_Wrapper.m_Player_ToggleSailboat;
         public InputAction @SailboatForward => m_Wrapper.m_Player_SailboatForward;
         public InputAction @SailboatBackward => m_Wrapper.m_Player_SailboatBackward;
+        public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1044,6 +1088,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatBackward.started += instance.OnSailboatBackward;
             @SailboatBackward.performed += instance.OnSailboatBackward;
             @SailboatBackward.canceled += instance.OnSailboatBackward;
+            @OpenPlaymenu.started += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1075,6 +1122,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatBackward.started -= instance.OnSailboatBackward;
             @SailboatBackward.performed -= instance.OnSailboatBackward;
             @SailboatBackward.canceled -= instance.OnSailboatBackward;
+            @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1105,6 +1155,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_MiddleClick;
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_Positive;
+    private readonly InputAction m_UI_Close;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1118,6 +1169,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @MiddleClick => m_Wrapper.m_UI_MiddleClick;
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @Positive => m_Wrapper.m_UI_Positive;
+        public InputAction @Close => m_Wrapper.m_UI_Close;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1154,6 +1206,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Positive.started += instance.OnPositive;
             @Positive.performed += instance.OnPositive;
             @Positive.canceled += instance.OnPositive;
+            @Close.started += instance.OnClose;
+            @Close.performed += instance.OnClose;
+            @Close.canceled += instance.OnClose;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1185,6 +1240,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Positive.started -= instance.OnPositive;
             @Positive.performed -= instance.OnPositive;
             @Positive.canceled -= instance.OnPositive;
+            @Close.started -= instance.OnClose;
+            @Close.performed -= instance.OnClose;
+            @Close.canceled -= instance.OnClose;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1258,6 +1316,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnToggleSailboat(InputAction.CallbackContext context);
         void OnSailboatForward(InputAction.CallbackContext context);
         void OnSailboatBackward(InputAction.CallbackContext context);
+        void OnOpenPlaymenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1270,5 +1329,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnMiddleClick(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
         void OnPositive(InputAction.CallbackContext context);
+        void OnClose(InputAction.CallbackContext context);
     }
 }

@@ -45,7 +45,9 @@ public class SequenceInvoker : MonoBehaviour
     private IEnumerator Cor_StartSequenceChain(Sequence_Base[] sequenceChain)
     {
         sequenceRunning = true;
-        PlayerCore player = FindObjectOfType<PlayerCore>();
+        PlaymenuBehavior playmenu = FindFirstObjectByType<PlaymenuBehavior>();
+        playmenu.DisableInput();
+        PlayerCore player = FindFirstObjectByType<PlayerCore>();
         player.DisableForSequence();
 
         for (int i = 0; i < sequenceChain.Length; i++)
@@ -56,6 +58,7 @@ public class SequenceInvoker : MonoBehaviour
         if(dialogue.DialogueOpened) { yield return dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         yield return null;
+        playmenu.EnableInput();
         player.EnableForSequence();
 
         sequenceRunning = false;

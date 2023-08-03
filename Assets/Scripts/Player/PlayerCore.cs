@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using Sirenix.OdinInspector.Editor.Validation;
+using Cinemachine;
 
 public class PlayerCore : SerializedMonoBehaviour
 {
@@ -574,14 +575,19 @@ public class PlayerCore : SerializedMonoBehaviour
         interestPoint = target;
     }
 
+
     public void DisableForSequence()
     {
         input.Disable();
+        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+        if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
     }
 
     public void EnableForSequence()
     {
-         input.Enable();
+        input.Enable();
+        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+        if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
     }
 
     public void FootstepEvent()

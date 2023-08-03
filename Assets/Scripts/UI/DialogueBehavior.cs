@@ -7,8 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Localization;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class DialogueData
@@ -27,6 +28,7 @@ public class DialogueBehavior : MonoBehaviour
     [SerializeField] private EventReference sound_open;
     [SerializeField] private EventReference sound_proceed;
     [SerializeField] private EventReference sound_type;
+    [SerializeField] private EventReference sound_select;
     [SerializeField] private EventReference sound_close;
     [Title("References")]
     [SerializeField] private GameObject visualGroup;
@@ -38,6 +40,7 @@ public class DialogueBehavior : MonoBehaviour
     [SerializeField] private DOTweenAnimation dialogueAnswerAnimation;
 
     private MainPlayerInputActions input;
+    public MainPlayerInputActions Input { get { return input; } }
 
     private bool dialogueOpened = false;
     public bool DialogueOpened { get { return dialogueOpened; } }
@@ -136,9 +139,30 @@ public class DialogueBehavior : MonoBehaviour
     }
 
     private DialogueAnswerSingle[] answerObjects;
+    int index = 0;
+    bool whileBreak = false;
+    bool answerEntered = false;
+    public bool WhileBreak { get { return whileBreak; } }
+
+    public void OnAnswerSelectedByMouse(int index)
+    {
+        if (answerEntered == false) return;
+        whileBreak = true;
+    }
+
+    public void OnAnswerMouseEnter(int index)
+    {
+        RuntimeManager.PlayOneShot(sound_select);
+        answerObjects[this.index].OnDeselected();
+        this.index = index;
+        answerObjects[this.index].OnSelected();
+    }
 
     public IEnumerator Cor_Branch(string[] answerStrings,Action<int> outCallback)
     {
+        index = 0;
+        whileBreak = false;
+
         if(!dialogueOpened)
         {
             yield return StartCoroutine(Cor_OpenDialogue());
@@ -155,48 +179,52 @@ public class DialogueBehavior : MonoBehaviour
             GameObject newObject = Instantiate(answerSinglePrefab, answerStartPosition);
             newObject.transform.localPosition = new Vector3(0f, i * answerSpawnSpace);
             answerObjects[i] = newObject.GetComponent<DialogueAnswerSingle>();
-            answerObjects[i].Initialize(answerStrings[i]);
+            answerObjects[i].Initialize(this,answerStrings[i],i);
         }
 
-        int index = 0;
-        answerObjects[0].OnSelected();
+
+        yield return new WaitForSeconds(0.5f);
+
+        if(index == 0) answerObjects[0].OnSelected();
+        answerEntered = true;
         
-        while(!input.UI.Positive.WasPressedThisFrame())
+        while(!(input.UI.Positive.WasPerformedThisFrame()&&!input.UI.Click.WasPerformedThisFrame()))
         {
             if(input.UI.Navigate.WasPressedThisFrame())
             {
                 Vector2 inp = input.UI.Navigate.ReadValue<Vector2>();
                 if (inp.y == 1f)
                 {
-                    RuntimeManager.PlayOneShot(sound_proceed);
+                    RuntimeManager.PlayOneShot(sound_select);
                     answerObjects[index].OnDeselected();
+
                     if (index == answerObjects.Length-1)
-                    {
                         index = 0;
-                    }
                     else
-                    {
                         index++;
-                    }
+
                     answerObjects[index].OnSelected();
                 }
                 else if (inp.y == -1f)
                 {
-                    RuntimeManager.PlayOneShot(sound_proceed);
+                    RuntimeManager.PlayOneShot(sound_select);
                     answerObjects[index].OnDeselected();
+
                     if(index == 0)
-                    {
                         index = answerObjects.Length-1;
-                    }
                     else
-                    {
                         index--;
-                    }
+
                     answerObjects[index].OnSelected();
                 }
             }
+
+            if (whileBreak) break;
+
             yield return null;
         }
+
+        answerEntered = false;
 
         RuntimeManager.PlayOneShot(sound_open);
 

@@ -56,6 +56,14 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
         TryResetInventoryUI();
     }
 
+    public IEnumerator Cor_ItemWindow(ItemData item,int quantity)
+    {
+        ItemObtainInfo info = FindFirstObjectByType<ItemObtainInfo>();
+        if (info == null) yield break;
+
+        yield return info.StartCoroutine(info.Cor_OpenWindow(item,quantity));
+    }
+
     public bool RemoveItem(ItemData item)
     {
         if (inventoryData.ContainsKey(item))

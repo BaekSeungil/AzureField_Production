@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InventoryBehavior : MonoBehaviour
 {
@@ -14,26 +15,45 @@ public class InventoryBehavior : MonoBehaviour
     [SerializeField] private int rowCount;
     [SerializeField] private RectTransform slotViewport;
     [SerializeField] private TextMeshProUGUI moneyText;
+    [SerializeField] private TextMeshProUGUI noItemText;
+
+    private MainPlayerInputActions input;
 
     private List<GameObject> instanciatedSlots;
 
     int currentScroll = 0;
 
+    private void Awake()
+    {
+        input = new MainPlayerInputActions();
+    }
+
+    private void OnEnable()
+    {
+        input.Enable();
+        input.UI.Navigate.performed += NavigateInventory;
+    }
+
     public void SetInventory(Dictionary<ItemData, int> data)
     {
-        if(instanciatedSlots == null) instanciatedSlots = new List<GameObject>();
+        if (instanciatedSlots == null) instanciatedSlots = new List<GameObject>();
+
+        ClearInventory();
 
         KeyValuePair<ItemData, int>[] itemArray = data.ToArray();
         currentScroll = 0;
 
-        for (int y = 0; y < (int)(itemArray.Length / rowCount); y++)
+        if(itemArray.Length == 0) { noItemText.gameObject.SetActive(true); return; }
+        else { noItemText.gameObject.SetActive(false); }
+
+        for (int y = 0; y <= (int)(itemArray.Length / rowCount); y++)
         {
-            for (int x = 0; x < rowCount; x++)
+            for (int x = 0; x < Mathf.Clamp(itemArray.Length - y*rowCount,0,rowCount); x++)
             {
                 GameObject newSlot = Instantiate(slotPrefab, slotViewport);
                 newSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(slotDistance.x * x + offset.x, slotDistance.y * y + offset.y);
                 InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
-                slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y * rowCount].Value);
+                slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
                 instanciatedSlots.Add(newSlot);
             }
         }
@@ -56,6 +76,18 @@ public class InventoryBehavior : MonoBehaviour
         currentScroll = 0;
     }
 
+    public void NavigateInventory(InputAction.CallbackContext context)
+    {
+        if(context.ReadValue<Vector2>() == Vector2.up)
+        {
+            ScrollInventoryUP();
+        }
+        else if(context.ReadValue<Vector2>() == Vector2.down)
+        {
+            ScrollInventoryDOWN();
+        }               
+    }
+
     public void ScrollInventoryUP()
     {
         if (currentScroll == 0) return;
@@ -75,18 +107,22 @@ public class InventoryBehavior : MonoBehaviour
         slotViewport.anchoredPosition = Vector2.Lerp(slotViewport.anchoredPosition, new Vector2(slotViewport.anchoredPosition.x, currentScroll * slotDistance.y), 0.2f);
     }
 
+    private void OnDisable()
+    {
+        input.Disable();
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
 
         int itemCount = 20;
-        float squareSize = 200;
+        float squareSize = 100;
         for (int y = 0; y < (int)(itemCount / rowCount); y++)
         {
             for (int x = 0; x < rowCount; x++)
             {
-
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, slotDistance.y * y,0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
+                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, slotDistance.y * y, 0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
             }
         }
     }

@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Localization.Metadata;
 
 public class MoneyObtainInfo : MonoBehaviour
 {
