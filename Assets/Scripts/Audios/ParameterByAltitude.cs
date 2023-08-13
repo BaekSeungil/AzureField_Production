@@ -31,11 +31,13 @@ public class ParameterByAltitude : MonoBehaviour
         {
             if (isGlobalParam)
             {
-                RuntimeManager.StudioSystem.setParameterByName(ParameterName, Mathf.InverseLerp(heightStart,heightEnd,playerTF.position.y));
+                float value = 0f;
+                if (RuntimeManager.StudioSystem.getParameterByName(ParameterName, out value) == FMOD.RESULT.OK)
+                    RuntimeManager.StudioSystem.setParameterByName(ParameterName, Mathf.InverseLerp(heightStart, heightEnd, playerTF.position.y));
             }
             else
             {
-                if(hasEventComp)
+                if (hasEventComp)
                 {
                     sound.EventInstance.setParameterByName(ParameterName, Mathf.InverseLerp(heightStart, heightEnd, playerTF.position.y));
                 }

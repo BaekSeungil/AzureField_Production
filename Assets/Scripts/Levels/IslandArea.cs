@@ -1,3 +1,5 @@
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,8 +8,59 @@ using UnityEngine;
 public class IslandArea : MonoBehaviour
 {
     [SerializeField] private string islandID;
+    [SerializeField] private string islandName;
     [SerializeField] private float areaFadeStart = 50f;
     [SerializeField] private float fullArea = 100f;
+    [SerializeField] private EventReference sound_Enter;
+
+    [FoldoutGroup("EnvoirmentSettings"), SerializeField]
+    private bool supressWave = true;
+    [FoldoutGroup("EnvoirmentSettings"), SerializeField]
+    private float waveIntensity = 0.1f;
+
+    private bool playerEnterFlag = false;
+    private Transform playerPosition;
+
+    private void OnEnable()
+    {
+        if(FindFirstObjectByType<PlayerCore>() != null)
+        {
+            playerPosition = FindFirstObjectByType<PlayerCore>().transform;
+            if (GetAreaInterpolation(playerPosition.position) > 0) playerEnterFlag = true;
+        }
+    }
+
+    private void Update()
+    {
+        if(playerPosition != null)
+        {
+            float distanceValue = GetAreaInterpolation(playerPosition.position);
+
+            if(playerEnterFlag == false)
+            {
+                if(Vector3.Distance(playerPosition.position,transform.position) < areaFadeStart)
+                {
+                    playerEnterFlag = true;
+                    OnEnterIslandRegion();
+                }
+            }
+            else
+            {
+                if (Vector3.Distance(playerPosition.position, transform.position) > areaFadeStart)
+                {
+                    playerEnterFlag = false;
+                }
+            }
+        
+            if(distanceValue > 0)
+            {
+                if(supressWave)
+                {
+                    GlobalOceanManager.Instance.IslandregionIntensityFactor = Mathf.Lerp(1.0f,waveIntensity,distanceValue);
+                }
+            }
+        }
+    }
 
     public float GetAreaInterpolation(Vector3 t_postion)
     {
@@ -16,6 +69,16 @@ public class IslandArea : MonoBehaviour
         else
         {
             return Mathf.InverseLerp(fullArea, areaFadeStart, Vector3.Distance(transform.position, t_postion));
+        }
+    }
+
+    private void OnEnterIslandRegion()
+    {
+        RegionEnter regionEnter = FindFirstObjectByType<RegionEnter>();
+        if (regionEnter != null)
+        {
+            regionEnter.OnRegionEnter(islandName);
+            RuntimeManager.PlayOneShot(sound_Enter);
         }
     }
 

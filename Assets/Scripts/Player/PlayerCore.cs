@@ -17,6 +17,7 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
     [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 속도    
+    [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소
 
     [Title("Physics")]
     [SerializeField, Range(0f, 1f)] private float horizontalDrag = 0.5f;            // 키 입력이 없을 때 수평 이동 마찰력
@@ -58,30 +59,35 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
     [SerializeField, ReadOnly, LabelText("Horizontal velocity magnitude")] private float velocity_hor_debug;
-
+    [SerializeField, ReadOnly, LabelText("Current holding item")] private string current_holding_item_debug;
 #pragma warning restore CS0414
 #endif
 
-    [Title("ChildReferences")]
-    [SerializeField, Required] private Animator animator;
-    [SerializeField, Required] private BuoyantBehavior buoyant;
-    [SerializeField, Required] private Transform RCO_foot;
-    [SerializeField, Required] new private CapsuleCollider collider;
-    [SerializeField, Required] private SailboatBehavior sailboat;
-    [SerializeField, Required] private Transform sailboasModelPivot;
-    [SerializeField, Required] private ParticleSystem sailingSplashEffect;
-    [SerializeField, Required] private ParticleSystem sailingSprayEffect;
-    [SerializeField, Required] private Transform headTarget;
-    [SerializeField, Required] private Rig headRig;
-    [SerializeField, Required] private Rig sailboatFootRig;
-    [SerializeField, Required] private StudioEventEmitter gustSound;
-    [SerializeField, Required] private StudioEventEmitter waterScratchSound;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Animator animator;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform RCO_foot;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform headTarget;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig headRig;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig handRig;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
 
     #endregion
 
     private Rigidbody rBody;
     private StudioEventEmitter sound;
     private Transform interestPoint;
+    private Interactable_Holding currentHoldingItem;
 
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
@@ -94,6 +100,9 @@ public class PlayerCore : SerializedMonoBehaviour
     private float initialRigidbodyDrag = 0f;
 
     Vector3 headRigForward;
+
+    int layerIndex_Swim;
+    int layerIndex_Boarding;
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -132,6 +141,9 @@ public class PlayerCore : SerializedMonoBehaviour
     {
         initialRigidbodyDrag = rBody.drag;
         headRigForward = headTarget.localPosition;
+
+        layerIndex_Swim = animator.GetLayerIndex("SwimLayer");
+        layerIndex_Boarding = animator.GetLayerIndex("BoardingLayer");
     }
 
     private void FixedUpdate()
@@ -165,11 +177,10 @@ public class PlayerCore : SerializedMonoBehaviour
             else animator.SetFloat("AirboneBlend", 1f, 0.5f, Time.deltaTime);
         }
 
-
         // Movement state change condition
         if (buoyant.SubmergeRateZeroClamped < -0.1f)
         {
-            
+
             if (CurrentMovement.GetType() == typeof(Movement_Ground) && !grounding)
             {
                 if (rBody.velocity.y < -0.5f) RuntimeManager.PlayOneShot(sound_splash);
@@ -189,31 +200,30 @@ public class PlayerCore : SerializedMonoBehaviour
         // =================== CURRENT MOVEMENT UPDATE =========================
 
         // animation & audio controls
-        if(CurrentMovement.GetType() == typeof(Movement_Swimming))
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1.0f, 0.2f));
-        else 
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0.0f, 0.2f));
+        if (CurrentMovement.GetType() == typeof(Movement_Swimming))
+            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 1.0f, 0.2f));
+        else
+            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 0.0f, 0.2f));
 
         if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
-            animator.SetLayerWeight(2, Mathf.Lerp(animator.GetLayerWeight(2), 1.0f, 0.2f));
+            animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 1.0f, 0.2f));
         else
         {
-            animator.SetLayerWeight(2, Mathf.Lerp(animator.GetLayerWeight(2), 0.0f, 0.2f));
+            animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 0.0f, 0.2f));
 
             float f;
             gustSound.EventInstance.getParameterByName("Speed", out f);
-            gustSound.EventInstance.setParameterByName("Speed", Mathf.Lerp(f,0f,0.1f));
+            gustSound.EventInstance.setParameterByName("Speed", Mathf.Lerp(f, 0f, 0.1f));
             waterScratchSound.EventInstance.getParameterByName("BoardWaterScratch", out f);
-            waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.Lerp(f,0f,0.1f));
+            waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.Lerp(f, 0f, 0.1f));
         }
-
 
         // etc.
 
-        if(interestPoint == null)
+        if (interestPoint == null)
         {
             headTarget.parent = transform;
-            headTarget.localPosition = Vector3.Lerp(headTarget.localPosition, headRigForward,0.1f);
+            headTarget.localPosition = Vector3.Lerp(headTarget.localPosition, headRigForward, 0.1f);
         }
         else
         {
@@ -223,6 +233,13 @@ public class PlayerCore : SerializedMonoBehaviour
             if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
                 interestPoint = null;
         }
+
+
+        if (Input.Player.Interact.WasPressedThisFrame())
+        {
+            ReleaseHoldingItem();
+        }
+
 
         // info update
 #if UNITY_EDITOR
@@ -234,6 +251,10 @@ public class PlayerCore : SerializedMonoBehaviour
         else control_disabled_debug = false;
 
         velocity_hor_debug = Vector3.ProjectOnPlane(rBody.velocity, Vector3.up).magnitude;
+        if (currentHoldingItem != null)
+            current_holding_item_debug = currentHoldingItem.gameObject.name;
+        else
+            current_holding_item_debug = "NULL";
 #endif
     }
 
@@ -274,7 +295,7 @@ public class PlayerCore : SerializedMonoBehaviour
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeed : player.moveSpeed;
                 Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal) * adjuestedScale;
 
-                Vector3 finalVelocity = slopedMoveVelocity;
+                Vector3 finalVelocity = slopedMoveVelocity * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
                     finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.WaterWalkDragging);
@@ -317,6 +338,12 @@ public class PlayerCore : SerializedMonoBehaviour
             base.OnUpdate(player);
             if (player.sprinting) player.animator.SetFloat("RunBlend", 1f, 0.5f, Time.deltaTime);
             else player.animator.SetFloat("RunBlend", 0f, 0.5f, Time.deltaTime);
+        }
+
+        public override void OnMovementExit(PlayerCore player)
+        {
+            base.OnMovementExit(player);
+            player.ReleaseHoldingItem();
         }
     }
 
@@ -528,7 +555,6 @@ public class PlayerCore : SerializedMonoBehaviour
 
     #endregion 
 
-
     #region InputCallbacks
 
     private void OnToggleSailboat(InputAction.CallbackContext context)
@@ -575,17 +601,73 @@ public class PlayerCore : SerializedMonoBehaviour
         interestPoint = target;
     }
 
+    bool holdItemCoroutineFlag = false;
+
+    public bool HoldItem(Transform leftHand, Transform rightHand,Interactable_Holding holdingItem)
+    {
+        if (holdItemCoroutineFlag) return false;
+        if (currentHoldingItem != null) { ReleaseHoldingItem(); return false; }
+        else
+        {
+            StartCoroutine(Cor_HoldItem(leftHand, rightHand, holdingItem));
+            return true;
+        }
+    }
+
+    float holdItemAnimTime = 1.0f;
+
+
+    private IEnumerator Cor_HoldItem(Transform leftHand, Transform rightHand, Interactable_Holding holdingItem)
+    {
+        animator.SetTrigger("ItemPickup");
+        bool inputWasEnabled = Input.Player.enabled;
+        Input.Player.Disable();
+        holdItemCoroutineFlag = true;
+
+        yield return new WaitForSeconds(holdItemAnimTime / 2f);
+
+        leftHandTarget.SetParent(leftHand, false);
+        rightHandTarget.SetParent(rightHand, false);
+        holdingItem.transform.parent = holdingItemTarget;
+        handRig.weight = 1.0f;
+
+        for (float t = 0; t < holdItemAnimTime / 2f; t += Time.deltaTime)
+        {
+            holdingItem.transform.localPosition = Vector3.Lerp(holdingItem.transform.localPosition, Vector3.zero, 0.4f);
+            holdingItem.transform.localRotation = Quaternion.Lerp(holdingItem.transform.localRotation, Quaternion.Euler(Vector3.zero), 0.4f);
+            holdObjectRig.weight = Mathf.InverseLerp(0,holdItemAnimTime*0.45f,t);
+            yield return null;
+        }
+
+        if (inputWasEnabled)
+            Input.Player.Enable();
+        holdObjectRig.weight = 0.9f;
+
+        holdItemCoroutineFlag = false;
+        currentHoldingItem = holdingItem;
+    }
+
+    public void ReleaseHoldingItem()
+    {
+        if (currentHoldingItem == null) return;
+
+        currentHoldingItem.transform.parent = null;
+        currentHoldingItem.Release();
+        currentHoldingItem = null;
+        handRig.weight = 0.0f;
+        holdObjectRig.weight = 0.0f;
+    }
 
     public void DisableForSequence()
     {
-        input.Disable();
+        input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
     }
 
     public void EnableForSequence()
     {
-        input.Enable();
+        input.Player.Enable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
     }

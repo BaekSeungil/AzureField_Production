@@ -21,6 +21,8 @@ public class GlobalOceanManager : SerializedMonoBehaviour
 
     [Title("GlobalWaveProperties")]
     [SerializeField,Range(0.0f,1.5f)] private float intensity;
+    public float IslandregionIntensityFactor = 1.0f;
+    public float Intensity { get { return intensity * IslandregionIntensityFactor; } }
 
     [SerializeField,DisableInPlayMode()] private float depth;
     [SerializeField,DisableInPlayMode()] private float phase;
@@ -150,7 +152,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
     {
         foreach(Material m in ReferencingMaterials)
         {
-            m.SetFloat("_Intensity",intensity);
+            m.SetFloat("_Intensity",Intensity);
             m.SetFloat("_Depth",depth);
             m.SetFloat("_Phase",phase);
             m.SetFloat("_Gravity",gravity);
@@ -208,7 +210,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             input = point,
             output = new NativeArray<Vector3>(1,Allocator.Persistent),
 
-            intensity = this.intensity,
+            intensity = this.Intensity,
             gravity = this.gravity,
             depth = this.depth,
             phase = this.phase,
@@ -240,7 +242,7 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             input = point,
             output = new NativeArray<float>(1,Allocator.TempJob),
 
-            intensity = this.intensity,
+            intensity = this.Intensity,
             gravity = this.gravity,
             depth = this.depth,
             phase = this.phase,

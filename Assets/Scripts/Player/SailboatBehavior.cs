@@ -43,5 +43,9 @@ public class SailboatBehavior : MonoBehaviour
 
     }
 
-
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawRay(transform.position, surfacePlane.normal);
+    }
 }

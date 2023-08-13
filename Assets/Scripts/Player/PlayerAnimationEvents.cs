@@ -10,4 +10,9 @@ public class PlayerAnimationEvents : MonoBehaviour
     {
         player.FootstepEvent();
     }
+
+    public void OnPlayerPickupEnd()
+    {
+        player.Input.Enable();
+    }
 }
