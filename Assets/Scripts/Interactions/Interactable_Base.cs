@@ -1,12 +1,14 @@
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class Interactable_Base : SerializedMonoBehaviour
 {
+    [SerializeField] protected string interactionUIText;
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 
@@ -15,6 +17,17 @@ public class Interactable_Base : SerializedMonoBehaviour
     public void OnInteractInput(InputAction.CallbackContext context)
     {
         if (!isEnabled) return;
+
+        if(PlayerCore.IsInstanceValid)
+        {
+            if (PlayerCore.Instance.IsHoldingSomething)
+                return;
+        }
+
+        if(InteractionInfo.IsInstanceValid)
+        {
+            InteractionInfo.Instance.HideCurrentInfo();
+        }
 
         Interact();
     }
@@ -25,6 +38,19 @@ public class Interactable_Base : SerializedMonoBehaviour
         {
             input = other.GetComponentInParent<PlayerCore>().Input;
             input.Player.Interact.performed += OnInteractInput;
+
+            if (interactionUIText != string.Empty)
+            {
+                if (InteractionInfo.IsInstanceValid)
+                {
+                    var infoUI = InteractionInfo.Instance;
+
+                    if (!infoUI.CompareCurrentTarget(transform))
+                    {
+                        infoUI.SetNewInteractionInfo(transform, interactionUIText);
+                    }
+                }
+            }
         }
     }
 
@@ -35,6 +61,16 @@ public class Interactable_Base : SerializedMonoBehaviour
             if (input != null)
                 input.Player.Interact.performed -= OnInteractInput;
             input = null;
+
+            if (InteractionInfo.IsInstanceValid)
+            {
+                var infoUI = InteractionInfo.Instance;
+
+                if (infoUI.CompareCurrentTarget(transform))
+                {
+                    infoUI.HideCurrentInfo();
+                }
+            }
         }
     }
 
@@ -44,6 +80,16 @@ public class Interactable_Base : SerializedMonoBehaviour
         {
             input.Player.Interact.performed -= OnInteractInput;
             input = null;
+        }
+
+        if (InteractionInfo.IsInstanceValid)
+        {
+            var infoUI = InteractionInfo.Instance;
+
+            if (infoUI.CompareCurrentTarget(transform))
+            {
+                infoUI.HideCurrentInfo();
+            }
         }
     }
 }

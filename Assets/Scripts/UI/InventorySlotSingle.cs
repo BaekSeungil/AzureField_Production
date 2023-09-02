@@ -36,7 +36,7 @@ public class InventorySlotSingle : MonoBehaviour
 
     public void OnItemUsed()
     {
-        PlayerInventoryContainer inventoryContainer = FindFirstObjectByType<PlayerInventoryContainer>();
+        PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
         if (inventoryContainer == null) { Debug.Log("인벤토리정보에 접근하려 했으나 PlayerInventoryConatiner가 없습니다."); return; }
 
         inventoryContainer.RemoveItem(assignedItem);

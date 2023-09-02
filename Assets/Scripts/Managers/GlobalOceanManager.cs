@@ -6,17 +6,8 @@ using Unity.Jobs;
 using Unity.Collections;
 using UnityEngine.Rendering;
 
-public class GlobalOceanManager : SerializedMonoBehaviour
+public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManager>
 {
-    private static GlobalOceanManager instance;
-    public static GlobalOceanManager Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
-
     [SerializeField] private Material[] ReferencingMaterials;
 
     [Title("GlobalWaveProperties")]
@@ -131,16 +122,6 @@ public class GlobalOceanManager : SerializedMonoBehaviour
             iteration = pointXZ - GetComlexWavePostion(iteration,false);
 
             output[0] = GetComlexWavePostion(iteration,true).y;
-        }
-    }
-
-    private void Awake() 
-    {
-        if (instance == null) instance = this;
-        else
-        {
-            Debug.Log(gameObject.name + " : 중복된 싱글턴 인스턴스, 삭제됨.");
-            Destroy(gameObject);
         }
     }
 

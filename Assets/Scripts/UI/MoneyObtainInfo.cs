@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class MoneyObtainInfo : MonoBehaviour
+public class MoneyObtainInfo : StaticSerializedMonoBehaviour<MoneyObtainInfo>
 {
     [SerializeField] float textInterval = 0.05f;
     [SerializeField] EventReference sound_textChangeTick;

@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemObtainInfo : MonoBehaviour
+public class ItemObtainInfo : StaticSerializedMonoBehaviour<ItemObtainInfo>
 {
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private EventReference sound_obtainSound;

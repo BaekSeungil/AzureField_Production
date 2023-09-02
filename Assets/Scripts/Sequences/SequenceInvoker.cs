@@ -4,11 +4,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
-public class SequenceInvoker : MonoBehaviour
+public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 {
-    static private SequenceInvoker instance;
-    static public SequenceInvoker Instance { get { return instance; } }
-
     private DialogueBehavior dialogue;
     public DialogueBehavior Dialogue { get { return dialogue; } }
     private PlayerInventoryContainer inventoryContainer;
@@ -16,20 +13,18 @@ public class SequenceInvoker : MonoBehaviour
     private PlayableDirector playable;
     public PlayableDirector Playable { get { return playable; } }
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (instance == null) instance = this;
-        else
-        {
-            Debug.Log( gameObject.name + " : 중복된 싱글턴 인스턴스, 삭제됨.");
-            Destroy(this); 
-        }
+        base.Awake();
 
-        dialogue = FindFirstObjectByType<DialogueBehavior>();
         playable = GetComponent<PlayableDirector>();
-        inventoryContainer = FindFirstObjectByType<PlayerInventoryContainer>();
-
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        dialogue = DialogueBehavior.Instance;
+        inventoryContainer = PlayerInventoryContainer.Instance;
     }
 
     private bool sequenceRunning = false;
@@ -45,9 +40,9 @@ public class SequenceInvoker : MonoBehaviour
     private IEnumerator Cor_StartSequenceChain(Sequence_Base[] sequenceChain)
     {
         sequenceRunning = true;
-        PlaymenuBehavior playmenu = FindFirstObjectByType<PlaymenuBehavior>();
+        PlaymenuBehavior playmenu = PlaymenuBehavior.Instance;
         playmenu.DisableInput();
-        PlayerCore player = FindFirstObjectByType<PlayerCore>();
+        PlayerCore player = PlayerCore.Instance;
         player.DisableForSequence();
 
         for (int i = 0; i < sequenceChain.Length; i++)
@@ -74,7 +69,7 @@ public class SequenceInvoker : MonoBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        dialogue = FindFirstObjectByType<DialogueBehavior>();
+        dialogue = DialogueBehavior.Instance;
     }
 
     private void OnDestroy()

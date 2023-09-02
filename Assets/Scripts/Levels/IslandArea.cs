@@ -23,9 +23,9 @@ public class IslandArea : MonoBehaviour
 
     private void OnEnable()
     {
-        if(FindFirstObjectByType<PlayerCore>() != null)
+        if(PlayerCore.IsInstanceValid)
         {
-            playerPosition = FindFirstObjectByType<PlayerCore>().transform;
+            playerPosition = PlayerCore.Instance.transform;
             if (GetAreaInterpolation(playerPosition.position) > 0) playerEnterFlag = true;
         }
     }
@@ -74,7 +74,7 @@ public class IslandArea : MonoBehaviour
 
     private void OnEnterIslandRegion()
     {
-        RegionEnter regionEnter = FindFirstObjectByType<RegionEnter>();
+        RegionEnter regionEnter = RegionEnter.Instance;
         if (regionEnter != null)
         {
             regionEnter.OnRegionEnter(islandName);

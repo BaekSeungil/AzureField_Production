@@ -91,7 +91,7 @@ public class Sequence_GainMoney : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if (invoker.InventoryContainer == null) { Debug.LogError("PlayerInvnentoryInvoker를 찾을 수 없습니다."); yield break; }
+        if (invoker.InventoryContainer == null) { Debug.LogError("PlayerInvnentoryContainer를 찾을 수 없습니다."); yield break; }
         invoker.InventoryContainer.AddMoney(amount);
         yield return null;
     }

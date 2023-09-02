@@ -9,7 +9,7 @@ public enum PlaymenuElement
     Inventory
 }
 
-public class PlaymenuBehavior : MonoBehaviour
+public class PlaymenuBehavior : StaticSerializedMonoBehaviour<PlaymenuBehavior>
 {
     [SerializeField] GameObject visualGroup;
     [SerializeField] GameObject inventoryObject;
@@ -19,8 +19,10 @@ public class PlaymenuBehavior : MonoBehaviour
 
     MainPlayerInputActions input;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         input = new MainPlayerInputActions();
         input.Player.Enable();
         input.Player.OpenPlaymenu.performed += OnOpenKeydown;
@@ -52,13 +54,13 @@ public class PlaymenuBehavior : MonoBehaviour
     {
         visualGroup.SetActive(true);
 
-        PlayerCore gameplayer = FindFirstObjectByType<PlayerCore>();
+        PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.DisableForSequence(); }
 
         if (playmenu == PlaymenuElement.Inventory)
         {
             inventoryObject.SetActive(true);
-            PlayerInventoryContainer inventoryContainer = FindFirstObjectByType<PlayerInventoryContainer>();
+            PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
             if (inventoryContainer == null) { Debug.Log("인벤토리 열기를 시도했지만 PlayterInventoryContainer를 찾을 수 없었습니다."); return; }
 
             RuntimeManager.PlayOneShot(sound_Open);
@@ -73,7 +75,7 @@ public class PlaymenuBehavior : MonoBehaviour
     {
         visualGroup.SetActive(false);
 
-        PlayerCore gameplayer = FindFirstObjectByType<PlayerCore>();
+        PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.EnableForSequence(); }
 
         RuntimeManager.PlayOneShot(sound_Close);

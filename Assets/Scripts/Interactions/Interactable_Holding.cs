@@ -13,7 +13,7 @@ public class Interactable_Holding : Interactable_Base
 
     public override void Interact()
     {
-        PlayerCore player = FindFirstObjectByType<PlayerCore>();
+        PlayerCore player = PlayerCore.Instance;
 
         if (isHolding) return;        
         if (player == null) return;
@@ -23,6 +23,7 @@ public class Interactable_Holding : Interactable_Base
     
     public void Hold(PlayerCore player)
     {
+
         if (player.HoldItem(leftHandPoint, rightHandPoint, this))
         {
             isHolding = true;

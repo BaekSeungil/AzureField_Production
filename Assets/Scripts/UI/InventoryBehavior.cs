@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InventoryBehavior : MonoBehaviour
+public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior>
 {
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Vector2 slotDistance;
@@ -23,8 +23,9 @@ public class InventoryBehavior : MonoBehaviour
 
     int currentScroll = 0;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         input = new MainPlayerInputActions();
     }
 

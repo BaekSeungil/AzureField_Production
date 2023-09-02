@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class RegionEnter : MonoBehaviour
+public class RegionEnter : StaticSerializedMonoBehaviour<RegionEnter>
 {
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private TextMeshProUGUI regionText;

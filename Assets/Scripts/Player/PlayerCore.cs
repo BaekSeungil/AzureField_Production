@@ -5,13 +5,10 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
-using Sirenix.OdinInspector.Editor.Validation;
-using Cinemachine;
 
-public class PlayerCore : SerializedMonoBehaviour
+public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
     #region Properties
-
     [Title("ControlProperties")]
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
     [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
@@ -71,6 +68,7 @@ public class PlayerCore : SerializedMonoBehaviour
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
@@ -88,6 +86,7 @@ public class PlayerCore : SerializedMonoBehaviour
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
+    public bool IsHoldingSomething { get { return currentHoldingItem != null; } }
 
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
@@ -121,8 +120,10 @@ public class PlayerCore : SerializedMonoBehaviour
         }
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         rBody = GetComponent<Rigidbody>();
         sound = GetComponent<StudioEventEmitter>();
 
@@ -135,6 +136,12 @@ public class PlayerCore : SerializedMonoBehaviour
 
         CurrentMovement = new Movement_Ground();
 
+    }
+
+    private void OnEnable()
+    {
+        var em = sailingSwooshEffect.emission;
+        em.rateOverTimeMultiplier = 0f;
     }
 
     private void Start()
@@ -538,6 +545,9 @@ public class PlayerCore : SerializedMonoBehaviour
 
             player.waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.InverseLerp(0.5f, -0.5f, player.sailboat.SubmergeRate) * GustAmount * 1.5f);
 
+            var em = player.sailingSwooshEffect.emission;
+            em.rateOverTimeMultiplier = GustAmount * 3f;
+
             player.gustSound.EventInstance.setParameterByName("Speed", GustAmount);
         }
 
@@ -550,6 +560,9 @@ public class PlayerCore : SerializedMonoBehaviour
             player.rBody.useGravity = true;
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
+
+            var em = player.sailingSwooshEffect.emission;
+            em.rateOverTimeMultiplier = 0f;
         }
     }
 

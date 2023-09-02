@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInventoryContainer : SerializedMonoBehaviour
+public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInventoryContainer>
 {
     [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;
     public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }
@@ -14,8 +14,10 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
     [SerializeField,ReadOnly] private int money;
     public int Money { get { return money; } }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         inventoryData = new Dictionary<ItemData, int>();
         if(debug_items != null)
         {
@@ -58,7 +60,7 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
 
     public IEnumerator Cor_ItemWindow(ItemData item,int quantity)
     {
-        ItemObtainInfo info = FindFirstObjectByType<ItemObtainInfo>();
+        ItemObtainInfo info = ItemObtainInfo.Instance;
         if (info == null) yield break;
 
         yield return info.StartCoroutine(info.Cor_OpenWindow(item,quantity));
@@ -132,7 +134,7 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
         int le = money;
         money += value;
 
-        MoneyObtainInfo info = FindFirstObjectByType<MoneyObtainInfo>();
+        MoneyObtainInfo info = MoneyObtainInfo.Instance;
         if (info != null) { info.MoneyChanged(le, value); return; }
     }
 
@@ -144,7 +146,7 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
             int le = money;
             money -= value;
 
-            MoneyObtainInfo info = FindFirstObjectByType<MoneyObtainInfo>();
+            MoneyObtainInfo info = MoneyObtainInfo.Instance;
             if (info != null) { info.MoneyChanged(le, -value); }
 
             TryResetInventoryUI();
@@ -155,7 +157,7 @@ public class PlayerInventoryContainer : SerializedMonoBehaviour
 
     private void TryResetInventoryUI()
     {
-        InventoryBehavior uiInventory = FindAnyObjectByType<InventoryBehavior>();
+        InventoryBehavior uiInventory = InventoryBehavior.Instance;
         if (uiInventory != null) 
         { 
             uiInventory.SetInventory(inventoryData);

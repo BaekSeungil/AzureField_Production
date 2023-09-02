@@ -18,7 +18,7 @@ public class DialogueData
     [TextArea]public string context;
 }
 
-public class DialogueBehavior : MonoBehaviour
+public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
 {
     [SerializeField] private float textInterval = 0.05f;
     [SerializeField] private float answerSpawnSpace = 50f;
@@ -47,8 +47,10 @@ public class DialogueBehavior : MonoBehaviour
 
     bool dialogueProceed = false;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         input = new MainPlayerInputActions();
         input.UI.Enable();
         input.UI.Positive.performed += OnPressedPositive;
