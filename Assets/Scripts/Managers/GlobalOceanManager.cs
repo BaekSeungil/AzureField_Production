@@ -15,6 +15,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     public float IslandregionIntensityFactor = 1.0f;
     public float Intensity { get { return intensity * IslandregionIntensityFactor; } }
 
+    [SerializeField,DisableInPlayMode()] private float rotation;
     [SerializeField,DisableInPlayMode()] private float depth;
     [SerializeField,DisableInPlayMode()] private float phase;
     [SerializeField,DisableInPlayMode()] private float gravity;
@@ -37,6 +38,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         public NativeArray<Vector3> output;
 
         public float intensity;
+        public float rotation;
         public float gravity;
         public float depth;
         public float phase;
@@ -65,7 +67,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
             for (int i = 0; i < waveVectors.Length; i++)
             {
-                result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i]);
+                Vector3 rotatedVector = Quaternion.AngleAxis(rotation, Vector3.up) * waveVectors[i];
+                result += SingleGerstnerWavePosition(input, rotatedVector, waveAmplitudes[i]);
             }
 
             output[0] = result;
@@ -78,6 +81,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         public Vector3 input;
         public NativeArray<float> output;
 
+        public float rotation;
         public float intensity;
         public float gravity;
         public float depth;
@@ -108,6 +112,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
             for (int i = 0; i < waveVectors.Length; i++)
             {
+                Vector3 rotatedVector = Quaternion.AngleAxis(rotation, Vector3.up) * waveVectors[i];
                 result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i],calculateY);
             }
 
@@ -134,6 +139,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         foreach(Material m in ReferencingMaterials)
         {
             m.SetFloat("_Intensity",Intensity);
+            m.SetFloat("_Rotation", rotation);
             m.SetFloat("_Depth",depth);
             m.SetFloat("_Phase",phase);
             m.SetFloat("_Gravity",gravity);
@@ -189,8 +195,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         WavePositionJob job = new WavePositionJob()
         {
             input = point,
-            output = new NativeArray<Vector3>(1,Allocator.Persistent),
-
+            output = new NativeArray<Vector3>(1, Allocator.Persistent),
+            rotation = this.rotation,
             intensity = this.Intensity,
             gravity = this.gravity,
             depth = this.depth,
@@ -222,7 +228,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         {
             input = point,
             output = new NativeArray<float>(1,Allocator.TempJob),
-
+            rotation = this.rotation,
             intensity = this.Intensity,
             gravity = this.gravity,
             depth = this.depth,
