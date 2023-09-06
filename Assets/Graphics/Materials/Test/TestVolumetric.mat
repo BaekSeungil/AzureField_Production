@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1250647415500872001
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -7,16 +20,20 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VolumetricFog
-  m_Shader: {fileID: -6465566751694194690, guid: e1ce389ceb02abd469b9394c6790cbc2, type: 3}
+  m_Name: TestVolumetric
+  m_Shader: {fileID: -6465566751694194690, guid: c5611a9c5ad201a428a06a1a965476cb,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3001
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -60,12 +77,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Skybox:
-        m_Texture: {fileID: 8900000, guid: 5640737aea8038542bc51c3eb11dc1fb, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VolumeTexture:
+        m_Texture: {fileID: 11700000, guid: d13f38d781633d24fbc5dadbe33beb77, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -83,7 +100,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
+    - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -92,55 +111,39 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _Fog_Minimum: -0.69
-    - _Fog_Noise_Density: 0.483
-    - _Fog_Noise_Strength: 0.078
-    - _Fog_Noisiness: 0.1
-    - _Fog_Roundedness: 0.517
-    - _Fog_Size: 0.43
-    - _Fog_Speed: 0.509
-    - _Fog_Strength: 0.152
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _Noise_Scale: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _QueueControl: 0
+    - _QueueControl: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _dispSize: 0
-    - _fogMin: 0
-    - _fogMultiplier: 0
-    - _fogSize: 0.01
+    - _darknessThreshold: 0
+    - _densityScale: 2
+    - _lightAbosrb: 1
+    - _lightStepSize: 0.01
+    - _numLightSteps: 10
+    - _numSteps: 20
+    - _stepSize: 0.1
+    - _transmittance: 2
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9955256, g: 1, b: 0.84339625, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Fog_Blend_Color_Max: {r: 0.7028302, g: 0.746381, b: 1, a: 0}
-    - _Fog_Blend_Color_Min: {r: 0.050980397, g: 0.098039225, b: 0.23529413, a: 0}
-    - _Fog_Color: {r: 1.5803404, g: 2.151953, b: 6.4222345, a: 1}
+    - _ShadowColor: {r: 0.25904235, g: 0.7245045, b: 0.9339623, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _Sphere: {r: 0, g: 0, b: 0, a: 5.01}
+    - _offset: {r: 0.5, g: 0.5, b: 0.5, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &6361411660694538249
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 5
