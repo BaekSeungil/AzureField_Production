@@ -41,6 +41,7 @@ public class SailboatBehavior : MonoBehaviour
             new Vector3(floatingPoint2.position.x, surface[1], floatingPoint2.position.z),
             new Vector3(floatingPoint3.position.x, surface[2], floatingPoint3.position.z));
 
+        if (Vector3.Dot(transform.up, Vector3.down) > 0.5f) transform.up = Vector3.up;
     }
 
     private void OnDrawGizmosSelected()

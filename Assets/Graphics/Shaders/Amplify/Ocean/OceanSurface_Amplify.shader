@@ -6,7 +6,7 @@ Shader "OceanSurface_Amplify"
 	{
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
-		_Intensity("Intensity", Float) = 1
+		[Header(WaveGeneration)]_Intensity("Intensity", Float) = 1
 		_Roataion("Roataion", Float) = 0
 		_Direction1("Direction1", Vector) = (0.5,0,0,0)
 		_Direction2("Direction2", Vector) = (-0.3,0,0.3,0)
@@ -16,21 +16,22 @@ Shader "OceanSurface_Amplify"
 		_Amplitude2("Amplitude2", Float) = 0.2
 		_Amplitude3("Amplitude3", Float) = 0.3
 		_Amplitude4("Amplitude4", Float) = 0
-		_Depth("Depth", Float) = 50
+		_WaveDepth("WaveDepth", Float) = 50
 		_Phase("Phase", Float) = 0
 		_Gravity("Gravity", Float) = 0.2
-		_NeighbourDistance("NeighbourDistance", Float) = 1
-		_ColorDepth("ColorDepth", Float) = 5
-		_WaveRiseThershold("WaveRiseThershold", Range( 0 , 1)) = 0.63
-		_WaveRiseFallback("WaveRiseFallback", Range( 0 , 1)) = 1
-		_WaterThickness("WaterThickness", Float) = 0.2
-		_PanSpeed("PanSpeed", Float) = 0.5
-		[HDR]_Emission("Emission", Color) = (0.06415081,0.4871341,2,0)
-		[HDR]_FoamEmmision("FoamEmmision", Color) = (2,2,2,0.003921569)
-		_ShallowColor("ShallowColor", Color) = (0.5415094,0.8120804,1,0)
-		[Normal]_NormalTexture1("NormalTexture1", 2D) = "bump" {}
-		[Normal]_NormalTexture2("NormalTexture2", 2D) = "bump" {}
-		_DeepColor("DeepColor", Color) = (0,0.08763248,0.6132076,0)
+		_NeighbourDistance("NeighbourDistance", Float) = 0.1
+		[Header(Depth Settings)]_DepthDistance("DepthDistance", Float) = 5
+		[Header(RiseTide)]_RiseThreshold("RiseThreshold", Range( 0 , 1)) = 0.63
+		[Header(RiseTide)]_RiseFadeout("RiseFadeout", Range( 0 , 1)) = 0
+		_NormalPanSpeed("NormalPanSpeed", Float) = 1
+		_NormalTexture1("NormalTexture1", 2D) = "bump" {}
+		_NormalTexture2("NormalTexture2", 2D) = "bump" {}
+		_NormalStrength("NormalStrength", Float) = 1
+		_ShallowColor("ShallowColor", Color) = (0.2268067,0.2911928,0.4339623,0)
+		_DeepColor("DeepColor", Color) = (0.1320755,0.1320755,0.1320755,0)
+		[HDR]_FoamColor("FoamColor", Color) = (2,2,2,0)
+		[HDR]_Emmision("Emmision", Color) = (0,0.4158199,1,0)
+		_WaterThickness("WaterThickness", Float) = 3
 
 
 		//_TransmissionShadow( "Transmission Shadow", Range( 0, 1 ) ) = 0.5
@@ -191,7 +192,7 @@ Shader "OceanSurface_Amplify"
 		{
 			
 			Name "Forward"
-			Tags { "LightMode"="UniversalForwardOnly" }
+			Tags { "LightMode"="UniversalForward" }
 
 			Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
 			ZWrite On
@@ -210,17 +211,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
-			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
@@ -272,8 +272,10 @@ Shader "OceanSurface_Amplify"
 			#endif
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 			#define ASE_NEEDS_FRAG_SCREEN_POSITION
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_FRAG_POSITION
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -312,31 +314,33 @@ Shader "OceanSurface_Amplify"
 					float2 dynamicLightmapUV : TEXCOORD7;
 				#endif
 				float4 ase_texcoord8 : TEXCOORD8;
+				float4 ase_texcoord9 : TEXCOORD9;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -375,8 +379,10 @@ Shader "OceanSurface_Amplify"
 			#endif
 
 			uniform float4 _CameraDepthTexture_TexelSize;
-			sampler2D _NormalTexture1;
-			sampler2D _NormalTexture2;
+			TEXTURE2D(_NormalTexture1);
+			SAMPLER(sampler_NormalTexture1);
+			TEXTURE2D(_NormalTexture2);
+			SAMPLER(sampler_NormalTexture2);
 
 
 			//#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
@@ -405,32 +411,63 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
+			inline float noise_randomValue (float2 uv) { return frac(sin(dot(uv, float2(12.9898, 78.233)))*43758.5453); }
+			inline float noise_interpolate (float a, float b, float t) { return (1.0-t)*a + (t*b); }
+			inline float valueNoise (float2 uv)
 			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
+				float2 i = floor(uv);
+				float2 f = frac( uv );
+				f = f* f * (3.0 - 2.0 * f);
+				uv = abs( frac(uv) - 0.5);
+				float2 c0 = i + float2( 0.0, 0.0 );
+				float2 c1 = i + float2( 1.0, 0.0 );
+				float2 c2 = i + float2( 0.0, 1.0 );
+				float2 c3 = i + float2( 1.0, 1.0 );
+				float r0 = noise_randomValue( c0 );
+				float r1 = noise_randomValue( c1 );
+				float r2 = noise_randomValue( c2 );
+				float r3 = noise_randomValue( c3 );
+				float bottomOfGrid = noise_interpolate( r0, r1, f.x );
+				float topOfGrid = noise_interpolate( r2, r3, f.x );
+				float t = noise_interpolate( bottomOfGrid, topOfGrid, f.y );
+				return t;
+			}
+			
+			float SimpleNoise(float2 UV)
+			{
+				float t = 0.0;
+				float freq = pow( 2.0, float( 0 ) );
+				float amp = pow( 0.5, float( 3 - 0 ) );
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(1));
+				amp = pow(0.5, float(3-1));
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(2));
+				amp = pow(0.5, float(3-2));
+				t += valueNoise( UV/freq )*amp;
+				return t;
+			}
+			
+			float2 UnityGradientNoiseDir( float2 p )
+			{
+				p = fmod(p , 289);
+				float x = fmod((34 * p.x + 1) * p.x , 289) + p.y;
+				x = fmod( (34 * x + 1) * x , 289);
+				x = frac( x / 41 ) * 2 - 1;
+				return normalize( float2(x - floor(x + 0.5 ), abs( x ) - 0.5 ) );
+			}
+			
+			float UnityGradientNoise( float2 UV, float Scale )
+			{
+				float2 p = UV * Scale;
+				float2 ip = floor( p );
+				float2 fp = frac( p );
+				float d00 = dot( UnityGradientNoiseDir( ip ), fp );
+				float d01 = dot( UnityGradientNoiseDir( ip + float2( 0, 1 ) ), fp - float2( 0, 1 ) );
+				float d10 = dot( UnityGradientNoiseDir( ip + float2( 1, 0 ) ), fp - float2( 1, 0 ) );
+				float d11 = dot( UnityGradientNoiseDir( ip + float2( 1, 1 ) ), fp - float2( 1, 1 ) );
+				fp = fp * fp * fp * ( fp * ( fp * 6 - 15 ) + 10 );
+				return lerp( lerp( d00, d01, fp.y ), lerp( d10, d11, fp.y ), fp.x ) + 0.5;
 			}
 			
 
@@ -441,173 +478,177 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				o.ase_texcoord8.xy = v.texcoord.xy;
+				o.ase_texcoord9 = v.vertex;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
 				o.ase_texcoord8.zw = 0;
@@ -813,212 +854,221 @@ Shader "OceanSurface_Amplify"
 
 				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord8.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord8.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord8.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
-				float4 lerpResult284 = lerp( _ShallowColor , _DeepColor , foam153);
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
+				float4 lerpResult590 = lerp( _ShallowColor , _DeepColor , Depth500);
 				
-				float2 appendResult415 = (float2(WorldPosition.x , WorldPosition.y));
-				float2 texCoord394 = IN.ase_texcoord8.xy * _NormalTexture1_ST.xy + ( ( ( float2( 0.4,1.17 ) * _PanSpeed ) * _TimeParameters.x ) + appendResult415 );
-				float2 texCoord390 = IN.ase_texcoord8.xy * _NormalTexture2_ST.xy + ( appendResult415 + ( _TimeParameters.x * ( _PanSpeed * float2( -0.5,0.2 ) ) ) );
-				float3 lerpResult181 = lerp( BlendNormal( UnpackNormalScale( tex2D( _NormalTexture1, texCoord394 ), 1.0f ) , UnpackNormalScale( tex2D( _NormalTexture2, texCoord390 ), 1.0f ) ) , float3( 0,1,0 ) , foam153);
+				float mulTime568 = _TimeParameters.x * _NormalPanSpeed;
+				float2 appendResult574 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord577 = IN.ase_texcoord8.xy * _NormalTexture1_ST.xy + ( ( float2( 0.4,0.17 ) * mulTime568 ) + appendResult574 );
+				float3 unpack580 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture1, sampler_NormalTexture1, texCoord577 ), _NormalStrength );
+				unpack580.z = lerp( 1, unpack580.z, saturate(_NormalStrength) );
+				float2 texCoord582 = IN.ase_texcoord8.xy * _NormalTexture2_ST.xy + ( appendResult574 + ( mulTime568 * float2( -0.5,0.2 ) ) );
+				float3 unpack584 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture2, sampler_NormalTexture2, texCoord582 ), _NormalStrength );
+				unpack584.z = lerp( 1, unpack584.z, saturate(_NormalStrength) );
+				float lerpResult558 = lerp( _RiseThreshold , 1.0 , _RiseFadeout);
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
+				float4 temp_output_6_0_g30 = float4( 0,1,0,0 );
+				float dotResult1_g30 = dot( float4( GerstNorm134 , 0.0 ) , temp_output_6_0_g30 );
+				float dotResult2_g30 = dot( temp_output_6_0_g30 , temp_output_6_0_g30 );
+				float2 appendResult536 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord537 = IN.ase_texcoord8.xy * float2( 1,1 ) + appendResult536;
+				float rotation543 = temp_output_615_0;
+				float cos539 = cos( rotation543 );
+				float sin539 = sin( rotation543 );
+				float2 rotator539 = mul( texCoord537 - float2( 0.5,0.5 ) , float2x2( cos539 , -sin539 , sin539 , cos539 )) + float2( 0.5,0.5 );
+				float simpleNoise545 = SimpleNoise( rotator539*5.0 );
+				float2 texCoord553 = IN.ase_texcoord8.xy * float2( 1,1 ) + ( appendResult536 + _TimeParameters.x );
+				float gradientNoise554 = UnityGradientNoise(texCoord553,0.02);
+				gradientNoise554 = gradientNoise554*0.5 + 0.5;
+				float smoothstepResult559 = smoothstep( _RiseThreshold , lerpResult558 , ( (1.0 + (length( ( ( dotResult1_g30 / dotResult2_g30 ) * temp_output_6_0_g30 ) ) - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) + (-0.1 + (simpleNoise545 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (-0.3 + (gradientNoise554 - 0.0) * (0.3 - -0.3) / (1.0 - 0.0)) ));
+				float RiseTide560 = smoothstepResult559;
+				float smoothstepResult523 = smoothstep( 0.97 , 1.0 , (1.0 + (distanceDepth498 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
+				float2 appendResult510 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord517 = IN.ase_texcoord8.xy * float2( 1,1 ) + ( ( _TimeParameters.x * 0.5 ) + appendResult510 );
+				float gradientNoise516 = UnityGradientNoise(texCoord517,2.15);
+				gradientNoise516 = gradientNoise516*0.5 + 0.5;
+				float clampResult526 = clamp( ( ( pow( ( 1.0 / 1000.0 ) , distanceDepth498 ) * cos( ( ( distanceDepth498 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( 0.5 + gradientNoise516 ) ) , -0.1 , 1.0 );
+				float Foam564 = step( ( RiseTide560 + smoothstepResult523 + clampResult526 ) , 0.5 );
+				float3 lerpResult587 = lerp( float3( 0.5,0.5,1 ) , BlendNormal( unpack580 , unpack584 ) , Foam564);
 				
-				float4 lerpResult304 = lerp( _Emission , _FoamEmmision , foam153);
-				
-				float WaterDepth187 = temp_output_298_0;
+				float4 lerpResult607 = lerp( _FoamColor , _Emmision , Foam564);
 				
 
-				float3 BaseColor = lerpResult284.rgb;
-				float3 Normal = lerpResult181;
-				float3 Emission = lerpResult304.rgb;
+				float3 BaseColor = lerpResult590.rgb;
+				float3 Normal = lerpResult587;
+				float3 Emission = lerpResult607.rgb;
 				float3 Specular = 0.5;
-				float Metallic = 0;
+				float Metallic = 0.5;
 				float Smoothness = 1.0;
 				float Occlusion = 0.0;
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -1269,16 +1319,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -1300,8 +1350,8 @@ Shader "OceanSurface_Amplify"
             #endif
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 			#define ASE_NEEDS_FRAG_SCREEN_POSITION
-			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -1316,7 +1366,7 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 vertex : POSITION;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -1330,32 +1380,33 @@ Shader "OceanSurface_Amplify"
 				#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR) && defined(ASE_NEEDS_FRAG_SHADOWCOORDS)
 				float4 shadowCoord : TEXCOORD2;
 				#endif
-				float4 ase_texcoord3 : TEXCOORD3;
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -1422,34 +1473,6 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
-			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
-			}
-			
 
 			VertexOutput VertexFunction( VertexInput v  )
 			{
@@ -1458,176 +1481,175 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
-				o.ase_texcoord3.xy = v.ase_texcoord.xy;
-				
-				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord3.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -1668,8 +1690,7 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 vertex : INTERNALTESSPOS;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
-
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -1686,7 +1707,7 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				o.vertex = v.vertex;
 				o.ase_normal = v.ase_normal;
-				o.ase_texcoord = v.ase_texcoord;
+				
 				return o;
 			}
 
@@ -1725,7 +1746,7 @@ Shader "OceanSurface_Amplify"
 				VertexInput o = (VertexInput) 0;
 				o.vertex = patch[0].vertex * bary.x + patch[1].vertex * bary.y + patch[2].vertex * bary.z;
 				o.ase_normal = patch[0].ase_normal * bary.x + patch[1].ase_normal * bary.y + patch[2].ase_normal * bary.z;
-				o.ase_texcoord = patch[0].ase_texcoord * bary.x + patch[1].ase_texcoord * bary.y + patch[2].ase_texcoord * bary.z;
+				
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -1770,196 +1791,12 @@ Shader "OceanSurface_Amplify"
 
 				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float WaterDepth187 = temp_output_298_0;
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord3.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord3.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord3.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
 				
 
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 				#ifdef ASE_DEPTH_WRITE_ON
 					float DepthValue = IN.clipPos.z;
@@ -1998,17 +1835,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
-			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -2029,6 +1865,8 @@ Shader "OceanSurface_Amplify"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
+			#define ASE_NEEDS_FRAG_POSITION
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
 
@@ -2058,31 +1896,33 @@ Shader "OceanSurface_Amplify"
 				#endif
 				float4 ase_texcoord4 : TEXCOORD4;
 				float4 ase_texcoord5 : TEXCOORD5;
+				float4 ase_texcoord6 : TEXCOORD6;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -2149,32 +1989,63 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
+			inline float noise_randomValue (float2 uv) { return frac(sin(dot(uv, float2(12.9898, 78.233)))*43758.5453); }
+			inline float noise_interpolate (float a, float b, float t) { return (1.0-t)*a + (t*b); }
+			inline float valueNoise (float2 uv)
 			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
+				float2 i = floor(uv);
+				float2 f = frac( uv );
+				f = f* f * (3.0 - 2.0 * f);
+				uv = abs( frac(uv) - 0.5);
+				float2 c0 = i + float2( 0.0, 0.0 );
+				float2 c1 = i + float2( 1.0, 0.0 );
+				float2 c2 = i + float2( 0.0, 1.0 );
+				float2 c3 = i + float2( 1.0, 1.0 );
+				float r0 = noise_randomValue( c0 );
+				float r1 = noise_randomValue( c1 );
+				float r2 = noise_randomValue( c2 );
+				float r3 = noise_randomValue( c3 );
+				float bottomOfGrid = noise_interpolate( r0, r1, f.x );
+				float topOfGrid = noise_interpolate( r2, r3, f.x );
+				float t = noise_interpolate( bottomOfGrid, topOfGrid, f.y );
+				return t;
+			}
+			
+			float SimpleNoise(float2 UV)
+			{
+				float t = 0.0;
+				float freq = pow( 2.0, float( 0 ) );
+				float amp = pow( 0.5, float( 3 - 0 ) );
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(1));
+				amp = pow(0.5, float(3-1));
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(2));
+				amp = pow(0.5, float(3-2));
+				t += valueNoise( UV/freq )*amp;
+				return t;
+			}
+			
+			float2 UnityGradientNoiseDir( float2 p )
+			{
+				p = fmod(p , 289);
+				float x = fmod((34 * p.x + 1) * p.x , 289) + p.y;
+				x = fmod( (34 * x + 1) * x , 289);
+				x = frac( x / 41 ) * 2 - 1;
+				return normalize( float2(x - floor(x + 0.5 ), abs( x ) - 0.5 ) );
+			}
+			
+			float UnityGradientNoise( float2 UV, float Scale )
+			{
+				float2 p = UV * Scale;
+				float2 ip = floor( p );
+				float2 fp = frac( p );
+				float d00 = dot( UnityGradientNoiseDir( ip ), fp );
+				float d01 = dot( UnityGradientNoiseDir( ip + float2( 0, 1 ) ), fp - float2( 0, 1 ) );
+				float d10 = dot( UnityGradientNoiseDir( ip + float2( 1, 0 ) ), fp - float2( 1, 0 ) );
+				float d11 = dot( UnityGradientNoiseDir( ip + float2( 1, 1 ) ), fp - float2( 1, 1 ) );
+				fp = fp * fp * fp * ( fp * ( fp * 6 - 15 ) + 10 );
+				return lerp( lerp( d00, d01, fp.y ), lerp( d10, d11, fp.y ), fp.x ) + 0.5;
 			}
 			
 
@@ -2185,180 +2056,184 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				float4 ase_clipPos = TransformObjectToHClip((v.vertex).xyz);
 				float4 screenPos = ComputeScreenPos(ase_clipPos);
 				o.ase_texcoord4 = screenPos;
 				
-				o.ase_texcoord5.xy = v.texcoord0.xy;
+				o.ase_texcoord5 = v.vertex;
+				o.ase_texcoord6.xy = v.texcoord0.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord5.zw = 0;
+				o.ase_texcoord6.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -2512,202 +2387,206 @@ Shader "OceanSurface_Amplify"
 				float4 screenPos = IN.ase_texcoord4;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord5.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord5.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord5.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
-				float4 lerpResult284 = lerp( _ShallowColor , _DeepColor , foam153);
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
+				float4 lerpResult590 = lerp( _ShallowColor , _DeepColor , Depth500);
 				
-				float4 lerpResult304 = lerp( _Emission , _FoamEmmision , foam153);
-				
-				float WaterDepth187 = temp_output_298_0;
+				float lerpResult558 = lerp( _RiseThreshold , 1.0 , _RiseFadeout);
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord5.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord5.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord5.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
+				float4 temp_output_6_0_g30 = float4( 0,1,0,0 );
+				float dotResult1_g30 = dot( float4( GerstNorm134 , 0.0 ) , temp_output_6_0_g30 );
+				float dotResult2_g30 = dot( temp_output_6_0_g30 , temp_output_6_0_g30 );
+				float2 appendResult536 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord537 = IN.ase_texcoord6.xy * float2( 1,1 ) + appendResult536;
+				float rotation543 = temp_output_615_0;
+				float cos539 = cos( rotation543 );
+				float sin539 = sin( rotation543 );
+				float2 rotator539 = mul( texCoord537 - float2( 0.5,0.5 ) , float2x2( cos539 , -sin539 , sin539 , cos539 )) + float2( 0.5,0.5 );
+				float simpleNoise545 = SimpleNoise( rotator539*5.0 );
+				float2 texCoord553 = IN.ase_texcoord6.xy * float2( 1,1 ) + ( appendResult536 + _TimeParameters.x );
+				float gradientNoise554 = UnityGradientNoise(texCoord553,0.02);
+				gradientNoise554 = gradientNoise554*0.5 + 0.5;
+				float smoothstepResult559 = smoothstep( _RiseThreshold , lerpResult558 , ( (1.0 + (length( ( ( dotResult1_g30 / dotResult2_g30 ) * temp_output_6_0_g30 ) ) - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) + (-0.1 + (simpleNoise545 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (-0.3 + (gradientNoise554 - 0.0) * (0.3 - -0.3) / (1.0 - 0.0)) ));
+				float RiseTide560 = smoothstepResult559;
+				float smoothstepResult523 = smoothstep( 0.97 , 1.0 , (1.0 + (distanceDepth498 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
+				float2 appendResult510 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord517 = IN.ase_texcoord6.xy * float2( 1,1 ) + ( ( _TimeParameters.x * 0.5 ) + appendResult510 );
+				float gradientNoise516 = UnityGradientNoise(texCoord517,2.15);
+				gradientNoise516 = gradientNoise516*0.5 + 0.5;
+				float clampResult526 = clamp( ( ( pow( ( 1.0 / 1000.0 ) , distanceDepth498 ) * cos( ( ( distanceDepth498 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( 0.5 + gradientNoise516 ) ) , -0.1 , 1.0 );
+				float Foam564 = step( ( RiseTide560 + smoothstepResult523 + clampResult526 ) , 0.5 );
+				float4 lerpResult607 = lerp( _FoamColor , _Emmision , Foam564);
 				
 
-				float3 BaseColor = lerpResult284.rgb;
-				float3 Emission = lerpResult304.rgb;
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float3 BaseColor = lerpResult590.rgb;
+				float3 Emission = lerpResult607.rgb;
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 
 				#ifdef _ALPHATEST_ON
@@ -2747,16 +2626,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -2774,14 +2653,14 @@ Shader "OceanSurface_Amplify"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
-			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_VERT_POSITION
 
 
 			struct VertexInput
 			{
 				float4 vertex : POSITION;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -2795,32 +2674,32 @@ Shader "OceanSurface_Amplify"
 					float4 shadowCoord : TEXCOORD1;
 				#endif
 				float4 ase_texcoord2 : TEXCOORD2;
-				float4 ase_texcoord3 : TEXCOORD3;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -2887,34 +2766,6 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
-			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
-			}
-			
 
 			VertexOutput VertexFunction( VertexInput v  )
 			{
@@ -2923,180 +2774,179 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID( v, o );
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO( o );
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				float4 ase_clipPos = TransformObjectToHClip((v.vertex).xyz);
 				float4 screenPos = ComputeScreenPos(ase_clipPos);
 				o.ase_texcoord2 = screenPos;
 				
-				o.ase_texcoord3.xy = v.ase_texcoord.xy;
-				
-				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord3.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -3138,8 +2988,7 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 vertex : INTERNALTESSPOS;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
-
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -3156,7 +3005,7 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				o.vertex = v.vertex;
 				o.ase_normal = v.ase_normal;
-				o.ase_texcoord = v.ase_texcoord;
+				
 				return o;
 			}
 
@@ -3195,7 +3044,7 @@ Shader "OceanSurface_Amplify"
 				VertexInput o = (VertexInput) 0;
 				o.vertex = patch[0].vertex * bary.x + patch[1].vertex * bary.y + patch[2].vertex * bary.z;
 				o.ase_normal = patch[0].ase_normal * bary.x + patch[1].ase_normal * bary.y + patch[2].ase_normal * bary.z;
-				o.ase_texcoord = patch[0].ase_texcoord * bary.x + patch[1].ase_texcoord * bary.y + patch[2].ase_texcoord * bary.z;
+				
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -3235,199 +3084,14 @@ Shader "OceanSurface_Amplify"
 				float4 screenPos = IN.ase_texcoord2;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord3.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord3.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord3.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
-				float4 lerpResult284 = lerp( _ShallowColor , _DeepColor , foam153);
-				
-				float WaterDepth187 = temp_output_298_0;
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
+				float4 lerpResult590 = lerp( _ShallowColor , _DeepColor , Depth500);
 				
 
-				float3 BaseColor = lerpResult284.rgb;
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float3 BaseColor = lerpResult590.rgb;
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 
 				half4 color = half4(BaseColor, Alpha );
@@ -3446,7 +3110,7 @@ Shader "OceanSurface_Amplify"
 		{
 			
 			Name "DepthNormals"
-			Tags { "LightMode"="DepthNormalsOnly" }
+			Tags { "LightMode"="DepthNormals" }
 
 			ZWrite On
 			Blend One Zero
@@ -3461,16 +3125,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -3494,7 +3158,9 @@ Shader "OceanSurface_Amplify"
             #endif
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_FRAG_POSITION
 			#define ASE_NEEDS_FRAG_SCREEN_POSITION
 
 
@@ -3528,31 +3194,33 @@ Shader "OceanSurface_Amplify"
 					float4 shadowCoord : TEXCOORD4;
 				#endif
 				float4 ase_texcoord5 : TEXCOORD5;
+				float4 ase_texcoord6 : TEXCOORD6;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -3590,8 +3258,10 @@ Shader "OceanSurface_Amplify"
 				int _PassValue;
 			#endif
 
-			sampler2D _NormalTexture1;
-			sampler2D _NormalTexture2;
+			TEXTURE2D(_NormalTexture1);
+			SAMPLER(sampler_NormalTexture1);
+			TEXTURE2D(_NormalTexture2);
+			SAMPLER(sampler_NormalTexture2);
 			uniform float4 _CameraDepthTexture_TexelSize;
 
 
@@ -3621,32 +3291,63 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
+			inline float noise_randomValue (float2 uv) { return frac(sin(dot(uv, float2(12.9898, 78.233)))*43758.5453); }
+			inline float noise_interpolate (float a, float b, float t) { return (1.0-t)*a + (t*b); }
+			inline float valueNoise (float2 uv)
 			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
+				float2 i = floor(uv);
+				float2 f = frac( uv );
+				f = f* f * (3.0 - 2.0 * f);
+				uv = abs( frac(uv) - 0.5);
+				float2 c0 = i + float2( 0.0, 0.0 );
+				float2 c1 = i + float2( 1.0, 0.0 );
+				float2 c2 = i + float2( 0.0, 1.0 );
+				float2 c3 = i + float2( 1.0, 1.0 );
+				float r0 = noise_randomValue( c0 );
+				float r1 = noise_randomValue( c1 );
+				float r2 = noise_randomValue( c2 );
+				float r3 = noise_randomValue( c3 );
+				float bottomOfGrid = noise_interpolate( r0, r1, f.x );
+				float topOfGrid = noise_interpolate( r2, r3, f.x );
+				float t = noise_interpolate( bottomOfGrid, topOfGrid, f.y );
+				return t;
+			}
+			
+			float SimpleNoise(float2 UV)
+			{
+				float t = 0.0;
+				float freq = pow( 2.0, float( 0 ) );
+				float amp = pow( 0.5, float( 3 - 0 ) );
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(1));
+				amp = pow(0.5, float(3-1));
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(2));
+				amp = pow(0.5, float(3-2));
+				t += valueNoise( UV/freq )*amp;
+				return t;
+			}
+			
+			float2 UnityGradientNoiseDir( float2 p )
+			{
+				p = fmod(p , 289);
+				float x = fmod((34 * p.x + 1) * p.x , 289) + p.y;
+				x = fmod( (34 * x + 1) * x , 289);
+				x = frac( x / 41 ) * 2 - 1;
+				return normalize( float2(x - floor(x + 0.5 ), abs( x ) - 0.5 ) );
+			}
+			
+			float UnityGradientNoise( float2 UV, float Scale )
+			{
+				float2 p = UV * Scale;
+				float2 ip = floor( p );
+				float2 fp = frac( p );
+				float d00 = dot( UnityGradientNoiseDir( ip ), fp );
+				float d01 = dot( UnityGradientNoiseDir( ip + float2( 0, 1 ) ), fp - float2( 0, 1 ) );
+				float d10 = dot( UnityGradientNoiseDir( ip + float2( 1, 0 ) ), fp - float2( 1, 0 ) );
+				float d11 = dot( UnityGradientNoiseDir( ip + float2( 1, 1 ) ), fp - float2( 1, 1 ) );
+				fp = fp * fp * fp * ( fp * ( fp * 6 - 15 ) + 10 );
+				return lerp( lerp( d00, d01, fp.y ), lerp( d10, d11, fp.y ), fp.x ) + 0.5;
 			}
 			
 
@@ -3657,173 +3358,177 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				o.ase_texcoord5.xy = v.ase_texcoord.xy;
+				o.ase_texcoord6 = v.vertex;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
 				o.ase_texcoord5.zw = 0;
@@ -3981,204 +3686,214 @@ Shader "OceanSurface_Amplify"
 					#endif
 				#endif
 
-				float2 appendResult415 = (float2(WorldPosition.x , WorldPosition.y));
-				float2 texCoord394 = IN.ase_texcoord5.xy * _NormalTexture1_ST.xy + ( ( ( float2( 0.4,1.17 ) * _PanSpeed ) * _TimeParameters.x ) + appendResult415 );
-				float2 texCoord390 = IN.ase_texcoord5.xy * _NormalTexture2_ST.xy + ( appendResult415 + ( _TimeParameters.x * ( _PanSpeed * float2( -0.5,0.2 ) ) ) );
+				float mulTime568 = _TimeParameters.x * _NormalPanSpeed;
+				float2 appendResult574 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord577 = IN.ase_texcoord5.xy * _NormalTexture1_ST.xy + ( ( float2( 0.4,0.17 ) * mulTime568 ) + appendResult574 );
+				float3 unpack580 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture1, sampler_NormalTexture1, texCoord577 ), _NormalStrength );
+				unpack580.z = lerp( 1, unpack580.z, saturate(_NormalStrength) );
+				float2 texCoord582 = IN.ase_texcoord5.xy * _NormalTexture2_ST.xy + ( appendResult574 + ( mulTime568 * float2( -0.5,0.2 ) ) );
+				float3 unpack584 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture2, sampler_NormalTexture2, texCoord582 ), _NormalStrength );
+				unpack584.z = lerp( 1, unpack584.z, saturate(_NormalStrength) );
+				float lerpResult558 = lerp( _RiseThreshold , 1.0 , _RiseFadeout);
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord6.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord6.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord6.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
+				float4 temp_output_6_0_g30 = float4( 0,1,0,0 );
+				float dotResult1_g30 = dot( float4( GerstNorm134 , 0.0 ) , temp_output_6_0_g30 );
+				float dotResult2_g30 = dot( temp_output_6_0_g30 , temp_output_6_0_g30 );
+				float2 appendResult536 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord537 = IN.ase_texcoord5.xy * float2( 1,1 ) + appendResult536;
+				float rotation543 = temp_output_615_0;
+				float cos539 = cos( rotation543 );
+				float sin539 = sin( rotation543 );
+				float2 rotator539 = mul( texCoord537 - float2( 0.5,0.5 ) , float2x2( cos539 , -sin539 , sin539 , cos539 )) + float2( 0.5,0.5 );
+				float simpleNoise545 = SimpleNoise( rotator539*5.0 );
+				float2 texCoord553 = IN.ase_texcoord5.xy * float2( 1,1 ) + ( appendResult536 + _TimeParameters.x );
+				float gradientNoise554 = UnityGradientNoise(texCoord553,0.02);
+				gradientNoise554 = gradientNoise554*0.5 + 0.5;
+				float smoothstepResult559 = smoothstep( _RiseThreshold , lerpResult558 , ( (1.0 + (length( ( ( dotResult1_g30 / dotResult2_g30 ) * temp_output_6_0_g30 ) ) - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) + (-0.1 + (simpleNoise545 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (-0.3 + (gradientNoise554 - 0.0) * (0.3 - -0.3) / (1.0 - 0.0)) ));
+				float RiseTide560 = smoothstepResult559;
 				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord5.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord5.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord5.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
-				float3 lerpResult181 = lerp( BlendNormal( UnpackNormalScale( tex2D( _NormalTexture1, texCoord394 ), 1.0f ) , UnpackNormalScale( tex2D( _NormalTexture2, texCoord390 ), 1.0f ) ) , float3( 0,1,0 ) , foam153);
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float smoothstepResult523 = smoothstep( 0.97 , 1.0 , (1.0 + (distanceDepth498 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
+				float2 appendResult510 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord517 = IN.ase_texcoord5.xy * float2( 1,1 ) + ( ( _TimeParameters.x * 0.5 ) + appendResult510 );
+				float gradientNoise516 = UnityGradientNoise(texCoord517,2.15);
+				gradientNoise516 = gradientNoise516*0.5 + 0.5;
+				float clampResult526 = clamp( ( ( pow( ( 1.0 / 1000.0 ) , distanceDepth498 ) * cos( ( ( distanceDepth498 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( 0.5 + gradientNoise516 ) ) , -0.1 , 1.0 );
+				float Foam564 = step( ( RiseTide560 + smoothstepResult523 + clampResult526 ) , 0.5 );
+				float3 lerpResult587 = lerp( float3( 0.5,0.5,1 ) , BlendNormal( unpack580 , unpack584 ) , Foam564);
 				
-				float WaterDepth187 = temp_output_298_0;
+				float Depth500 = distanceDepth498;
 				
 
-				float3 Normal = lerpResult181;
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float3 Normal = lerpResult587;
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 				#ifdef ASE_DEPTH_WRITE_ON
 					float DepthValue = IN.clipPos.z;
@@ -4249,17 +3964,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
-			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
@@ -4306,8 +4020,10 @@ Shader "OceanSurface_Amplify"
 			#endif
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 			#define ASE_NEEDS_FRAG_SCREEN_POSITION
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_FRAG_POSITION
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -4346,31 +4062,33 @@ Shader "OceanSurface_Amplify"
 				float2 dynamicLightmapUV : TEXCOORD7;
 				#endif
 				float4 ase_texcoord8 : TEXCOORD8;
+				float4 ase_texcoord9 : TEXCOORD9;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -4409,8 +4127,10 @@ Shader "OceanSurface_Amplify"
 			#endif
 
 			uniform float4 _CameraDepthTexture_TexelSize;
-			sampler2D _NormalTexture1;
-			sampler2D _NormalTexture2;
+			TEXTURE2D(_NormalTexture1);
+			SAMPLER(sampler_NormalTexture1);
+			TEXTURE2D(_NormalTexture2);
+			SAMPLER(sampler_NormalTexture2);
 
 
 			//#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
@@ -4436,32 +4156,63 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
+			inline float noise_randomValue (float2 uv) { return frac(sin(dot(uv, float2(12.9898, 78.233)))*43758.5453); }
+			inline float noise_interpolate (float a, float b, float t) { return (1.0-t)*a + (t*b); }
+			inline float valueNoise (float2 uv)
 			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
+				float2 i = floor(uv);
+				float2 f = frac( uv );
+				f = f* f * (3.0 - 2.0 * f);
+				uv = abs( frac(uv) - 0.5);
+				float2 c0 = i + float2( 0.0, 0.0 );
+				float2 c1 = i + float2( 1.0, 0.0 );
+				float2 c2 = i + float2( 0.0, 1.0 );
+				float2 c3 = i + float2( 1.0, 1.0 );
+				float r0 = noise_randomValue( c0 );
+				float r1 = noise_randomValue( c1 );
+				float r2 = noise_randomValue( c2 );
+				float r3 = noise_randomValue( c3 );
+				float bottomOfGrid = noise_interpolate( r0, r1, f.x );
+				float topOfGrid = noise_interpolate( r2, r3, f.x );
+				float t = noise_interpolate( bottomOfGrid, topOfGrid, f.y );
+				return t;
+			}
+			
+			float SimpleNoise(float2 UV)
+			{
+				float t = 0.0;
+				float freq = pow( 2.0, float( 0 ) );
+				float amp = pow( 0.5, float( 3 - 0 ) );
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(1));
+				amp = pow(0.5, float(3-1));
+				t += valueNoise( UV/freq )*amp;
+				freq = pow(2.0, float(2));
+				amp = pow(0.5, float(3-2));
+				t += valueNoise( UV/freq )*amp;
+				return t;
+			}
+			
+			float2 UnityGradientNoiseDir( float2 p )
+			{
+				p = fmod(p , 289);
+				float x = fmod((34 * p.x + 1) * p.x , 289) + p.y;
+				x = fmod( (34 * x + 1) * x , 289);
+				x = frac( x / 41 ) * 2 - 1;
+				return normalize( float2(x - floor(x + 0.5 ), abs( x ) - 0.5 ) );
+			}
+			
+			float UnityGradientNoise( float2 UV, float Scale )
+			{
+				float2 p = UV * Scale;
+				float2 ip = floor( p );
+				float2 fp = frac( p );
+				float d00 = dot( UnityGradientNoiseDir( ip ), fp );
+				float d01 = dot( UnityGradientNoiseDir( ip + float2( 0, 1 ) ), fp - float2( 0, 1 ) );
+				float d10 = dot( UnityGradientNoiseDir( ip + float2( 1, 0 ) ), fp - float2( 1, 0 ) );
+				float d11 = dot( UnityGradientNoiseDir( ip + float2( 1, 1 ) ), fp - float2( 1, 1 ) );
+				fp = fp * fp * fp * ( fp * ( fp * 6 - 15 ) + 10 );
+				return lerp( lerp( d00, d01, fp.y ), lerp( d10, d11, fp.y ), fp.x ) + 0.5;
 			}
 			
 
@@ -4472,173 +4223,177 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				o.ase_texcoord8.xy = v.texcoord.xy;
+				o.ase_texcoord9 = v.vertex;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
 				o.ase_texcoord8.zw = 0;
@@ -4837,212 +4592,221 @@ Shader "OceanSurface_Amplify"
 
 				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord8.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord8.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( WorldPosition + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( WorldPosition + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( WorldPosition + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord8.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
-				float4 lerpResult284 = lerp( _ShallowColor , _DeepColor , foam153);
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
+				float4 lerpResult590 = lerp( _ShallowColor , _DeepColor , Depth500);
 				
-				float2 appendResult415 = (float2(WorldPosition.x , WorldPosition.y));
-				float2 texCoord394 = IN.ase_texcoord8.xy * _NormalTexture1_ST.xy + ( ( ( float2( 0.4,1.17 ) * _PanSpeed ) * _TimeParameters.x ) + appendResult415 );
-				float2 texCoord390 = IN.ase_texcoord8.xy * _NormalTexture2_ST.xy + ( appendResult415 + ( _TimeParameters.x * ( _PanSpeed * float2( -0.5,0.2 ) ) ) );
-				float3 lerpResult181 = lerp( BlendNormal( UnpackNormalScale( tex2D( _NormalTexture1, texCoord394 ), 1.0f ) , UnpackNormalScale( tex2D( _NormalTexture2, texCoord390 ), 1.0f ) ) , float3( 0,1,0 ) , foam153);
+				float mulTime568 = _TimeParameters.x * _NormalPanSpeed;
+				float2 appendResult574 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord577 = IN.ase_texcoord8.xy * _NormalTexture1_ST.xy + ( ( float2( 0.4,0.17 ) * mulTime568 ) + appendResult574 );
+				float3 unpack580 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture1, sampler_NormalTexture1, texCoord577 ), _NormalStrength );
+				unpack580.z = lerp( 1, unpack580.z, saturate(_NormalStrength) );
+				float2 texCoord582 = IN.ase_texcoord8.xy * _NormalTexture2_ST.xy + ( appendResult574 + ( mulTime568 * float2( -0.5,0.2 ) ) );
+				float3 unpack584 = UnpackNormalScale( SAMPLE_TEXTURE2D( _NormalTexture2, sampler_NormalTexture2, texCoord582 ), _NormalStrength );
+				unpack584.z = lerp( 1, unpack584.z, saturate(_NormalStrength) );
+				float lerpResult558 = lerp( _RiseThreshold , 1.0 , _RiseFadeout);
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( IN.ase_texcoord9.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
+				float4 temp_output_6_0_g30 = float4( 0,1,0,0 );
+				float dotResult1_g30 = dot( float4( GerstNorm134 , 0.0 ) , temp_output_6_0_g30 );
+				float dotResult2_g30 = dot( temp_output_6_0_g30 , temp_output_6_0_g30 );
+				float2 appendResult536 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord537 = IN.ase_texcoord8.xy * float2( 1,1 ) + appendResult536;
+				float rotation543 = temp_output_615_0;
+				float cos539 = cos( rotation543 );
+				float sin539 = sin( rotation543 );
+				float2 rotator539 = mul( texCoord537 - float2( 0.5,0.5 ) , float2x2( cos539 , -sin539 , sin539 , cos539 )) + float2( 0.5,0.5 );
+				float simpleNoise545 = SimpleNoise( rotator539*5.0 );
+				float2 texCoord553 = IN.ase_texcoord8.xy * float2( 1,1 ) + ( appendResult536 + _TimeParameters.x );
+				float gradientNoise554 = UnityGradientNoise(texCoord553,0.02);
+				gradientNoise554 = gradientNoise554*0.5 + 0.5;
+				float smoothstepResult559 = smoothstep( _RiseThreshold , lerpResult558 , ( (1.0 + (length( ( ( dotResult1_g30 / dotResult2_g30 ) * temp_output_6_0_g30 ) ) - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) + (-0.1 + (simpleNoise545 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (-0.3 + (gradientNoise554 - 0.0) * (0.3 - -0.3) / (1.0 - 0.0)) ));
+				float RiseTide560 = smoothstepResult559;
+				float smoothstepResult523 = smoothstep( 0.97 , 1.0 , (1.0 + (distanceDepth498 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
+				float2 appendResult510 = (float2(WorldPosition.x , WorldPosition.z));
+				float2 texCoord517 = IN.ase_texcoord8.xy * float2( 1,1 ) + ( ( _TimeParameters.x * 0.5 ) + appendResult510 );
+				float gradientNoise516 = UnityGradientNoise(texCoord517,2.15);
+				gradientNoise516 = gradientNoise516*0.5 + 0.5;
+				float clampResult526 = clamp( ( ( pow( ( 1.0 / 1000.0 ) , distanceDepth498 ) * cos( ( ( distanceDepth498 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( 0.5 + gradientNoise516 ) ) , -0.1 , 1.0 );
+				float Foam564 = step( ( RiseTide560 + smoothstepResult523 + clampResult526 ) , 0.5 );
+				float3 lerpResult587 = lerp( float3( 0.5,0.5,1 ) , BlendNormal( unpack580 , unpack584 ) , Foam564);
 				
-				float4 lerpResult304 = lerp( _Emission , _FoamEmmision , foam153);
-				
-				float WaterDepth187 = temp_output_298_0;
+				float4 lerpResult607 = lerp( _FoamColor , _Emmision , Foam564);
 				
 
-				float3 BaseColor = lerpResult284.rgb;
-				float3 Normal = lerpResult181;
-				float3 Emission = lerpResult304.rgb;
+				float3 BaseColor = lerpResult590.rgb;
+				float3 Normal = lerpResult587;
+				float3 Emission = lerpResult607.rgb;
 				float3 Specular = 0.5;
-				float Metallic = 0;
+				float Metallic = 0.5;
 				float Smoothness = 1.0;
 				float Occlusion = 0.0;
-				float Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				float Alpha = ( Depth500 * _WaterThickness );
 				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -5161,16 +4925,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -5192,13 +4956,14 @@ Shader "OceanSurface_Amplify"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 
 
 			struct VertexInput
 			{
 				float4 vertex : POSITION;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -5206,33 +4971,32 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 clipPos : SV_POSITION;
 				float4 ase_texcoord : TEXCOORD0;
-				float4 ase_texcoord1 : TEXCOORD1;
-				float4 ase_texcoord2 : TEXCOORD2;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -5299,34 +5063,6 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
-			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
-			}
-			
 
 			struct SurfaceDescription
 			{
@@ -5343,182 +5079,179 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				float4 ase_clipPos = TransformObjectToHClip((v.vertex).xyz);
 				float4 screenPos = ComputeScreenPos(ase_clipPos);
 				o.ase_texcoord = screenPos;
-				o.ase_texcoord2.xyz = ase_worldPos;
 				
-				o.ase_texcoord1.xy = v.ase_texcoord.xy;
-				
-				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord1.zw = 0;
-				o.ase_texcoord2.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -5548,8 +5281,7 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 vertex : INTERNALTESSPOS;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
-
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -5566,7 +5298,7 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				o.vertex = v.vertex;
 				o.ase_normal = v.ase_normal;
-				o.ase_texcoord = v.ase_texcoord;
+				
 				return o;
 			}
 
@@ -5605,7 +5337,7 @@ Shader "OceanSurface_Amplify"
 				VertexInput o = (VertexInput) 0;
 				o.vertex = patch[0].vertex * bary.x + patch[1].vertex * bary.y + patch[2].vertex * bary.z;
 				o.ase_normal = patch[0].ase_normal * bary.x + patch[1].ase_normal * bary.y + patch[2].ase_normal * bary.z;
-				o.ase_texcoord = patch[0].ase_texcoord * bary.x + patch[1].ase_texcoord * bary.y + patch[2].ase_texcoord * bary.z;
+				
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -5630,197 +5362,12 @@ Shader "OceanSurface_Amplify"
 				float4 screenPos = IN.ase_texcoord;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float WaterDepth187 = temp_output_298_0;
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord1.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord1.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float3 ase_worldPos = IN.ase_texcoord2.xyz;
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord1.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
 				
 
-				surfaceDescription.Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				surfaceDescription.Alpha = ( Depth500 * _WaterThickness );
 				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
@@ -5859,16 +5406,16 @@ Shader "OceanSurface_Amplify"
 			#pragma require tessellation tessHW
 			#pragma hull HullFunction
 			#pragma domain DomainFunction
-			#define ASE_DISTANCE_TESSELLATION
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
-			#define ASE_DEPTH_WRITE_ON
 			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_DISTANCE_TESSELLATION
+			#define ASE_DEPTH_WRITE_ON
 			#define ASE_ABSOLUTE_VERTEX_POS 1
 			#define _EMISSION
 			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140008
 			#define REQUIRE_DEPTH_TEXTURE 1
+			#define ASE_USING_SAMPLING_MACROS 1
 
 
 			#pragma vertex vert
@@ -5890,13 +5437,14 @@ Shader "OceanSurface_Amplify"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
 			#include "../../CustomFunctions/GerstnerWave.hlsl"
+			#define ASE_NEEDS_VERT_POSITION
 
 
 			struct VertexInput
 			{
 				float4 vertex : POSITION;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -5904,33 +5452,32 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 clipPos : SV_POSITION;
 				float4 ase_texcoord : TEXCOORD0;
-				float4 ase_texcoord1 : TEXCOORD1;
-				float4 ase_texcoord2 : TEXCOORD2;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Emission;
+			float4 _FoamColor;
 			float4 _NormalTexture2_ST;
 			float4 _NormalTexture1_ST;
+			float4 _Emmision;
 			float4 _DeepColor;
-			float4 _FoamEmmision;
 			float4 _ShallowColor;
 			float3 _Direction4;
 			float3 _Direction1;
 			float3 _Direction2;
 			float3 _Direction3;
-			float _PanSpeed;
-			float _WaveRiseFallback;
-			float _WaveRiseThershold;
-			float _ColorDepth;
+			float _RiseFadeout;
+			float _RiseThreshold;
+			float _NormalStrength;
+			float _NormalPanSpeed;
+			float _DepthDistance;
 			float _NeighbourDistance;
 			float _Amplitude3;
 			float _Amplitude2;
 			float _Intensity;
 			float _Amplitude1;
-			float _Depth;
+			float _WaveDepth;
 			float _Gravity;
 			float _Phase;
 			float _Roataion;
@@ -5997,34 +5544,6 @@ Shader "OceanSurface_Amplify"
 				return mul( finalMatrix, original ) + center;
 			}
 			
-			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
-			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
-			float snoise( float2 v )
-			{
-				const float4 C = float4( 0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439 );
-				float2 i = floor( v + dot( v, C.yy ) );
-				float2 x0 = v - i + dot( i, C.xx );
-				float2 i1;
-				i1 = ( x0.x > x0.y ) ? float2( 1.0, 0.0 ) : float2( 0.0, 1.0 );
-				float4 x12 = x0.xyxy + C.xxzz;
-				x12.xy -= i1;
-				i = mod2D289( i );
-				float3 p = permute( permute( i.y + float3( 0.0, i1.y, 1.0 ) ) + i.x + float3( 0.0, i1.x, 1.0 ) );
-				float3 m = max( 0.5 - float3( dot( x0, x0 ), dot( x12.xy, x12.xy ), dot( x12.zw, x12.zw ) ), 0.0 );
-				m = m * m;
-				m = m * m;
-				float3 x = 2.0 * frac( p * C.www ) - 1.0;
-				float3 h = abs( x ) - 0.5;
-				float3 ox = floor( x + 0.5 );
-				float3 a0 = x - ox;
-				m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );
-				float3 g;
-				g.x = a0.x * x0.x + h.x * x0.y;
-				g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-				return 130.0 * dot( m, g );
-			}
-			
 
 			struct SurfaceDescription
 			{
@@ -6041,182 +5560,179 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float localgerstner4_g189 = ( 0.0 );
-				float3 ase_worldPos = TransformObjectToWorld( (v.vertex).xyz );
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 GerstPos132 = worldToObj155_g185;
+				float localgerstner4_g24 = ( 0.0 );
+				float3 objToWorld179_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float temp_output_143_0_g1 = _NeighbourDistance;
+				float3 appendResult142_g1 = (float3(temp_output_143_0_g1 , 0.0 , 0.0));
+				float3 temp_output_23_0_g24 = ( objToWorld179_g1 + appendResult142_g1 );
+				float3 position4_g24 = temp_output_23_0_g24;
+				float temp_output_615_0 = radians( _Roataion );
+				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_79_0_g1 = rotatedValue387;
+				float3 direction4_g24 = temp_output_79_0_g1;
+				float temp_output_82_0_g1 = _Phase;
+				float temp_output_24_0_g24 = temp_output_82_0_g1;
+				float phase4_g24 = temp_output_24_0_g24;
+				float temp_output_25_0_g24 = _TimeParameters.x;
+				float time4_g24 = temp_output_25_0_g24;
+				float temp_output_81_0_g1 = _Gravity;
+				float temp_output_26_0_g24 = temp_output_81_0_g1;
+				float gravity4_g24 = temp_output_26_0_g24;
+				float temp_output_80_0_g1 = _WaveDepth;
+				float temp_output_27_0_g24 = temp_output_80_0_g1;
+				float depth4_g24 = temp_output_27_0_g24;
+				float temp_output_84_0_g1 = ( _Amplitude1 * _Intensity );
+				float amplitude4_g24 = temp_output_84_0_g1;
+				float3 result4_g24 = float3( 0,0,0 );
+				gerstner_float( position4_g24 , direction4_g24 , phase4_g24 , time4_g24 , gravity4_g24 , depth4_g24 , amplitude4_g24 , result4_g24 );
+				float localgerstner9_g24 = ( 0.0 );
+				float3 position9_g24 = temp_output_23_0_g24;
+				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_78_0_g1 = rotatedValue64;
+				float3 direction9_g24 = temp_output_78_0_g1;
+				float phase9_g24 = temp_output_24_0_g24;
+				float time9_g24 = temp_output_25_0_g24;
+				float gravity9_g24 = temp_output_26_0_g24;
+				float depth9_g24 = temp_output_27_0_g24;
+				float temp_output_73_0_g1 = ( _Intensity * _Amplitude2 );
+				float amplitude9_g24 = temp_output_73_0_g1;
+				float3 result9_g24 = float3( 0,0,0 );
+				gerstner_float( position9_g24 , direction9_g24 , phase9_g24 , time9_g24 , gravity9_g24 , depth9_g24 , amplitude9_g24 , result9_g24 );
+				float localgerstner14_g24 = ( 0.0 );
+				float3 position14_g24 = temp_output_23_0_g24;
+				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_77_0_g1 = rotatedValue65;
+				float3 direction14_g24 = temp_output_77_0_g1;
+				float phase14_g24 = temp_output_24_0_g24;
+				float time14_g24 = temp_output_25_0_g24;
+				float gravity14_g24 = temp_output_26_0_g24;
+				float depth14_g24 = temp_output_27_0_g24;
+				float temp_output_75_0_g1 = ( _Intensity * _Amplitude3 );
+				float amplitude14_g24 = temp_output_75_0_g1;
+				float3 result14_g24 = float3( 0,0,0 );
+				gerstner_float( position14_g24 , direction14_g24 , phase14_g24 , time14_g24 , gravity14_g24 , depth14_g24 , amplitude14_g24 , result14_g24 );
+				float localgerstner15_g24 = ( 0.0 );
+				float3 position15_g24 = temp_output_23_0_g24;
+				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), temp_output_615_0 );
+				float3 temp_output_76_0_g1 = rotatedValue66;
+				float3 direction15_g24 = temp_output_76_0_g1;
+				float phase15_g24 = temp_output_24_0_g24;
+				float time15_g24 = temp_output_25_0_g24;
+				float gravity15_g24 = temp_output_26_0_g24;
+				float depth15_g24 = temp_output_27_0_g24;
+				float temp_output_74_0_g1 = ( _Amplitude4 * _Intensity );
+				float amplitude15_g24 = temp_output_74_0_g1;
+				float3 result15_g24 = float3( 0,0,0 );
+				gerstner_float( position15_g24 , direction15_g24 , phase15_g24 , time15_g24 , gravity15_g24 , depth15_g24 , amplitude15_g24 , result15_g24 );
+				float3 worldToObj156_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g24 + result9_g24 ) + ( result14_g24 + result15_g24 ) ) + temp_output_23_0_g24 ), 1 ) ).xyz;
+				float3 GerstPos132 = worldToObj156_g1;
 				
-				float localgerstner4_g186 = ( 0.0 );
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
+				float localgerstner4_g28 = ( 0.0 );
+				float3 objToWorld182_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult174_g1 = (float3(0.0 , temp_output_143_0_g1 , 0.0));
+				float3 temp_output_23_0_g28 = ( objToWorld182_g1 + appendResult174_g1 );
+				float3 position4_g28 = temp_output_23_0_g28;
+				float3 direction4_g28 = temp_output_79_0_g1;
+				float temp_output_24_0_g28 = temp_output_82_0_g1;
+				float phase4_g28 = temp_output_24_0_g28;
+				float temp_output_25_0_g28 = _TimeParameters.x;
+				float time4_g28 = temp_output_25_0_g28;
+				float temp_output_26_0_g28 = temp_output_81_0_g1;
+				float gravity4_g28 = temp_output_26_0_g28;
+				float temp_output_27_0_g28 = temp_output_80_0_g1;
+				float depth4_g28 = temp_output_27_0_g28;
+				float amplitude4_g28 = temp_output_84_0_g1;
+				float3 result4_g28 = float3( 0,0,0 );
+				gerstner_float( position4_g28 , direction4_g28 , phase4_g28 , time4_g28 , gravity4_g28 , depth4_g28 , amplitude4_g28 , result4_g28 );
+				float localgerstner9_g28 = ( 0.0 );
+				float3 position9_g28 = temp_output_23_0_g28;
+				float3 direction9_g28 = temp_output_78_0_g1;
+				float phase9_g28 = temp_output_24_0_g28;
+				float time9_g28 = temp_output_25_0_g28;
+				float gravity9_g28 = temp_output_26_0_g28;
+				float depth9_g28 = temp_output_27_0_g28;
+				float amplitude9_g28 = temp_output_73_0_g1;
+				float3 result9_g28 = float3( 0,0,0 );
+				gerstner_float( position9_g28 , direction9_g28 , phase9_g28 , time9_g28 , gravity9_g28 , depth9_g28 , amplitude9_g28 , result9_g28 );
+				float localgerstner14_g28 = ( 0.0 );
+				float3 position14_g28 = temp_output_23_0_g28;
+				float3 direction14_g28 = temp_output_77_0_g1;
+				float phase14_g28 = temp_output_24_0_g28;
+				float time14_g28 = temp_output_25_0_g28;
+				float gravity14_g28 = temp_output_26_0_g28;
+				float depth14_g28 = temp_output_27_0_g28;
+				float amplitude14_g28 = temp_output_75_0_g1;
+				float3 result14_g28 = float3( 0,0,0 );
+				gerstner_float( position14_g28 , direction14_g28 , phase14_g28 , time14_g28 , gravity14_g28 , depth14_g28 , amplitude14_g28 , result14_g28 );
+				float localgerstner15_g28 = ( 0.0 );
+				float3 position15_g28 = temp_output_23_0_g28;
+				float3 direction15_g28 = temp_output_76_0_g1;
+				float phase15_g28 = temp_output_24_0_g28;
+				float time15_g28 = temp_output_25_0_g28;
+				float gravity15_g28 = temp_output_26_0_g28;
+				float depth15_g28 = temp_output_27_0_g28;
+				float amplitude15_g28 = temp_output_74_0_g1;
+				float3 result15_g28 = float3( 0,0,0 );
+				gerstner_float( position15_g28 , direction15_g28 , phase15_g28 , time15_g28 , gravity15_g28 , depth15_g28 , amplitude15_g28 , result15_g28 );
+				float3 worldToObj155_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g28 + result9_g28 ) + ( result14_g28 + result15_g28 ) ) + temp_output_23_0_g28 ), 1 ) ).xyz;
+				float3 temp_output_3_0_g29 = worldToObj155_g1;
+				float3 normalizeResult8_g29 = normalize( ( worldToObj156_g1 - temp_output_3_0_g29 ) );
+				float localgerstner4_g26 = ( 0.0 );
+				float3 objToWorld184_g1 = mul( GetObjectToWorldMatrix(), float4( v.vertex.xyz, 1 ) ).xyz;
+				float3 appendResult136_g1 = (float3(0.0 , 0.0 , temp_output_143_0_g1));
+				float3 temp_output_23_0_g26 = ( objToWorld184_g1 + appendResult136_g1 );
+				float3 position4_g26 = temp_output_23_0_g26;
+				float3 direction4_g26 = temp_output_79_0_g1;
+				float temp_output_24_0_g26 = temp_output_82_0_g1;
+				float phase4_g26 = temp_output_24_0_g26;
+				float temp_output_25_0_g26 = _TimeParameters.x;
+				float time4_g26 = temp_output_25_0_g26;
+				float temp_output_26_0_g26 = temp_output_81_0_g1;
+				float gravity4_g26 = temp_output_26_0_g26;
+				float temp_output_27_0_g26 = temp_output_80_0_g1;
+				float depth4_g26 = temp_output_27_0_g26;
+				float amplitude4_g26 = temp_output_84_0_g1;
+				float3 result4_g26 = float3( 0,0,0 );
+				gerstner_float( position4_g26 , direction4_g26 , phase4_g26 , time4_g26 , gravity4_g26 , depth4_g26 , amplitude4_g26 , result4_g26 );
+				float localgerstner9_g26 = ( 0.0 );
+				float3 position9_g26 = temp_output_23_0_g26;
+				float3 direction9_g26 = temp_output_78_0_g1;
+				float phase9_g26 = temp_output_24_0_g26;
+				float time9_g26 = temp_output_25_0_g26;
+				float gravity9_g26 = temp_output_26_0_g26;
+				float depth9_g26 = temp_output_27_0_g26;
+				float amplitude9_g26 = temp_output_73_0_g1;
+				float3 result9_g26 = float3( 0,0,0 );
+				gerstner_float( position9_g26 , direction9_g26 , phase9_g26 , time9_g26 , gravity9_g26 , depth9_g26 , amplitude9_g26 , result9_g26 );
+				float localgerstner14_g26 = ( 0.0 );
+				float3 position14_g26 = temp_output_23_0_g26;
+				float3 direction14_g26 = temp_output_77_0_g1;
+				float phase14_g26 = temp_output_24_0_g26;
+				float time14_g26 = temp_output_25_0_g26;
+				float gravity14_g26 = temp_output_26_0_g26;
+				float depth14_g26 = temp_output_27_0_g26;
+				float amplitude14_g26 = temp_output_75_0_g1;
+				float3 result14_g26 = float3( 0,0,0 );
+				gerstner_float( position14_g26 , direction14_g26 , phase14_g26 , time14_g26 , gravity14_g26 , depth14_g26 , amplitude14_g26 , result14_g26 );
+				float localgerstner15_g26 = ( 0.0 );
+				float3 position15_g26 = temp_output_23_0_g26;
+				float3 direction15_g26 = temp_output_76_0_g1;
+				float phase15_g26 = temp_output_24_0_g26;
+				float time15_g26 = temp_output_25_0_g26;
+				float gravity15_g26 = temp_output_26_0_g26;
+				float depth15_g26 = temp_output_27_0_g26;
+				float amplitude15_g26 = temp_output_74_0_g1;
+				float3 result15_g26 = float3( 0,0,0 );
+				gerstner_float( position15_g26 , direction15_g26 , phase15_g26 , time15_g26 , gravity15_g26 , depth15_g26 , amplitude15_g26 , result15_g26 );
+				float3 worldToObj164_g1 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g26 + result9_g26 ) + ( result14_g26 + result15_g26 ) ) + temp_output_23_0_g26 ), 1 ) ).xyz;
+				float3 normalizeResult9_g29 = normalize( ( temp_output_3_0_g29 - worldToObj164_g1 ) );
+				float3 normalizeResult11_g29 = normalize( cross( normalizeResult8_g29 , normalizeResult9_g29 ) );
+				float3 GerstNorm134 = normalizeResult11_g29;
 				
 				float4 ase_clipPos = TransformObjectToHClip((v.vertex).xyz);
 				float4 screenPos = ComputeScreenPos(ase_clipPos);
 				o.ase_texcoord = screenPos;
-				o.ase_texcoord2.xyz = ase_worldPos;
 				
-				o.ase_texcoord1.xy = v.ase_texcoord.xy;
-				
-				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord1.zw = 0;
-				o.ase_texcoord2.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -6245,8 +5761,7 @@ Shader "OceanSurface_Amplify"
 			{
 				float4 vertex : INTERNALTESSPOS;
 				float3 ase_normal : NORMAL;
-				float4 ase_texcoord : TEXCOORD0;
-
+				
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -6263,7 +5778,7 @@ Shader "OceanSurface_Amplify"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				o.vertex = v.vertex;
 				o.ase_normal = v.ase_normal;
-				o.ase_texcoord = v.ase_texcoord;
+				
 				return o;
 			}
 
@@ -6302,7 +5817,7 @@ Shader "OceanSurface_Amplify"
 				VertexInput o = (VertexInput) 0;
 				o.vertex = patch[0].vertex * bary.x + patch[1].vertex * bary.y + patch[2].vertex * bary.z;
 				o.ase_normal = patch[0].ase_normal * bary.x + patch[1].ase_normal * bary.y + patch[2].ase_normal * bary.z;
-				o.ase_texcoord = patch[0].ase_texcoord * bary.x + patch[1].ase_texcoord * bary.y + patch[2].ase_texcoord * bary.z;
+				
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -6327,197 +5842,12 @@ Shader "OceanSurface_Amplify"
 				float4 screenPos = IN.ase_texcoord;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float screenDepth11_g132 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
-				float distanceDepth11_g132 = saturate( abs( ( screenDepth11_g132 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _ColorDepth ) ) );
-				float temp_output_298_0 = ( 1.0 - distanceDepth11_g132 );
-				float WaterDepth187 = temp_output_298_0;
-				float smoothstepResult91 = smoothstep( 0.0 , 0.2 , (1.0 + (temp_output_298_0 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)));
-				float2 temp_cast_0 = (_TimeParameters.x).xx;
-				float2 texCoord117 = IN.ase_texcoord1.xy * float2( 1,1 ) + temp_cast_0;
-				float simplePerlin2D287 = snoise( texCoord117*0.2 );
-				simplePerlin2D287 = simplePerlin2D287*0.5 + 0.5;
-				float clampResult107 = clamp( ( ( ( 1.0 - pow( ( 1.0 / 1000.0 ) , temp_output_298_0 ) ) * sin( ( ( temp_output_298_0 * 100.0 ) + ( 4.0 * _TimeParameters.x ) ) ) ) * ( simplePerlin2D287 + 0.7 ) ) , 0.0 , 0.9 );
-				float lerpResult143 = lerp( _WaveRiseThershold , 1.0 , _WaveRiseFallback);
-				float2 texCoord118 = IN.ase_texcoord1.xy * float2( 1,1 ) + float2( 0,0 );
-				float cos121 = cos( radians( _Roataion ) );
-				float sin121 = sin( radians( _Roataion ) );
-				float2 rotator121 = mul( texCoord118 - float2( 0.5,0.5 ) , float2x2( cos121 , -sin121 , sin121 , cos121 )) + float2( 0.5,0.5 );
-				float simplePerlin2D126 = snoise( rotator121*0.5 );
-				simplePerlin2D126 = simplePerlin2D126*0.5 + 0.5;
-				float localgerstner4_g186 = ( 0.0 );
-				float3 ase_worldPos = IN.ase_texcoord2.xyz;
-				float temp_output_143_0_g185 = _NeighbourDistance;
-				float3 appendResult142_g185 = (float3(temp_output_143_0_g185 , 0.0 , 0.0));
-				float3 temp_output_23_0_g186 = ( ase_worldPos + appendResult142_g185 );
-				float3 position4_g186 = temp_output_23_0_g186;
-				float3 rotatedValue387 = RotateAroundAxis( float3( 0,0,0 ), _Direction1, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_79_0_g185 = rotatedValue387;
-				float3 direction4_g186 = temp_output_79_0_g185;
-				float temp_output_82_0_g185 = _Phase;
-				float temp_output_24_0_g186 = temp_output_82_0_g185;
-				float phase4_g186 = temp_output_24_0_g186;
-				float temp_output_25_0_g186 = _TimeParameters.x;
-				float time4_g186 = temp_output_25_0_g186;
-				float temp_output_81_0_g185 = _Gravity;
-				float temp_output_26_0_g186 = temp_output_81_0_g185;
-				float gravity4_g186 = temp_output_26_0_g186;
-				float temp_output_80_0_g185 = _Depth;
-				float temp_output_27_0_g186 = temp_output_80_0_g185;
-				float depth4_g186 = temp_output_27_0_g186;
-				float temp_output_84_0_g185 = ( _Amplitude1 * _Intensity );
-				float amplitude4_g186 = temp_output_84_0_g185;
-				float3 result4_g186 = float3( 0,0,0 );
-				gerstner_float( position4_g186 , direction4_g186 , phase4_g186 , time4_g186 , gravity4_g186 , depth4_g186 , amplitude4_g186 , result4_g186 );
-				float localgerstner9_g186 = ( 0.0 );
-				float3 position9_g186 = temp_output_23_0_g186;
-				float3 rotatedValue64 = RotateAroundAxis( float3( 0,0,0 ), _Direction2, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_78_0_g185 = rotatedValue64;
-				float3 direction9_g186 = temp_output_78_0_g185;
-				float phase9_g186 = temp_output_24_0_g186;
-				float time9_g186 = temp_output_25_0_g186;
-				float gravity9_g186 = temp_output_26_0_g186;
-				float depth9_g186 = temp_output_27_0_g186;
-				float temp_output_73_0_g185 = ( _Intensity * _Amplitude2 );
-				float amplitude9_g186 = temp_output_73_0_g185;
-				float3 result9_g186 = float3( 0,0,0 );
-				gerstner_float( position9_g186 , direction9_g186 , phase9_g186 , time9_g186 , gravity9_g186 , depth9_g186 , amplitude9_g186 , result9_g186 );
-				float localgerstner14_g186 = ( 0.0 );
-				float3 position14_g186 = temp_output_23_0_g186;
-				float3 rotatedValue65 = RotateAroundAxis( float3( 0,0,0 ), _Direction3, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_77_0_g185 = rotatedValue65;
-				float3 direction14_g186 = temp_output_77_0_g185;
-				float phase14_g186 = temp_output_24_0_g186;
-				float time14_g186 = temp_output_25_0_g186;
-				float gravity14_g186 = temp_output_26_0_g186;
-				float depth14_g186 = temp_output_27_0_g186;
-				float temp_output_75_0_g185 = ( _Intensity * _Amplitude3 );
-				float amplitude14_g186 = temp_output_75_0_g185;
-				float3 result14_g186 = float3( 0,0,0 );
-				gerstner_float( position14_g186 , direction14_g186 , phase14_g186 , time14_g186 , gravity14_g186 , depth14_g186 , amplitude14_g186 , result14_g186 );
-				float localgerstner15_g186 = ( 0.0 );
-				float3 position15_g186 = temp_output_23_0_g186;
-				float3 rotatedValue66 = RotateAroundAxis( float3( 0,0,0 ), _Direction4, normalize( float3( 0,1,0 ) ), _Roataion );
-				float3 temp_output_76_0_g185 = rotatedValue66;
-				float3 direction15_g186 = temp_output_76_0_g185;
-				float phase15_g186 = temp_output_24_0_g186;
-				float time15_g186 = temp_output_25_0_g186;
-				float gravity15_g186 = temp_output_26_0_g186;
-				float depth15_g186 = temp_output_27_0_g186;
-				float temp_output_74_0_g185 = ( _Amplitude4 * _Intensity );
-				float amplitude15_g186 = temp_output_74_0_g185;
-				float3 result15_g186 = float3( 0,0,0 );
-				gerstner_float( position15_g186 , direction15_g186 , phase15_g186 , time15_g186 , gravity15_g186 , depth15_g186 , amplitude15_g186 , result15_g186 );
-				float3 worldToObj156_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g186 + result9_g186 ) + ( result14_g186 + result15_g186 ) ) + temp_output_23_0_g186 ), 1 ) ).xyz;
-				float localgerstner4_g189 = ( 0.0 );
-				float3 appendResult69_g185 = (float3(0.0 , temp_output_143_0_g185 , 0.0));
-				float3 temp_output_23_0_g189 = ( ase_worldPos + appendResult69_g185 );
-				float3 position4_g189 = temp_output_23_0_g189;
-				float3 direction4_g189 = temp_output_79_0_g185;
-				float temp_output_24_0_g189 = temp_output_82_0_g185;
-				float phase4_g189 = temp_output_24_0_g189;
-				float temp_output_25_0_g189 = _TimeParameters.x;
-				float time4_g189 = temp_output_25_0_g189;
-				float temp_output_26_0_g189 = temp_output_81_0_g185;
-				float gravity4_g189 = temp_output_26_0_g189;
-				float temp_output_27_0_g189 = temp_output_80_0_g185;
-				float depth4_g189 = temp_output_27_0_g189;
-				float amplitude4_g189 = temp_output_84_0_g185;
-				float3 result4_g189 = float3( 0,0,0 );
-				gerstner_float( position4_g189 , direction4_g189 , phase4_g189 , time4_g189 , gravity4_g189 , depth4_g189 , amplitude4_g189 , result4_g189 );
-				float localgerstner9_g189 = ( 0.0 );
-				float3 position9_g189 = temp_output_23_0_g189;
-				float3 direction9_g189 = temp_output_78_0_g185;
-				float phase9_g189 = temp_output_24_0_g189;
-				float time9_g189 = temp_output_25_0_g189;
-				float gravity9_g189 = temp_output_26_0_g189;
-				float depth9_g189 = temp_output_27_0_g189;
-				float amplitude9_g189 = temp_output_73_0_g185;
-				float3 result9_g189 = float3( 0,0,0 );
-				gerstner_float( position9_g189 , direction9_g189 , phase9_g189 , time9_g189 , gravity9_g189 , depth9_g189 , amplitude9_g189 , result9_g189 );
-				float localgerstner14_g189 = ( 0.0 );
-				float3 position14_g189 = temp_output_23_0_g189;
-				float3 direction14_g189 = temp_output_77_0_g185;
-				float phase14_g189 = temp_output_24_0_g189;
-				float time14_g189 = temp_output_25_0_g189;
-				float gravity14_g189 = temp_output_26_0_g189;
-				float depth14_g189 = temp_output_27_0_g189;
-				float amplitude14_g189 = temp_output_75_0_g185;
-				float3 result14_g189 = float3( 0,0,0 );
-				gerstner_float( position14_g189 , direction14_g189 , phase14_g189 , time14_g189 , gravity14_g189 , depth14_g189 , amplitude14_g189 , result14_g189 );
-				float localgerstner15_g189 = ( 0.0 );
-				float3 position15_g189 = temp_output_23_0_g189;
-				float3 direction15_g189 = temp_output_76_0_g185;
-				float phase15_g189 = temp_output_24_0_g189;
-				float time15_g189 = temp_output_25_0_g189;
-				float gravity15_g189 = temp_output_26_0_g189;
-				float depth15_g189 = temp_output_27_0_g189;
-				float amplitude15_g189 = temp_output_74_0_g185;
-				float3 result15_g189 = float3( 0,0,0 );
-				gerstner_float( position15_g189 , direction15_g189 , phase15_g189 , time15_g189 , gravity15_g189 , depth15_g189 , amplitude15_g189 , result15_g189 );
-				float3 worldToObj155_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g189 + result9_g189 ) + ( result14_g189 + result15_g189 ) ) + temp_output_23_0_g189 ), 1 ) ).xyz;
-				float3 temp_output_3_0_g188 = worldToObj155_g185;
-				float3 normalizeResult8_g188 = normalize( ( worldToObj156_g185 - temp_output_3_0_g188 ) );
-				float localgerstner4_g187 = ( 0.0 );
-				float3 appendResult136_g185 = (float3(0.0 , 0.0 , temp_output_143_0_g185));
-				float3 temp_output_23_0_g187 = ( ase_worldPos + appendResult136_g185 );
-				float3 position4_g187 = temp_output_23_0_g187;
-				float3 direction4_g187 = temp_output_79_0_g185;
-				float temp_output_24_0_g187 = temp_output_82_0_g185;
-				float phase4_g187 = temp_output_24_0_g187;
-				float temp_output_25_0_g187 = _TimeParameters.x;
-				float time4_g187 = temp_output_25_0_g187;
-				float temp_output_26_0_g187 = temp_output_81_0_g185;
-				float gravity4_g187 = temp_output_26_0_g187;
-				float temp_output_27_0_g187 = temp_output_80_0_g185;
-				float depth4_g187 = temp_output_27_0_g187;
-				float amplitude4_g187 = temp_output_84_0_g185;
-				float3 result4_g187 = float3( 0,0,0 );
-				gerstner_float( position4_g187 , direction4_g187 , phase4_g187 , time4_g187 , gravity4_g187 , depth4_g187 , amplitude4_g187 , result4_g187 );
-				float localgerstner9_g187 = ( 0.0 );
-				float3 position9_g187 = temp_output_23_0_g187;
-				float3 direction9_g187 = temp_output_78_0_g185;
-				float phase9_g187 = temp_output_24_0_g187;
-				float time9_g187 = temp_output_25_0_g187;
-				float gravity9_g187 = temp_output_26_0_g187;
-				float depth9_g187 = temp_output_27_0_g187;
-				float amplitude9_g187 = temp_output_73_0_g185;
-				float3 result9_g187 = float3( 0,0,0 );
-				gerstner_float( position9_g187 , direction9_g187 , phase9_g187 , time9_g187 , gravity9_g187 , depth9_g187 , amplitude9_g187 , result9_g187 );
-				float localgerstner14_g187 = ( 0.0 );
-				float3 position14_g187 = temp_output_23_0_g187;
-				float3 direction14_g187 = temp_output_77_0_g185;
-				float phase14_g187 = temp_output_24_0_g187;
-				float time14_g187 = temp_output_25_0_g187;
-				float gravity14_g187 = temp_output_26_0_g187;
-				float depth14_g187 = temp_output_27_0_g187;
-				float amplitude14_g187 = temp_output_75_0_g185;
-				float3 result14_g187 = float3( 0,0,0 );
-				gerstner_float( position14_g187 , direction14_g187 , phase14_g187 , time14_g187 , gravity14_g187 , depth14_g187 , amplitude14_g187 , result14_g187 );
-				float localgerstner15_g187 = ( 0.0 );
-				float3 position15_g187 = temp_output_23_0_g187;
-				float3 direction15_g187 = temp_output_76_0_g185;
-				float phase15_g187 = temp_output_24_0_g187;
-				float time15_g187 = temp_output_25_0_g187;
-				float gravity15_g187 = temp_output_26_0_g187;
-				float depth15_g187 = temp_output_27_0_g187;
-				float amplitude15_g187 = temp_output_74_0_g185;
-				float3 result15_g187 = float3( 0,0,0 );
-				gerstner_float( position15_g187 , direction15_g187 , phase15_g187 , time15_g187 , gravity15_g187 , depth15_g187 , amplitude15_g187 , result15_g187 );
-				float3 worldToObj164_g185 = mul( GetWorldToObjectMatrix(), float4( ( ( ( result4_g187 + result9_g187 ) + ( result14_g187 + result15_g187 ) ) + temp_output_23_0_g187 ), 1 ) ).xyz;
-				float3 normalizeResult9_g188 = normalize( ( temp_output_3_0_g188 - worldToObj164_g185 ) );
-				float3 normalizeResult11_g188 = normalize( cross( normalizeResult8_g188 , normalizeResult9_g188 ) );
-				float3 GerstNorm134 = normalizeResult11_g188;
-				float dotResult130 = dot( GerstNorm134 , float3( 0,0,1 ) );
-				float2 temp_cast_1 = (_TimeParameters.x).xx;
-				float2 texCoord140 = IN.ase_texcoord1.xy * float2( 1,1 ) + temp_cast_1;
-				float simplePerlin2D138 = snoise( texCoord140*0.02 );
-				simplePerlin2D138 = simplePerlin2D138*0.5 + 0.5;
-				float smoothstepResult147 = smoothstep( _WaveRiseThershold , lerpResult143 , ( ( (-0.1 + (simplePerlin2D126 - 0.0) * (0.1 - -0.1) / (1.0 - 0.0)) + (1.0 + (dotResult130 - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) ) + (-0.2 + (simplePerlin2D138 - 0.0) * (0.2 - -0.2) / (1.0 - 0.0)) ));
-				float waterRise149 = smoothstepResult147;
-				float foam153 = step( 0.4 , ( ( ( 1.0 - smoothstepResult91 ) * clampResult107 ) + waterRise149 ) );
+				float screenDepth498 = LinearEyeDepth(SHADERGRAPH_SAMPLE_SCENE_DEPTH( ase_screenPosNorm.xy ),_ZBufferParams);
+				float distanceDepth498 = saturate( ( screenDepth498 - LinearEyeDepth( ase_screenPosNorm.z,_ZBufferParams ) ) / ( _DepthDistance ) );
+				float Depth500 = distanceDepth498;
 				
 
-				surfaceDescription.Alpha = ( ( ( 1.0 - WaterDepth187 ) * _WaterThickness ) + foam153 );
+				surfaceDescription.Alpha = ( Depth500 * _WaterThickness );
 				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
@@ -6551,122 +5881,139 @@ Shader "OceanSurface_Amplify"
 }
 /*ASEBEGIN
 Version=19200
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;58;-387.338,4383.654;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;59;-384.5516,4507.337;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;60;-388.4516,4600.938;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;61;-383.2515,4708.837;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RotateAboutAxisNode;65;-1023.79,4655.204;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RotateAboutAxisNode;66;-1024.897,4821.411;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;118;-1434.155,3586.409;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.RotatorNode;121;-1202.051,3634.284;Inherit;False;3;0;FLOAT2;0,0;False;1;FLOAT2;0.5,0.5;False;2;FLOAT;1;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.RadiansOpNode;128;-1383.502,3738.417;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;125;-729.568,3633.885;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-0.1;False;4;FLOAT;0.1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;136;-465.1816,3632.467;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;142;376.1527,3623.556;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;145;-1.909436,4075.061;Inherit;False;Property;_WaveRiseFallback;WaveRiseFallback;16;0;Create;True;0;0;0;False;0;False;1;0;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;211;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;212;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;True;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;213;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;214;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=Universal2D;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;215;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthNormals;0;6;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=DepthNormalsOnly;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;216;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;217;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;SceneSelectionPass;0;8;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;218;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ScenePickingPass;0;9;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.RangedFloatNode;229;1335.208,1450.711;Inherit;False;Constant;_Float1;Float 1;26;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;57;-777.6666,4406.986;Inherit;False;Property;_Intensity;Intensity;0;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector3Node;43;-1259.004,4342.271;Inherit;False;Property;_Direction1;Direction1;2;0;Create;True;0;0;0;False;0;False;0.5,0,0;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.Vector3Node;44;-1257.493,4494.389;Inherit;False;Property;_Direction2;Direction2;3;0;Create;True;0;0;0;False;0;False;-0.3,0,0.3;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.Vector3Node;45;-1257.201,4641.688;Inherit;False;Property;_Direction3;Direction3;4;0;Create;True;0;0;0;False;0;False;0.1,0,-0.4;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.Vector3Node;46;-1255.019,4822.599;Inherit;False;Property;_Direction4;Direction4;5;0;Create;True;0;0;0;False;0;False;0.01,0,0.01;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.RangedFloatNode;47;-600.5735,4392.228;Inherit;False;Property;_Amplitude1;Amplitude1;6;0;Create;True;0;0;0;False;0;False;1.5;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;48;-603.7048,4517.831;Inherit;False;Property;_Amplitude2;Amplitude2;7;0;Create;True;0;0;0;False;0;False;0.2;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;49;-598.8052,4607.831;Inherit;False;Property;_Amplitude3;Amplitude3;8;0;Create;True;0;0;0;False;0;False;0.3;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;50;-601.1052,4705.131;Inherit;False;Property;_Amplitude4;Amplitude4;9;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;51;-390.0899,4832.997;Inherit;False;Property;_Depth;Depth;10;0;Create;True;0;0;0;False;0;False;50;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;52;-396.8339,4927.403;Inherit;False;Property;_Phase;Phase;11;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;53;-395.1481,5018.44;Inherit;False;Property;_Gravity;Gravity;12;0;Create;True;0;0;0;False;0;False;0.2;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;54;-463.7719,5114.636;Inherit;False;Property;_NeighbourDistance;NeighbourDistance;13;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;63;-1668.765,4359.05;Inherit;False;Property;_Roataion;Roataion;1;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;209;802.098,1093.014;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.DotProductOpNode;130;-857.827,3902.563;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;131;-722.5792,3901.364;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;140;-344.4902,3775.119;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.NoiseGeneratorNode;138;-114.59,3773.893;Inherit;True;Simplex2D;True;True;2;0;FLOAT2;0,0;False;1;FLOAT;0.02;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;141;119.4303,3774.706;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-0.2;False;4;FLOAT;0.2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SmoothstepOpNode;147;566.9213,3620.511;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;143;363.9533,4028.546;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;1;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;144;-3.185071,3996.109;Inherit;False;Property;_WaveRiseThershold;WaveRiseThershold;15;0;Create;True;0;0;0;False;0;False;0.63;0;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;187;-1145.108,2393.515;Inherit;False;WaterDepth;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.PowerNode;72;-1103.475,2725.032;Inherit;False;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;149;825.1532,3620.061;Inherit;False;waterRise;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleDivideOpNode;73;-1318.876,2726.632;Inherit;False;2;0;FLOAT;1;False;1;FLOAT;1000;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;88;-978.5084,2829.19;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;292;56.56934,2515.742;Inherit;False;2;2;0;FLOAT;1;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;71;-1118.679,2530.23;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;153;649.0096,2521.256;Inherit;False;foam;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;68;-1871.695,2532.292;Inherit;False;Property;_ColorDepth;ColorDepth;14;0;Create;True;0;0;0;False;0;False;5;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;106;-404.1041,3006.991;Inherit;False;2;2;0;FLOAT;1;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SinOpNode;295;-828.9561,2817.641;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;74;-1153.437,2827.453;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;100;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;90;-657.2165,2726.569;Inherit;False;2;2;0;FLOAT;1;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;298;-1637.938,2535.712;Inherit;False;WaterDepthFadeAlpha;-1;;132;ea87e8fa9c7d21a44be9a41871d57b62;0;1;8;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;299;-888.9248,2722.519;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;300;-207.7437,2519.582;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;87;-1269.472,2953.675;Inherit;False;2;2;0;FLOAT;4;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;290;295.3892,2518.583;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ClampOpNode;107;-213.6615,3003.568;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0.9;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SmoothstepOpNode;91;-482.0674,2527.407;Inherit;False;3;0;FLOAT;0.97;False;1;FLOAT;0;False;2;FLOAT;0.2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.GetLocalVarNode;151;48.0353,2701.946;Inherit;False;149;waterRise;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;304;918.811,1473.864;Inherit;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.ColorNode;189;454.2368,1059.366;Inherit;False;Property;_DeepColor;DeepColor;24;0;Create;True;0;0;0;False;0;False;0,0.08763248,0.6132076,0;0,0.08763248,0.6132076,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ColorNode;188;453.0369,875.1653;Inherit;False;Property;_ShallowColor;ShallowColor;21;0;Create;True;0;0;0;False;0;False;0.5415094,0.8120804,1,0;0.5415094,0.8120804,1,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.LerpOp;284;768.9565,979.8453;Inherit;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.GetLocalVarNode;186;848.8786,1735.984;Inherit;False;187;WaterDepth;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;306;1029.932,1732.111;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;305;1177.575,1733.287;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.GetLocalVarNode;289;568.4344,1966.912;Inherit;False;153;foam;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;307;1347.778,1771.695;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;287;-834.5835,3054.051;Inherit;True;Simplex2D;True;True;2;0;FLOAT2;0,0;False;1;FLOAT;0.2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;302;-564.0035,3050.795;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0.7;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;312;1332.112,1282.884;Inherit;False;Constant;_Float2;Float 2;26;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;228;1333.744,1376.492;Inherit;False;Constant;_Float0;Float 0;26;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.ColorNode;220;525.2111,1636.545;Inherit;False;Property;_FoamEmmision;FoamEmmision;20;1;[HDR];Create;True;0;0;0;False;0;False;2,2,2,0.003921569;2,2,2,0.003921569;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ColorNode;219;533.6332,1444.119;Inherit;False;Property;_Emission;Emission;19;1;[HDR];Create;True;0;0;0;False;0;False;0.06415081,0.4871341,2,0;0.06415081,0.4871341,2,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.GetLocalVarNode;226;1247.18,1600.706;Inherit;False;134;GerstNorm;1;0;OBJECT;;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.GetLocalVarNode;227;1226.829,1523.022;Inherit;False;132;GerstPos;1;0;OBJECT;;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RangedFloatNode;281;904.1102,1825.922;Inherit;False;Property;_WaterThickness;WaterThickness;17;0;Create;True;0;0;0;False;0;False;0.2;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;126;-994.0635,3637.649;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;0.5;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;181;891.537,1313.804;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,1,0;False;2;FLOAT;0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.BlendNormalsNode;377;462.8987,1312.561;Inherit;False;0;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.SimpleTimeNode;139;-542.59,3916.893;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;210;1560.938,1289.053;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;OceanSurface_Amplify;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;20;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;41;Workflow;0;638300494971966529;Surface;1;638300532170568009;  Refraction Model;0;638300393858801420;  Blend;0;638300532503677378;Two Sided;1;638300530233978272;Fragment Normal Space,InvertActionOnDeselection;0;638300515573946518;Forward Only;1;0;Transmission;0;638300533001720014;  Transmission Shadow;0.5,False,;0;Translucency;0;638300532644099097;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;0;638300336150030956;  Use Shadow Threshold;0;0;Receive Shadows;1;0;GPU Instancing;0;638300336161044116;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;638300533062819400;Override Baked GI;0;0;Extra Pre Pass;0;0;DOTS Instancing;0;638300351025897575;Tessellation;1;638300330473901041;  Phong;0;0;  Strength;0.5,False,;0;  Type;1;638300336253128043;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;1;638300529556680630;  Early Z;0;638300502736683489;Vertex Position,InvertActionOnDeselection;0;638300547132398355;Debug Display;0;638300351079489654;Clear Coat;0;0;0;10;False;True;False;True;True;True;True;True;True;True;False;;False;0
-Node;AmplifyShaderEditor.SimpleTimeNode;84;-1487.472,3122.675;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;117;-1164.19,3059.402;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.StepOpNode;303;481.3736,2513.962;Inherit;False;2;0;FLOAT;0.4;False;1;FLOAT;0.4;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RotateAboutAxisNode;64;-1036.728,4497.36;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RotateAboutAxisNode;387;-1035.028,4334.226;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.GetLocalVarNode;135;-1067.422,3903.422;Inherit;False;134;GerstNorm;1;0;OBJECT;;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.SamplerNode;361;-26.72515,1249.536;Inherit;True;Property;_NormalTexture1;NormalTexture1;22;1;[Normal];Create;True;0;0;0;False;0;False;-1;769ca6e81a779f845bdd21c6ffddc408;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.TextureCoordinatesNode;394;-350.9309,1113.298;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.TextureTransformNode;393;-686.9309,1141.298;Inherit;False;361;False;1;0;SAMPLER2D;;False;2;FLOAT2;0;FLOAT2;1
-Node;AmplifyShaderEditor.TextureCoordinatesNode;390;-365.8002,1646.635;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SamplerNode;362;-30.84008,1538.619;Inherit;True;Property;_NormalTexture2;NormalTexture2;23;1;[Normal];Create;True;0;0;0;False;0;False;-1;1d07290fa3fdc52449c080dbf13c2089;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.RegisterLocalVarNode;134;266.4007,4471.351;Inherit;False;GerstNorm;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;132;268.9829,4566.814;Inherit;False;GerstPos;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.FunctionNode;407;-128.875,4484.13;Inherit;False;GerstnerFinal;-1;;185;c1f434d9d858ad248a81af6b7a1b452f;0;12;80;FLOAT;0;False;82;FLOAT;0;False;81;FLOAT;0;False;79;FLOAT3;0,0,0;False;78;FLOAT3;0,0,0;False;77;FLOAT3;0,0,0;False;76;FLOAT3;0,0,0;False;84;FLOAT;0;False;73;FLOAT;0;False;75;FLOAT;0;False;74;FLOAT;0;False;143;FLOAT;0;False;2;FLOAT3;125;FLOAT3;0
-Node;AmplifyShaderEditor.TextureTransformNode;396;-721.8293,1723.901;Inherit;False;362;False;1;0;SAMPLER2D;;False;2;FLOAT2;0;FLOAT2;1
-Node;AmplifyShaderEditor.SimpleAddOpNode;413;-590.5315,1311.763;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;414;-590.5315,1485.763;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.RangedFloatNode;161;-1634.932,1420.865;Inherit;False;Property;_PanSpeed;PanSpeed;18;0;Create;True;0;0;0;False;0;False;0.5;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector2Node;154;-1658.858,1281.141;Inherit;False;Constant;_Vector0;Vector 0;17;0;Create;True;0;0;0;False;0;False;0.4,1.17;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;162;-1433.669,1267.278;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;160;-1424.308,1557.474;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleTimeNode;386;-1451.325,1426.109;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector2Node;155;-1683.283,1555.878;Inherit;False;Constant;_Vector1;Vector 0;17;0;Create;True;0;0;0;False;0;False;-0.5,0.2;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;398;-1209.489,1279.916;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;397;-1215.489,1550.916;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.WorldPosInputsNode;410;-1241.774,1406.853;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.DynamicAppendNode;415;-1058.774,1428.853;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.CommentaryNode;565;1709.683,1707.994;Inherit;False;2503.378;734.5054;;18;571;584;580;586;585;582;583;577;575;578;576;574;570;569;568;567;566;634;NormalMap;1,1,1,1;0;0
+Node;AmplifyShaderEditor.CommentaryNode;533;812.8723,2708.312;Inherit;False;2693.161;763.9817;;22;536;541;612;613;547;549;555;554;557;556;560;559;558;550;553;552;551;537;545;539;546;635;RiseTide;1,1,1,1;0;0
+Node;AmplifyShaderEditor.CommentaryNode;502;963.7496,3869.6;Inherit;False;2412.672;1101.149;;23;510;562;519;523;507;525;564;561;528;526;524;522;521;520;506;518;516;517;511;514;513;505;636;Foam;1,1,1,1;0;0
+Node;AmplifyShaderEditor.CommentaryNode;493;-1837.498,2459.587;Inherit;False;2392.958;1082.213;;26;63;615;65;51;57;132;134;54;53;52;50;49;48;47;61;60;59;58;543;45;46;43;387;64;44;66;GerstnerGenerate;1,1,1,1;0;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;211;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;212;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;True;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;213;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;214;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=Universal2D;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;215;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthNormals;0;6;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=DepthNormals;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;216;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;217;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;SceneSelectionPass;0;8;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;218;1120.13,1745.131;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ScenePickingPass;0;9;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;209;647.6163,729.0755;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.RotateAboutAxisNode;66;-930.2685,3112.79;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.Vector3Node;44;-1162.865,2785.769;Inherit;False;Property;_Direction2;Direction2;3;0;Create;True;0;0;0;False;0;False;-0.3,0,0.3;-0.3,0,0.3;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.RotateAboutAxisNode;64;-942.0992,2788.739;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RotateAboutAxisNode;387;-940.3992,2625.605;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.Vector3Node;43;-1164.375,2633.65;Inherit;False;Property;_Direction1;Direction1;2;0;Create;True;0;0;0;False;0;False;0.5,0,0;0.5,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.Vector3Node;46;-1160.39,3113.978;Inherit;False;Property;_Direction4;Direction4;5;0;Create;True;0;0;0;False;0;False;0.01,0,0.01;0.01,0,0.01;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.Vector3Node;45;-1162.573,2933.067;Inherit;False;Property;_Direction3;Direction3;4;0;Create;True;0;0;0;False;0;False;0.1,0,-0.4;0.1,0,-0.4;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.RegisterLocalVarNode;543;-1371.129,3102.213;Inherit;False;rotation;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;546;2188.355,2948.317;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-0.1;False;4;FLOAT;0.1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;58;-292.7112,2675.033;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;59;-289.9247,2798.716;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;60;-293.8247,2892.317;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;61;-288.6246,3000.216;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;47;-505.947,2683.607;Inherit;False;Property;_Amplitude1;Amplitude1;6;0;Create;True;0;0;0;False;0;False;1.5;1.5;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;48;-509.0782,2809.21;Inherit;False;Property;_Amplitude2;Amplitude2;7;0;Create;True;0;0;0;False;0;False;0.2;0.2;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;49;-504.1786,2899.21;Inherit;False;Property;_Amplitude3;Amplitude3;8;0;Create;True;0;0;0;False;0;False;0.3;0.3;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;50;-506.4787,2996.51;Inherit;False;Property;_Amplitude4;Amplitude4;9;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;52;-302.207,3218.782;Inherit;False;Property;_Phase;Phase;11;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;53;-300.5212,3309.819;Inherit;False;Property;_Gravity;Gravity;12;0;Create;True;0;0;0;False;0;False;0.2;0.2;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;54;-369.1451,3406.015;Inherit;False;Property;_NeighbourDistance;NeighbourDistance;13;0;Create;True;0;0;0;False;0;False;0.1;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;134;303.4348,2693.114;Inherit;False;GerstNorm;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;132;304.8331,2792.68;Inherit;False;GerstPos;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RotatorNode;539;1733.505,2948.729;Inherit;False;3;0;FLOAT2;0,0;False;1;FLOAT2;0.5,0.5;False;2;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;545;1937.689,2947.81;Inherit;True;Simple;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;5;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;537;1475.505,2953.829;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleAddOpNode;551;1489.326,3222.096;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SimpleTimeNode;552;1245.326,3300.096;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;553;1666.326,3213.096;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleAddOpNode;550;2454.323,2938.367;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;558;2777.137,3173.696;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;1;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SmoothstepOpNode;559;2968.945,2936.545;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;560;3181.538,2935.038;Inherit;False;RiseTide;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;505;1385.671,4044.718;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleTimeNode;513;1156.241,4601.067;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;514;1342.241,4638.067;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0.5;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;511;1502.333,4663.7;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;517;1628.286,4573.776;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.NoiseGeneratorNode;516;1838.286,4573.776;Inherit;True;Gradient;True;True;2;0;FLOAT2;0,0;False;1;FLOAT;2.15;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;518;1356.286,4516.776;Inherit;False;2;2;0;FLOAT;4;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.PowerNode;506;1404.46,4232.724;Inherit;False;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;520;1607.506,4375.161;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.CosOpNode;521;1735.506,4375.161;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;522;1883.506,4240.161;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;524;2127.71,4523.313;Inherit;False;2;2;0;FLOAT;0.5;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ClampOpNode;526;2515.112,4238.615;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;-0.1;False;2;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;528;2741.825,4018.401;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;561;2529.949,3950.404;Inherit;False;560;RiseTide;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;576;2897.372,2136.831;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.TextureTransformNode;578;3049.073,1770.932;Inherit;False;580;False;1;0;SAMPLER2D;;False;2;FLOAT2;0;FLOAT2;1
+Node;AmplifyShaderEditor.SimpleAddOpNode;575;2905.139,1826.023;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;577;3302.873,1776.534;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.TextureCoordinatesNode;582;3300.226,2090.999;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;585;3265.74,1955.667;Inherit;False;Property;_NormalStrength;NormalStrength;20;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.BlendNormalsNode;586;3857.668,1933.734;Inherit;False;0;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.GetLocalVarNode;588;4086.855,2045.838;Inherit;False;564;Foam;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;590;4154.394,2640.354;Inherit;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.ColorNode;591;3877.393,2547.354;Inherit;False;Property;_ShallowColor;ShallowColor;21;0;Create;True;0;0;0;False;0;False;0.2268067,0.2911928,0.4339623,0;0,0.3100035,1,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.ColorNode;592;3886.044,2723.82;Inherit;False;Property;_DeepColor;DeepColor;22;0;Create;True;0;0;0;False;0;False;0.1320755,0.1320755,0.1320755,0;0,0.3100035,1,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.GetLocalVarNode;589;3902.17,2907.215;Inherit;False;500;Depth;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;500;1068.422,3728.328;Inherit;False;Depth;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;602;4614.414,3062.686;Inherit;False;132;GerstPos;1;0;OBJECT;;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.GetLocalVarNode;603;4644.414,3158.686;Inherit;False;134;GerstNorm;1;0;OBJECT;;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RangedFloatNode;57;-661.0399,2707.365;Inherit;False;Property;_Intensity;Intensity;0;1;[Header];Create;True;1;WaveGeneration;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;51;-332.463,3126.376;Inherit;False;Property;_WaveDepth;WaveDepth;10;0;Create;True;0;0;0;False;0;False;50;50;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;556;2464.475,3144.964;Inherit;False;Property;_RiseThreshold;RiseThreshold;15;1;[Header];Create;True;1;RiseTide;0;0;False;0;False;0.63;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;557;2464.05,3236.845;Inherit;False;Property;_RiseFadeout;RiseFadeout;16;1;[Header];Create;True;1;RiseTide;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;580;3522.308,1761.508;Inherit;True;Property;_NormalTexture1;NormalTexture1;18;0;Create;True;0;0;0;False;0;False;-1;769ca6e81a779f845bdd21c6ffddc408;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;599;3880.588,3688.009;Inherit;False;Property;_WaterThickness;WaterThickness;25;0;Create;True;0;0;0;False;0;False;3;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;587;4303.686,1909.053;Inherit;False;3;0;FLOAT3;0.5,0.5,1;False;1;FLOAT3;0.5,0.5,1;False;2;FLOAT;0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RangedFloatNode;605;4664.252,2818.863;Inherit;False;Constant;_Float1;Float 0;26;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;604;4663.252,2744.863;Inherit;False;Constant;_Float0;Float 0;26;0;Create;True;0;0;0;False;0;False;0.5;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;564;3175.891,4017.852;Inherit;False;Foam;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;593;3886.536,3216.293;Inherit;False;Property;_FoamColor;FoamColor;23;1;[HDR];Create;True;0;0;0;False;0;False;2,2,2,0;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;600;4156.588,3591.009;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;525;2316.211,4239.013;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;606;4666.252,2895.863;Inherit;False;Constant;_Float2;Float 0;26;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;598;3913.077,3594.006;Inherit;False;500;Depth;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;596;3907.314,3120.212;Inherit;False;564;Foam;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleDivideOpNode;507;1201.45,4239.472;Inherit;False;2;0;FLOAT;1;False;1;FLOAT;1000;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;594;3887.292,3399.664;Inherit;False;Property;_Emmision;Emmision;24;1;[HDR];Create;True;0;0;0;False;0;False;0,0.4158199,1,0;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.LerpOp;607;4402.274,2935.732;Inherit;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.SmoothstepOpNode;523;1865.188,4045.231;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0.97;False;2;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;519;1398.286,4374.776;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;100;False;1;FLOAT;0
+Node;AmplifyShaderEditor.StepOpNode;562;2928.556,4018.885;Inherit;False;2;0;FLOAT;0.4;False;1;FLOAT;0.5;False;1;FLOAT;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;554;1929.326,3215.096;Inherit;True;Gradient;True;True;2;0;FLOAT2;0,0;False;1;FLOAT;0.02;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;555;2182.326,3215.096;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-0.3;False;4;FLOAT;0.3;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;549;2189.323,2766.367;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;210;4877.916,2651.775;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;OceanSurface_Amplify;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;20;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;True;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForward;False;False;0;;0;0;Standard;41;Workflow;1;638304480516057885;Surface;1;638300532170568009;  Refraction Model;0;638304480755138240;  Blend;0;638300532503677378;Two Sided;1;638300530233978272;Fragment Normal Space,InvertActionOnDeselection;0;638300515573946518;Forward Only;0;638304493892474346;Transmission;0;638304493882192066;  Transmission Shadow;0.5,False,;0;Translucency;0;638304493887678754;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;0;638300336150030956;  Use Shadow Threshold;0;0;Receive Shadows;1;0;GPU Instancing;0;638300336161044116;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;638302145110543716;Override Baked GI;0;0;Extra Pre Pass;0;0;DOTS Instancing;0;638300351025897575;Tessellation;1;638300330473901041;  Phong;0;0;  Strength;0.5,False,;0;  Type;1;638302106946930346;  Tess;32,False,_Float1;638302108524865803;  Min;5,False,;638302108654740862;  Max;50,False,;638302108723997465;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;1;638304683130604165;  Early Z;0;638302145002705540;Vertex Position,InvertActionOnDeselection;0;638304707961944244;Debug Display;0;638300351079489654;Clear Coat;0;0;0;10;False;True;False;True;True;True;True;True;True;True;False;;True;0
+Node;AmplifyShaderEditor.GetLocalVarNode;547;1569.948,2764.97;Inherit;False;134;GerstNorm;1;0;OBJECT;;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.LengthOpNode;613;2006.018,2761.116;Inherit;False;1;0;FLOAT4;0,0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;612;1830.018,2766.116;Inherit;False;Projection;-1;;30;3249e2c8638c9ef4bbd1902a2d38a67c;0;2;5;FLOAT3;0,0,0;False;6;FLOAT4;0,1,0,0;False;1;FLOAT4;0
+Node;AmplifyShaderEditor.RotateAboutAxisNode;65;-929.1613,2946.583;Inherit;False;True;4;0;FLOAT3;0,1,0;False;1;FLOAT;0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.RangedFloatNode;63;-1736.886,2912.546;Inherit;False;Property;_Roataion;Roataion;1;0;Create;True;0;0;0;True;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RadiansOpNode;615;-1556.789,2914.256;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;541;1482.655,2872.56;Inherit;False;543;rotation;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;616;-31.21512,2691.199;Inherit;False;GerstnerFinal;-1;;1;c1f434d9d858ad248a81af6b7a1b452f;0;12;80;FLOAT;0;False;82;FLOAT;0;False;81;FLOAT;0;False;79;FLOAT3;0,0,0;False;78;FLOAT3;0,0,0;False;77;FLOAT3;0,0,0;False;76;FLOAT3;0,0,0;False;84;FLOAT;0;False;73;FLOAT;0;False;75;FLOAT;0;False;74;FLOAT;0;False;143;FLOAT;0;False;2;FLOAT3;125;FLOAT3;0
+Node;AmplifyShaderEditor.RangedFloatNode;499;506.8818,3884.611;Inherit;False;Property;_DepthDistance;DepthDistance;14;1;[Header];Create;True;1;Depth Settings;0;0;False;0;False;5;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.DepthFade;498;701.1948,3860.666;Inherit;False;True;True;False;2;1;FLOAT3;0,0,0;False;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DynamicAppendNode;510;1266.332,4749.7;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.DynamicAppendNode;536;1242.759,3098.837;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.Vector2Node;566;2175.323,1807.845;Inherit;False;Constant;_Vector;Vector;18;0;Create;True;0;0;0;False;0;False;0.4,0.17;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.Vector2Node;567;2174.916,2225.917;Inherit;False;Constant;_Vector0;Vector 0;18;0;Create;True;0;0;0;False;0;False;-0.5,0.2;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.SimpleTimeNode;568;2169.685,2031.351;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;569;2430.154,1825.279;Inherit;False;2;2;0;FLOAT2;0,0;False;1;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;570;2421.784,2187.212;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.DynamicAppendNode;574;2686.77,1968.334;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RangedFloatNode;571;1943.565,2031.978;Inherit;False;Property;_NormalPanSpeed;NormalPanSpeed;17;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.WorldPosInputsNode;634;2444.875,1952.313;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.WorldPosInputsNode;635;1019.064,3066.555;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.WorldPosInputsNode;636;1023.606,4729.098;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.TextureTransformNode;583;3029.228,2056.998;Inherit;False;584;False;1;0;SAMPLER2D;;False;2;FLOAT2;0;FLOAT2;1
+Node;AmplifyShaderEditor.SamplerNode;584;3523.883,2119.091;Inherit;True;Property;_NormalTexture2;NormalTexture2;19;0;Create;True;0;0;0;False;0;False;-1;1d07290fa3fdc52449c080dbf13c2089;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+WireConnection;66;1;615;0
+WireConnection;66;3;46;0
+WireConnection;64;1;615;0
+WireConnection;64;3;44;0
+WireConnection;387;1;615;0
+WireConnection;387;3;43;0
+WireConnection;543;0;615;0
+WireConnection;546;0;545;0
 WireConnection;58;0;47;0
 WireConnection;58;1;57;0
 WireConnection;59;0;57;0
@@ -6675,117 +6022,114 @@ WireConnection;60;0;57;0
 WireConnection;60;1;49;0
 WireConnection;61;0;50;0
 WireConnection;61;1;57;0
-WireConnection;65;1;63;0
+WireConnection;134;0;616;125
+WireConnection;132;0;616;0
+WireConnection;539;0;537;0
+WireConnection;539;2;541;0
+WireConnection;545;0;539;0
+WireConnection;537;1;536;0
+WireConnection;551;0;536;0
+WireConnection;551;1;552;0
+WireConnection;553;1;551;0
+WireConnection;550;0;549;0
+WireConnection;550;1;546;0
+WireConnection;550;2;555;0
+WireConnection;558;0;556;0
+WireConnection;558;2;557;0
+WireConnection;559;0;550;0
+WireConnection;559;1;556;0
+WireConnection;559;2;558;0
+WireConnection;560;0;559;0
+WireConnection;505;0;498;0
+WireConnection;514;0;513;0
+WireConnection;511;0;514;0
+WireConnection;511;1;510;0
+WireConnection;517;1;511;0
+WireConnection;516;0;517;0
+WireConnection;518;1;513;0
+WireConnection;506;0;507;0
+WireConnection;506;1;498;0
+WireConnection;520;0;519;0
+WireConnection;520;1;518;0
+WireConnection;521;0;520;0
+WireConnection;522;0;506;0
+WireConnection;522;1;521;0
+WireConnection;524;1;516;0
+WireConnection;526;0;525;0
+WireConnection;528;0;561;0
+WireConnection;528;1;523;0
+WireConnection;528;2;526;0
+WireConnection;576;0;574;0
+WireConnection;576;1;570;0
+WireConnection;575;0;569;0
+WireConnection;575;1;574;0
+WireConnection;577;0;578;0
+WireConnection;577;1;575;0
+WireConnection;582;0;583;0
+WireConnection;582;1;576;0
+WireConnection;586;0;580;0
+WireConnection;586;1;584;0
+WireConnection;590;0;591;0
+WireConnection;590;1;592;0
+WireConnection;590;2;589;0
+WireConnection;500;0;498;0
+WireConnection;580;1;577;0
+WireConnection;580;5;585;0
+WireConnection;587;1;586;0
+WireConnection;587;2;588;0
+WireConnection;564;0;562;0
+WireConnection;600;0;598;0
+WireConnection;600;1;599;0
+WireConnection;525;0;522;0
+WireConnection;525;1;524;0
+WireConnection;607;0;593;0
+WireConnection;607;1;594;0
+WireConnection;607;2;596;0
+WireConnection;523;0;505;0
+WireConnection;519;0;498;0
+WireConnection;562;0;528;0
+WireConnection;554;0;553;0
+WireConnection;555;0;554;0
+WireConnection;549;0;613;0
+WireConnection;210;0;590;0
+WireConnection;210;1;587;0
+WireConnection;210;2;607;0
+WireConnection;210;3;604;0
+WireConnection;210;4;605;0
+WireConnection;210;5;606;0
+WireConnection;210;6;600;0
+WireConnection;210;8;602;0
+WireConnection;210;10;603;0
+WireConnection;613;0;612;0
+WireConnection;612;5;547;0
+WireConnection;65;1;615;0
 WireConnection;65;3;45;0
-WireConnection;66;1;63;0
-WireConnection;66;3;46;0
-WireConnection;121;0;118;0
-WireConnection;121;2;128;0
-WireConnection;128;0;63;0
-WireConnection;125;0;126;0
-WireConnection;136;0;125;0
-WireConnection;136;1;131;0
-WireConnection;142;0;136;0
-WireConnection;142;1;141;0
-WireConnection;130;0;135;0
-WireConnection;131;0;130;0
-WireConnection;140;1;139;0
-WireConnection;138;0;140;0
-WireConnection;141;0;138;0
-WireConnection;147;0;142;0
-WireConnection;147;1;144;0
-WireConnection;147;2;143;0
-WireConnection;143;0;144;0
-WireConnection;143;2;145;0
-WireConnection;187;0;298;0
-WireConnection;72;0;73;0
-WireConnection;72;1;298;0
-WireConnection;149;0;147;0
-WireConnection;88;0;74;0
-WireConnection;88;1;87;0
-WireConnection;292;0;300;0
-WireConnection;292;1;107;0
-WireConnection;71;0;298;0
-WireConnection;153;0;303;0
-WireConnection;106;0;90;0
-WireConnection;106;1;302;0
-WireConnection;295;0;88;0
-WireConnection;74;0;298;0
-WireConnection;90;0;299;0
-WireConnection;90;1;295;0
-WireConnection;298;8;68;0
-WireConnection;299;0;72;0
-WireConnection;300;0;91;0
-WireConnection;87;1;84;0
-WireConnection;290;0;292;0
-WireConnection;290;1;151;0
-WireConnection;107;0;106;0
-WireConnection;91;0;71;0
-WireConnection;304;0;219;0
-WireConnection;304;1;220;0
-WireConnection;304;2;289;0
-WireConnection;284;0;188;0
-WireConnection;284;1;189;0
-WireConnection;284;2;289;0
-WireConnection;306;0;186;0
-WireConnection;305;0;306;0
-WireConnection;305;1;281;0
-WireConnection;307;0;305;0
-WireConnection;307;1;289;0
-WireConnection;287;0;117;0
-WireConnection;302;0;287;0
-WireConnection;126;0;121;0
-WireConnection;181;0;377;0
-WireConnection;181;2;289;0
-WireConnection;377;0;361;0
-WireConnection;377;1;362;0
-WireConnection;210;0;284;0
-WireConnection;210;1;181;0
-WireConnection;210;2;304;0
-WireConnection;210;4;228;0
-WireConnection;210;5;229;0
-WireConnection;210;6;307;0
-WireConnection;210;8;227;0
-WireConnection;210;10;226;0
-WireConnection;117;1;84;0
-WireConnection;303;1;290;0
-WireConnection;64;1;63;0
-WireConnection;64;3;44;0
-WireConnection;387;1;63;0
-WireConnection;387;3;43;0
-WireConnection;361;1;394;0
-WireConnection;394;0;393;0
-WireConnection;394;1;413;0
-WireConnection;390;0;396;0
-WireConnection;390;1;414;0
-WireConnection;362;1;390;0
-WireConnection;134;0;407;125
-WireConnection;132;0;407;0
-WireConnection;407;80;51;0
-WireConnection;407;82;52;0
-WireConnection;407;81;53;0
-WireConnection;407;79;387;0
-WireConnection;407;78;64;0
-WireConnection;407;77;65;0
-WireConnection;407;76;66;0
-WireConnection;407;84;58;0
-WireConnection;407;73;59;0
-WireConnection;407;75;60;0
-WireConnection;407;74;61;0
-WireConnection;407;143;54;0
-WireConnection;413;0;398;0
-WireConnection;413;1;415;0
-WireConnection;414;0;415;0
-WireConnection;414;1;397;0
-WireConnection;162;0;154;0
-WireConnection;162;1;161;0
-WireConnection;160;0;161;0
-WireConnection;160;1;155;0
-WireConnection;398;0;162;0
-WireConnection;398;1;386;0
-WireConnection;397;0;386;0
-WireConnection;397;1;160;0
-WireConnection;415;0;410;1
-WireConnection;415;1;410;2
+WireConnection;615;0;63;0
+WireConnection;616;80;51;0
+WireConnection;616;82;52;0
+WireConnection;616;81;53;0
+WireConnection;616;79;387;0
+WireConnection;616;78;64;0
+WireConnection;616;77;65;0
+WireConnection;616;76;66;0
+WireConnection;616;84;58;0
+WireConnection;616;73;59;0
+WireConnection;616;75;60;0
+WireConnection;616;74;61;0
+WireConnection;616;143;54;0
+WireConnection;498;0;499;0
+WireConnection;510;0;636;1
+WireConnection;510;1;636;3
+WireConnection;536;0;635;1
+WireConnection;536;1;635;3
+WireConnection;568;0;571;0
+WireConnection;569;0;566;0
+WireConnection;569;1;568;0
+WireConnection;570;0;568;0
+WireConnection;570;1;567;0
+WireConnection;574;0;634;1
+WireConnection;574;1;634;3
+WireConnection;584;1;582;0
+WireConnection;584;5;585;0
 ASEEND*/
-//CHKSM=27ECB9CF7A3C2E01B3B5277D28D0263F38B5273F
+//CHKSM=D12E0CCBA315C0966517507C1A1A2337AA2CBF2B
