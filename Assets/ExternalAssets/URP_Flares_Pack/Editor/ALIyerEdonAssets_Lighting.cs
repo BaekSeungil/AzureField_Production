@@ -157,17 +157,9 @@ public class Startup
     static Startup()
     {
         EditorPrefs.SetInt("showCounts_urpflare", EditorPrefs.GetInt("showCounts_urpflare") + 1);
-        if (EditorPrefs.GetInt("showCounts_urpflare") < 2)
+        if (EditorPrefs.GetInt("showCounts_urpflare") == 10)
         { 
-
             EditorApplication.ExecuteMenuItem("Window/Lighting Tools");
-            if (EditorPrefs.GetInt("dontShow_urpflare") == 3)
-                EditorWindow.GetWindow(typeof(ALIyerEdonAssets_Lighting)).Close();
-        }
-        else          
-        {
-            if(EditorPrefs.GetInt("showCounts_urpflare") >= 30)
-               EditorPrefs.SetInt("showCounts_urpflare", 0);
-        }            
+        }        
     }
 } 

@@ -204,9 +204,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
-            #if defined(DECAL_ANGLE_FADE)
+			#if defined(DECAL_ANGLE_FADE)
 			float _DecalAngleFadeSupported;
-            #endif
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -449,7 +449,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -515,9 +514,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
-            #if defined(DECAL_ANGLE_FADE)
+			#if defined(DECAL_ANGLE_FADE)
 			float _DecalAngleFadeSupported;
-            #endif
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -740,7 +739,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -750,7 +748,12 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
 			#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
 			#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+			/*ase_srp_cond_begin:<140009*/
 			#pragma multi_compile_fragment _ _SHADOWS_SOFT
+			/*ase_srp_cond_end*/
+			/*ase_srp_cond_begin:>=140009*/
+			#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+			/*ase_srp_cond_end*/
 			#pragma multi_compile _ _FORWARD_PLUS
 			#pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
 			#pragma multi_compile _DECAL_NORMAL_BLEND_LOW _DECAL_NORMAL_BLEND_MEDIUM _DECAL_NORMAL_BLEND_HIGH
@@ -837,9 +840,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
-            #if defined(DECAL_ANGLE_FADE)
+			#if defined(DECAL_ANGLE_FADE)
 			float _DecalAngleFadeSupported;
-            #endif
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -1181,7 +1184,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -1189,7 +1191,12 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#pragma editor_sync_compilation
 
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+			/*ase_srp_cond_begin:<140009*/
 			#pragma multi_compile_fragment _ _SHADOWS_SOFT
+			/*ase_srp_cond_end*/
+			/*ase_srp_cond_begin:>=140009*/
+			#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+			/*ase_srp_cond_end*/
 			#pragma multi_compile _DECAL_NORMAL_BLEND_LOW _DECAL_NORMAL_BLEND_MEDIUM _DECAL_NORMAL_BLEND_HIGH
 			#pragma multi_compile _ _DECAL_LAYERS
 			#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
@@ -1275,9 +1282,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
-            #if defined(DECAL_ANGLE_FADE)
+			#if defined(DECAL_ANGLE_FADE)
 			float _DecalAngleFadeSupported;
-            #endif
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -1628,7 +1635,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -1719,6 +1725,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
+			#if defined(DECAL_ANGLE_FADE)
+			float _DecalAngleFadeSupported;
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -1950,7 +1959,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -2040,6 +2048,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
+			#if defined(DECAL_ANGLE_FADE)
+			float _DecalAngleFadeSupported;
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -2137,11 +2148,11 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
 			{
-            #if UNITY_REVERSED_Z
+			#if UNITY_REVERSED_Z
 				input.positionCS.z -= _DecalMeshDepthBias;
-            #else
+			#else
 				input.positionCS.z += _DecalMeshDepthBias;
-            #endif
+			#endif
 			}
 
 			PackedVaryings Vert(Attributes inputMesh /*ase_vert_input*/ )
@@ -2271,7 +2282,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -2284,7 +2294,12 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
 			#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
 			#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+			/*ase_srp_cond_begin:<140009*/
 			#pragma multi_compile_fragment _ _SHADOWS_SOFT
+			/*ase_srp_cond_end*/
+			/*ase_srp_cond_begin:>=140009*/
+			#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+			/*ase_srp_cond_end*/
 			#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
 			#pragma multi_compile _ SHADOWS_SHADOWMASK
 			#pragma multi_compile _ _FORWARD_PLUS
@@ -2383,6 +2398,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
+			#if defined(DECAL_ANGLE_FADE)
+			float _DecalAngleFadeSupported;
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -2491,11 +2509,11 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
 			{
-            #if UNITY_REVERSED_Z
+			#if UNITY_REVERSED_Z
 				input.positionCS.z -= _DecalMeshDepthBias;
-            #else
+			#else
 				input.positionCS.z += _DecalMeshDepthBias;
-            #endif
+			#endif
 			}
 
 			void InitializeInputData(PackedVaryings input, float3 positionWS, half3 normalWS, half3 viewDirectionWS, out InputData inputData)
@@ -2714,7 +2732,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma vertex Vert
 			#pragma fragment Frag
 			#pragma multi_compile_instancing
@@ -2725,7 +2742,12 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#pragma multi_compile _ DYNAMICLIGHTMAP_ON
 			#pragma multi_compile _ DIRLIGHTMAP_COMBINED
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+			/*ase_srp_cond_begin:<140009*/
 			#pragma multi_compile_fragment _ _SHADOWS_SOFT
+			/*ase_srp_cond_end*/
+			/*ase_srp_cond_begin:>=140009*/
+			#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+			/*ase_srp_cond_end*/
 			#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
 			#pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE
 			#pragma multi_compile _DECAL_NORMAL_BLEND_LOW _DECAL_NORMAL_BLEND_MEDIUM _DECAL_NORMAL_BLEND_HIGH
@@ -2826,6 +2848,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
+			#if defined(DECAL_ANGLE_FADE)
+			float _DecalAngleFadeSupported;
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
@@ -2933,11 +2958,11 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
 			{
-            #if UNITY_REVERSED_Z
+			#if UNITY_REVERSED_Z
 				input.positionCS.z -= _DecalMeshDepthBias;
-            #else
+			#else
 				input.positionCS.z += _DecalMeshDepthBias;
-            #endif
+			#endif
 			}
 
 			void InitializeInputData(PackedVaryings input, float3 positionWS, half3 normalWS, half3 viewDirectionWS, out InputData inputData)
@@ -3167,7 +3192,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
 			HLSLPROGRAM
 
-			#pragma only_renderers gles gles3 glcore d3d11
 			#pragma multi_compile_instancing
 			#pragma editor_sync_compilation
 			#pragma vertex Vert
@@ -3226,6 +3250,9 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			float _DecalMeshBiasType;
 			float _DecalMeshDepthBias;
 			float _DecalMeshViewBias;
+			#if defined(DECAL_ANGLE_FADE)
+			float _DecalAngleFadeSupported;
+			#endif
 			CBUFFER_END
 
 			/*ase_globals*/
