@@ -4,7 +4,16 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(PlayableDirector))]
 public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
+//===============================
+//
+// [싱글턴 오브젝트]
+// 시퀀스 리스트를 재생할 수 있는 스크립트 입니다.
+// StartSequence를 통해 매개변수로 시퀀스 리스트를 넣어 해당 시퀀스 묶음을 순차적으로 재생합니다. 
+// 작동중인 시퀀스가 있다면, 새로 재생을 시도한 시퀀스가 무시됩니다.
+//
+//===============================
 {
     private DialogueBehavior dialogue;
     public DialogueBehavior Dialogue { get { return dialogue; } }
@@ -18,7 +27,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         base.Awake();
 
         playable = GetComponent<PlayableDirector>();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        //SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
@@ -67,14 +76,14 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         }
     }
 
-    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        dialogue = DialogueBehavior.Instance;
-    }
+    //public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    //{
+    //    dialogue = DialogueBehavior.Instance;
+    //}
 
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
+    //private void OnDestroy()
+    //{
+    //    SceneManager.sceneLoaded -= OnSceneLoaded;
+    //}
 
 }

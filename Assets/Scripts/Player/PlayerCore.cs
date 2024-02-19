@@ -8,13 +8,21 @@ using FMODUnity;
 
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
+    //============================================
+    //
+    // [싱글턴 오브젝트]
+    // 플레이어 캐릭터에 관한 핵심 코드들입니다.
+    // 플레이어의 움직임 상태는 State패턴에 의해 관리되고 있습니다. 자세한 정보는 프로그래머 매뉴얼을 참고해주세요 
+    //
+    //============================================
+
     #region Properties
     [Title("ControlProperties")]
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
     [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
     [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 속도    
-    [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소
+    [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소 (곱연산)
 
     [Title("Physics")]
     [SerializeField, Range(0f, 1f)] private float horizontalDrag = 0.5f;            // 키 입력이 없을 때 수평 이동 마찰력
@@ -42,7 +50,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
     [Title("Audios")]
-    [SerializeField] private EventReference sound_splash;
+    [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
 
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
@@ -86,13 +94,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
-    public bool IsHoldingSomething { get { return currentHoldingItem != null; } }
+    public bool IsHoldingSomething { get { return currentHoldingItem != null; } }   // 현재 플레이어가 무언가를 들고 있는지 확인합니다.
 
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
 
     private bool sprinting = false;
-    public bool Grounding { get { return grounding; } }
+    public bool Grounding { get { return grounding; } }                             // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
 
     private const float slopeBoostForce = 100f;
 
@@ -273,17 +281,26 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #endif
     }
 
+    //============================================
+    //
+    // MovementStates는 플레이어의 현재 행동을 나타내는 state패턴의 클래스들 입니다.
+    // CurrentMovement를 통해 현재 플레이어의 움직임 state를 변경할 수 있습니다.
+    // CurrentMovement가 바뀌면 이전 state의 OnMovementExit가 호출되고 바뀔 state의 OnMovementEnter가 호출됩니다.
+    //
+    //============================================
+
     #region MovementStates
 
     protected class MovementState
     {
-        public virtual void OnMovementEnter(PlayerCore @player) { }
-        public virtual void OnUpdate(PlayerCore @player) { }
-        public virtual void OnFixedUpdate(PlayerCore @player) { }
-        public virtual void OnMovementExit(PlayerCore @player) { }
+        public virtual void OnMovementEnter(PlayerCore @player) { }     // 해당 state로 들어올 때 이 함수가 호출됩니다.
+        public virtual void OnUpdate(PlayerCore @player) { }            // Update 루프 때 이 함수가 호출됩니다
+        public virtual void OnFixedUpdate(PlayerCore @player) { }       // FixedUpdate 루프 때 이 함수가 호출됩니다.
+        public virtual void OnMovementExit(PlayerCore @player) { }      // 해당 state에서 나가라 때 이 함수가 호출됩니다.
     }
 
     protected class Movement_Ground : MovementState
+    // 플레이어가 땅 위를 뛰어다니는 상태일 때
     {
         public override void OnFixedUpdate(PlayerCore player)
         {
@@ -355,6 +372,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     protected class Movement_Swimming : MovementState
+    // 플레이어가 수영중인 상황일 때
     {
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -403,6 +421,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     protected class Movement_Sailboat : MovementState
+    //플레이어가 조각배를 타는 상황일 때
     {
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -569,7 +588,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #endregion 
 
     #region InputCallbacks
-
+    // InputSystem 입력 이벤트
     private void OnToggleSailboat(InputAction.CallbackContext context)
     {
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat))
@@ -610,6 +629,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #endregion
 
     public void SetInterestPoint(Transform target)
+    // 플레이어가 얼굴을 향하는 방향을 target으로 맞춥니다.
     {
         interestPoint = target;
     }
@@ -617,6 +637,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     bool holdItemCoroutineFlag = false;
 
     public bool HoldItem(Transform leftHand, Transform rightHand,Interactable_Holding holdingItem)
+    //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
     {
         if (holdItemCoroutineFlag) return false;
         if (currentHoldingItem != null) { ReleaseHoldingItem(); return false; }
@@ -661,6 +682,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     public void ReleaseHoldingItem()
+    // 현재 들고있는 아이템이 있으면 즉시 놓습니다.
     {
         if (currentHoldingItem == null) return;
 
@@ -672,6 +694,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     public void DisableForSequence()
+    // 시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     {
         input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
@@ -679,6 +702,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     public void EnableForSequence()
+    // 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
     {
         input.Player.Enable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
@@ -686,6 +710,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     public void FootstepEvent()
+    // 애니메이션 이벤트 : 플레이어가 발을 딛을 때 호출되는 함수.
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground))
             PlayFootstepSound();

@@ -8,15 +8,14 @@ using UnityEngine.InputSystem;
 
 public class Interactable_Base : SerializedMonoBehaviour
 {
-
 //================================================
 //
-// Interactable의 베이스 클래스입니다.
+// Interactable 계열 스크립트들의 베이스 클래스입니다.
 // 플레이어가 가까이 오면 상호작용 UI를 띄우고, 상호작용 키를 누르면 오버라이드된 Interact를 호출합니다.
 //
 //================================================
 
-    [SerializeField] protected string interactionUIText;
+    [SerializeField] protected string interactionUIText;    // 상호작용 UI에 띄울 텍스트
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 

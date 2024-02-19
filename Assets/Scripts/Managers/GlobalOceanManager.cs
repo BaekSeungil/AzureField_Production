@@ -7,24 +7,35 @@ using Unity.Collections;
 using UnityEngine.Rendering;
 
 public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManager>
+//================================================
+//
+// [싱글턴 클래스]
+// 현재 월드상의 바다와 관련된 데이터를 관리하고 물리적인 연산을 하는 클래스입니다.
+// 파도의 물리적 연산은 잡시스템을 통해 멀티스레드로 처리됩니다.
+// 4개의 파도 벡터와 강도가 중첩되어 바다를 형성합니다.
+// 특정 오브젝트가 파도의 영향을 받은 위치를 계산하고자 한다면 이 클래스의 GetWavePosition이나, GetWaveHeight을 사용해야합니다.
+
+// 인스펙터에서 SetWave를 통해 특정 번호의 파도 벡터와 강도를 변형할 수 있습니다.
+//
+//================================================
 {
-    [SerializeField] private Material[] ReferencingMaterials;
+    [SerializeField] private Material[] ReferencingMaterials;                           // OceanSurface.mat을 가지고 있는 오브젝트들, 아래 속성들과 머트리얼의 속성을 맟추기 위해 필요
 
     [Title("GlobalWaveProperties")]
-    [SerializeField,Range(0.0f,1.5f)] private float intensity;
-    public float IslandregionIntensityFactor = 1.0f;
-    public float Intensity { get { return intensity * IslandregionIntensityFactor; } }
+    [SerializeField,Range(0.0f,1.5f)] private float intensity;                          // 파도의 강도를 곱연산
+    public float IslandregionIntensityFactor = 1.0f;                                    
+    public float Intensity { get { return intensity * IslandregionIntensityFactor; } }  // (읽기 전용) IslandArea에 의한 파도 약화효과를 적용한 파도의 강도
 
-    [SerializeField,DisableInPlayMode()] private float rotation;
-    [SerializeField,DisableInPlayMode()] private float depth;
-    [SerializeField,DisableInPlayMode()] private float phase;
-    [SerializeField,DisableInPlayMode()] private float gravity;
+    [SerializeField,DisableInPlayMode()] private float rotation;                        // Gerstner 파도 속성 : 파도 회전값
+    [SerializeField,DisableInPlayMode()] private float depth;                           // Gerstner 파도 속성 : depth 값
+    [SerializeField,DisableInPlayMode()] private float phase;                           // Gerstner 파도 속성 : phase 값
+    [SerializeField,DisableInPlayMode()] private float gravity;                         // Gerstner 파도 속성 : gravity 값
     [Title("")]
-    [SerializeField,DisableInPlayMode()] private Vector3 Wave1_Vector;
-    [SerializeField,DisableInPlayMode()] private float Wave1_Amplitude;
+    [SerializeField,DisableInPlayMode()] private Vector3 Wave1_Vector;                  // 파도 1번 속성 : 파도 벡터
+    [SerializeField,DisableInPlayMode()] private float Wave1_Amplitude;                 // 파도 1번 속성 : 파도 강도
     [Title("")]
-    [SerializeField, DisableInPlayMode()] private Vector3 Wave2_Vector;
-    [SerializeField, DisableInPlayMode()] private float Wave2_Amplitude;
+    [SerializeField, DisableInPlayMode()] private Vector3 Wave2_Vector;                 // 파도 2번 속성 : 파도 벡터
+    [SerializeField, DisableInPlayMode()] private float Wave2_Amplitude;                // 파도 2번 속성 : 파도 강도
     [Title("")]
     [SerializeField, DisableInPlayMode()] private Vector3 Wave3_Vector;
     [SerializeField, DisableInPlayMode()] private float Wave3_Amplitude;
@@ -134,6 +145,11 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         UpdateReferencingMaterials();
     }
 
+    private void Start()
+    {
+        UpdateReferencingMaterials();
+    }
+
     private void UpdateReferencingMaterials()
     {
         foreach(Material m in ReferencingMaterials)
@@ -187,7 +203,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         UpdateReferencingMaterials();
     }
 
-    public Vector3 GetWavePosition(Vector3 point)
+    public Vector3 GetWavePosition(Vector3 point) 
+    // point지점에서 지금 바다의 파도로 인해 변화한 위치를 나타냅니다.
     {
         Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
         float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
@@ -219,7 +236,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         return result;
     }
 
-    public float GetWaveHeight(Vector3 point)
+    public float GetWaveHeight(Vector3 point) 
+    // point지점에서 현재 바다 수면의 높이 값을(y) 구합니다.
     {
         Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
         float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };

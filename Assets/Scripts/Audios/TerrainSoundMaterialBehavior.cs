@@ -2,18 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//============================================
-//
-// Terrain은 플레이어의 위치에 따라 다른 소리를 내야할 필요가 있습니다.
-// 이 스크립트는 Terrain의 스플랫맵을 읽어 대상의 위치가 Terrain의 어느 텍스쳐 위에 올라와있고 거기에 맞는 SoundMaterial을 가질 수 있게 되어있습니다.
-//
-//============================================
-
-
 [RequireComponent(typeof(Terrain))]
 public class TerrainSoundMaterialBehavior : SoundMaterialBehavior
 {
-    [SerializeField] private SoundMaterial[] soundPerLayer;     // Terrain의 스플랫맵 인덱스에 1대1로 대응하는 SoundMaterial 리스트
+    //============================================
+    //
+    // Terrain은 플레이어의 위치에 따라 다른 소리를 내야할 필요가 있습니다.
+    // 이 스크립트는 Terrain의 스플랫맵을 읽어 대상의 위치가 Terrain의 어느 텍스쳐 위에 올라와있고 거기에 맞는 SoundMaterial을 가질 수 있게 되어있습니다.
+    //
+    //============================================
+
+    [SerializeField] private SoundMaterial[] soundPerLayer;     // Terrain의 LayerPalette에 1대1로 대응하는 SoundMaterial 리스트
 
     private Terrain terrain;
 

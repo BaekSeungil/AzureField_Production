@@ -6,13 +6,20 @@ using UnityEngine;
 
 public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInventoryContainer>
 {
-    [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;
-    public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }
+    //============================================
+    //
+    // [싱글턴 오브젝트]
+    // 플레이어 인벤토리 "정보"를 관리하는 클래스입니다. "표시"를 관리하는 클래스는 UI/InventoryBehavior.cs를 확인하세요
+    // 
+    //============================================
+
+    [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;             // 실질적으로 인벤토리 정보가 담기는 곳입니다.
+    public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }        // (읽기 전용) 현재 인벤토리 정보를 가져옵니다.
 
     private Dictionary<ItemData, int> debug_items;
 
     [SerializeField,ReadOnly] private int money;
-    public int Money { get { return money; } }
+    public int Money { get { return money; } }                                              // 현재 가지고 있는 조개 정보를 가져옵니다.
 
     protected override void Awake()
     {
@@ -44,7 +51,7 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
 
     public void AddItem(ItemData item, int quantity)
     {
-        if (quantity < 0) { Debug.LogWarning("InventoryContainer : 비정상적인 아이템 추가 시도"); return; }
+        if (quantity < 0) { Debug.LogWarning("InventoryContainer : 음수의 아이템 추가 시도"); return; }
 
         if (inventoryData.ContainsKey(item))
         {
