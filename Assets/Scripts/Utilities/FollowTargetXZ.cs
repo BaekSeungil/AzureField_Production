@@ -3,13 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//============================================
+//
+// 현재 Transform이 Target의 X값과 Z값만 따라가도록 합니다. 
+//
+//============================================
+
 public class FollowTargetXZ : MonoBehaviour
 {
     [Required]
     public Transform target;
 
-    [SerializeField] private bool isCliped = false;
-    [SerializeField] private float clipSize = 0.1f;
+    [SerializeField] private bool isCliped = false;     // 현재 오브젝트가 연속적으로 움직이길 원하면 false, clipSize에 따라 불연속적으로 움직이길 원하면 true
+    [SerializeField] private float clipSize = 0.1f;     // 불연속적으로 움직일 때 움직이는 간격
 
     private Vector3 offset;
 
