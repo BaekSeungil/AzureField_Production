@@ -24,7 +24,7 @@ public class FollowTargetXZ : MonoBehaviour
         {
             transform.position = new Vector3(
                 (target.position.x + offset.x) - (target.position.x + offset.x) % clipSize,
-                transform.position.y + offset.y,
+                offset.y,
                 (target.position.z + offset.z) - (target.position.z + offset.z) % clipSize
                 );
         }
