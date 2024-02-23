@@ -1,4 +1,4 @@
-using FMODUnity;
+ï»¿using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,16 +7,16 @@ using UnityEngine;
 //============================================
 //
 // ParameterByAltitude
-// ÇÃ·¹ÀÌ¾îÀÇ °íµµ¿¡ µû¶ó FMODÀÇ ÆÄ¶ó¹ÌÅÍ °ªÀ» ¹Ù²ß´Ï´Ù.
+// í”Œë ˆì´ì–´ì˜ ê³ ë„ì— ë”°ë¼ FMODì˜ íŒŒë¼ë¯¸í„° ê°’ì„ ë°”ê¿‰ë‹ˆë‹¤.
 //
 //============================================
 
 public class ParameterByAltitude : MonoBehaviour
 {
-    [SerializeField] string ParameterName;      // FMOD ÆÄ¶ó¹ÌÅÍ ÀÌ¸§
-    [SerializeField] float heightStart;         // °íµµ ÃÖ¼Ò°ª
-    [SerializeField] float heightEnd;           // °íµµ ÃÖ´ë°ª
-    [SerializeField] bool isGlobalParam;        // ÇØ´ç ÆÄ¶ó¹ÌÅÍ°¡ Global°ªÀÏ °æ¿ì true, StudioEventEmitter ÄÄÆ÷³ÍÆ®¶û ºÙ¿©¾µ°æ¿ì false
+    [SerializeField] string ParameterName;      // FMOD íŒŒë¼ë¯¸í„° ì´ë¦„
+    [SerializeField] float heightStart;         // ê³ ë„ ìµœì†Œê°’
+    [SerializeField] float heightEnd;           // ê³ ë„ ìµœëŒ€ê°’
+    [SerializeField] bool isGlobalParam;        // í•´ë‹¹ íŒŒë¼ë¯¸í„°ê°€ Globalê°’ì¼ ê²½ìš° true, StudioEventEmitter ì»´í¬ë„ŒíŠ¸ë‘ ë¶™ì—¬ì“¸ê²½ìš° false
 
     Transform playerTF;
     StudioEventEmitter sound;

@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+ï»¿using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -37,7 +37,7 @@ public class InventorySlotSingle : MonoBehaviour
     public void OnItemUsed()
     {
         PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
-        if (inventoryContainer == null) { Debug.Log("ÀÎº¥Åä¸®Á¤º¸¿¡ Á¢±ÙÇÏ·Á ÇßÀ¸³ª PlayerInventoryConatiner°¡ ¾ø½À´Ï´Ù."); return; }
+        if (inventoryContainer == null) { Debug.Log("ì¸ë²¤í† ë¦¬ì •ë³´ì— ì ‘ê·¼í•˜ë ¤ í–ˆìœ¼ë‚˜ PlayerInventoryConatinerê°€ ì—†ìŠµë‹ˆë‹¤."); return; }
 
         inventoryContainer.RemoveItem(assignedItem);
     }

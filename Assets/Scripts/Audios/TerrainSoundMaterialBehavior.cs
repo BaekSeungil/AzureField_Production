@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,12 +7,12 @@ public class TerrainSoundMaterialBehavior : SoundMaterialBehavior
 {
     //============================================
     //
-    // TerrainÀº ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡¿¡ µû¶ó ´Ù¸¥ ¼Ò¸®¸¦ ³»¾ßÇÒ ÇÊ¿ä°¡ ÀÖ½À´Ï´Ù.
-    // ÀÌ ½ºÅ©¸³Æ®´Â TerrainÀÇ ½ºÇÃ·§¸ÊÀ» ÀĞ¾î ´ë»óÀÇ À§Ä¡°¡ TerrainÀÇ ¾î´À ÅØ½ºÃÄ À§¿¡ ¿Ã¶ó¿ÍÀÖ°í °Å±â¿¡ ¸Â´Â SoundMaterialÀ» °¡Áú ¼ö ÀÖ°Ô µÇ¾îÀÖ½À´Ï´Ù.
+    // Terrainì€ í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ì— ë”°ë¼ ë‹¤ë¥¸ ì†Œë¦¬ë¥¼ ë‚´ì•¼í•  í•„ìš”ê°€ ìˆìŠµë‹ˆë‹¤.
+    // ì´ ìŠ¤í¬ë¦½íŠ¸ëŠ” Terrainì˜ ìŠ¤í”Œë«ë§µì„ ì½ì–´ ëŒ€ìƒì˜ ìœ„ì¹˜ê°€ Terrainì˜ ì–´ëŠ í…ìŠ¤ì³ ìœ„ì— ì˜¬ë¼ì™€ìˆê³  ê±°ê¸°ì— ë§ëŠ” SoundMaterialì„ ê°€ì§ˆ ìˆ˜ ìˆê²Œ ë˜ì–´ìˆìŠµë‹ˆë‹¤.
     //
     //============================================
 
-    [SerializeField] private SoundMaterial[] soundPerLayer;     // TerrainÀÇ LayerPalette¿¡ 1´ë1·Î ´ëÀÀÇÏ´Â SoundMaterial ¸®½ºÆ®
+    [SerializeField] private SoundMaterial[] soundPerLayer;     // Terrainì˜ LayerPaletteì— 1ëŒ€1ë¡œ ëŒ€ì‘í•˜ëŠ” SoundMaterial ë¦¬ìŠ¤íŠ¸
 
     private Terrain terrain;
 

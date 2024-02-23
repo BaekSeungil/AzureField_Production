@@ -1,4 +1,4 @@
-using FMODUnity;
+ï»¿using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,7 +61,7 @@ public class PlaymenuBehavior : StaticSerializedMonoBehaviour<PlaymenuBehavior>
         {
             inventoryObject.SetActive(true);
             PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
-            if (inventoryContainer == null) { Debug.Log("ÀÎº¥Åä¸® ¿­±â¸¦ ½ÃµµÇßÁö¸¸ PlayterInventoryContainer¸¦ Ã£À» ¼ö ¾ø¾ú½À´Ï´Ù."); return; }
+            if (inventoryContainer == null) { Debug.Log("ì¸ë²¤í† ë¦¬ ì—´ê¸°ë¥¼ ì‹œë„í–ˆì§€ë§Œ PlayterInventoryContainerë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆìŠµë‹ˆë‹¤."); return; }
 
             RuntimeManager.PlayOneShot(sound_Open);
             visualGroup.SetActive(true);

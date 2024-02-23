@@ -1,10 +1,10 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum SoundMaterial
 {
-    // »ç¿îµå ÀçÁúÀÇ Á¾·ù
+    // ì‚¬ìš´ë“œ ì¬ì§ˆì˜ ì¢…ë¥˜
     Default,
     Sand,
     Water,
@@ -16,22 +16,22 @@ public class SoundMaterialBehavior : MonoBehaviour
 {
     //============================================
     //
-    // ÇöÀç ¶¥ÀÇ ÀçÁúÀ» ³ªÅ¸³»±â À§ÇÑ Å¬·¡½º ÀÔ´Ï´Ù.
-    // »ç¿îµå¸¦ ³»´Â ¿ÀºêÁ§Æ®°¡ SoundMaterial Á¤º¸¸¦ ÇÊ¿ä·Î ÇÒ ¶§, GetSoundMaterialÀ» ÅëÇØ ¾î¶² »ç¿îµå ÀçÁú Á¤º¸¸¦ ¾ò¾î¾ß ÇÏ´ÂÁö °áÁ¤ÇÕ´Ï´Ù.
-    // ÀÌ´Â Terrain °°Àº ´ÙÁß SoundMaterialÀ» ÇÊ¿ä·Î ÇÏ´Â ¿ÀºêÁ§Æ® °°Àº °÷¿¡µµ ÇÊ¿äÇÕ´Ï´Ù. (TerrainSoundMaterialBehavior.cs Âü°í)
+    // í˜„ì¬ ë•…ì˜ ì¬ì§ˆì„ ë‚˜íƒ€ë‚´ê¸° ìœ„í•œ í´ë˜ìŠ¤ ì…ë‹ˆë‹¤.
+    // ì‚¬ìš´ë“œë¥¼ ë‚´ëŠ” ì˜¤ë¸Œì íŠ¸ê°€ SoundMaterial ì •ë³´ë¥¼ í•„ìš”ë¡œ í•  ë•Œ, GetSoundMaterialì„ í†µí•´ ì–´ë–¤ ì‚¬ìš´ë“œ ì¬ì§ˆ ì •ë³´ë¥¼ ì–»ì–´ì•¼ í•˜ëŠ”ì§€ ê²°ì •í•©ë‹ˆë‹¤.
+    // ì´ëŠ” Terrain ê°™ì€ ë‹¤ì¤‘ SoundMaterialì„ í•„ìš”ë¡œ í•˜ëŠ” ì˜¤ë¸Œì íŠ¸ ê°™ì€ ê³³ì—ë„ í•„ìš”í•©ë‹ˆë‹¤. (TerrainSoundMaterialBehavior.cs ì°¸ê³ )
     //
     //============================================
 
     [SerializeField] private SoundMaterial soundmat;
 
     public virtual SoundMaterial GetSoundMaterial() 
-    // ÇöÀç soundMat¹İÈ¯
+    // í˜„ì¬ soundMatë°˜í™˜
     {
         return soundmat;
     }
 
     public virtual SoundMaterial GetSoundMaterial(Vector3 position) 
-    // position : ¼Ò¸®³ª´Â°÷ÀÇ À§Ä¡, ¿À¹ö¶óÀÌµå µÇÁö ¾ÊÀ» ½Ã ÇöÀç soundMat ±×´ë·Î ¹İÈ¯
+    // position : ì†Œë¦¬ë‚˜ëŠ”ê³³ì˜ ìœ„ì¹˜, ì˜¤ë²„ë¼ì´ë“œ ë˜ì§€ ì•Šì„ ì‹œ í˜„ì¬ soundMat ê·¸ëŒ€ë¡œ ë°˜í™˜
     {
         return soundmat;
     }

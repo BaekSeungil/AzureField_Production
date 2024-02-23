@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -8,12 +8,12 @@ public class PersistentSerializedMonoBehaviour<T> : SerializedMonoBehaviour
 {
     // =====================================
 
-    //  !!¸Å¿ì Áß¿ä!!
-    //  ÀÌ Å¬·¡½º¸¦ »ó¼Ó¹ŞÀ¸¸é SerializedMonoBehaviour¸¦ »ç¿ëÇÏ´Â ½Ì±ÛÅÏ Å¬·¡½º°¡ µË´Ï´Ù.
-    //  ÀÌ Å¬·¡½º´Â DontDestroyOnLoad¿¡ Æ÷ÇÔµÇ¾î ¾ÀÀÌ ¹Ù²î´õ¶óµµ Á¦°ÅµÇÁö ¾Ê½À´Ï´Ù!!
-    //  ¹İµå½Ã ÀÌ ÇÔ¼ö¸¦ »ó¼Ó¹Ş°í Awake()¸¦ »ç¿ëÇÒ ¶§ ¾Æ·¡ Awake()¸¦ ¿À¹ö¶óÀÌµùÇÏ°í base.Awake()¸¦ »ç¿ëÇÏ¼¼¿ä!
+    //  !!ë§¤ìš° ì¤‘ìš”!!
+    //  ì´ í´ë˜ìŠ¤ë¥¼ ìƒì†ë°›ìœ¼ë©´ SerializedMonoBehaviourë¥¼ ì‚¬ìš©í•˜ëŠ” ì‹±ê¸€í„´ í´ë˜ìŠ¤ê°€ ë©ë‹ˆë‹¤.
+    //  ì´ í´ë˜ìŠ¤ëŠ” DontDestroyOnLoadì— í¬í•¨ë˜ì–´ ì”¬ì´ ë°”ë€Œë”ë¼ë„ ì œê±°ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤!!
+    //  ë°˜ë“œì‹œ ì´ í•¨ìˆ˜ë¥¼ ìƒì†ë°›ê³  Awake()ë¥¼ ì‚¬ìš©í•  ë•Œ ì•„ë˜ Awake()ë¥¼ ì˜¤ë²„ë¼ì´ë”©í•˜ê³  base.Awake()ë¥¼ ì‚¬ìš©í•˜ì„¸ìš”!
     //
-    //  ¿¹½Ã)
+    //  ì˜ˆì‹œ)
     //  protected override void Awake()
     //  {
     //      base.Awake();
@@ -28,8 +28,8 @@ public class PersistentSerializedMonoBehaviour<T> : SerializedMonoBehaviour
     private string debug_static_objcect;
 
     static private T instance;
-    static public T Instance { get { return instance; } }                           // ½Ì±ÛÅÏ ÀÎ½ºÅÏ½º¸¦ ¹Ş¾Æ¿É´Ï´Ù.
-    static public bool IsInstanceValid { get { return instance != null; } }         // ÇöÀç ÀÎ½ºÅÏ½º°¡ Á¤»óÀûÀ¸·Î Á¸ÀçÇÏ´ÂÁö È®ÀÎÇÕ´Ï´Ù.
+    static public T Instance { get { return instance; } }                           // ì‹±ê¸€í„´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+    static public bool IsInstanceValid { get { return instance != null; } }         // í˜„ì¬ ì¸ìŠ¤í„´ìŠ¤ê°€ ì •ìƒì ìœ¼ë¡œ ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤.
 
     protected virtual void Awake()
     {

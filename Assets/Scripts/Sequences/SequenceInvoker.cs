@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -8,10 +8,10 @@ using UnityEngine.SceneManagement;
 public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 //===============================
 //
-// [½Ì±ÛÅÏ ¿ÀºêÁ§Æ®]
-// ½ÃÄö½º ¸®½ºÆ®¸¦ Àç»ıÇÒ ¼ö ÀÖ´Â ½ºÅ©¸³Æ® ÀÔ´Ï´Ù.
-// StartSequence¸¦ ÅëÇØ ¸Å°³º¯¼ö·Î ½ÃÄö½º ¸®½ºÆ®¸¦ ³Ö¾î ÇØ´ç ½ÃÄö½º ¹­À½À» ¼øÂ÷ÀûÀ¸·Î Àç»ıÇÕ´Ï´Ù. 
-// ÀÛµ¿ÁßÀÎ ½ÃÄö½º°¡ ÀÖ´Ù¸é, »õ·Î Àç»ıÀ» ½ÃµµÇÑ ½ÃÄö½º°¡ ¹«½ÃµË´Ï´Ù.
+// [ì‹±ê¸€í„´ ì˜¤ë¸Œì íŠ¸]
+// ì‹œí€€ìŠ¤ ë¦¬ìŠ¤íŠ¸ë¥¼ ì¬ìƒí•  ìˆ˜ ìˆëŠ” ìŠ¤í¬ë¦½íŠ¸ ì…ë‹ˆë‹¤.
+// StartSequenceë¥¼ í†µí•´ ë§¤ê°œë³€ìˆ˜ë¡œ ì‹œí€€ìŠ¤ ë¦¬ìŠ¤íŠ¸ë¥¼ ë„£ì–´ í•´ë‹¹ ì‹œí€€ìŠ¤ ë¬¶ìŒì„ ìˆœì°¨ì ìœ¼ë¡œ ì¬ìƒí•©ë‹ˆë‹¤. 
+// ì‘ë™ì¤‘ì¸ ì‹œí€€ìŠ¤ê°€ ìˆë‹¤ë©´, ìƒˆë¡œ ì¬ìƒì„ ì‹œë„í•œ ì‹œí€€ìŠ¤ê°€ ë¬´ì‹œë©ë‹ˆë‹¤.
 //
 //===============================
 {
@@ -41,7 +41,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 
     public void StartSequence(Sequence_Base[] sequenceChain)
     {
-        if(sequenceRunning) { Debug.LogWarning("ÀÛµ¿ÁßÀÎ ½ÃÄö½º°¡ ÀÖ½À´Ï´Ù. ½ÃÀÛµÉ ½ÃÄö½º°¡ ¹«½ÃµË´Ï´Ù."); return; }
+        if(sequenceRunning) { Debug.LogWarning("ì‘ë™ì¤‘ì¸ ì‹œí€€ìŠ¤ê°€ ìˆìŠµë‹ˆë‹¤. ì‹œì‘ë  ì‹œí€€ìŠ¤ê°€ ë¬´ì‹œë©ë‹ˆë‹¤."); return; }
 
         StartCoroutine(Cor_StartSequenceChain(sequenceChain));
     }

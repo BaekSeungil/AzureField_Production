@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using FMODUnity;
 using RichTextSubstringHelper;
 using Sirenix.OdinInspector;

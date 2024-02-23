@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+ï»¿using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -6,12 +6,12 @@ using UnityEngine.Timeline;
 
 //===============================
 //
-// ½ÃÄö½º¹øµéÀÇ Á¤º¸¸¦ ³ªÅ¸³»´Â ½ºÅ©¸³Æ®ÀÔ´Ï´Ù.
-// ½ÃÄö½º : °ÔÀÓÇÃ·¹ÀÌ Áß ´ë»ç, ÀÌº¥Æ®, Å¸ÀÓ¶óÀÎ °°Àº °ÍµéÀ» ÄÚ·çÆ¾À» ÀÌ¿ëÇØ ¿¬¼ÓÀûÀ¸·Î ¼ø¼­´ë·Î Àç»ıÇÒ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
-// Sequence_Base¸¦ »ó¼ÓÇÑ ÀÚ½Ä Å¬·¡½º¸¦ ¸¸µé°í IEnumerator Sequence(SequenceInvoker invoker)¸¦ ¿À¹ö¶óÀÌµå ÇÏ¿© ¿©·¯ À¯ÇüÀÇ ½ÃÄö½º ³»¿ëµéÀ» Á¤ÀÇÇÒ ¼ö ÀÖ½À´Ï´Ù.
+// ì‹œí€€ìŠ¤ë²ˆë“¤ì˜ ì •ë³´ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ìŠ¤í¬ë¦½íŠ¸ì…ë‹ˆë‹¤.
+// ì‹œí€€ìŠ¤ : ê²Œì„í”Œë ˆì´ ì¤‘ ëŒ€ì‚¬, ì´ë²¤íŠ¸, íƒ€ì„ë¼ì¸ ê°™ì€ ê²ƒë“¤ì„ ì½”ë£¨í‹´ì„ ì´ìš©í•´ ì—°ì†ì ìœ¼ë¡œ ìˆœì„œëŒ€ë¡œ ì¬ìƒí•  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
+// Sequence_Baseë¥¼ ìƒì†í•œ ìì‹ í´ë˜ìŠ¤ë¥¼ ë§Œë“¤ê³  IEnumerator Sequence(SequenceInvoker invoker)ë¥¼ ì˜¤ë²„ë¼ì´ë“œ í•˜ì—¬ ì—¬ëŸ¬ ìœ í˜•ì˜ ì‹œí€€ìŠ¤ ë‚´ìš©ë“¤ì„ ì •ì˜í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
 //
-// ½ÃÄö½º¹øµéÀÇ Á¤º¸´Â SequenceBundleAsset ½ºÅ©¸³ÅÍºí¿ÀºêÁ§Æ® ÆÄÀÏÀ» »ı¼ºÇÏ¿© ÀÛ¼ºÇÒ ¼ö ÀÖ½À´Ï´Ù.
-// ¸¸µé¾îÁø ½ÃÄö½º¹øµé¿¡¼ÂÀº SequenceInvoker ÀÎ½ºÅÏ½º¸¦ ÅëÇØ Àç»ıÇÒ ¼ö ÀÖ½À´Ï´Ù. ÇØ´ç ½ºÅ©¸³Æ®¸¦ Âü°íÇÏ¼¼¿ä.
+// ì‹œí€€ìŠ¤ë²ˆë“¤ì˜ ì •ë³´ëŠ” SequenceBundleAsset ìŠ¤í¬ë¦½í„°ë¸”ì˜¤ë¸Œì íŠ¸ íŒŒì¼ì„ ìƒì„±í•˜ì—¬ ì‘ì„±í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+// ë§Œë“¤ì–´ì§„ ì‹œí€€ìŠ¤ë²ˆë“¤ì—ì…‹ì€ SequenceInvoker ì¸ìŠ¤í„´ìŠ¤ë¥¼ í†µí•´ ì¬ìƒí•  ìˆ˜ ìˆìŠµë‹ˆë‹¤. í•´ë‹¹ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¸ê³ í•˜ì„¸ìš”.
 //
 //===============================
 
@@ -27,12 +27,12 @@ public class Sequence_Base
 }
 
 /// <summary>
-/// ¾Æ¹«°Íµµ ÇÏÁö ¾Ê°í time¸¸Å­ ±â´Ù¸³´Ï´Ù.
+/// ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•Šê³  timeë§Œí¼ ê¸°ë‹¤ë¦½ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_WaitForSeconds : Sequence_Base
 {
-    public float time;      // ´ÙÀ½À¸·Î ³Ñ¾î°¥¶§±îÁöÀÇ ½Ã°£
+    public float time;      // ë‹¤ìŒìœ¼ë¡œ ë„˜ì–´ê°ˆë•Œê¹Œì§€ì˜ ì‹œê°„
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
@@ -41,18 +41,18 @@ public class Sequence_WaitForSeconds : Sequence_Base
 }
 
 /// <summary>
-/// ´ë»çÃ¢À» ¿­°í dialoguesÀÇ ´ë»ç µ¥ÀÌÅÍµéÀ» ¼ø¼­´ë·Î Ãâ·ÂÇÕ´Ï´Ù.
+/// ëŒ€ì‚¬ì°½ì„ ì—´ê³  dialoguesì˜ ëŒ€ì‚¬ ë°ì´í„°ë“¤ì„ ìˆœì„œëŒ€ë¡œ ì¶œë ¥í•©ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_Dialogue : Sequence_Base
 {
-    public DialogueData[] dialogues;                    // ´ë»ç µ¥ÀÌÅÍµé
-    public bool CloseDialogueAfterFinish = true;        // trueÀÏ ½Ã ´ë»çÃ¢ÀÌ ¸ğµÎ Àç»ıµÇ¸é ´ë»çÃ¢ UI¸¦ ´İ½À´Ï´Ù.
+    public DialogueData[] dialogues;                    // ëŒ€ì‚¬ ë°ì´í„°ë“¤
+    public bool CloseDialogueAfterFinish = true;        // trueì¼ ì‹œ ëŒ€ì‚¬ì°½ì´ ëª¨ë‘ ì¬ìƒë˜ë©´ ëŒ€ì‚¬ì°½ UIë¥¼ ë‹«ìŠµë‹ˆë‹¤.
 
     public override IEnumerator Sequence(SequenceInvoker invoker) 
     {
         if (invoker.Dialogue == null)
-        { Debug.Log("Dialogue UI ÀÎ½ºÅÏ½º°¡ ¾ø½À´Ï´Ù!"); yield break; }
+        { Debug.Log("Dialogue UI ì¸ìŠ¤í„´ìŠ¤ê°€ ì—†ìŠµë‹ˆë‹¤!"); yield break; }
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_DialogueSequence(dialogues));
         if(CloseDialogueAfterFinish)
         {
@@ -62,7 +62,7 @@ public class Sequence_Dialogue : Sequence_Base
 }
 
 /// <summary>
-/// ´ë»çÃ¢ÀÌ ´İÈ÷Áö ¾ÊÀº »óÅÂ¶ó¸é ´ë»çÃ¢À» ´İ½À´Ï´Ù.
+/// ëŒ€ì‚¬ì°½ì´ ë‹«íˆì§€ ì•Šì€ ìƒíƒœë¼ë©´ ëŒ€ì‚¬ì°½ì„ ë‹«ìŠµë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_CloseDialogue : Sequence_Base
@@ -74,7 +74,7 @@ public class Sequence_CloseDialogue : Sequence_Base
 }
 
 /// <summary>
-/// ´ë»çÃ¢ÀÌ È°¼ºÈ­ µÇ¾îÀÖ´Â µµÁß ÇÃ·¹ÀÌ¾î°¡ ¼±ÅÃÇÒ ¼ö ÀÖ´Â Ã¢À» ¸¸µì´Ï´Ù.
+/// ëŒ€ì‚¬ì°½ì´ í™œì„±í™” ë˜ì–´ìˆëŠ” ë„ì¤‘ í”Œë ˆì´ì–´ê°€ ì„ íƒí•  ìˆ˜ ìˆëŠ” ì°½ì„ ë§Œë“­ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_DialogueBranch : Sequence_Base
@@ -94,7 +94,7 @@ public class Sequence_DialogueBranch : Sequence_Base
 }
 
 /// <summary>
-/// Å¸ÀÓ¶óÀÎÀ» Àç»ıÇÕ´Ï´Ù.
+/// íƒ€ì„ë¼ì¸ì„ ì¬ìƒí•©ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_Timeline : Sequence_Base
@@ -110,7 +110,7 @@ public class Sequence_Timeline : Sequence_Base
 }
 
 /// <summary>
-/// Á¶°³¸¦ amount ¸¸Å­ Áö±ŞÇÕ´Ï´Ù.
+/// ì¡°ê°œë¥¼ amount ë§Œí¼ ì§€ê¸‰í•©ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_GainMoney : Sequence_Base
@@ -119,7 +119,7 @@ public class Sequence_GainMoney : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if (invoker.InventoryContainer == null) { Debug.LogError("PlayerInvnentoryContainer¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù."); yield break; }
+        if (invoker.InventoryContainer == null) { Debug.LogError("PlayerInvnentoryContainerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤."); yield break; }
         invoker.InventoryContainer.AddMoney(amount);
         yield return null;
     }
@@ -127,7 +127,7 @@ public class Sequence_GainMoney : Sequence_Base
 }
 
 /// <summary>
-/// ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®¿¡ Ãß°¡ÇÕ´Ï´Ù.
+/// ì•„ì´í…œì„ ì¸ë²¤í† ë¦¬ì— ì¶”ê°€í•©ë‹ˆë‹¤.
 /// </summary>
 [System.Serializable]
 public class Sequence_ObtainItem : Sequence_Base

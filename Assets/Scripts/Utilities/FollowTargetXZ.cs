@@ -1,11 +1,11 @@
-using Sirenix.OdinInspector;
+ï»¿using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 //============================================
 //
-// ÇöÀç TransformÀÌ TargetÀÇ X°ª°ú Z°ª¸¸ µû¶ó°¡µµ·Ï ÇÕ´Ï´Ù. 
+// í˜„ì¬ Transformì´ Targetì˜ Xê°’ê³¼ Zê°’ë§Œ ë”°ë¼ê°€ë„ë¡ í•©ë‹ˆë‹¤. 
 //
 //============================================
 
@@ -14,8 +14,8 @@ public class FollowTargetXZ : MonoBehaviour
     [Required]
     public Transform target;
 
-    [SerializeField] private bool isCliped = false;     // ÇöÀç ¿ÀºêÁ§Æ®°¡ ¿¬¼ÓÀûÀ¸·Î ¿òÁ÷ÀÌ±æ ¿øÇÏ¸é false, clipSize¿¡ µû¶ó ºÒ¿¬¼ÓÀûÀ¸·Î ¿òÁ÷ÀÌ±æ ¿øÇÏ¸é true
-    [SerializeField] private float clipSize = 0.1f;     // ºÒ¿¬¼ÓÀûÀ¸·Î ¿òÁ÷ÀÏ ¶§ ¿òÁ÷ÀÌ´Â °£°İ
+    [SerializeField] private bool isCliped = false;     // í˜„ì¬ ì˜¤ë¸Œì íŠ¸ê°€ ì—°ì†ì ìœ¼ë¡œ ì›€ì§ì´ê¸¸ ì›í•˜ë©´ false, clipSizeì— ë”°ë¼ ë¶ˆì—°ì†ì ìœ¼ë¡œ ì›€ì§ì´ê¸¸ ì›í•˜ë©´ true
+    [SerializeField] private float clipSize = 0.1f;     // ë¶ˆì—°ì†ì ìœ¼ë¡œ ì›€ì§ì¼ ë•Œ ì›€ì§ì´ëŠ” ê°„ê²©
 
     private Vector3 offset;
 
