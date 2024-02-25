@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,16 +6,16 @@ public class LukaBlinkEye : MonoBehaviour
 {
     //================================================
     //
-    // Ä³¸¯ÅÍÀÇ ÀÚ¿¬½º·¯¿î ´« ±ô¹ÚÀÌ±â¸¦ À§ÇØ ¸¸µé¾îÁø Å¬·¡½º ÀÔ´Ï´Ù.
-    // ¸ğµ¨¸µÀÇ Blendshape¸¦ »ç¿ëÇÕ´Ï´Ù.
+    // ìºë¦­í„°ì˜ ìì—°ìŠ¤ëŸ¬ìš´ ëˆˆ ê¹œë°•ì´ê¸°ë¥¼ ìœ„í•´ ë§Œë“¤ì–´ì§„ í´ë˜ìŠ¤ ì…ë‹ˆë‹¤.
+    // ëª¨ë¸ë§ì˜ Blendshapeë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.
     // 
     //================================================
 
-    [SerializeField] private float blinkInterval = 4.0f;        // ´«À» ±ô¹ÚÀÌ´Âµ¥ Áö³ª¾ß ÇÏ´Â Æò±ÕÀûÀÎ ½Ã°£ÀÔ´Ï´Ù. (·£´ı)
-    [SerializeField] private float blinkTime = 0.2f;            // ´«À» ±ô¹ÚÀÌ´Â ½Ã°£ÀÔ´Ï´Ù.
-    [SerializeField] private float intervalNoise = 2.5f;        // ´«À» ±ô¹ÚÀÌ°Ô ÇÏ´Â ½Ã°£ÀÇ ·£´ı°ª¿¡ ÀÇÇÑ ¿ÀÂ÷°ªÀÔ´Ï´Ù.
-    [SerializeField] private int blinkBlendshapeIndex = 0;      // ¸ğµ¨¸µ¿¡¼­ ´«À» ±ô¹ÚÀÌ´Â °ª¿¡ ÇØ´çÇÏ´Â blendshape¸¦ ÀÌ°÷¿¡ ÀÔ·ÂÇØ¾ßÇÕ´Ï´Ù.
-    [SerializeField] private AnimationCurve blinkCurve;         // ´«À» ¾î¶»°Ô ±ô¹ÚÀÏÁö Á¤ÇÏ´Â ¾Ö´Ï¸ŞÀÌ¼Ç Ä¿ºêÀÔ´Ï´Ù.
+    [SerializeField] private float blinkInterval = 4.0f;        // ëˆˆì„ ê¹œë°•ì´ëŠ”ë° ì§€ë‚˜ì•¼ í•˜ëŠ” í‰ê· ì ì¸ ì‹œê°„ì…ë‹ˆë‹¤. (ëœë¤)
+    [SerializeField] private float blinkTime = 0.2f;            // ëˆˆì„ ê¹œë°•ì´ëŠ” ì‹œê°„ì…ë‹ˆë‹¤.
+    [SerializeField] private float intervalNoise = 2.5f;        // ëˆˆì„ ê¹œë°•ì´ê²Œ í•˜ëŠ” ì‹œê°„ì˜ ëœë¤ê°’ì— ì˜í•œ ì˜¤ì°¨ê°’ì…ë‹ˆë‹¤.
+    [SerializeField] private int blinkBlendshapeIndex = 0;      // ëª¨ë¸ë§ì—ì„œ ëˆˆì„ ê¹œë°•ì´ëŠ” ê°’ì— í•´ë‹¹í•˜ëŠ” blendshapeë¥¼ ì´ê³³ì— ì…ë ¥í•´ì•¼í•©ë‹ˆë‹¤.
+    [SerializeField] private AnimationCurve blinkCurve;         // ëˆˆì„ ì–´ë–»ê²Œ ê¹œë°•ì¼ì§€ ì •í•˜ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì»¤ë¸Œì…ë‹ˆë‹¤.
 
     [SerializeField] private SkinnedMeshRenderer playerMesh;
 

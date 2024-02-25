@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ using UnityEditor.Localization.Plugins.Google;
 public class LocalizationUtil : MonoBehaviour
 {
 #if UNITY_EDITOR
-    [MenuItem("Localization/½ºÆ®¸µ ½ÃÆ® ¾÷µ¥ÀÌÆ®")]
+    [MenuItem("Localization/ìŠ¤íŠ¸ë§ ì‹œíŠ¸ ì—…ë°ì´íŠ¸")]
 
     public static void PullAllExtensions()
     {

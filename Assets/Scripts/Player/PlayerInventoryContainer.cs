@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+ï»¿using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,18 +8,18 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
 {
     //============================================
     //
-    // [½Ì±ÛÅÏ ¿ÀºêÁ§Æ®]
-    // ÇÃ·¹ÀÌ¾î ÀÎº¥Åä¸® "Á¤º¸"¸¦ °ü¸®ÇÏ´Â Å¬·¡½ºÀÔ´Ï´Ù. "Ç¥½Ã"¸¦ °ü¸®ÇÏ´Â Å¬·¡½º´Â UI/InventoryBehavior.cs¸¦ È®ÀÎÇÏ¼¼¿ä
+    // [ì‹±ê¸€í„´ ì˜¤ë¸Œì íŠ¸]
+    // í”Œë ˆì´ì–´ ì¸ë²¤í† ë¦¬ "ì •ë³´"ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤ì…ë‹ˆë‹¤. "í‘œì‹œ"ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤ëŠ” UI/InventoryBehavior.csë¥¼ í™•ì¸í•˜ì„¸ìš”
     // 
     //============================================
 
-    [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;             // ½ÇÁúÀûÀ¸·Î ÀÎº¥Åä¸® Á¤º¸°¡ ´ã±â´Â °÷ÀÔ´Ï´Ù.
-    public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }        // (ÀĞ±â Àü¿ë) ÇöÀç ÀÎº¥Åä¸® Á¤º¸¸¦ °¡Á®¿É´Ï´Ù.
+    [SerializeField, ReadOnly] private Dictionary<ItemData, int> inventoryData;             // ì‹¤ì§ˆì ìœ¼ë¡œ ì¸ë²¤í† ë¦¬ ì •ë³´ê°€ ë‹´ê¸°ëŠ” ê³³ì…ë‹ˆë‹¤.
+    public Dictionary<ItemData, int> InventoryData { get { return inventoryData; } }        // (ì½ê¸° ì „ìš©) í˜„ì¬ ì¸ë²¤í† ë¦¬ ì •ë³´ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
 
     private Dictionary<ItemData, int> debug_items;
 
     [SerializeField,ReadOnly] private int money;
-    public int Money { get { return money; } }                                              // ÇöÀç °¡Áö°í ÀÖ´Â Á¶°³ Á¤º¸¸¦ °¡Á®¿É´Ï´Ù.
+    public int Money { get { return money; } }                                              // í˜„ì¬ ê°€ì§€ê³  ìˆëŠ” ì¡°ê°œ ì •ë³´ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
 
     protected override void Awake()
     {
@@ -51,7 +51,7 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
 
     public void AddItem(ItemData item, int quantity)
     {
-        if (quantity < 0) { Debug.LogWarning("InventoryContainer : À½¼öÀÇ ¾ÆÀÌÅÛ Ãß°¡ ½Ãµµ"); return; }
+        if (quantity < 0) { Debug.LogWarning("InventoryContainer : ìŒìˆ˜ì˜ ì•„ì´í…œ ì¶”ê°€ ì‹œë„"); return; }
 
         if (inventoryData.ContainsKey(item))
         {

@@ -1,4 +1,4 @@
-using DG.Tweening;
+ï»¿using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ public class SailboatBehavior : MonoBehaviour
     {
         if (GlobalOceanManager.Instance == null)
         {
-            Debug.Log("SailboatBehavior¸¦ »ç¿ëÇÏ·Á¸é Global Ocean Manager¸¦ »ı¼ºÇÏ¼¼¿ä!");
+            Debug.Log("SailboatBehaviorë¥¼ ì‚¬ìš©í•˜ë ¤ë©´ Global Ocean Managerë¥¼ ìƒì„±í•˜ì„¸ìš”!");
         }
 
         surfacePlane = new Plane(Vector3.up, 0f);

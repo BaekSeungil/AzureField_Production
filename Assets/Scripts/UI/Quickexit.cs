@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class Quickexit : MonoBehaviour
 {
@@ -14,11 +17,17 @@ public class Quickexit : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(Keyboard.current.escapeKey.isPressed)
+        if (Keyboard.current.escapeKey.isPressed)
         {
             progress += Time.fixedDeltaTime;
             canvas.alpha = Mathf.Lerp(canvas.alpha, 1f, 0.5f);
-            if (time < progress) Application.Quit();
+            if (time < progress)
+            { 
+                Application.Quit();
+#if UNITY_EDITOR
+                EditorApplication.ExitPlaymode();
+#endif
+            }
         }
         else
         {
