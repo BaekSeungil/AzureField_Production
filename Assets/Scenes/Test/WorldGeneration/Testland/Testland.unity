@@ -554,7 +554,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   islandID: TST
-  islandName: "\uD14C\uC2A4\uD2B8 \uC9C0\uC5ED"
+  islandName:
+    m_TableReference:
+      m_TableCollectionName: GUID:b80ee5aa20678b543bd39c0b6233d3a4
+    m_TableEntryReference:
+      m_KeyId: 721570746368
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   areaFadeStart: 200
   fullArea: 400
   sound_Enter:
@@ -567,6 +575,9 @@ MonoBehaviour:
   supressWave: 1
   waveIntensity: 0.1
   debug_distanceFromPlayer: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &97300422 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d9cab69e2c6686647bd3c5bfb937b510,
@@ -1757,6 +1768,7 @@ GameObject:
   - component: {fileID: 312699824}
   - component: {fileID: 312699826}
   - component: {fileID: 312699825}
+  - component: {fileID: 312699827}
   m_Layer: 9
   m_Name: TestWoodenSign
   m_TagString: Untagged
@@ -1822,12 +1834,61 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  interactionUIText: "\uBCF4\uAE30"
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:07d4be5e13d5c394f8752773e76579a2
+    m_TableEntryReference:
+      m_KeyId: 892627046400
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   interestPlayer: 1
   eventsOnStartInteract:
     m_PersistentCalls:
       m_Calls: []
   sequenceAsset: {fileID: 11400000, guid: 8fa51b305e59bb74cac5cb3daa03d4bf, type: 2}
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &312699827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312699823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects:
+  - rid: 4215111448755437622
+  references:
+    version: 2
+    RefIds:
+    - rid: 4215111448755437622
+      type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects,
+        asm: Unity.Localization}
+      data:
+        m_Target: {fileID: 312699826}
+        m_TrackedProperties:
+          items:
+          - rid: 4215111448755437623
+        m_UpdateType: 0
+        m_Changed:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 4215111448755437623
+      type: {class: LongTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties,
+        asm: Unity.Localization}
+      data:
+        m_PropertyPath: interactionUIText.m_TableEntryReference.m_KeyId
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: ko
+          value: 772409905152
 --- !u!4 &325226653 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 88b96ce382451c545a986f797316a22b,
@@ -2025,6 +2086,7 @@ GameObject:
   - component: {fileID: 339879488}
   - component: {fileID: 339879493}
   - component: {fileID: 339879492}
+  - component: {fileID: 339879494}
   m_Layer: 0
   m_Name: PickupTest
   m_TagString: Untagged
@@ -2147,11 +2209,22 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  interactionUIText: "\uC90D\uAE30"
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:07d4be5e13d5c394f8752773e76579a2
+    m_TableEntryReference:
+      m_KeyId: 892685766656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   leftHandPoint: {fileID: 242552277}
   rightHandPoint: {fileID: 619835173}
   rigidbody: {fileID: 339879488}
   collision: {fileID: 1894751483}
+  references:
+    version: 2
+    RefIds: []
 --- !u!135 &339879493
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2173,6 +2246,44 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &339879494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339879486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects:
+  - rid: 4215111448755437624
+  references:
+    version: 2
+    RefIds:
+    - rid: 4215111448755437624
+      type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects,
+        asm: Unity.Localization}
+      data:
+        m_Target: {fileID: 339879492}
+        m_TrackedProperties:
+          items:
+          - rid: 4215111448755437625
+        m_UpdateType: 0
+        m_Changed:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 4215111448755437625
+      type: {class: LongTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties,
+        asm: Unity.Localization}
+      data:
+        m_PropertyPath: interactionUIText.m_TableEntryReference.m_KeyId
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: ko
+          value: 772443459584
 --- !u!1 &342219477
 GameObject:
   m_ObjectHideFlags: 0
@@ -4355,6 +4466,7 @@ GameObject:
   - component: {fileID: 532596104}
   - component: {fileID: 532596103}
   - component: {fileID: 532596102}
+  - component: {fileID: 532596107}
   m_Layer: 0
   m_Name: PickupTest_1
   m_TagString: Untagged
@@ -4400,11 +4512,22 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  interactionUIText: "\uC90D\uAE30"
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:07d4be5e13d5c394f8752773e76579a2
+    m_TableEntryReference:
+      m_KeyId: 892685766656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   leftHandPoint: {fileID: 396958540}
   rightHandPoint: {fileID: 360711330}
   rigidbody: {fileID: 532596104}
   collision: {fileID: 2086425697}
+  references:
+    version: 2
+    RefIds: []
 --- !u!135 &532596103
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4503,6 +4626,44 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 532596100}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &532596107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532596100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects:
+  - rid: 4215111448755437626
+  references:
+    version: 2
+    RefIds:
+    - rid: 4215111448755437626
+      type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects,
+        asm: Unity.Localization}
+      data:
+        m_Target: {fileID: 532596102}
+        m_TrackedProperties:
+          items:
+          - rid: 4215111448755437627
+        m_UpdateType: 0
+        m_Changed:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 4215111448755437627
+      type: {class: LongTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties,
+        asm: Unity.Localization}
+      data:
+        m_PropertyPath: interactionUIText.m_TableEntryReference.m_KeyId
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: ko
+          value: 772443459584
 --- !u!4 &543158838 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 864e6af001823334290aced25720392c,
@@ -11293,6 +11454,7 @@ GameObject:
   - component: {fileID: 1827045237}
   - component: {fileID: 1827045236}
   - component: {fileID: 1827045235}
+  - component: {fileID: 1827045240}
   m_Layer: 0
   m_Name: PickupTest_2
   m_TagString: Untagged
@@ -11338,11 +11500,22 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  interactionUIText: "\uC90D\uAE30"
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:07d4be5e13d5c394f8752773e76579a2
+    m_TableEntryReference:
+      m_KeyId: 892685766656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   leftHandPoint: {fileID: 432100606}
   rightHandPoint: {fileID: 2096916590}
   rigidbody: {fileID: 1827045237}
   collision: {fileID: 1118969428}
+  references:
+    version: 2
+    RefIds: []
 --- !u!135 &1827045236
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -11441,6 +11614,44 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1827045233}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1827045240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827045233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects:
+  - rid: 4215111448755437628
+  references:
+    version: 2
+    RefIds:
+    - rid: 4215111448755437628
+      type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects,
+        asm: Unity.Localization}
+      data:
+        m_Target: {fileID: 1827045235}
+        m_TrackedProperties:
+          items:
+          - rid: 4215111448755437629
+        m_UpdateType: 0
+        m_Changed:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 4215111448755437629
+      type: {class: LongTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties,
+        asm: Unity.Localization}
+      data:
+        m_PropertyPath: interactionUIText.m_TableEntryReference.m_KeyId
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: ko
+          value: 772443459584
 --- !u!4 &1830339757 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d9cab69e2c6686647bd3c5bfb937b510,
@@ -14572,12 +14783,12 @@ PrefabInstance:
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -1e-45
+      value: 1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -14602,12 +14813,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000016795445
+      value: -0.000000016795418
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000037379984
+      value: -0.000000003737992
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -14677,17 +14888,17 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.16080931
+      value: -0.16080932
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000008491224
+      value: 0.000000008670631
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000001383473
+      value: 0.0000000014127038
       objectReference: {fileID: 0}
     - target: {fileID: 6832785402570513268, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}

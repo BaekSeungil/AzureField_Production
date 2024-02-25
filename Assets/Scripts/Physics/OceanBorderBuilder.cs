@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ public class OceanBorderBuilder : MonoBehaviour
     private void Start()
     {
         oceanManager = FindFirstObjectByType<GlobalOceanManager>();
-        if (oceanManager == null) Debug.LogWarning("OceanBorderBuilder´Â GlobalOceanManager¿Í ÇÔ²² »ç¿ëÇÏ¼¼¿ä");
+        if (oceanManager == null) Debug.LogWarning("OceanBorderBuilderëŠ” GlobalOceanManagerì™€ í•¨ê»˜ ì‚¬ìš©í•˜ì„¸ìš”");
     }
 
     private void FixedUpdate()

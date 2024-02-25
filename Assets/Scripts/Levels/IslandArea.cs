@@ -1,30 +1,31 @@
-using FMODUnity;
+ï»¿using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class IslandArea : MonoBehaviour
 {
     //================================================
     //
-    // ¼¶ÀÇ Á¤º¸¿Í ¿µ¿ªÀ» ³ªÅ¸³»´Â ½ºÅ©¸³Æ® ÀÔ´Ï´Ù.
-    // ÇÃ·¹ÀÌ¾î°¡ fullArea¹üÀ§ ³»·Î ¼¶¿¡ Á¢±ÙÇÏ¸é °íÀ¯ÀÇ ¿¬ÃâÀ» ³¾ ¼ö ÀÖ½À´Ï´Ù.
-    // ¶ÇÇÑ, ÇÃ·¹ÀÌ¾î°¡ ¼¶¿¡ °¡±î¿öÁü¿¡ µû¶ó ÆÄµµ¸¦ Àæ¾Æµé°Ô ¼³Á¤ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+    // ì„¬ì˜ ì •ë³´ì™€ ì˜ì—­ì„ ë‚˜íƒ€ë‚´ëŠ” ìŠ¤í¬ë¦½íŠ¸ ìž…ë‹ˆë‹¤.
+    // í”Œë ˆì´ì–´ê°€ fullAreaë²”ìœ„ ë‚´ë¡œ ì„¬ì— ì ‘ê·¼í•˜ë©´ ê³ ìœ ì˜ ì—°ì¶œì„ ë‚¼ ìˆ˜ ìžˆìŠµë‹ˆë‹¤.
+    // ë˜í•œ, í”Œë ˆì´ì–´ê°€ ì„¬ì— ê°€ê¹Œì›Œì§ì— ë”°ë¼ íŒŒë„ë¥¼ ìž¦ì•„ë“¤ê²Œ ì„¤ì •í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.
     //
     //================================================
 
-    [SerializeField] private string islandID;               // ¼¶ ±¸ºÐ ID
-    [SerializeField] private string islandName;             // ¼¶ ÀÌ¸§
-    [SerializeField] private float areaFadeStart = 50f;     // ¼¶ ÁøÀÔ ±¸¿ª ³ÐÀÌ
-    [SerializeField] private float fullArea = 100f;         // ¼¶ ÁøÀÔ ½ÃÀÛ ±¸¿ª
-    [SerializeField] private EventReference sound_Enter;    // ¼¶ ÁøÀÔ ½Ã »ç¿îµå
+    [SerializeField] private string islandID;               // ì„¬ êµ¬ë¶„ ID
+    [SerializeField] private LocalizedString islandName;    // ì„¬ ì´ë¦„ ( UI )
+    [SerializeField] private float areaFadeStart = 50f;     // ì„¬ ì§„ìž… êµ¬ì—­ ë„“ì´
+    [SerializeField] private float fullArea = 100f;         // ì„¬ ì§„ìž… ì‹œìž‘ êµ¬ì—­
+    [SerializeField] private EventReference sound_Enter;    // ì„¬ ì§„ìž… ì‹œ ì‚¬ìš´ë“œ
 
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
-    private bool supressWave = true;                        // trueÀÏ ½Ã ¼¶ ±¸¿ª ÁøÀÔ½Ã ÆÄµµ¸¦ Àæ¾Æµé°ÔÇÔ
+    private bool supressWave = true;                        // trueì¼ ì‹œ ì„¬ êµ¬ì—­ ì§„ìž…ì‹œ íŒŒë„ë¥¼ ìž¦ì•„ë“¤ê²Œí•¨
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
-    private float waveIntensity = 0.1f;                     // ¼¶ ±¸¿ª ÁøÀÔ½Ã ÆÄµµ°¡ ¾ó¸¶³ª Àæ¾ÆµéÁö ¼³Á¤
+    private float waveIntensity = 0.1f;                     // ì„¬ êµ¬ì—­ ì§„ìž…ì‹œ íŒŒë„ê°€ ì–¼ë§ˆë‚˜ ìž¦ì•„ë“¤ì§€ ì„¤ì •
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
@@ -90,7 +91,7 @@ public class IslandArea : MonoBehaviour
     }
 
     public float GetAreaInterpolation(Vector3 t_postion)
-    // ÇÃ·¹ÀÌ¾î°¡ ¼¶¿¡ Á¢±ÙÀ» ½ÃÀÛÇßÀ» ¶§ Á¢±ÙÀÌ ¾ó¸¶³ª ÁøÇàµÇ¾ú´ÂÁö 0.0~1.0°ªÀ¸·Î Ç¥ÇöÇÕ´Ï´Ù.
+    // í”Œë ˆì´ì–´ê°€ ì„¬ì— ì ‘ê·¼ì„ ì‹œìž‘í–ˆì„ ë•Œ ì ‘ê·¼ì´ ì–¼ë§ˆë‚˜ ì§„í–‰ë˜ì—ˆëŠ”ì§€ 0.0~1.0ê°’ìœ¼ë¡œ í‘œí˜„í•©ë‹ˆë‹¤.
     {
         if (Vector3.Distance(transform.position, t_postion) > fullArea) return 0;
         else if(Vector3.Distance(transform.position, t_postion) < areaFadeStart) return 1;
@@ -105,7 +106,7 @@ public class IslandArea : MonoBehaviour
         RegionEnter regionEnter = RegionEnter.Instance;
         if (regionEnter != null)
         {
-            regionEnter.OnRegionEnter(islandName);
+            regionEnter.OnRegionEnter(islandName.GetLocalizedString());
             RuntimeManager.PlayOneShot(sound_Enter);
         }
     }

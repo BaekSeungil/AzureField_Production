@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+ï»¿using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,28 +8,28 @@ public class OceanProfile : SerializedScriptableObject
 {
     //================================================
     //
-    // ÇöÀç ¹Ù´Ù Ç¥¸éÀÇ Á¤º¸¸¦ ´ã´Â ½ºÅ©¸³ÅÍºí ¿ÀºêÁ§Æ®ÀÔ´Ï´Ù.
+    // í˜„ì¬ ë°”ë‹¤ í‘œë©´ì˜ ì •ë³´ë¥¼ ë‹´ëŠ” ìŠ¤í¬ë¦½í„°ë¸” ì˜¤ë¸Œì íŠ¸ì…ë‹ˆë‹¤.
     //
     //================================================
 
-    [SerializeField,ColorUsage(false,true)] private Color oceanColor;           // ¹Ù´Ù ¸ÓÆ®¸®¾ó Emmision »ö»ó
+    [SerializeField,ColorUsage(false,true)] private Color oceanColor;           // ë°”ë‹¤ ë¨¸íŠ¸ë¦¬ì–¼ Emmision ìƒ‰ìƒ
     public Color OceanColor { get { return oceanColor; } }
     [SerializeField, Range(0.0f, 1.5f)] private float oceanIntensity;
-    public float OceanIntensity { get { return oceanIntensity; } }              // ÆÄµµ °­µµ °ö
+    public float OceanIntensity { get { return oceanIntensity; } }              // íŒŒë„ ê°•ë„ ê³±
     
     public struct Waveform
     {
-        public Vector3 vector;              // ÆÄµµ º¤ÅÍ
-        public float amplitude;             // ÆÄµµ °­µµ
+        public Vector3 vector;              // íŒŒë„ ë²¡í„°
+        public float amplitude;             // íŒŒë„ ê°•ë„
     }
 
-    [SerializeField] private Waveform waveform1;                                // 1¹ø ÆÄÇü
+    [SerializeField] private Waveform waveform1;                                // 1ë²ˆ íŒŒí˜•
     public Waveform Waveform1 { get { return waveform1; } }
-    [SerializeField] private Waveform waveform2;                                // 2¹ø ÆÄÇü
+    [SerializeField] private Waveform waveform2;                                // 2ë²ˆ íŒŒí˜•
     public Waveform Waveform2 { get { return waveform2; } }
-    [SerializeField] private Waveform waveform3;                                // 3¹ø ÆÄÇü
+    [SerializeField] private Waveform waveform3;                                // 3ë²ˆ íŒŒí˜•
     public Waveform Waveform3 { get { return waveform3; } }
-    [SerializeField] private Waveform waveform4;                                // 4¹ø ÆÄÇü
+    [SerializeField] private Waveform waveform4;                                // 4ë²ˆ íŒŒí˜•
     public Waveform Waveform4 { get { return waveform4; } }
 
     public void InitilzeOceanProfile(Color _color, float _oceanIntensity, Vector3 _wv1, float _wa1, Vector3 _wv2, float _wa2, Vector3 _wv3, float _wa3, Vector3 _wv4, float _wa4) 

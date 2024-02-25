@@ -24,8 +24,8 @@ public class ItemObtainInfo : StaticSerializedMonoBehaviour<ItemObtainInfo>
         visualGroup.SetActive(true);
 
         itemImage.sprite = item.ItemImage;
-        itemNameText.text = item.ItemName;
-        itemDescriptionText.text = item.ItemDiscription;
+        itemNameText.text = item.ItemName.GetLocalizedString();
+        itemDescriptionText.text = item.ItemDiscription.GetLocalizedString();
 
         if (quantity > 1) quantityText.text = "x" + quantity.ToString();
         else quantityText.text = string.Empty;

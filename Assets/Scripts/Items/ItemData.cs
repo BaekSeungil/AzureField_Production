@@ -1,29 +1,35 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu(fileName = "NewItemData",menuName = "CreateNewItemData",order = 1)]
 public class ItemData : ScriptableObject
 {
     //================================================
     //
-    // ¾ÆÀÌÅÛ Á¤º¸¸¦ ´ã´Â ½ºÅ©¸³ÅÍºí ¿ÀºêÁ§Æ®ÀÔ´Ï´Ù.
+    // ì•„ì´í…œ ì •ë³´ë¥¼ ë‹´ëŠ” ìŠ¤í¬ë¦½í„°ë¸” ì˜¤ë¸Œì íŠ¸ì…ë‹ˆë‹¤.
     //
     //================================================
 
-    [SerializeField] private string itemID;                                 // ¾ÆÀÌÅÛ ±¸ºĞ¿ë ID
+    [SerializeField] private string itemID;                                         // ì•„ì´í…œ êµ¬ë¶„ìš© ID
     public string ItemID { get { return itemID; } }                         
-    [SerializeField] private string itemName;                               // ¾ÆÀÌÅÛÀÇ ÀÌ¸§
-    public string ItemName { get { return itemName; } }
-    [SerializeField] private Sprite itemImage;                              // ¾ÆÀÌÅÛÀÇ ÀÌ¹ÌÁö
+    [SerializeField] private LocalizedString itemName;                              // ì•„ì´í…œì˜ ì´ë¦„ ( UI )
+    public LocalizedString ItemName { get { return itemName; } }
+    [SerializeField] private Sprite itemImage;                                      // ì•„ì´í…œì˜ ì´ë¯¸ì§€ ( UI )
     public Sprite ItemImage { get { return itemImage; } }
-    [SerializeField,TextArea()] private string itemDiscription;             // ¾ÆÀÌÅÛ ¼³¸í
-    public string ItemDiscription { get { return itemDiscription; } }
-    [SerializeField] private string[] tags;                                 // ¾ÆÀÌÅÛ ÅÂ±×
+    [SerializeField] private LocalizedString itemDiscription;                       // ì•„ì´í…œ ì„¤ëª… ( UI )
+    public LocalizedString ItemDiscription { get { return itemDiscription; } }
+    [SerializeField] private string[] tags;                                         // ì•„ì´í…œ íƒœê·¸
     public string[] Tags { get { return tags; } }
 
+    /// <summary>
+    /// setì— ìˆëŠ” ì•„ì´í…œë“¤ ì¤‘ IDê°’ì˜ ì•„ì´í…œì´ ìˆëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤. 
+    /// </summary>
+    /// <param name="set"></param>
+    /// <param name="ID"></param>
+    /// <returns> ì•„ì´í…œ ì¡´ì¬ ì—¬ë¶€ </returns>
     static bool TryItemFromSet(ItemData[] set, string ID)
-    // set¿¡ ÀÖ´Â ¾ÆÀÌÅÛµé Áß ID°ªÀÇ ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö È®ÀÎÇÕ´Ï´Ù. 
     {
         for (int i = 0; i < set.Length; i++)
         {
@@ -35,9 +41,14 @@ public class ItemData : ScriptableObject
         return false;
     }
 
-
+    /// <summary>
+    /// setì— ìˆëŠ” ì•„ì´í…œë“¤ ì¤‘ IDê°’ì˜ ì•„ì´í…œì´ ìˆëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤. ìˆë‹¤ë©´ to ë ˆí¼ëŸ°ìŠ¤ì— ì•„ì´í…œì„ ì €ì¥í•©ë‹ˆë‹¤.
+    /// </summary>
+    /// <param name="set"></param>
+    /// <param name="ID"></param>
+    /// <param name="to"></param>
+    /// <returns> ì•„ì´í…œ ì¡´ì¬ ì—¬ë¶€ </returns>
     static bool TryItemFromSet(ItemData[] set, string ID, out ItemData to)
-    // set¿¡ ÀÖ´Â ¾ÆÀÌÅÛµé Áß ID°ªÀÇ ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö È®ÀÎÇÕ´Ï´Ù. ÀÖ´Ù¸é to ·¹ÆÛ·±½º¿¡ ¾ÆÀÌÅÛÀ» ÀúÀåÇÕ´Ï´Ù.
     {
         for (int i = 0; i < set.Length; i++)
         {
@@ -52,8 +63,12 @@ public class ItemData : ScriptableObject
         return false;
     }
 
+    /// <summary>
+    /// ì´ ì•„ì´í…œì´ tagë¥¼ ê°€ì§€ê³  ìˆëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <returns> ì•„ì´í…œ ì¡´ì¬ ì—¬ë¶€ </returns>
     public bool HasTag(string tag)
-    // ÀÌ ¾ÆÀÌÅÛÀÌ tag¿¡ ÇØ´çÇÏ´Â ¾ÆÀÌÅÛ ÅÂ±×°¡ Àû¾îµµ ÇÏ³ª ÀÌ»ó ÀÖ´ÂÁö È®ÀÎÇÕ´Ï´Ù.
     {
         for(int i = 0; i < tags.Length; i++)
         {

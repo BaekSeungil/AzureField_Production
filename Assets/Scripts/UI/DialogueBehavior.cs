@@ -4,18 +4,16 @@ using RichTextSubstringHelper;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using UnityEngine.Localization;
 
 [System.Serializable]
 public class DialogueData
 {
-    public string speecher;
-    [TextArea]public string context;
+    public LocalizedString speecher;
+    public LocalizedString context;
 }
 
 public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
@@ -86,10 +84,13 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
             inputWaitObject.SetActive(false);
             dialogueProceed = false;
 
-            if (dialogues[i].speecher == string.Empty) speecher.text = string.Empty;
-            else speecher.text = dialogues[i].speecher;
+            string localized_speecher = dialogues[i].speecher.GetLocalizedString();
+            string localized_context = dialogues[i].context.GetLocalizedString();
 
-            string ctx = dialogues[i].context;
+            if (localized_speecher == string.Empty) speecher.text = string.Empty;
+            else speecher.text = localized_speecher;
+
+            string ctx = localized_context;
 
             for (int j = 0; j <= ctx.RichTextLength(); j++)
             {
@@ -160,7 +161,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         answerObjects[this.index].OnSelected();
     }
 
-    public IEnumerator Cor_Branch(string[] answerStrings,Action<int> outCallback)
+    public IEnumerator Cor_Branch(LocalizedString[] answerStrings,Action<int> outCallback)
     {
         index = 0;
         whileBreak = false;
@@ -181,7 +182,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
             GameObject newObject = Instantiate(answerSinglePrefab, answerStartPosition);
             newObject.transform.localPosition = new Vector3(0f, i * answerSpawnSpace);
             answerObjects[i] = newObject.GetComponent<DialogueAnswerSingle>();
-            answerObjects[i].Initialize(this,answerStrings[i],i);
+            answerObjects[i].Initialize(this,answerStrings[i].GetLocalizedString(),i);
         }
 
 
@@ -243,7 +244,6 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
 
         outCallback(index);
     }
-
 
     private void ClearDialogue()
     {

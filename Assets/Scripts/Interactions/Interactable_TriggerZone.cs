@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+ï»¿using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,19 +8,19 @@ public class Interactable_TriggerZone : Interactable_Base
 {
     //================================================
     //
-    // Interactable_BaseÀÇ ÀÚ½Ä Å¬·¡½º,  Interact¸¦ ¿À¹ö¶óÀÌµå
-    // Interact½Ã sequenceAssetÀ» ÅëÇØ ´ë»ç³ª ÄÆ½Å°°Àº ½ÃÄö½º¸¦ ½ÃÀÛÇÕ´Ï´Ù.
+    // Interactable_Baseì˜ ìì‹ í´ë˜ìŠ¤,  Interactë¥¼ ì˜¤ë²„ë¼ì´ë“œ
+    // Interactì‹œ sequenceAssetì„ í†µí•´ ëŒ€ì‚¬ë‚˜ ì»·ì‹ ê°™ì€ ì‹œí€€ìŠ¤ë¥¼ ì‹œì‘í•©ë‹ˆë‹¤.
     //
     //================================================
 
-    [SerializeField] private bool interestPlayer = true;            // trueÀÏ ½Ã ÇÃ·¹ÀÌ¾î°¡ °¡±îÀÌ ´Ù°¡°¡¸é ÇØ´ç ¿ÀºêÁ§Æ®¸¦ ¹Ù¶óº¾´Ï´Ù.
-    [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact µÆÀ» ¶§ È£ÃâµÇ´Â UnityEventÀÔ´Ï´Ù
-    [SerializeField] private SequenceBundleAsset sequenceAsset;     // Interact µÆÀ» ¶§ ½ÃÀÛÇÏ´Â ½ÃÄö½º ÀÔ´Ï´Ù.
+    [SerializeField] private bool interestPlayer = true;            // trueì¼ ì‹œ í”Œë ˆì´ì–´ê°€ ê°€ê¹Œì´ ë‹¤ê°€ê°€ë©´ í•´ë‹¹ ì˜¤ë¸Œì íŠ¸ë¥¼ ë°”ë¼ë´…ë‹ˆë‹¤.
+    [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact ëì„ ë•Œ í˜¸ì¶œë˜ëŠ” UnityEventì…ë‹ˆë‹¤
+    [SerializeField] private SequenceBundleAsset sequenceAsset;     // Interact ëì„ ë•Œ ì‹œì‘í•˜ëŠ” ì‹œí€€ìŠ¤ ì…ë‹ˆë‹¤.
 
     public override void Interact()
     {
         eventsOnStartInteract.Invoke();
-        if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker°¡ ¾ø½À´Ï´Ù."); return; }
+        if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvokerê°€ ì—†ìŠµë‹ˆë‹¤."); return; }
         SequenceInvoker.Instance.StartSequence(sequenceAsset.sequenceBundles);
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(transform);
     }

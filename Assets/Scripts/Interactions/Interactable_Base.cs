@@ -1,21 +1,18 @@
-using Sirenix.OdinInspector;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
+ï»¿using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization;
 
 public class Interactable_Base : SerializedMonoBehaviour
 {
 //================================================
 //
-// Interactable °è¿­ ½ºÅ©¸³Æ®µéÀÇ º£ÀÌ½º Å¬·¡½ºÀÔ´Ï´Ù.
-// ÇÃ·¹ÀÌ¾î°¡ °¡±îÀÌ ¿À¸é »óÈ£ÀÛ¿ë UI¸¦ ¶ç¿ì°í, »óÈ£ÀÛ¿ë Å°¸¦ ´©¸£¸é ¿À¹ö¶óÀÌµåµÈ Interact¸¦ È£ÃâÇÕ´Ï´Ù.
+// Interactable ê³„ì—´ ìŠ¤í¬ë¦½íŠ¸ë“¤ì˜ ë² ì´ìŠ¤ í´ë˜ìŠ¤ì…ë‹ˆë‹¤.
+// í”Œë ˆì´ì–´ê°€ ê°€ê¹Œì´ ì˜¤ë©´ ìƒí˜¸ì‘ìš© UIë¥¼ ë„ìš°ê³ , ìƒí˜¸ì‘ìš© í‚¤ë¥¼ ëˆ„ë¥´ë©´ ì˜¤ë²„ë¼ì´ë“œëœ Interactë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 //
 //================================================
 
-    [SerializeField] protected string interactionUIText;    // »óÈ£ÀÛ¿ë UI¿¡ ¶ç¿ï ÅØ½ºÆ®
+    [SerializeField] protected LocalizedString interactionUIText;    // ìƒí˜¸ì‘ìš© UIì— ë„ìš¸ í…ìŠ¤íŠ¸
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 
@@ -46,7 +43,7 @@ public class Interactable_Base : SerializedMonoBehaviour
             input = other.GetComponentInParent<PlayerCore>().Input;
             input.Player.Interact.performed += OnInteractInput;
 
-            if (interactionUIText != string.Empty)
+            if (interactionUIText.GetLocalizedString() != string.Empty)
             {
                 if (InteractionInfo.IsInstanceValid)
                 {
@@ -54,7 +51,7 @@ public class Interactable_Base : SerializedMonoBehaviour
 
                     if (!infoUI.CompareCurrentTarget(transform))
                     {
-                        infoUI.SetNewInteractionInfo(transform, interactionUIText);
+                        infoUI.SetNewInteractionInfo(transform, interactionUIText.GetLocalizedString());
                     }
                 }
             }

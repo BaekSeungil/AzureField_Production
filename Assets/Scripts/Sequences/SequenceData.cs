@@ -1,6 +1,7 @@
 ﻿using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -79,7 +80,7 @@ public class Sequence_CloseDialogue : Sequence_Base
 [System.Serializable]
 public class Sequence_DialogueBranch : Sequence_Base
 {
-    public string[] branchAnswers;
+    public LocalizedString[] branchAnswers;
     public SequenceBundleAsset[] sequenceAssets;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)

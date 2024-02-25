@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,17 +6,17 @@ public class Interactable_Holding : Interactable_Base
 {
     //================================================
     //
-    // Interactable_BaseÀÇ ÀÚ½Ä Å¬·¡½º,  Interact¸¦ ¿À¹ö¶óÀÌµå
-    // Interact½Ã ÇÃ·¹ÀÌ¾î°¡ ÀÌ ¿ÀºêÁ§Æ®¸¦ µì´Ï´Ù.
-    // ÀÌ ¶§ PlayerCoreÀÇ HoldItemÀÌ È£ÃâµË´Ï´Ù.
+    // Interactable_Baseì˜ ìì‹ í´ë˜ìŠ¤,  Interactë¥¼ ì˜¤ë²„ë¼ì´ë“œ
+    // Interactì‹œ í”Œë ˆì´ì–´ê°€ ì´ ì˜¤ë¸Œì íŠ¸ë¥¼ ë“­ë‹ˆë‹¤.
+    // ì´ ë•Œ PlayerCoreì˜ HoldItemì´ í˜¸ì¶œë©ë‹ˆë‹¤.
     //
     //================================================
 
-    public Transform leftHandPoint;         // ÇÃ·¹ÀÌ¾î°¡ ¾ÆÀÌÅÛÀ» ÀâÀ» ¶§ ¿Ş¼ÕÀÇ À§Ä¡¿Í °¢µµ¸¦ ³ªÅ¸³À´Ï´Ù.
-    public Transform rightHandPoint;        // ÇÃ·¹ÀÌ¾î°¡ ¾ÆÀÌÅÛÀ» ÀâÀ» ¶§ ¿À¸¥¼ÕÀÇ À§Ä¡¿Í °¢µµ¸¦ ³ªÅ¸³À´Ï´Ù.
+    public Transform leftHandPoint;         // í”Œë ˆì´ì–´ê°€ ì•„ì´í…œì„ ì¡ì„ ë•Œ ì™¼ì†ì˜ ìœ„ì¹˜ì™€ ê°ë„ë¥¼ ë‚˜íƒ€ëƒ…ë‹ˆë‹¤.
+    public Transform rightHandPoint;        // í”Œë ˆì´ì–´ê°€ ì•„ì´í…œì„ ì¡ì„ ë•Œ ì˜¤ë¥¸ì†ì˜ ìœ„ì¹˜ì™€ ê°ë„ë¥¼ ë‚˜íƒ€ëƒ…ë‹ˆë‹¤.
 
     private bool isHolding = false;
-    [SerializeField] private new Rigidbody rigidbody;
+    [SerializeField] private Rigidbody rigidbody;
     [SerializeField] private Collider collision;
 
     public override void Interact()
