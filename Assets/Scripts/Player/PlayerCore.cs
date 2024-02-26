@@ -94,13 +94,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
-    public bool IsHoldingSomething { get { return currentHoldingItem != null; } }   // 현재 플레이어가 무언가를 들고 있는지 확인합니다.
+    /// <summary>
+    /// 현재 플레이어가 무언가를 들고 있는지 확인합니다.
+    /// </summary>
+    public bool IsHoldingSomething { get { return currentHoldingItem != null; } }
 
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
 
     private bool sprinting = false;
-    public bool Grounding { get { return grounding; } }                             // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
+    /// <summary>
+    /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
+    /// </summary>
+    public bool Grounding { get { return grounding; } }
 
     private const float slopeBoostForce = 100f;
 
@@ -293,14 +299,32 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     protected class MovementState
     {
-        public virtual void OnMovementEnter(PlayerCore @player) { }     // 해당 state로 들어올 때 이 함수가 호출됩니다.
-        public virtual void OnUpdate(PlayerCore @player) { }            // Update 루프 때 이 함수가 호출됩니다
-        public virtual void OnFixedUpdate(PlayerCore @player) { }       // FixedUpdate 루프 때 이 함수가 호출됩니다.
-        public virtual void OnMovementExit(PlayerCore @player) { }      // 해당 state에서 나가라 때 이 함수가 호출됩니다.
+        /// <summary>
+        /// 해당 state로 들어올 때 이 함수가 호출됩니다.
+        /// </summary>
+        /// <param name="player"> 플레이어 인스턴스 </param>
+        public virtual void OnMovementEnter(PlayerCore @player) { }
+        /// <summary>
+        /// Update 루프 때 이 함수가 호출됩니다
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void OnUpdate(PlayerCore @player) { }
+        /// <summary>
+        /// FixedUpdate 루프 때 이 함수가 호출됩니다.
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void OnFixedUpdate(PlayerCore @player) { }
+        /// <summary>
+        /// 해당 state에서 나가라 때 이 함수가 호출됩니다.
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void OnMovementExit(PlayerCore @player) { }
     }
 
+/// <summary>
+/// 플레이어가 땅 위를 뛰어다니는 상태일 때
+/// </summary>
     protected class Movement_Ground : MovementState
-    // 플레이어가 땅 위를 뛰어다니는 상태일 때
     {
         public override void OnFixedUpdate(PlayerCore player)
         {
@@ -371,8 +395,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+/// <summary>
+/// 플레이어가 수영중인 상황일 때
+/// </summary>
     protected class Movement_Swimming : MovementState
-    // 플레이어가 수영중인 상황일 때
     {
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -420,8 +446,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+/// <summary>
+/// 플레이어가 조각배를 타는 상황일 때
+/// </summary>
     protected class Movement_Sailboat : MovementState
-    //플레이어가 조각배를 타는 상황일 때
     {
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -587,9 +615,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     #endregion 
 
-    #region InputCallbacks
-    // InputSystem 입력 이벤트
+    #region InputCallbacks    
+// InputSystem 입력 이벤트
+
     private void OnToggleSailboat(InputAction.CallbackContext context)
+    // @ "조각배소환" 버튼
     {
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat))
         {
@@ -603,6 +633,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     private void OnJump(InputAction.CallbackContext context)
+    // @ "점프" 버튼
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
@@ -616,6 +647,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     private void OnSprint(InputAction.CallbackContext context)
+    // @ "달리기" 버튼
     {
         sprinting = true;
 
@@ -628,16 +660,25 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     #endregion
 
+/// <summary>
+/// 플레이어가 얼굴을 향하는 방향을 target으로 맞춥니다.
+/// </summary>
+/// <param name="target"></param>
     public void SetInterestPoint(Transform target)
-    // 플레이어가 얼굴을 향하는 방향을 target으로 맞춥니다.
     {
         interestPoint = target;
     }
 
     bool holdItemCoroutineFlag = false;
 
+/// <summary>
+///     //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
+/// </summary>
+/// <param name="leftHand"> 왼손 짚는 위치 </param>
+/// <param name="rightHand"> 오른손 짚는 위치 </param>
+/// <param name="holdingItem"> 잡는 아이템 </param>
+/// <returns></returns>
     public bool HoldItem(Transform leftHand, Transform rightHand,Interactable_Holding holdingItem)
-    //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
     {
         if (holdItemCoroutineFlag) return false;
         if (currentHoldingItem != null) { ReleaseHoldingItem(); return false; }
@@ -681,8 +722,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         currentHoldingItem = holdingItem;
     }
 
+/// <summary>
+/// 현재 들고있는 아이템이 있으면 즉시 놓습니다.
+/// </summary>
     public void ReleaseHoldingItem()
-    // 현재 들고있는 아이템이 있으면 즉시 놓습니다.
     {
         if (currentHoldingItem == null) return;
 
@@ -693,24 +736,31 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
+
+/// <summary>
+///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
+/// </summary>
     public void DisableForSequence()
-    // 시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     {
         input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
     }
 
+/// <summary>
+/// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
+/// </summary>
     public void EnableForSequence()
-    // 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
     {
         input.Player.Enable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
     }
 
+/// <summary>
+/// @ 애니메이션 용 이벤트 함수 : 플레이어가 발을 딛을 때 호출되는 함수.
+/// </summary>
     public void FootstepEvent()
-    // 애니메이션 이벤트 : 플레이어가 발을 딛을 때 호출되는 함수.
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground))
             PlayFootstepSound();
