@@ -1,4 +1,4 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
@@ -8,16 +8,23 @@ public class Interactable_Base : SerializedMonoBehaviour
 //================================================
 //
 // Interactable 계열 스크립트들의 베이스 클래스입니다.
-// 플레이어가 가까이 오면 상호작용 UI를 띄우고, 상호작용 키를 누르면 오버라이드된 Interact를 호출합니다.
+// 플레이어가 가까이 오면서 Trigger를 건드리면 상호작용 UI를 띄우고, 상호작용 키를 누르면 오버라이드된 Interact를 호출합니다.
 //
 //================================================
 
-    [SerializeField] protected LocalizedString interactionUIText;    // 상호작용 UI에 띄울 텍스트
+    [SerializeField] protected LocalizedString interactionUIText;    // 가까이 접근 시 상호작용 UI에 띄울 텍스트
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 
+    /// <summary>
+    /// 오버라이드 하여 적절한 상호작용을 하게 만드세요
+    /// </summary>
     public virtual void Interact() { }
 
+    /// <summary>
+    /// 인풋 이벤트
+    /// </summary>
+    /// <param name="context"></param>
     public void OnInteractInput(InputAction.CallbackContext context)
     {
         if (!isEnabled) return;

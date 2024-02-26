@@ -1,8 +1,7 @@
-﻿using FMODUnity;
+using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Localization;
 
@@ -16,11 +15,13 @@ public class IslandArea : MonoBehaviour
     //
     //================================================
 
-    [SerializeField] private string islandID;               // 섬 구분 ID
-    [SerializeField] private LocalizedString islandName;    // 섬 이름 ( UI )
-    [SerializeField] private float areaFadeStart = 50f;     // 섬 진입 구역 넓이
-    [SerializeField] private float fullArea = 100f;         // 섬 진입 시작 구역
-    [SerializeField] private EventReference sound_Enter;    // 섬 진입 시 사운드
+    [SerializeField] private string islandID;               
+    public string IslandID { get { return islandID; } }                         // 섬 구분 ID
+    [SerializeField] private LocalizedString islandName;    
+    public LocalizedString IslandName { get { return islandName; } }            // 섬 이름 ( UI )
+    [SerializeField] private float areaFadeStart = 50f;                         // “내부 구역” 경계
+    [SerializeField] private float fullArea = 100f;                             // “외부 구역” 경계
+    [SerializeField] private EventReference sound_Enter;                        // 섬 진입 시 사운드
 
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
     private bool supressWave = true;                        // true일 시 섬 구역 진입시 파도를 잦아들게함
@@ -90,8 +91,12 @@ public class IslandArea : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 해당 위치가 외부 구역 ~ 내부 구역 사이에서 어느정도 거리에 있는지 0~1 로 표현합니다.
+    /// </summary>
+    /// <param name="t_postion"> 위치 </param>
+    /// <returns></returns>
     public float GetAreaInterpolation(Vector3 t_postion)
-    // 플레이어가 섬에 접근을 시작했을 때 접근이 얼마나 진행되었는지 0.0~1.0값으로 표현합니다.
     {
         if (Vector3.Distance(transform.position, t_postion) > fullArea) return 0;
         else if(Vector3.Distance(transform.position, t_postion) < areaFadeStart) return 1;

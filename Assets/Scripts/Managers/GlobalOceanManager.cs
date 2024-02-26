@@ -24,7 +24,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     [SerializeField] private Material[] ReferencingMaterials;                           // OceanSurface.mat을 가지고 있는 오브젝트들, 아래 속성들과 머트리얼의 속성을 맟추기 위해 필요
 
     [Title("GlobalWaveProperties")]
-    [SerializeField,OnValueChanged("GUI_ProfileChanged"),DisableInPlayMode()] private OceanProfile defaultProfile;
+    [SerializeField,OnValueChanged("GUI_ProfileChanged"),DisableInPlayMode()] private OceanProfile defaultOceanProfile; // 초기 오션 프로파일
     private OceanProfile activeOceanProfile;
     [SerializeField, ReadOnly] private float islandregionIntensityFactor = 1.0f;
     public float IslandregionIntensityFactor
@@ -159,13 +159,16 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
     private void Start()
     {
-        SetWaveImmedietly(defaultProfile);
-        activeOceanProfile = defaultProfile;
+        SetWaveImmedietly(defaultOceanProfile);
+        activeOceanProfile = defaultOceanProfile;
 
         UpdateReferencingMaterials();
     }
 
-    private void UpdateReferencingMaterials()
+    /// <summary>
+    /// GlobalOceanManager의 속성값을 머트리얼의 속성값에 적용시킵니다.
+    /// </summary>
+    public void UpdateReferencingMaterials()
     {
         foreach(Material m in ReferencingMaterials)
         {
@@ -411,6 +414,6 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
     private void GUI_ProfileChanged()
     {
-        SetWaveImmedietly(defaultProfile);
+        SetWaveImmedietly(defaultOceanProfile);
     }
 }

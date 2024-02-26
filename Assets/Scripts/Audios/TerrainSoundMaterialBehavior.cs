@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,6 +40,11 @@ public class TerrainSoundMaterialBehavior : SoundMaterialBehavior
         return splatPosition;
     }
 
+    /// <summary>
+    /// 월드좌표의 position값이 Terrain에서 어떤 SoundMaterial을 가지는지 확인합니다.
+    /// </summary>
+    /// <param name="position"> 기준 위치 </param>
+    /// <returns></returns>
     public override SoundMaterial GetSoundMaterial(Vector3 position)
     {
         Vector3 terrain_coord = ConvertToSplatMapCoordinate(position);

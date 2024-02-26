@@ -18,10 +18,10 @@ public class BuoyantBehavior : MonoBehaviour
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
 
     [SerializeField,ReadOnly] private float submergeRate = 0.0f;
-    public float SubmergeRateZeroClamped { get {return Mathf.Clamp(submergeRate,float.NegativeInfinity,0.0f);}}
-    public float SubmergeRate { get { return submergeRate; } }
+    public float SubmergeRateZeroClamped { get {return Mathf.Clamp(submergeRate,float.NegativeInfinity,0.0f);}}     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
+    public float SubmergeRate { get { return submergeRate; } }                                                      // 물체가 얼마나 침수됐는지 표현합니다.
     private bool waterDetected = false;
-    public bool WaterDetected { get {return waterDetected;}}
+    public bool WaterDetected { get {return waterDetected;}}                                                        // 물체의 아래나 위에 연산 가능한 물이 있는지 나타냅니다.
 
     Rigidbody rbody;
 

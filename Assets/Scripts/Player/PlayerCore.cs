@@ -21,7 +21,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
     [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
-    [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 속도    
+    [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 파워  
     [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소 (곱연산)
 
     [Title("Physics")]
@@ -29,8 +29,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, Range(20f, 70f)] private float maxClimbSlope = 60f;            // 최고 이동가능 경사면
     [SerializeField] private float groundCastDistance = 0.1f;                       // 바닥 인식 거리
     [SerializeField] private LayerMask groundIgnore;                                // 바닥 인식 제외 레이어
-    [SerializeField, Range(0f, 0.8f)] private float WaterWalkDragging = 0.5f;       // 물에서 걸을 때 받는 항력
-    [SerializeField] private float WaterRigidbodyDrag = 10.0f;                      // 수영모드 시 변경되는 리지드바디 Drag 값
+    [SerializeField, Range(0f, 0.8f)] private float waterWalkDragging = 0.5f;       // 물에서 걸을 때 받는 항력
+    [SerializeField] private float swimRigidbodyDrag = 10.0f;                       // 수영모드 시 변경되는 리지드바디 Drag 값
     [SerializeField] private float swimUpforce = 1.0f;                              // 수영시 적용되는 추가 부력
     [SerializeField, ReadOnly] private bool grounding = false;                      // 디버그 : 바닥 체크
     [SerializeField, ReadOnly] private Vector3 groundNormal = Vector3.up;           // 디버그 : 바닥 법선
@@ -41,7 +41,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float sailboatAccelerationForce = 50f;                 // 조각배 가속력
     [SerializeField] private float sailboatSlopeInfluenceForce = 20f;               // 조각배 수면 각도 영향력
     [SerializeField] private float sailboatNearsurf = 0.5f;                         // 조각배 저공비행 취급 높이
-    [SerializeField] private float sailboatNearsurfaceBoost = 1.2f;                 // 조각배 저공비행 추가속도
+    [SerializeField] private float sailboatNearsurfBoost = 1.2f;                    // 조각배 저공비행 추가속도
     [SerializeField] private float sailboatFullDrag = 10.0f;                        // 조각배 완전 침수시 마찰력
     [SerializeField] private float sailboatScratchDrag = 1.0f;                      // 조각배 살짝 침수시 마찰력
     [SerializeField] private float sailboatMinimumDrag = 0.0f;                      // 조각배 최소 마찰력
@@ -346,7 +346,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Vector3 finalVelocity = slopedMoveVelocity * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
-                    finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.WaterWalkDragging);
+                    finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging);
                 }
 
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
@@ -368,7 +368,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 );
 
                 if (player.buoyant.WaterDetected)
-                    player.animator.speed = 1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.WaterWalkDragging;
+                    player.animator.speed = 1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging;
                 else 
                     player.animator.speed = 1.0f;
 
@@ -402,7 +402,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         public override void OnMovementEnter(PlayerCore player)
         {
-            player.rBody.drag = player.WaterRigidbodyDrag;
+            player.rBody.drag = player.swimRigidbodyDrag;
             base.OnMovementEnter(player);
             player.animator.SetBool("Swimming", true);
             player.animator.SetTrigger("SwimmingEnter");
@@ -474,7 +474,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             SailboatBehavior sailboat = player.sailboat;
             GustAmount = Mathf.InverseLerp(player.gustStartVelocity, player.gustMaxVelocity, Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude);
 
-            float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f ? player.sailboatNearsurfaceBoost : 1.0f;
+            float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f ? player.sailboatNearsurfBoost : 1.0f;
 
             if (player.sailboat.SubmergeRate < -0.5f)
             {

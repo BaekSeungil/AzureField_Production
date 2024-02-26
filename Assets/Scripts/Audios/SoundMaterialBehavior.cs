@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ public class SoundMaterialBehavior : MonoBehaviour
     }
 
     public virtual SoundMaterial GetSoundMaterial(Vector3 position) 
-    // position : 소리나는곳의 위치, 오버라이드 되지 않을 시 현재 soundMat 그대로 반환
+    // position : 소리나는곳의 위치, 오버라이드 되지 않을 시 현재 soundmat 그대로 반환
     {
         return soundmat;
     }
