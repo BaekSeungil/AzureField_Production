@@ -35,9 +35,9 @@ public class Interactable_Base : SerializedMonoBehaviour
                 return;
         }
 
-        if(InteractionInfo.IsInstanceValid)
+        if(UI_InteractionInfo.IsInstanceValid)
         {
-            InteractionInfo.Instance.HideCurrentInfo();
+            UI_InteractionInfo.Instance.HideCurrentInfo();
         }
 
         Interact();
@@ -52,9 +52,9 @@ public class Interactable_Base : SerializedMonoBehaviour
 
             if (interactionUIText.GetLocalizedString() != string.Empty)
             {
-                if (InteractionInfo.IsInstanceValid)
+                if (UI_InteractionInfo.IsInstanceValid)
                 {
-                    var infoUI = InteractionInfo.Instance;
+                    var infoUI = UI_InteractionInfo.Instance;
 
                     if (!infoUI.CompareCurrentTarget(transform))
                     {
@@ -73,9 +73,9 @@ public class Interactable_Base : SerializedMonoBehaviour
                 input.Player.Interact.performed -= OnInteractInput;
             input = null;
 
-            if (InteractionInfo.IsInstanceValid)
+            if (UI_InteractionInfo.IsInstanceValid)
             {
-                var infoUI = InteractionInfo.Instance;
+                var infoUI = UI_InteractionInfo.Instance;
 
                 if (infoUI.CompareCurrentTarget(transform))
                 {
@@ -93,9 +93,9 @@ public class Interactable_Base : SerializedMonoBehaviour
             input = null;
         }
 
-        if (InteractionInfo.IsInstanceValid)
+        if (UI_InteractionInfo.IsInstanceValid)
         {
-            var infoUI = InteractionInfo.Instance;
+            var infoUI = UI_InteractionInfo.Instance;
 
             if (infoUI.CompareCurrentTarget(transform))
             {
