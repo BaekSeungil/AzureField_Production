@@ -1,10 +1,13 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 
-public class RegionEnter : StaticSerializedMonoBehaviour<RegionEnter>
+public class UI_RegionEnter : StaticSerializedMonoBehaviour<UI_RegionEnter>
 {
+    // 플래이어가 새로운 섬 지역에 들어갔을 때 띄우는 UI 입니다.
+
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private TextMeshProUGUI regionText;
     [SerializeField] new private Animation animation;
@@ -13,6 +16,13 @@ public class RegionEnter : StaticSerializedMonoBehaviour<RegionEnter>
     {
         visualGroup.SetActive(true);
         regionText.text = regionName;
+        animation.Play();
+    }
+
+    public void OnRegionEnter(LocalizedString regionName)
+    {
+        visualGroup.SetActive(true);
+        regionText.text = regionName.GetLocalizedString();
         animation.Play();
     }
 

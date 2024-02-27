@@ -1,21 +1,29 @@
-﻿using FMODUnity;
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum PlaymenuElement
+public enum PlaymenuElement // 플레이메뉴 타입
 {
     Inventory
 }
 
-public class PlaymenuBehavior : StaticSerializedMonoBehaviour<PlaymenuBehavior>
+public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBehavior>
 {
+    //===============================
+    //
+    // [싱글턴 오브젝트]
+    // 인벤토리나, 지도, 기록 같은 플레이 메뉴 UI를 모두 관리합니다.
+    // 메뉴 관련 요소들은 하위 오브젝트가 아닌 여기서 호출하세요!
+    //
+    //===============================  
+
     [SerializeField] GameObject visualGroup;
     [SerializeField] GameObject inventoryObject;
 
-    [SerializeField] EventReference sound_Open;
-    [SerializeField] EventReference sound_Close;
+    [SerializeField] EventReference sound_Open;         // 소리 : 메뉴 오픈시 소리
+    [SerializeField] EventReference sound_Close;        // 소리 : 메뉴 닫을시 소리
 
     MainPlayerInputActions input;
 
@@ -50,6 +58,10 @@ public class PlaymenuBehavior : StaticSerializedMonoBehaviour<PlaymenuBehavior>
         }
     }
 
+    /// <summary>
+    /// 플레이 메뉴를 엽니다.
+    /// </summary>
+    /// <param name="playmenu">메뉴 종류</param>
     public void OpenPlaymenu(PlaymenuElement playmenu = PlaymenuElement.Inventory)
     {
         visualGroup.SetActive(true);
@@ -65,12 +77,15 @@ public class PlaymenuBehavior : StaticSerializedMonoBehaviour<PlaymenuBehavior>
 
             RuntimeManager.PlayOneShot(sound_Open);
             visualGroup.SetActive(true);
-            InventoryBehavior inventory = inventoryObject.GetComponent<InventoryBehavior>();
+            UI_InventoryBehavior inventory = inventoryObject.GetComponent<UI_InventoryBehavior>();
             inventory.SetInventory(inventoryContainer.InventoryData);
             inventory.SetMoney(inventoryContainer.Money);
         }
     }
 
+    /// <summary>
+    /// 플레이 메뉴를 닫습니다.
+    /// </summary>
     public void ClosePlaymenu()
     {
         visualGroup.SetActive(false);

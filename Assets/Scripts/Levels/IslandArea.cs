@@ -108,7 +108,7 @@ public class IslandArea : MonoBehaviour
 
     private void OnEnterIslandRegion()
     {
-        RegionEnter regionEnter = RegionEnter.Instance;
+        UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
         {
             regionEnter.OnRegionEnter(islandName.GetLocalizedString());

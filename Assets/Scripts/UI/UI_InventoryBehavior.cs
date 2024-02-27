@@ -7,12 +7,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior>
+public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBehavior>
 {
     //============================================
     //
     // [싱글턴 오브젝트]
-    // 인벤토리 UI를 관리하는 클래스입니다.
+    // 인벤토리를 표시하는 UI를 관리하는 클래스입니다.
     // OnEnable되면 자동으로 열립니다.
     // 
     //============================================
@@ -46,7 +46,7 @@ public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior
     }
 
     /// <summary>
-    /// data 딕셔너리를 받아와 현재 UI를 세팅
+    /// 인벤토리 데이터 딕셔너리를 받아와 현재 UI를 세팅
     /// </summary>
     /// <param name="data"></param>
     public void SetInventory(Dictionary<ItemData, int> data)

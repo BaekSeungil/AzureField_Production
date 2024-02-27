@@ -204,7 +204,7 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
 
     private void TryResetInventoryUI()
     {
-        InventoryBehavior uiInventory = InventoryBehavior.Instance;
+        UI_InventoryBehavior uiInventory = UI_InventoryBehavior.Instance;
         if (uiInventory != null) 
         { 
             uiInventory.SetInventory(inventoryData);
