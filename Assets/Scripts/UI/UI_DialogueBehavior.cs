@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using FMODUnity;
 using RichTextSubstringHelper;
 using Sirenix.OdinInspector;
@@ -9,26 +9,38 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
+/// <summary>
+/// 대사창 데이터
+/// </summary>
 [System.Serializable]
 public class DialogueData
 {
-    public LocalizedString speecher;
-    public LocalizedString context;
+    public LocalizedString speecher;        // 대사창에서 말하는 사람 이름
+    public LocalizedString context;         // 대사창에서 내용
 }
 
-public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
+public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBehavior>
 {
-    [SerializeField] private float textInterval = 0.05f;
-    [SerializeField] private float answerSpawnSpace = 50f;
-    [SerializeField] private GameObject answerSinglePrefab;
+    //============================================
+    //
+    // [싱글턴 오브젝트]
+    // 대사창 UI 표시를 관리하는 클래스입니다.
+    // 코루틴 부분은 Sequence 에서만 사용하세요!
+    // 
+    //============================================
+
+    [SerializeField] private float textInterval = 0.05f;            // 텍스트 출력 시간 간격
+    [SerializeField] private float answerSpawnSpace = 50f;          // 선택지 버튼 스폰 간격
 
     [Title("Sounds")]
-    [SerializeField] private EventReference sound_open;
-    [SerializeField] private EventReference sound_proceed;
-    [SerializeField] private EventReference sound_type;
-    [SerializeField] private EventReference sound_select;
-    [SerializeField] private EventReference sound_close;
+    [SerializeField] private EventReference sound_open;             // 소리 : 대사창 오픈
+    [SerializeField] private EventReference sound_proceed;          // 소리 : 대사창 진행
+    [SerializeField] private EventReference sound_type;             // 소리 : 대사창 텍스트 타이포
+    [SerializeField] private EventReference sound_select;           // 소리 : 선택지 선택됨
+    [SerializeField] private EventReference sound_close;            // 소리 : 창 닫김
+
     [Title("References")]
+    [SerializeField] private GameObject answerSinglePrefab;
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private TextMeshProUGUI speecher;
     [SerializeField] private TextMeshProUGUI context;
@@ -41,7 +53,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
     public MainPlayerInputActions Input { get { return input; } }
 
     private bool dialogueOpened = false;
-    public bool DialogueOpened { get { return dialogueOpened; } }
+    public bool DialogueOpened { get { return dialogueOpened; } }   // 현재 대사창 열렸는지 여부
 
     bool dialogueProceed = false;
 
@@ -66,6 +78,11 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         dialogueProceed = true;
     }
 
+    /// <summary>
+    /// Sequence 전용 : 대사창 코루틴
+    /// </summary>
+    /// <param name="dialogues"> 대사 데이터 </param>
+    /// <returns></returns>
     public IEnumerator Cor_DialogueSequence(DialogueData[] dialogues)
     {
         visualGroup.SetActive(true);
@@ -125,6 +142,10 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         dialogueOpened = true;
     }
 
+    /// <summary>
+    /// Sequence 전용 : 대사창 닫기 코루틴
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator Cor_CloseDialogue()
     {
         if (!dialogueOpened) yield break;
@@ -141,7 +162,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
 
     }
 
-    private DialogueAnswerSingle[] answerObjects;
+    private UI_DialogueAnswerSingle[] answerObjects;
     int index = 0;
     bool whileBreak = false;
     bool answerEntered = false;
@@ -161,12 +182,18 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         answerObjects[this.index].OnSelected();
     }
 
-    public IEnumerator Cor_Branch(LocalizedString[] answerStrings,Action<int> outCallback)
+    /// <summary>
+    /// Sequence 전용 : 선택지 코루틴
+    /// </summary>
+    /// <param name="answerStrings"> 선택지 텍스트 </param>
+    /// <param name="outIndex"> 선택된 인덱스를 외부로 보낼 때 사용 </param>
+    /// <returns></returns>
+    public IEnumerator Cor_Branch(LocalizedString[] answerStrings, Action<int> outIndex)
     {
         index = 0;
         whileBreak = false;
 
-        if(!dialogueOpened)
+        if (!dialogueOpened)
         {
             yield return StartCoroutine(Cor_OpenDialogue());
         }
@@ -175,25 +202,25 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         Tween tw = dialogueAnswerAnimation.GetTweens()[0];
         yield return tw.WaitForCompletion();
 
-        answerObjects = new DialogueAnswerSingle[answerStrings.Length];
+        answerObjects = new UI_DialogueAnswerSingle[answerStrings.Length];
 
-        for(int i = 0; i < answerStrings.Length; i++)
+        for (int i = 0; i < answerStrings.Length; i++)
         {
             GameObject newObject = Instantiate(answerSinglePrefab, answerStartPosition);
             newObject.transform.localPosition = new Vector3(0f, i * answerSpawnSpace);
-            answerObjects[i] = newObject.GetComponent<DialogueAnswerSingle>();
-            answerObjects[i].Initialize(this,answerStrings[i].GetLocalizedString(),i);
+            answerObjects[i] = newObject.GetComponent<UI_DialogueAnswerSingle>();
+            answerObjects[i].Initialize(this, answerStrings[i].GetLocalizedString(), i);
         }
 
 
         yield return new WaitForSeconds(0.5f);
 
-        if(index == 0) answerObjects[0].OnSelected();
+        if (index == 0) answerObjects[0].OnSelected();
         answerEntered = true;
-        
-        while(!(input.UI.Positive.WasPerformedThisFrame()&&!input.UI.Click.WasPerformedThisFrame()))
+
+        while (!(input.UI.Positive.WasPerformedThisFrame() && !input.UI.Click.WasPerformedThisFrame()))
         {
-            if(input.UI.Navigate.WasPressedThisFrame())
+            if (input.UI.Navigate.WasPressedThisFrame())
             {
                 Vector2 inp = input.UI.Navigate.ReadValue<Vector2>();
                 if (inp.y == 1f)
@@ -201,7 +228,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
                     RuntimeManager.PlayOneShot(sound_select);
                     answerObjects[index].OnDeselected();
 
-                    if (index == answerObjects.Length-1)
+                    if (index == answerObjects.Length - 1)
                         index = 0;
                     else
                         index++;
@@ -213,8 +240,8 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
                     RuntimeManager.PlayOneShot(sound_select);
                     answerObjects[index].OnDeselected();
 
-                    if(index == 0)
-                        index = answerObjects.Length-1;
+                    if (index == 0)
+                        index = answerObjects.Length - 1;
                     else
                         index--;
 
@@ -231,7 +258,7 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
 
         RuntimeManager.PlayOneShot(sound_open);
 
-        for(int i = answerObjects.Length - 1; i >= 0; i--)
+        for (int i = answerObjects.Length - 1; i >= 0; i--)
         {
             Destroy(answerObjects[i].gameObject);
         }
@@ -242,12 +269,17 @@ public class DialogueBehavior : StaticSerializedMonoBehaviour<DialogueBehavior>
         tw = dialogueAnswerAnimation.GetTweens()[1];
         yield return tw.WaitForCompletion();
 
-        outCallback(index);
+        outIndex(index);
     }
 
     private void ClearDialogue()
     {
         speecher.text = string.Empty;
         context.text = string.Empty;
+    }
+
+    private void OnDestroy()
+    {
+        input.UI.Positive.performed -= OnPressedPositive;
     }
 }

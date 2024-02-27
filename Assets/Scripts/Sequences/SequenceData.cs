@@ -1,4 +1,4 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -19,7 +19,7 @@ using UnityEngine.Timeline;
 [CreateAssetMenu(fileName = "NewSequenceData", menuName = "CreateNewSequenceBundleAsset", order = 1)]
 public class SequenceBundleAsset : SerializedScriptableObject
 {
-    public Sequence_Base[] sequenceBundles;
+    public Sequence_Base[] SequenceBundles;
 }
 
 public class Sequence_Base 
@@ -33,8 +33,7 @@ public class Sequence_Base
 [System.Serializable]
 public class Sequence_WaitForSeconds : Sequence_Base
 {
-    public float time;      // 다음으로 넘어갈때까지의 시간
-
+    public float time;      // 기다리는 시간
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
         yield return new WaitForSeconds(time);
@@ -80,17 +79,17 @@ public class Sequence_CloseDialogue : Sequence_Base
 [System.Serializable]
 public class Sequence_DialogueBranch : Sequence_Base
 {
-    public LocalizedString[] branchAnswers;
-    public SequenceBundleAsset[] sequenceAssets;
+    public LocalizedString[] branchAnswers;                 // 선택할 수 있는 텍스트 (UI)
+    public SequenceBundleAsset[] sequenceAssets;            // 선택지들에 대응되는 새롭게 시작할 시퀀스 에셋들
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("Invalid branches-sequenceAssets Length."); yield break; }
+        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("Invalid branches-sequenceAssets Length. Both are must be same"); yield break; }
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
 
-        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].sequenceBundles));
+        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
 }
 
@@ -100,7 +99,7 @@ public class Sequence_DialogueBranch : Sequence_Base
 [System.Serializable]
 public class Sequence_Timeline : Sequence_Base
 {
-    public TimelineAsset timeline;
+    public TimelineAsset timeline;      // 실행할 타임라인 에셋
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
@@ -116,7 +115,7 @@ public class Sequence_Timeline : Sequence_Base
 [System.Serializable]
 public class Sequence_GainMoney : Sequence_Base
 {
-    public int amount;
+    public int amount;      // 획득할 조개 개수
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
@@ -133,8 +132,8 @@ public class Sequence_GainMoney : Sequence_Base
 [System.Serializable]
 public class Sequence_ObtainItem : Sequence_Base
 {
-    public ItemData item;
-    public int quantity = 1;
+    public ItemData item;               // 획득할 아이템 데이터
+    public int quantity = 1;            // 개수
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {

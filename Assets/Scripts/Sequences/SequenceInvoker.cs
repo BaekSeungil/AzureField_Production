@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -15,8 +15,8 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 //
 //===============================
 {
-    private DialogueBehavior dialogue;
-    public DialogueBehavior Dialogue { get { return dialogue; } }
+    private UI_DialogueBehavior dialogue;
+    public UI_DialogueBehavior Dialogue { get { return dialogue; } }
     private PlayerInventoryContainer inventoryContainer;
     public PlayerInventoryContainer InventoryContainer { get { return inventoryContainer; } }
     private PlayableDirector playable;
@@ -32,7 +32,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 
     private void Start()
     {
-        dialogue = DialogueBehavior.Instance;
+        dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
     }
 

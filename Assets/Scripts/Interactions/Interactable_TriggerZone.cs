@@ -21,7 +21,7 @@ public class Interactable_TriggerZone : Interactable_Base
     {
         eventsOnStartInteract.Invoke();
         if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-        SequenceInvoker.Instance.StartSequence(sequenceAsset.sequenceBundles);
+        SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(transform);
     }
 }

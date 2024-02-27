@@ -1,19 +1,29 @@
-﻿using System;
+using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior>
 {
-    [SerializeField] private GameObject slotPrefab;
-    [SerializeField] private Vector2 slotDistance;
-    [SerializeField] private Vector2 offset;
-    [SerializeField] private int rowCount;
+    //============================================
+    //
+    // [싱글턴 오브젝트]
+    // 인벤토리 UI를 관리하는 클래스입니다.
+    // OnEnable되면 자동으로 열립니다.
+    // 
+    //============================================
+
+    [SerializeField] private Vector2 slotDistance;  // 아이템 슬롯 간격
+    [SerializeField] private Vector2 offset;        // 아이템 슬롯 오프셋
+    [SerializeField] private int rowCount;          // 가로줄 숫자
+
+    [Title("References")]
     [SerializeField] private RectTransform slotViewport;
+    [SerializeField] private GameObject slotPrefab;
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI noItemText;
 
@@ -35,6 +45,10 @@ public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior
         input.UI.Navigate.performed += NavigateInventory;
     }
 
+    /// <summary>
+    /// data 딕셔너리를 받아와 현재 UI를 세팅
+    /// </summary>
+    /// <param name="data"></param>
     public void SetInventory(Dictionary<ItemData, int> data)
     {
         if (instanciatedSlots == null) instanciatedSlots = new List<GameObject>();
@@ -60,11 +74,18 @@ public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior
         }
     }
 
+    /// <summary>
+    /// 조개 수량 텍스트를 설정
+    /// </summary>
+    /// <param name="data"></param>
     public void SetMoney(int value)
     {
         moneyText.text = value.ToString();
     }
 
+    /// <summary>
+    /// 인벤토리 슬롯들을 모두 제거
+    /// </summary>
     public void ClearInventory()
     {
         foreach (var slot in instanciatedSlots)
@@ -110,6 +131,7 @@ public class InventoryBehavior : StaticSerializedMonoBehaviour<InventoryBehavior
 
     private void OnDisable()
     {
+        input.UI.Navigate.performed -= NavigateInventory;
         input.Disable();
     }
 
