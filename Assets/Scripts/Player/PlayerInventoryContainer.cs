@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,6 +35,10 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         }
     }
 
+    /// <summary>
+    /// 아이템을 하나 추가합니다
+    /// </summary>
+    /// <param name="item">아이템</param>
     public void AddItem(ItemData item)
     {
         if (inventoryData.ContainsKey(item))
@@ -49,6 +53,11 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         TryResetInventoryUI();
     }
 
+    /// <summary>
+    /// 아이템을 quantity 만큼 추가합니다
+    /// </summary>
+    /// <param name="item">아이템</param>
+    /// <param name="quantity">수량</param>
     public void AddItem(ItemData item, int quantity)
     {
         if (quantity < 0) { Debug.LogWarning("InventoryContainer : 음수의 아이템 추가 시도"); return; }
@@ -65,6 +74,12 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         TryResetInventoryUI();
     }
 
+    /// <summary>
+    /// 아이템 창을 여는 코루틴 입니다
+    /// </summary>
+    /// <param name="item">아이템</param>
+    /// <param name="quantity">개수</param>
+    /// <returns></returns>
     public IEnumerator Cor_ItemWindow(ItemData item,int quantity)
     {
         ItemObtainInfo info = ItemObtainInfo.Instance;
@@ -73,6 +88,11 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         yield return info.StartCoroutine(info.Cor_OpenWindow(item,quantity));
     }
 
+    /// <summary>
+    /// 아이템을 제거합니다.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns> 아이템 제거 실패 시 false </returns>
     public bool RemoveItem(ItemData item)
     {
         if (inventoryData.ContainsKey(item))
@@ -98,6 +118,12 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
 
     }
 
+    /// <summary>
+    /// 아이템을 quantity만큼 제거합니다.
+    /// </summary>
+    /// <param name="item">아이템</param>
+    /// <param name="quantity">수량</param>
+    /// <returns>아이템 제거 실패 시 false</returns>
     public bool RemoveItem(ItemData item, int quantity)
     {
         if (inventoryData.ContainsKey(item))
@@ -125,6 +151,11 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         }
     }
 
+    /// <summary>
+    /// itemID가 인벤토리에 있는지 확인합니다.
+    /// </summary>
+    /// <param name="itemID"></param>
+    /// <returns></returns>
     public bool HasItem(string itemID)
     {
         var items = inventoryData.Keys;
@@ -136,6 +167,10 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         return false;
     }
 
+    /// <summary>
+    /// 조개를 추가합니다
+    /// </summary>
+    /// <param name="value">수량</param>
     public void AddMoney(int value)
     {
         int le = money;
@@ -145,6 +180,11 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
         if (info != null) { info.MoneyChanged(le, value); return; }
     }
 
+    /// <summary>
+    /// 조개를 제거합니다.
+    /// </summary>
+    /// <param name="value">수량</param>
+    /// <returns></returns>
     public bool UseMoney(int value)
     {
         if (money < value) return false;

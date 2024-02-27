@@ -1,18 +1,18 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueAnswerSingle : MonoBehaviour
+public class UI_DialogueAnswerSingle : MonoBehaviour
 {
     [SerializeField] private GameObject SelectedIndicator;
     [SerializeField] private TextMeshProUGUI contextText;
     [SerializeField] private Button button;
     private int index;
-    private DialogueBehavior dialogueBehavior;
+    private UI_DialogueBehavior dialogueBehavior;
 
-    public void Initialize(DialogueBehavior behavior,string context,int _index)
+    public void Initialize(UI_DialogueBehavior behavior,string context,int _index)
     {
         dialogueBehavior = behavior;
         contextText.text = context;
