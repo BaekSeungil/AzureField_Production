@@ -1,11 +1,17 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InteractionInfo : StaticSerializedMonoBehaviour<InteractionInfo>
+public class UI_InteractionInfo : StaticSerializedMonoBehaviour<UI_InteractionInfo>
 {
+    //===============================
+    //
+    // [싱글턴 오브젝트]
+    // Interaction이 가능한 오브젝트에 가까이가면 띄우는 UI들을 관리합니다.
+    //
+    //===============================  
     [SerializeField] private CanvasGroup visualGroup;
     [SerializeField] private RectTransform panelRect;
     [SerializeField] private TextMeshProUGUI textMesh;

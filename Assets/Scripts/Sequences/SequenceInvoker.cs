@@ -6,15 +6,15 @@ using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(PlayableDirector))]
 public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
-//===============================
-//
-// [싱글턴 오브젝트]
-// 시퀀스 리스트를 재생할 수 있는 스크립트 입니다.
-// StartSequence를 통해 매개변수로 시퀀스 리스트를 넣어 해당 시퀀스 묶음을 순차적으로 재생합니다. 
-// 작동중인 시퀀스가 있다면, 새로 재생을 시도한 시퀀스가 무시됩니다.
-//
-//===============================
 {
+    //===============================
+    //
+    // [싱글턴 오브젝트]
+    // 시퀀스 리스트를 재생할 수 있는 스크립트 입니다.
+    // StartSequence를 통해 매개변수로 시퀀스 리스트를 넣어 해당 시퀀스 묶음을 순차적으로 재생합니다. 
+    // 작동중인 시퀀스가 있다면, 새로 재생을 시도한 시퀀스가 무시됩니다.
+    //
+    //===============================
     private UI_DialogueBehavior dialogue;
     public UI_DialogueBehavior Dialogue { get { return dialogue; } }
     private PlayerInventoryContainer inventoryContainer;
@@ -49,7 +49,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     private IEnumerator Cor_StartSequenceChain(Sequence_Base[] sequenceChain)
     {
         sequenceRunning = true;
-        PlaymenuBehavior playmenu = PlaymenuBehavior.Instance;
+        UI_PlaymenuBehavior playmenu = UI_PlaymenuBehavior.Instance;
         playmenu.DisableInput();
         PlayerCore player = PlayerCore.Instance;
         player.DisableForSequence();
