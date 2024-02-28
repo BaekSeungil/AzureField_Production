@@ -4,13 +4,23 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-public class SplinePlayerTracker : MonoBehaviour
+public class SplinePlayerTracker : MonoBehaviour,IAsyncLoadObject
 {
     // 오브젝트의 Transform이 스플라인(베지어 커브) 위에서 플레이어와 가장 가까운 거리를 따라다닙니다.
 
     [SerializeField] private SplineContainer track;                 // 스플라인
     [SerializeField] private float maxTrackDistance = 100f;         // 인식 최대거리
     Transform playerTF;
+
+    void IAsyncLoadObject.OnObjectLoaded()
+    {
+        playerTF = PlayerCore.Instance.transform;
+    }
+
+    void IAsyncLoadObject.OnObjectUnloaded()
+    {
+        FindObjectsOfTypeAll<IAsyncLoadObject>();
+    }
 
     private void OnEnable()
     {
