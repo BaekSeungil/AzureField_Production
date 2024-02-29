@@ -22,7 +22,7 @@ public class IslandArea : MonoBehaviour
     public LocalizedString IslandName { get { return islandName; } }            // 섬 이름 ( UI )
     [SerializeField] private float innerArea = 50f;                             // “내부 구역” 경계
     [SerializeField] private float outerArea = 100f;                            // “외부 구역” 경계
-    [SerializeField] private UnityAction action_OnInnerEnter;                   // ※섬 내부에서만 사용할 것※ 섬 내부 구역 진입시 발생하는 이벤트
+    [SerializeField] private UnityEvent eventOnInnerEnter;                   // ※섬 내부에서만 사용할 것※ 섬 내부 구역 진입시 발생하는 이벤트
     [SerializeField] private EventReference sound_Enter;                        // 섬 진입 시 사운드
 
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
@@ -120,8 +120,8 @@ public class IslandArea : MonoBehaviour
 
     private void OnInnerAreaEnter()
     {
-        if (action_OnInnerEnter != null)
-            action_OnInnerEnter.Invoke();
+        if (eventOnInnerEnter != null)
+            eventOnInnerEnter.Invoke();
 
         UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
@@ -137,5 +137,10 @@ public class IslandArea : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, innerArea);
         Gizmos.color = new Color(1f, 1f, 0f, 1.0f);
         Gizmos.DrawWireSphere(transform.position, outerArea);
+    }
+
+    public void IslandDebug()
+    {
+        Debug.Log("Entered");
     }
 }
