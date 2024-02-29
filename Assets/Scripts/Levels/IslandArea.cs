@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Localization;
 
 public class IslandArea : MonoBehaviour
@@ -19,8 +20,9 @@ public class IslandArea : MonoBehaviour
     public string IslandID { get { return islandID; } }                         // 섬 구분 ID
     [SerializeField] private LocalizedString islandName;    
     public LocalizedString IslandName { get { return islandName; } }            // 섬 이름 ( UI )
-    [SerializeField] private float areaFadeStart = 50f;                         // “내부 구역” 경계
-    [SerializeField] private float fullArea = 100f;                             // “외부 구역” 경계
+    [SerializeField] private float innerArea = 50f;                             // “내부 구역” 경계
+    [SerializeField] private float outerArea = 100f;                            // “외부 구역” 경계
+    [SerializeField] private UnityAction action_OnInnerEnter;                   // ※섬 내부에서만 사용할 것※ 섬 내부 구역 진입시 발생하는 이벤트
     [SerializeField] private EventReference sound_Enter;                        // 섬 진입 시 사운드
 
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
@@ -67,15 +69,15 @@ public class IslandArea : MonoBehaviour
 
             if (playerEnterFlag == false)
             {
-                if(Vector3.Distance(playerPosition.position,transform.position) < areaFadeStart)
+                if(Vector3.Distance(playerPosition.position,transform.position) < innerArea)
                 {
                     playerEnterFlag = true;
-                    OnEnterIslandRegion();
+                    OnInnerAreaEnter();
                 }
             }
             else
             {
-                if (Vector3.Distance(playerPosition.position, transform.position) > areaFadeStart)
+                if (Vector3.Distance(playerPosition.position, transform.position) > innerArea)
                 {
                     playerEnterFlag = false;
                 }
@@ -83,9 +85,14 @@ public class IslandArea : MonoBehaviour
         
             if(distanceValue > 0)
             {
-                if(supressWave)
+                if (supressWave)
                 {
-                    GlobalOceanManager.Instance.IslandregionIntensityFactor = Mathf.Lerp(1.0f,waveIntensity,distanceValue);
+                    float value = Mathf.Lerp(1.0f, waveIntensity, distanceValue);
+
+                    if (value < 0.01f) value = 0f;
+                    else if (value > 0.99f) value = 1f;
+
+                    GlobalOceanManager.Instance.IslandregionIntensityFactor = value;
                 }
             }
         }
@@ -98,16 +105,24 @@ public class IslandArea : MonoBehaviour
     /// <returns></returns>
     public float GetAreaInterpolation(Vector3 t_postion)
     {
-        if (Vector3.Distance(transform.position, t_postion) > fullArea) return 0;
-        else if(Vector3.Distance(transform.position, t_postion) < areaFadeStart) return 1;
+        if (Vector3.Distance(transform.position, t_postion) > outerArea) return 0;
+        else if(Vector3.Distance(transform.position, t_postion) < innerArea) return 1;
         else
         {
-            return Mathf.InverseLerp(fullArea, areaFadeStart, Vector3.Distance(transform.position, t_postion));
+            float value = Mathf.InverseLerp(outerArea, innerArea, Vector3.Distance(transform.position, t_postion));
+
+            if (value < 0.01f) value = 0f;
+            else if (value > 0.99f) value = 1f;
+
+            return value;
         }
     }
 
-    private void OnEnterIslandRegion()
+    private void OnInnerAreaEnter()
     {
+        if (action_OnInnerEnter != null)
+            action_OnInnerEnter.Invoke();
+
         UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
         {
@@ -119,8 +134,8 @@ public class IslandArea : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(0f, 1f, 0f, 1.0f);
-        Gizmos.DrawWireSphere(transform.position, areaFadeStart);
+        Gizmos.DrawWireSphere(transform.position, innerArea);
         Gizmos.color = new Color(1f, 1f, 0f, 1.0f);
-        Gizmos.DrawWireSphere(transform.position, fullArea);
+        Gizmos.DrawWireSphere(transform.position, outerArea);
     }
 }
