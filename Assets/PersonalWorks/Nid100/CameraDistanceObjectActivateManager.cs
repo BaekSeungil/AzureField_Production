@@ -40,33 +40,35 @@ public class CameraDistanceObjectActivateManager : MonoBehaviour
     public float DistanceComparison(int num) 
     {
         Dist = Vector3.Distance(mCamera.transform.position, enemyObject[num].transform.position);
+        //Debug.Log("Dist : " + Dist);
         return Dist;
+        
     }
 
     /// <summary>
-    /// 카메라와 오브젝트의 거리가 cameraObjectActivateDistance 보다 높을 경우 오브젝트 활성화
+    /// 카메라와 오브젝트의 거리에 따른 오브젝트 비활성화
     /// <summary>
-    public void ObjectActive()
+    public void ObjectDisabled()
     {
         for (int i = 0; i < enemyObject.Length; i++)
         {
             if (DistanceComparison(i) > cameraObjectActivateDistance)
             {
-                enemyObject[i].SetActive(true);
+                enemyObject[i].SetActive(false);
             }
         }
     }
 
     /// <summary>
-    /// 카메라와 오브젝트의 거리가 cameraObjectActivateDistance 보다 낮을 경우 오브젝트 비활성화
+    /// 카메라와 오브젝트의 거리에 따른 오브젝트 활성화
     /// <summary>
-    public void ObjectDisabled() 
+    public void ObjectActive() 
     {
         for (int i = 0; i < enemyObject.Length; i++)
         {
             if (DistanceComparison(i) < cameraObjectActivateDistance)
             {
-                enemyObject[i].SetActive(false);
+                enemyObject[i].SetActive(true);
             }
         }
     }
