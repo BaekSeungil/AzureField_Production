@@ -18,21 +18,40 @@ public class Spline_Quest : MonoBehaviour
     public string spline_questiD { get { return Spline_Quset_ID; } }
 
     [SerializeField] private LocalizedString Spline_Quest_Name; // Spline 퀘스트 이름
-    public LocalizedString spline_quest_name;
+    private LocalizedString spline_quest_name;
 
-    private SplineComponent spline; //Spline 호출;
 
+    [SerializeField] private float ClosetPoint; //스플라인 감지 거리
+    public float closetPoint {get{return ClosetPoint;}}
+
+    private bool HasWaring = false; //경고를 했는지 여부
+    private SplineContainer spline; 
     private void Awake()
     {
         CheckPlayer = GameObject.FindGameObjectWithTag("Player");
-        spline = GetComponent<SplineComponent>();
-
+        spline = GetComponent<SplineContainer>();
     }
 
-    private void Update()
+    /// <summary>
+    /// 스플라인과 플레이어간 거리 계산
+    /// </summary>
+    private void FixedUpdate()
     {
-        
+          
+       float distance = Vector3.Distance(transform.position,CheckPlayer.transform.position);
+
+        if(distance > ClosetPoint && !HasWaring)
+        {
+            Debug.Log("경로 이탈");
+            HasWaring = true;
+        }
+        else if(distance <= ClosetPoint && HasWaring)
+        {
+            HasWaring = false;
+        }
+
     }
 
+   
 
 }
