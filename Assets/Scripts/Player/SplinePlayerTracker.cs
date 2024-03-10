@@ -14,6 +14,7 @@ public class SplinePlayerTracker : MonoBehaviour
 
     /// <summary>
     /// Spine의 내부에 있는지 확인하는 함수입니다. *반드시 스플라인이 "시계방향"으로 진행해야 합니다!!
+    /// 출처 : https://forum.unity.com/threads/figure-out-whether-a-point-is-inside-a-unity-spline-new-spline-system.1508984/
     /// </summary>
     /// <param name="point">지점</param>
     /// <param name="splineContainer">스플라인 영역</param>
