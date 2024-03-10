@@ -63,6 +63,9 @@ public class SplinePlayerTracker : MonoBehaviour
                 transform.position = new Vector3(nearPoint.x, nearPoint.y, nearPoint.z);
             }
         }
+
+
+
     }
 
     private void OnDrawGizmosSelected()
