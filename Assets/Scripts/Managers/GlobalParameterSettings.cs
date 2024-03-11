@@ -6,6 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewGlobalParameterSettings", menuName = "NewGlobalParameterSettings")]
 public class GlobalParameterSettings : SerializedScriptableObject
 {
-    [SerializeField] private Dictionary<string, TypeValuePair> settings;
-    public Dictionary<string, TypeValuePair> Settings { get { return settings; } }
+    [SerializeField] private Dictionary<string, int> settings;
+    public Dictionary<string, int> Settings { get { return settings; } }
 }
