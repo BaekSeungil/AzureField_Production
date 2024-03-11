@@ -42,3 +42,5 @@ public class SplinePlayerTracker : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, maxTrackDistance);
     }
 }
+
+

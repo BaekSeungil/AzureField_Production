@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TestVolumetric
-  m_Shader: {fileID: -6465566751694194690, guid: c5611a9c5ad201a428a06a1a965476cb,
+  m_Shader: {fileID: -6465566751694194690, guid: 3e5e97012cf0fff4980206e058091a92,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -30,10 +30,10 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3001
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _DistanceMin _numLightSteps
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -110,6 +110,10 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DiatanceFalloff: 1
+    - _DistanceMax: 1000
+    - _DistanceMin: 400
+    - _DistanceMult: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
@@ -117,6 +121,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _MinDistance: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 1
@@ -131,18 +136,18 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     - _darknessThreshold: 0
-    - _densityScale: 2
+    - _densityScale: 30
     - _lightAbosrb: 1
-    - _lightStepSize: 0.01
-    - _numLightSteps: 10
+    - _lightStepSize: 0.02
+    - _numLightSteps: 20
     - _numSteps: 20
-    - _stepSize: 0.1
-    - _transmittance: 2
+    - _stepSize: 0.08
+    - _transmittance: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.9955256, g: 1, b: 0.84339625, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowColor: {r: 0.25904235, g: 0.7245045, b: 0.9339623, a: 1}
+    - _ShadowColor: {r: 0.3226415, g: 0.75301075, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Sphere: {r: 0, g: 0, b: 0, a: 5.01}
     - _offset: {r: 0.5, g: 0.5, b: 0.5, a: 0}
