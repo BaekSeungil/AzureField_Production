@@ -30,7 +30,7 @@ public class FairwindQuest : MonoBehaviour
     private void Awake()
     {
         CheckPlayer = GameObject.FindGameObjectWithTag("Player");
-        spline = GetComponent<SplineContainer>();
+
     }
 
     /// <summary>
@@ -56,12 +56,15 @@ public class FairwindQuest : MonoBehaviour
 
    private void OnDrawGizmos() 
    {
-
+  
+        spline = GetComponent<SplineContainer>();
        foreach(var point in  spline.Spline.ToArray())
        {
-    
+ 
          Gizmos.color = Color.red;
-         Gizmos.DrawSphere(point.Position, closetPoint);
+         Gizmos.DrawSphere( new Vector3(point.Position.x,point.Position.y,
+         point.Position.z) + transform.position, closetPoint);
+
        }
    }
 
