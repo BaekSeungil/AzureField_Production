@@ -6,7 +6,8 @@ using UnityEngine.Events;
 using UnityEngine.Localization;
 using UnityEngine.Splines;
 
-public class Spline_Quest : MonoBehaviour
+//FairwindQuest
+public class FairwindQuest : MonoBehaviour
 {
     /*
 
@@ -37,21 +38,34 @@ public class Spline_Quest : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-          
-       float distance = Vector3.Distance(transform.position,CheckPlayer.transform.position);
+       
+        
+        
+        // float distance = Vector3.Distance(pos,CheckPlayer.transform.position);
 
-        if(distance > ClosetPoint && !HasWaring)
-        {
-            Debug.Log("경로 이탈");
-            HasWaring = true;
-        }
-        else if(distance <= ClosetPoint && HasWaring)
-        {
-            HasWaring = false;
-        }
-
+        // if(distance > ClosetPoint && !HasWaring)
+        // {
+        //     Debug.Log("경로 이탈");
+        //     HasWaring = true;
+        // }
+        // else if(distance <= ClosetPoint && HasWaring)
+        // {
+        //     HasWaring = false;
+        // }
     }
 
-   
+   private void OnDrawGizmos() 
+   {
+
+       foreach(var point in  spline.Spline.ToArray())
+       {
+    
+         Gizmos.color = Color.red;
+         Gizmos.DrawSphere(point.Position, closetPoint);
+       }
+   }
+
 
 }
+
+
