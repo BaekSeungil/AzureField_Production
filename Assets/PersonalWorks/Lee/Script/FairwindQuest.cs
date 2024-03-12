@@ -22,10 +22,12 @@ public class FairwindQuest : MonoBehaviour
     private LocalizedString spline_quest_name;
 
 
-    [SerializeField] private float ClosetPoint; //스플라인 감지 거리
+    [SerializeField] private float ClosetPoint; //스플라인 내 감지 거리
     public float closetPoint {get{return ClosetPoint;}}
 
-    private bool HasWaring = false; //경고를 했는지 여부
+    [SerializeField] private float OutPoint; //스플라인 외 감지거리
+    public float outPoint{get{return OutPoint;}}
+
     private SplineContainer spline; 
     private void Awake()
     {
@@ -36,36 +38,41 @@ public class FairwindQuest : MonoBehaviour
     /// <summary>
     /// 스플라인과 플레이어간 거리 계산
     /// </summary>
-    private void FixedUpdate()
+    private void Update()
     {
-       
-        
-        
-        // float distance = Vector3.Distance(pos,CheckPlayer.transform.position);
+             
 
-        // if(distance > ClosetPoint && !HasWaring)
-        // {
-        //     Debug.Log("경로 이탈");
-        //     HasWaring = true;
-        // }
-        // else if(distance <= ClosetPoint && HasWaring)
-        // {
-        //     HasWaring = false;
-        // }
+        
     }
 
    private void OnDrawGizmos() 
    {
   
         spline = GetComponent<SplineContainer>();
-       foreach(var point in  spline.Spline.ToArray())
-       {
- 
-         Gizmos.color = Color.red;
-         Gizmos.DrawSphere( new Vector3(point.Position.x,point.Position.y,
-         point.Position.z) + transform.position, closetPoint);
 
-       }
+        if (spline == null || spline.Spline == null)
+         return;
+
+        foreach(var point in  spline.Spline.ToArray())
+        {
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.TransformPoint(point.Position), closetPoint);
+            
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.TransformPoint(point.Position), outPoint);
+
+            //float distance = Vector3.Distance(transform.TransformPoint(point.Position),CheckPlayer.transform.position);
+            // Gizmos.DrawSphere( new Vector3(point.Position.x,point.Position.y,
+            // point.Position.z) + transform.position, closetPoint);
+
+            
+
+
+        }
+
+        
+      
    }
 
 
