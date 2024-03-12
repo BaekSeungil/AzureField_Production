@@ -3,20 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum DataType
-{
-    BOOL,
-    INT,
-    FLOAT,
-    STRING
-}
-
-public struct TypeValuePair
-{
-    public string Value;
-    public DataType Type;
-}
-
 public class GlobalGameParameters : StaticSerializedMonoBehaviour<GlobalGameParameters>
 {
     //====================================
