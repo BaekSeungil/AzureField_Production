@@ -38,25 +38,34 @@ public class FairwindQuest : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-
-        spline = new SplineContainer();
+       
         
-        Vector3 pos = spline.transform.position;
+        
+        // float distance = Vector3.Distance(pos,CheckPlayer.transform.position);
 
-       float distance = Vector3.Distance(transform.position,CheckPlayer.transform.position);
-
-        if(distance > ClosetPoint && !HasWaring)
-        {
-            Debug.Log("경로 이탈");
-            HasWaring = true;
-        }
-        else if(distance <= ClosetPoint && HasWaring)
-        {
-            HasWaring = false;
-        }
-
+        // if(distance > ClosetPoint && !HasWaring)
+        // {
+        //     Debug.Log("경로 이탈");
+        //     HasWaring = true;
+        // }
+        // else if(distance <= ClosetPoint && HasWaring)
+        // {
+        //     HasWaring = false;
+        // }
     }
 
-   
+   private void OnDrawGizmos() 
+   {
+
+       foreach(var point in  spline.Spline.ToArray())
+       {
+    
+         Gizmos.color = Color.red;
+         Gizmos.DrawSphere(point.Position, closetPoint);
+       }
+   }
+
 
 }
+
+
