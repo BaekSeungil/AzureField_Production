@@ -1,4 +1,4 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class FollowTargetXZ : MonoBehaviour
 {
-    [Required]
     public Transform target;
 
     [SerializeField] private bool isCliped = false;     // 현재 오브젝트가 연속적으로 움직이길 원하면 false, clipSize에 따라 불연속적으로 움직이길 원하면 true
