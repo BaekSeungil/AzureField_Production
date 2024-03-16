@@ -13,7 +13,7 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
     #region Properties
     [SerializeField] private float countDownTimer = 30;       //플레이어가 영역밖으로 나가면 카운트다운으로 사용될 변수입니다.
     [SerializeField] private static string recentLand;                //최근 방문한 섬
-    [SerializeField] private static Vector3 respawnTransgorm;
+    [SerializeField] private static Vector3 respawnTransgorm;       //최근 방문한 섬의 리스폰 좌표
     #endregion
 
     public Transform playerPoint;                           //플레이어 좌표
@@ -42,6 +42,11 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
         isInside = IsInsideSpline(ToVector3(playerPoint), splineContainer[0], splineBounds, out nearestPointInSpline);
     }
 
+    /// <summary>
+    /// 섬 방문 시, 해당 섬의 ID와 리스폰 좌표를 가져옵니다.
+    /// </summary>
+    /// <param name="landName"></param>
+    /// <param name="spawnTransform"></param>
     public static void RecentLandRecord(string landName,Vector3 spawnTransform)
     {
         recentLand = landName;
