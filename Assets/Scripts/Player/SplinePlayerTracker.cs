@@ -17,6 +17,9 @@ public class SplinePlayerTracker : MonoBehaviour
         var player = PlayerCore.Instance;
         if (player != null)
             playerTF = player.transform;
+        
+        Spline sp = new Spline();
+        Vector3 pos = sp.ToArray()[0].Position;
     }
 
     private void FixedUpdate()
