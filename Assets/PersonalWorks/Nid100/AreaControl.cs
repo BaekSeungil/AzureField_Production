@@ -11,20 +11,25 @@ using UnityEngine.Splines;
 public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
 {
     #region Properties
-    [SerializeField] private float countDownTimer = 30;       //플레이어가 영역밖으로 나가면 카운트다운으로 사용될 변수입니다.
+    [SerializeField] private float countDownTimer = 30f;       //플레이어가 영역밖으로 나가면 카운트다운으로 사용될 변수입니다.
+    [SerializeField] private float countDownOverTimer = 6f;     //countDownTimer의 타이머가 끝나고 플레이어 익사 애니메이션이 나오는 시간입니다.
     [SerializeField] private static string recentLand;                //최근 방문한 섬
     [SerializeField] private static Vector3 respawnTransgorm;
+    [SerializeField] private GameObject player;
+    [SerializeField] private Transform playerPoint;             //플레이어 좌표
     #endregion
-
-    public Transform playerPoint;                           //플레이어 좌표
+                    
     public bool isInside;                                   //플레이어의 통제구역 내부/외부를 확인
     public SplineContainer[] splineContainer;               //스플라인으로 만든 통제구역범위
     public Bounds splineBounds;                             //Bounds입니다. 건들지마시오.                   
 
+    
 
     protected override void Awake()
     {
         base.Awake();
+        player = GameObject.Find("MainCharacter");
+        playerPoint = GameObject.Find("MainCharacter").GetComponent<Transform>();
     }
 
         void Update()
@@ -74,12 +79,19 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
         if (countDownTimer >= 0f)
         {
             countDownTimer -= Time.deltaTime;
-            Debug.Log("남은 시간 : "+countDownTimer);
+            Debug.Log("남은 시간 : " + countDownTimer);
         }
-        else
+        else if (countDownTimer >= -countDownOverTimer)
+        {
+            countDownTimer -= Time.deltaTime;
+            player.GetComponent<PlayerCore>().DisableForSequence();
+            player.GetComponent<PlayerCore>().SailboatQuit();
+
+            Debug.Log("캐릭터 이동정지 및 조각배 강제 하차");
+        }
+        else 
         {
             playerPoint.position = respawnTransgorm;
-            Debug.Log("카운트다운 종료");
         }
 
         
