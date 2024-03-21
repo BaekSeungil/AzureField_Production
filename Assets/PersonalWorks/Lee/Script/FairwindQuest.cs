@@ -7,6 +7,13 @@ using UnityEngine.Localization;
 using UnityEngine.Splines;
 
 //FairwindQuest
+
+public enum QuestType
+{
+    Start, //퀘스트 시작(중간 지점용으로 사용가능)
+    End    //퀘스트 마무리(보상 지급과 퀘스트 빌드중 퀘스트 영구 삭제)
+};
+
 public class FairwindQuest : MonoBehaviour
 {
     /*
@@ -19,6 +26,9 @@ public class FairwindQuest : MonoBehaviour
     [SerializeField] private string Spline_Quset_ID; //  Spline 퀘스트 ID
     public string spline_questiD { get { return Spline_Quset_ID; } }
 
+    [SerializeField] private QuestType questType; // 퀘스트 타입
+    public QuestType QuestType { get { return questType; } }
+
     [SerializeField] private LocalizedString Spline_Quest_Name; // Spline 퀘스트 이름
     private LocalizedString spline_quest_name;
 
@@ -26,7 +36,11 @@ public class FairwindQuest : MonoBehaviour
     [SerializeField] private float ClosetPoint; //스플라인 좌표 확인 범위
     public float closetPoint {get{return ClosetPoint;}}
 
-    [SerializeField] private float CountTime;
+    [SerializeField] private int StartKnotIndex; //처음 시작 좌표
+
+    [SerializeField] private int LastKontIndex; // 마지막 좌표값 배열
+
+    [SerializeField] private float CountTime; // 카운트다운 시간 설정
 
     private float timer;
 
@@ -54,6 +68,7 @@ public class FairwindQuest : MonoBehaviour
             if(timer <= 0)
             {
                 Debug.Log("미션실패");
+                timerOnOff = false;
             }
         }
         else if(timerOnOff == false)
@@ -78,6 +93,7 @@ public class FairwindQuest : MonoBehaviour
             //Gizmos 좌표 범위 설정
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.TransformPoint(point.Position), closetPoint);
+
           
         }
 
