@@ -134,6 +134,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    public void SailboatQuit()
+    {
+        CurrentMovement = new Movement_Ground();
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -628,6 +633,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
         else
         {
+
             CurrentMovement = new Movement_Ground();
         }
     }
