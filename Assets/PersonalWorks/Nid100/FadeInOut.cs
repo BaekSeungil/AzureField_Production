@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FadeInOut : MonoBehaviour
+public class FadeInOut : StaticSerializedMonoBehaviour<FadeInOut>
 {
     public float fadeSpeed = 1f;
-    public bool fadeInOnStart = true;
-    public bool fadeOutOnExit = true;
 
     private CanvasGroup canvasGroup;
 
@@ -18,11 +16,13 @@ public class FadeInOut : MonoBehaviour
 
     public void FadeInExecution()
     {
+        StopAllCoroutines();
         StartCoroutine(FadeIn());
     }
 
     public void FadeOutExecution()
     {
+        StopAllCoroutines();
         StartCoroutine(FadeOut());
     }
 
