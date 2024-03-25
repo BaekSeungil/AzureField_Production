@@ -15,9 +15,9 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
     [SerializeField] private float countDownOverTimer = 6f;     //countDownTimer의 타이머가 끝나고 플레이어 익사 애니메이션이 나오는 시간입니다.
     [SerializeField] private static string recentLand;                //최근 방문한 섬
     [SerializeField] private static Vector3 respawnTransgorm;
-    [SerializeField] private GameObject player;
+    [SerializeField] private PlayerCore player;
     [SerializeField] private Transform playerPoint;             //플레이어 좌표
-    [SerializeField] private GameObject fade;
+    [SerializeField] private FadeInOut fade;
     #endregion
                     
     public bool isInside;                                   //플레이어의 통제구역 내부/외부를 확인
@@ -29,9 +29,9 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
     protected override void Awake()
     {
         base.Awake();
-        player = GameObject.Find("MainCharacter");
-        playerPoint = GameObject.Find("MainCharacter").GetComponent<Transform>();
-        fade = GameObject.Find("Fade");
+        player = PlayerCore.Instance;
+        playerPoint = PlayerCore.Instance.transform;
+        fade = FadeInOut.Instance;
     }
 
         void Update()
@@ -86,21 +86,21 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
         else if (countDownTimer >= -countDownOverTimer)
         {
             countDownTimer -= Time.deltaTime;
-            player.GetComponent<PlayerCore>().DisableForSequence();
-            player.GetComponent<PlayerCore>().SailboatQuit();
+            player.DisableForSequence();
+            player.SailboatQuit();
 
             Debug.Log("캐릭터 이동정지 및 조각배 강제 하차");
         }
         else if (countDownTimer >= -countDownOverTimer - 5f)
         {
             countDownTimer -= Time.deltaTime;
-            fade.GetComponent<FadeInOut>().FadeInExecution();
+            fade.FadeInExecution();
         }
         else
         {
             playerPoint.position = respawnTransgorm;
-            fade.GetComponent<FadeInOut>().FadeOutExecution();
-            player.GetComponent<PlayerCore>().EnableForSequence();
+            fade.FadeOutExecution();
+            player.EnableForSequence();
 
         }
         
