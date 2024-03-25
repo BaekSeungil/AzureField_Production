@@ -16,7 +16,8 @@ public class IslandArea : MonoBehaviour
     //
     //================================================
 
-    [SerializeField] private string islandID;               
+    [SerializeField] private string islandID;
+    [SerializeField] private Vector3 spawnTransform;
     public string IslandID { get { return islandID; } }                         // 섬 구분 ID
     [SerializeField] private LocalizedString islandName;    
     public LocalizedString IslandName { get { return islandName; } }            // 섬 이름 ( UI )
@@ -32,6 +33,7 @@ public class IslandArea : MonoBehaviour
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
+
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -128,6 +130,7 @@ public class IslandArea : MonoBehaviour
         {
             regionEnter.OnRegionEnter(islandName.GetLocalizedString());
             RuntimeManager.PlayOneShot(sound_Enter);
+            AreaControl.RecentLandRecord(islandID, spawnTransform);
         }
     }
 
