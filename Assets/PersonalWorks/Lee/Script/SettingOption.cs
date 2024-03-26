@@ -37,13 +37,44 @@ public class SettingOption : MonoBehaviour
       Master.setVolume(MasterVolme);
    }
 
-   
-
-   
+   //그래픽 파이프라인
    public void SetPipeLine(int value)
    {
         QualitySettings.SetQualityLevel(value);
         QualitySettings.renderPipeline = RenderPipeLine[value];
    }
+
+   public void MasterVolumeLevel(float newMasterVolume)
+   {
+      MasterVolme = newMasterVolume;
+   }
+   public void MusicVolumeLevel(float newMusicVolume)
+   {
+      MasterVolme =  newMusicVolume;
+   }
+
+   public void SFXVolumeLevel(float newSFXVolume)
+   {
+      MasterVolme =  newSFXVolume;
+      FMOD.Studio.PLAYBACK_STATE PbState;
+      VolumeEvent.getPlaybackState(out PbState);
+      if(PbState != FMOD.Studio.PLAYBACK_STATE.PLAYING)
+      {
+         VolumeEvent.start();
+      }
+
+   }
+
+   public void InButton()
+   {
+      
+   }
+
+   public void ExitWindow()
+   {
+      Destroy(gameObject);
+   }
+
+
 
 }
