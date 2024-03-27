@@ -4,46 +4,91 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
+using Unity.Entities;
 
 public class SettingOption : MonoBehaviour
 {
-   FMOD.Studio.EventInstance VolumeEvent;
-   FMOD.Studio.Bus Music;
-   FMOD.Studio.Bus SFX;
-   FMOD.Studio.Bus Master;
 
-   
-   [Header("환경설정")]
-    [SerializeField] float MusicVolme;
+   [SerializeField] GameObject Setting;
+   [SerializeField] GameObject SoundSetting;
+   [SerializeField] GameObject GrapicSetting;
+   [SerializeField] GameObject MoveSetting;
 
-    [SerializeField] float SFXVolme;
-    [SerializeField] float MasterVolme;
-   [SerializeField] List<RenderPipelineAsset> RenderPipeLine;
-   [SerializeField] TMP_Dropdown Dropdown;
-
+   private bool GameIsPaused = false;
 
    private void Awake() 
    {
-      Music = FMODUnity.RuntimeManager.GetBus("bus:/Master/Music");
-      SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/SFX");
-      Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
-      VolumeEvent = FMODUnity.RuntimeManager.CreateInstance("event:/SFX/VolumeEvent");
+      
    }
 
    private void Update() 
    {
-      Music.setVolume(MusicVolme);
-      SFX.setVolume(SFXVolme);
-      Master.setVolume(MasterVolme);
+      if(Input.GetKeyDown(KeyCode.P))
+      {
+         if(GameIsPaused)
+         {
+            Resume();
+         }
+         else
+         {
+            Pasue();
+         }
+      }
    }
 
-   
-
-   
-   public void SetPipeLine(int value)
+   public void Resume()
    {
-        QualitySettings.SetQualityLevel(value);
-        QualitySettings.renderPipeline = RenderPipeLine[value];
+      Setting.SetActive(false);
+      Time.timeScale = 1f;
+      GameIsPaused = false;
    }
 
+   public void Pasue()
+   {
+      Setting.SetActive(true);
+      Time.timeScale = 0f;
+      GameIsPaused  = true;
+   }
+
+   public void SetSoundprefab()
+   {
+      SoundSetting.SetActive(true);
+      Setting.SetActive(false);
+
+   }
+
+   public void ExitSoundprefab()
+   {
+      SoundSetting.SetActive(false);
+      Setting.SetActive(true);
+   }
+
+   public void SetGrapicprefab()
+   {
+      GrapicSetting.SetActive(true);
+      Setting.SetActive(false);
+   }
+
+   public void ExitGrapicprefab()
+   {
+      GrapicSetting.SetActive(false);
+      Setting.SetActive(true);
+   }
+
+   public void SetMoveprefab()
+   {
+      MoveSetting.SetActive(true);
+      Setting.SetActive(false);
+   }
+
+   public void ExitMoveprefab()
+   {
+      MoveSetting.SetActive(false);
+      Setting.SetActive(true);
+   }
+
+   public void QuitGame()
+   {
+      Application.Quit();
+   }
 }
