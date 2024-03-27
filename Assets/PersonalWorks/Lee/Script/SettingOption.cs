@@ -5,35 +5,41 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
 using Unity.Entities;
+using UnityEngine.InputSystem;
 
 public class SettingOption : MonoBehaviour
 {
+
 
    [SerializeField] GameObject Setting;
    [SerializeField] GameObject SoundSetting;
    [SerializeField] GameObject GrapicSetting;
    [SerializeField] GameObject MoveSetting;
 
-   private bool GameIsPaused = false;
+   MainPlayerInputActions inputs;
+
+
+   private static bool GameIsPaused = false;
 
    private void Awake() 
+   {
+      inputs = new MainPlayerInputActions();
+      inputs.UI.Enable();
+   }
+
+   public void Enable()
    {
       
    }
 
+   public void Disable()
+   {
+
+   }
+
    private void Update() 
    {
-      if(Input.GetKeyDown(KeyCode.P))
-      {
-         if(GameIsPaused)
-         {
-            Resume();
-         }
-         else
-         {
-            Pasue();
-         }
-      }
+      
    }
 
    public void Resume()
