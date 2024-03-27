@@ -478,6 +478,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5c14090-3884-4484-b45f-1fed2f0c2d72"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -876,6 +885,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Close"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""94d0185f-aee2-4d42-8b1c-8e9089064c69"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -967,6 +987,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
+        m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1156,6 +1177,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_Positive;
     private readonly InputAction m_UI_Close;
+    private readonly InputAction m_UI_Escape;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1170,6 +1192,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @Positive => m_Wrapper.m_UI_Positive;
         public InputAction @Close => m_Wrapper.m_UI_Close;
+        public InputAction @Escape => m_Wrapper.m_UI_Escape;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1209,6 +1232,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
+            @Escape.started += instance.OnEscape;
+            @Escape.performed += instance.OnEscape;
+            @Escape.canceled += instance.OnEscape;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1243,6 +1269,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
+            @Escape.started -= instance.OnEscape;
+            @Escape.performed -= instance.OnEscape;
+            @Escape.canceled -= instance.OnEscape;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1330,5 +1359,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnRightClick(InputAction.CallbackContext context);
         void OnPositive(InputAction.CallbackContext context);
         void OnClose(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
     }
 }
