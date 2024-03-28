@@ -480,9 +480,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Escape"",
+                    ""name"": ""Pasue"",
                     ""type"": ""Button"",
-                    ""id"": ""b5c14090-3884-4484-b45f-1fed2f0c2d72"",
+                    ""id"": ""2ce65d4b-07cc-42d5-aff2-ed34cc7e1095"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -888,12 +888,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""94d0185f-aee2-4d42-8b1c-8e9089064c69"",
-                    ""path"": ""<Keyboard>/escape"",
+                    ""id"": ""1b36bf91-2800-42d8-b15c-90c0d5f34394"",
+                    ""path"": ""<Keyboard>/p"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Escape"",
+                    ""action"": ""Pasue"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -987,7 +987,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
-        m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
+        m_UI_Pasue = m_UI.FindAction("Pasue", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1177,7 +1177,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_Positive;
     private readonly InputAction m_UI_Close;
-    private readonly InputAction m_UI_Escape;
+    private readonly InputAction m_UI_Pasue;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1192,7 +1192,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @Positive => m_Wrapper.m_UI_Positive;
         public InputAction @Close => m_Wrapper.m_UI_Close;
-        public InputAction @Escape => m_Wrapper.m_UI_Escape;
+        public InputAction @Pasue => m_Wrapper.m_UI_Pasue;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1232,9 +1232,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
-            @Escape.started += instance.OnEscape;
-            @Escape.performed += instance.OnEscape;
-            @Escape.canceled += instance.OnEscape;
+            @Pasue.started += instance.OnPasue;
+            @Pasue.performed += instance.OnPasue;
+            @Pasue.canceled += instance.OnPasue;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1269,9 +1269,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
-            @Escape.started -= instance.OnEscape;
-            @Escape.performed -= instance.OnEscape;
-            @Escape.canceled -= instance.OnEscape;
+            @Pasue.started -= instance.OnPasue;
+            @Pasue.performed -= instance.OnPasue;
+            @Pasue.canceled -= instance.OnPasue;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1359,6 +1359,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnRightClick(InputAction.CallbackContext context);
         void OnPositive(InputAction.CallbackContext context);
         void OnClose(InputAction.CallbackContext context);
-        void OnEscape(InputAction.CallbackContext context);
+        void OnPasue(InputAction.CallbackContext context);
     }
 }

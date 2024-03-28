@@ -5,45 +5,53 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
 using Unity.Entities;
+using UnityEngine.InputSystem;
+using UnityEngine.PlayerLoop;
 
 public class SettingOption : MonoBehaviour
 {
+
 
    [SerializeField] GameObject Setting;
    [SerializeField] GameObject SoundSetting;
    [SerializeField] GameObject GrapicSetting;
    [SerializeField] GameObject MoveSetting;
 
-   private bool GameIsPaused = false;
+   MainPlayerInputActions inputs;
+
+
+   private static bool GameIsPaused = false;
 
    private void Awake() 
    {
-      
+      inputs = new MainPlayerInputActions();
+      inputs.UI.Enable();
    }
 
-   private void Update() 
+   private void Update()
    {
-      if(Input.GetKeyDown(KeyCode.P))
-      {
-         if(GameIsPaused)
-         {
-            Resume();
-         }
-         else
-         {
-            Pasue();
-         }
-      }
+      if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+        {
+            if (GameIsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+    
    }
-
    public void Resume()
    {
       Setting.SetActive(false);
       Time.timeScale = 1f;
       GameIsPaused = false;
+      Debug.Log("버튼눌림");
    }
 
-   public void Pasue()
+   public void Pause()
    {
       Setting.SetActive(true);
       Time.timeScale = 0f;
@@ -85,6 +93,15 @@ public class SettingOption : MonoBehaviour
    {
       MoveSetting.SetActive(false);
       Setting.SetActive(true);
+   }
+
+   public void ReTurnSettingmenu()
+   {
+      Setting.SetActive(true);
+      GrapicSetting.SetActive(false);
+      MoveSetting.SetActive(false);
+      SoundSetting.SetActive(false);
+
    }
 
    public void QuitGame()
