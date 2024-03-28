@@ -95,6 +95,15 @@ public class SettingOption : MonoBehaviour
       Setting.SetActive(true);
    }
 
+   public void ReTurnSettingmenu()
+   {
+      Setting.SetActive(true);
+      GrapicSetting.SetActive(false);
+      MoveSetting.SetActive(false);
+      SoundSetting.SetActive(false);
+
+   }
+
    public void QuitGame()
    {
       Application.Quit();
