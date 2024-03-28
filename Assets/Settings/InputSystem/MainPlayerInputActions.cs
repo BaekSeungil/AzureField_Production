@@ -478,6 +478,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pasue"",
+                    ""type"": ""Button"",
+                    ""id"": ""2ce65d4b-07cc-42d5-aff2-ed34cc7e1095"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -876,6 +885,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Close"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b36bf91-2800-42d8-b15c-90c0d5f34394"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pasue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -967,6 +987,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
+        m_UI_Pasue = m_UI.FindAction("Pasue", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1156,6 +1177,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_Positive;
     private readonly InputAction m_UI_Close;
+    private readonly InputAction m_UI_Pasue;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1170,6 +1192,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @Positive => m_Wrapper.m_UI_Positive;
         public InputAction @Close => m_Wrapper.m_UI_Close;
+        public InputAction @Pasue => m_Wrapper.m_UI_Pasue;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1209,6 +1232,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
+            @Pasue.started += instance.OnPasue;
+            @Pasue.performed += instance.OnPasue;
+            @Pasue.canceled += instance.OnPasue;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1243,6 +1269,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
+            @Pasue.started -= instance.OnPasue;
+            @Pasue.performed -= instance.OnPasue;
+            @Pasue.canceled -= instance.OnPasue;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1330,5 +1359,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnRightClick(InputAction.CallbackContext context);
         void OnPositive(InputAction.CallbackContext context);
         void OnClose(InputAction.CallbackContext context);
+        void OnPasue(InputAction.CallbackContext context);
     }
 }

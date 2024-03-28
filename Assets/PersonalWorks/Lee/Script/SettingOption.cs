@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.Rendering;
 using Unity.Entities;
 using UnityEngine.InputSystem;
+using UnityEngine.PlayerLoop;
 
 public class SettingOption : MonoBehaviour
 {
@@ -27,29 +28,30 @@ public class SettingOption : MonoBehaviour
       inputs.UI.Enable();
    }
 
-   public void Enable()
+   private void Update()
    {
-      
+      if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+        {
+            if (GameIsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+    
    }
-
-   public void Disable()
-   {
-
-   }
-
-   private void Update() 
-   {
-      
-   }
-
    public void Resume()
    {
       Setting.SetActive(false);
       Time.timeScale = 1f;
       GameIsPaused = false;
+      Debug.Log("버튼눌림");
    }
 
-   public void Pasue()
+   public void Pause()
    {
       Setting.SetActive(true);
       Time.timeScale = 0f;
