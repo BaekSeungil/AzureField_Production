@@ -1,18 +1,96 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 
-public class UI_FairwindInfo : MonoBehaviour
+public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private LocalizedString message_succeed;
+    [SerializeField] private LocalizedString message_failTimeout;
+    [SerializeField] private LocalizedString message_failRouteout;
+
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject visualGroup;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject fairwnindObject;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI fairwindCountdown_integer;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI fairwindCountdown_frac;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject alertObject;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI alertCountdown_integer;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI alertCountdown_frac;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject successUI;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI successUI_text;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject failedUI;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI failedUI_text;
+
+
+    private void Start()
     {
-        
+        visualGroup.SetActive(false);
+        fairwindCountdown_integer.text = "00";
+        fairwindCountdown_frac.text = "00";
+        alertCountdown_integer.text = "00";
+        alertCountdown_frac.text = "00";
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ToggleFairwindUI(bool value)
     {
-        
+        if (value != visualGroup.activeInHierarchy)
+            visualGroup.SetActive(value);
+    }
+
+    public void ToggleAlertUI(bool value)
+    {
+        if(value != alertObject.activeInHierarchy)
+            alertObject.SetActive(value);
+    }
+
+    public void SetFairwindCountdown(float time)
+    {
+        if (!visualGroup.activeInHierarchy) return;
+        fairwindCountdown_integer.text = ((int)time).ToString();
+        fairwindCountdown_frac.text = (((int)(time*100))%100).ToString();
+    }
+
+    public void SetAlertCountdown(float time)
+    {
+        if (!alertObject.activeInHierarchy) return;
+        alertCountdown_integer.text = ((int)time).ToString();
+        alertCountdown_frac.text = (((int)(time * 100)) % 100).ToString();
+    }
+
+    public void OnFairwindSuccessed()
+    {
+        //ToggleFairwindUI(false);
+        ToggleAlertUI(false);       
+        successUI.SetActive(true);
+        successUI_text.text = message_succeed.GetLocalizedString();
+    }
+
+    public void OnFairwindTimeoutFailed()
+    {
+        //ToggleFairwindUI(false);
+        ToggleAlertUI(false);
+        failedUI.SetActive(true);
+        failedUI_text.text = message_failTimeout.GetLocalizedString();
+    }
+
+    public void OnFairwindRouteoutFailed()
+    {
+        //ToggleFairwindUI(false);
+        ToggleAlertUI(false);
+        failedUI.SetActive(true);
+        failedUI_text.text = message_failRouteout.GetLocalizedString();
     }
 }
