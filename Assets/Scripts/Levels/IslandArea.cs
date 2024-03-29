@@ -60,8 +60,13 @@ public class IslandArea : MonoBehaviour
         }
     }
 
+    private float enterInterval = 10f;
+    private float enterTimer = 0f;
+
     private void Update()
     {
+        enterTimer += Time.deltaTime;
+
         if(playerPosition != null)
         {
             float distanceValue = GetAreaInterpolation(playerPosition.position);
@@ -71,10 +76,13 @@ public class IslandArea : MonoBehaviour
 
             if (playerEnterFlag == false)
             {
-                if(Vector3.Distance(playerPosition.position,transform.position) < innerArea)
+                if (Vector3.Distance(playerPosition.position, transform.position) < innerArea)
                 {
                     playerEnterFlag = true;
-                    OnInnerAreaEnter();
+                    if (EnterUIFilter())
+                    {
+                        OnInnerAreaEnter();
+                    }
                 }
             }
             else
@@ -132,6 +140,15 @@ public class IslandArea : MonoBehaviour
             RuntimeManager.PlayOneShot(sound_Enter);
             AreaControl.RecentLandRecord(islandID, spawnTransform);
         }
+    }
+
+
+
+    private bool EnterUIFilter()
+    {
+        if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
+        if (enterTimer < enterInterval) { enterTimer = 0f; return false; }
+        return true;
     }
 
     private void OnDrawGizmosSelected()
