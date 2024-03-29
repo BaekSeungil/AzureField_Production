@@ -51,13 +51,14 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     {
         if (value == true)
         {
-            visualGroup.SetActive(value);
+            visualGroup.SetActive(true);
         }
         else
         {
             successUI.SetActive(false);
             failedUI.SetActive(false);
             ToggleAlertUI(false);
+            visualGroup.SetActive(true);
         }
     }
 
