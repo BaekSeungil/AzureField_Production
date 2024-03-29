@@ -1,11 +1,12 @@
-using DG.Tweening;
 using FMODUnity;
+using NUnit.Framework.Constraints;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Splines;
 
 public class FairwindChallengeInstance : MonoBehaviour
@@ -14,19 +15,25 @@ public class FairwindChallengeInstance : MonoBehaviour
     static public FairwindChallengeInstance ActiveChallenge { get { return activeChallenge; } }
     static public bool IsActiveChallengeExists { get { return activeChallenge != null; } }
 
-    [InfoBox("프리셋 오브젝트는 꼭 Unpack해서 사용하세요! \n시작점은 붉은색, 경유지는 보라색, 도착점은 초록색으로 표시됩니다.\n 노란색은 플레이어가 순풍의 도전을 진행하면서 유지해야될 거리를 나타냅니다. \n 경로를 편집하고싶다면, Route의 스플라인을 편집하세요.")]
+    [InfoBox("시작점은 붉은색, 경유지는 보라색, 도착점은 초록색으로 표시됩니다.\n 노란색은 플레이어가 순풍의 도전을 진행하면서 유지해야될 거리를 나타냅니다. \n 경로를 편집하고싶다면, Route의 스플라인을 편집하세요.")]
     [SerializeField] private string iD;
     public string ID { get { return iD; } }
-    [SerializeField, LabelText("보상 아이템 (선택사항)")] private ItemData[] rewardItems;
-    [SerializeField, LabelText("도전 완료 시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
     [SerializeField, LabelText("제한 시간 (초)")] private float timelimit = 0;
     public float Timelimit { get { return timelimit; } }
+    [SerializeField, LabelText("보상 아이템 (선택사항)")] private ItemData[] rewardItems;
+    [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
 
-    [Title("공용 필드")]
-    [ShowInInspector, LabelText("판정반경(M)")] private static float triggerDistance = 5f;
-    [ShowInInspector, LabelText("이탈거리(M)")] private static float distanceAllowence = 10f;
-    [ShowInInspector, LabelText("이탈경고시간(초)")] private static float distanceAllowenceTime = 3f;
 
+    [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Warning)]
+    [SerializeField, LabelText("도전 시작시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeStart;
+    [SerializeField, LabelText("도전 종료시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeEnd;
+
+    [SerializeField, Required, FoldoutGroup("사운드")]
+    private EventReference sound_Checkpoint;
+    [SerializeField, Required, FoldoutGroup("사운드")]
+    private EventReference sound_Finish;
+    [SerializeField, Required, FoldoutGroup("사운드")]
+    private EventReference sound_Failed;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private GameObject lightPilarObject;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] 
@@ -35,17 +42,18 @@ public class FairwindChallengeInstance : MonoBehaviour
     private SplineExtrude extrude;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private EventReference sound_Start;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")]
-    private EventReference sound_Checkpoint;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")]
-    private EventReference sound_Finish;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")]
-    private EventReference sound_Failed;
+
+    private float triggerDistance = 5;
+    private float distanceAllowence = 10;
+    private float distanceAllowenceTime = 5;
 
     /// <summary>
     /// 경로의 스플라인 데이터를 가져옵니다.
     /// </summary>
     public Spline RouteSpline { get { return route.Spline; } }
+    //public Spline SegmentedRouteSpline(int startKnot, int endKnot) 
+    //{     
+    //}
 
     enum ChallengeState
     {
@@ -95,10 +103,13 @@ public class FairwindChallengeInstance : MonoBehaviour
     public void AbortChallenge()
     {
         FairwindProgress = null;
-        lightPilarObject.SetActive(false);
         extrude.gameObject.SetActive(false);
+        lightPilarObject.transform.position = new Vector3(startKnotPosition.x, lightPilarObject.transform.position.y, startKnotPosition.z);
         StopAllCoroutines();
         currentState = ChallengeState.Aborted;
+        activeKnotIndex = 0;
+        if (OnChallengeEnd != null)
+            OnChallengeEnd.Invoke();
     }
 
     /// <summary>
@@ -115,8 +126,8 @@ public class FairwindChallengeInstance : MonoBehaviour
     public float GetDistanceFromRoute(Vector3 point,out Vector3 pointOnSpline,out float t)
     {
         float3 p;
-        float distance = SplineUtility.GetNearestPoint(RouteSpline, new float3(point.x, point.y, point.z), out p, out t);
-        pointOnSpline = new Vector3(p.x,p.y,p.z);
+        float distance = SplineUtility.GetNearestPoint(RouteSpline, new float3(point.x - transform.position.x, point.y - transform.position.y, point.z - transform.position.z), out p, out t);
+        pointOnSpline = new Vector3(p.x + transform.position.x, p.y + transform.position.y, p.z + transform.position.z);
 
         return distance;
     }
@@ -131,18 +142,21 @@ public class FairwindChallengeInstance : MonoBehaviour
         extrude.gameObject.SetActive(true);
 
         FairwindProgress = StartCoroutine(Cor_FairwindMainProgress());
+
+        if (OnChallengeStart != null)
+            OnChallengeStart.Invoke();
     }
 
     IEnumerator Cor_FairwindMainProgress()
     {
         FMODUnity.RuntimeManager.PlayOneShot(sound_Start);
-        for(int i = 0; i < routeKnotList.Length-1; i++)
+        for (int i = 0; i < routeKnotList.Length - 1; i++)
         {
             activeKnotIndex++;
-            float prevF = RouteSpline.ConvertIndexUnit(activeKnotIndex-1, PathIndexUnit.Knot, PathIndexUnit.Normalized);
+            float prevF = RouteSpline.ConvertIndexUnit(activeKnotIndex - 1, PathIndexUnit.Knot, PathIndexUnit.Normalized);
             float nextF = RouteSpline.ConvertIndexUnit(activeKnotIndex, PathIndexUnit.Knot, PathIndexUnit.Normalized);
-            yield return StartCoroutine(Cor_ChangeDestination(prevF,nextF));
-            yield return new WaitUntil(()=>(GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
+            yield return StartCoroutine(Cor_ChangeDestination(prevF, nextF));
+            yield return new WaitUntil(() => (GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
             FMODUnity.RuntimeManager.PlayOneShot(sound_Checkpoint);
         }
         FMODUnity.RuntimeManager.PlayOneShot(sound_Finish);
@@ -165,13 +179,15 @@ public class FairwindChallengeInstance : MonoBehaviour
 
             }
 
-            if(sequenceOnFinish != null)
+            if (sequenceOnFinish != null)
             {
                 SequenceInvoker.Instance.StartSequence(sequenceOnFinish.SequenceBundles);
             }
         }
 
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
+        if (OnChallengeEnd != null)
+            OnChallengeEnd.Invoke();
         currentState = ChallengeState.Closed;
         activeChallenge = null;
     }
@@ -287,6 +303,15 @@ public class FairwindChallengeInstance : MonoBehaviour
     {
         if (route != null)
         {
+
+            if(currentState == ChallengeState.Active)
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawLine(nearestFromPlayer, PlayerCore.Instance.transform.position);
+                Vector3 o;
+                float t;
+                UnityEditor.Handles.Label(PlayerCore.Instance.transform.position + Vector3.down * 2f, ((int)GetDistanceFromRoute(PlayerCore.Instance.transform.position, out o, out t)).ToString()+ " M"); ;
+            }
 
             GetRoutePositions(out routeKnotList);
             startKnotPosition = routeKnotList[0];

@@ -38,6 +38,9 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     private void Start()
     {
         visualGroup.SetActive(false);
+        successUI.SetActive(false);
+        failedUI.SetActive(false);
+
         fairwindCountdown_integer.text = "00";
         fairwindCountdown_frac.text = "00";
         alertCountdown_integer.text = "00";
@@ -46,8 +49,17 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void ToggleFairwindUI(bool value)
     {
-        if (value != visualGroup.activeInHierarchy)
-            visualGroup.SetActive(value);
+        if (value == true)
+        {
+            visualGroup.SetActive(true);
+        }
+        else
+        {
+            successUI.SetActive(false);
+            failedUI.SetActive(false);
+            ToggleAlertUI(false);
+            visualGroup.SetActive(true);
+        }
     }
 
     public void ToggleAlertUI(bool value)
@@ -72,7 +84,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void OnFairwindSuccessed()
     {
-        //ToggleFairwindUI(false);
         ToggleAlertUI(false);       
         successUI.SetActive(true);
         successUI_text.text = message_succeed.GetLocalizedString();
@@ -80,7 +91,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void OnFairwindTimeoutFailed()
     {
-        //ToggleFairwindUI(false);
         ToggleAlertUI(false);
         failedUI.SetActive(true);
         failedUI_text.text = message_failTimeout.GetLocalizedString();
@@ -88,7 +98,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void OnFairwindRouteoutFailed()
     {
-        //ToggleFairwindUI(false);
         ToggleAlertUI(false);
         failedUI.SetActive(true);
         failedUI_text.text = message_failRouteout.GetLocalizedString();
