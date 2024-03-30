@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using TMPro;
 using UnityEngine.Rendering;
 using Unity.Entities;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
+using FMOD;
 
 public class SettingOption : MonoBehaviour
 {
@@ -46,9 +48,12 @@ public class SettingOption : MonoBehaviour
    public void Resume()
    {
       Setting.SetActive(false);
+      GrapicSetting.SetActive(false);
+      SoundSetting.SetActive(false);
+      MoveSetting.SetActive(false);
       Time.timeScale = 1f;
       GameIsPaused = false;
-      Debug.Log("버튼눌림");
+
    }
 
    public void Pause()
@@ -60,52 +65,43 @@ public class SettingOption : MonoBehaviour
 
    public void SetSoundprefab()
    {
-      SoundSetting.SetActive(true);
+      SoundSetting.SetActive(enabled);
       Setting.SetActive(false);
-
+      GrapicSetting.SetActive(false);
+      MoveSetting.SetActive(false);
+     
    }
 
-   public void ExitSoundprefab()
+   public void Exitprefab()
    {
-      SoundSetting.SetActive(false);
       Setting.SetActive(true);
+      GrapicSetting.SetActive(false);
+      SoundSetting.SetActive(false);
+      MoveSetting.SetActive(false);
    }
 
    public void SetGrapicprefab()
    {
       GrapicSetting.SetActive(true);
       Setting.SetActive(false);
+      SoundSetting.SetActive(false);
+      MoveSetting.SetActive(false);
+      
    }
-
-   public void ExitGrapicprefab()
-   {
-      GrapicSetting.SetActive(false);
-      Setting.SetActive(true);
-   }
-
    public void SetMoveprefab()
    {
       MoveSetting.SetActive(true);
       Setting.SetActive(false);
-   }
-
-   public void ExitMoveprefab()
-   {
-      MoveSetting.SetActive(false);
-      Setting.SetActive(true);
-   }
-
-   public void ReTurnSettingmenu()
-   {
-      Setting.SetActive(true);
-      GrapicSetting.SetActive(false);
-      MoveSetting.SetActive(false);
       SoundSetting.SetActive(false);
-
+      MoveSetting.SetActive(false);
    }
+
 
    public void QuitGame()
    {
       Application.Quit();
+#if UNITY_EDITOR
+      EditorApplication.ExitPlaymode();
+#endif
    }
 }
