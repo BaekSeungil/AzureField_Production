@@ -7,6 +7,13 @@ using UnityEngine.Localization;
 using UnityEngine.Splines;
 
 //FairwindQuest
+
+public enum QuestType
+{
+    Start, //퀘스트 시작(중간 지점용으로 사용가능)
+    End    //퀘스트 마무리(보상 지급과 퀘스트 빌드중 퀘스트 영구 삭제)
+};
+
 public class FairwindQuest : MonoBehaviour
 {
     /*
@@ -15,22 +22,35 @@ public class FairwindQuest : MonoBehaviour
 
     */
     private GameObject CheckPlayer; // 플레이어 타겟
+    private Transform KontTarget; //노트타겟
     [SerializeField] private string Spline_Quset_ID; //  Spline 퀘스트 ID
     public string spline_questiD { get { return Spline_Quset_ID; } }
+
+    [SerializeField] private QuestType questType; // 퀘스트 타입
+    public QuestType QuestType { get { return questType; } }
 
     [SerializeField] private LocalizedString Spline_Quest_Name; // Spline 퀘스트 이름
     private LocalizedString spline_quest_name;
 
 
-    [SerializeField] private float ClosetPoint; //스플라인 내 감지 거리
+    [SerializeField] private float ClosetPoint; //스플라인 좌표 확인 범위
     public float closetPoint {get{return ClosetPoint;}}
 
-    [SerializeField] private float OutPoint; //스플라인 외 감지거리
-    public float outPoint{get{return OutPoint;}}
+    [SerializeField] private int StartKnotIndex; //처음 시작 좌표
 
-    private SplineContainer spline; 
+    [SerializeField] private int LastKontIndex; // 마지막 좌표값 배열
+
+    [SerializeField] private float CountTime; // 카운트다운 시간 설정
+
+    private float timer;
+
+    private bool timerOnOff = false;
+
+    private SplineContainer spline; //스플라인
+
+
     private void Awake()
-    {
+    {   timer = CountTime;
         CheckPlayer = GameObject.FindGameObjectWithTag("Player");
 
     }
@@ -41,6 +61,20 @@ public class FairwindQuest : MonoBehaviour
     private void Update()
     {
              
+        if(timerOnOff == true)
+        {
+            timer -= Time.deltaTime;
+            Debug.Log(timer + "초");
+            if(timer <= 0)
+            {
+                Debug.Log("미션실패");
+                timerOnOff = false;
+            }
+        }
+        else if(timerOnOff == false)
+        {
+            timer = CountTime;
+        }
 
         
     }
@@ -50,31 +84,44 @@ public class FairwindQuest : MonoBehaviour
   
         spline = GetComponent<SplineContainer>();
 
+
         if (spline == null || spline.Spline == null)
          return;
 
         foreach(var point in  spline.Spline.ToArray())
         {
-
+            //Gizmos 좌표 범위 설정
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.TransformPoint(point.Position), closetPoint);
-            
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.TransformPoint(point.Position), outPoint);
 
-            //float distance = Vector3.Distance(transform.TransformPoint(point.Position),CheckPlayer.transform.position);
-            // Gizmos.DrawSphere( new Vector3(point.Position.x,point.Position.y,
-            // point.Position.z) + transform.position, closetPoint);
-
-            
-
-
+          
         }
 
         
-      
+
    }
 
+    private void OnTriggerEnter(Collider other) 
+    {
+       if(other.CompareTag("Player"))
+       {    
+            timerOnOff = false;
+
+            Debug.Log("경로에 플레이어 감지");
+       }
+    }
+
+    private void OnTriggerExit(Collider other) 
+    {
+        if(other.CompareTag("Player"))
+       {
+            timerOnOff = true;
+
+            Debug.Log("경로를 벗어남");
+       }
+    }
+
+    
 
 }
 
