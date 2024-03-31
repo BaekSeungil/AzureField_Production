@@ -34,14 +34,14 @@ public class FairwindChallengeInstance : MonoBehaviour
     private EventReference sound_Finish;
     [SerializeField, Required, FoldoutGroup("사운드")]
     private EventReference sound_Failed;
+    [SerializeField, Required, FoldoutGroup("사운드")]
+    private EventReference sound_Start;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private GameObject lightPilarObject;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] 
     private SplineContainer route;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private SplineExtrude extrude;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")]
-    private EventReference sound_Start;
 
     private float triggerDistance = 5;
     private float distanceAllowence = 10;
@@ -328,7 +328,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(startKnotPosition, distanceAllowence);
 
-            if (knotCount > 3)
+            if (knotCount > 2)
             {
                 for (int i = 1; i < knotCount - 1; i++)
                 {
@@ -337,7 +337,7 @@ public class FairwindChallengeInstance : MonoBehaviour
                 }
             }
 
-            if (knotCount > 2)
+            if (knotCount > 1)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireSphere(endKnotPosition, triggerDistance);

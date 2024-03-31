@@ -34,7 +34,7 @@ public class StaticSerializedMonoBehaviour<T> : SerializedMonoBehaviour
     protected virtual void Awake()
     {
         if(instance == null) { instance = this as T; debug_static_objcect = gameObject.name; }
-        else { Debug.LogWarning(typeof(T).Name + " : Duplicated SingletonObject, "+ gameObject.name + " : This Object Will be Destroyed."); Destroy(gameObject); }
+        else { Debug.LogWarning(typeof(T).Name + " : Duplicated SingletonObject, "+ gameObject.name + " : This Object Will be Destroyed."); DestroyImmediate(gameObject); }
     }
 
 }
