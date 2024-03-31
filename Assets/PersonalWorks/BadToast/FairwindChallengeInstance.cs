@@ -162,7 +162,8 @@ public class FairwindChallengeInstance : MonoBehaviour
         FMODUnity.RuntimeManager.PlayOneShot(sound_Finish);
         lightPilarObject.SetActive(false);
         route.GetComponent<MeshRenderer>().enabled = false;
-        yield return null;
+
+        yield return new WaitForSeconds(1f);
 
         if (SequenceInvoker.IsInstanceValid)
         {
