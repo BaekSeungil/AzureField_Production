@@ -14,10 +14,10 @@ public class SettingOption : MonoBehaviour
 {
 
 
-   [SerializeField] GameObject Setting;
-   [SerializeField] GameObject SoundSetting;
-   [SerializeField] GameObject GrapicSetting;
-   [SerializeField] GameObject MoveSetting;
+   [SerializeField] public GameObject Setting;
+   [SerializeField] public GameObject SoundSetting;
+   [SerializeField] public GameObject GrapicSetting;
+   [SerializeField] public GameObject MoveSetting;
 
    MainPlayerInputActions inputs;
 
@@ -68,8 +68,6 @@ public class SettingOption : MonoBehaviour
       SoundSetting.SetActive(true);
       Setting.SetActive(false);
       GrapicSetting.SetActive(false);
-      MoveSetting.SetActive(false);
-     
    }
 
    public void Exitprefab()
