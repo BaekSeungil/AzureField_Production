@@ -58,7 +58,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             successUI.SetActive(false);
             failedUI.SetActive(false);
             ToggleAlertUI(false);
-            visualGroup.SetActive(true);
+            visualGroup.SetActive(false);
         }
     }
 
