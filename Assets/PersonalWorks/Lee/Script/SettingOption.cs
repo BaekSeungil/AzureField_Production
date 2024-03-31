@@ -65,7 +65,7 @@ public class SettingOption : MonoBehaviour
 
    public void SetSoundprefab()
    {
-      SoundSetting.SetActive(enabled);
+      SoundSetting.SetActive(true);
       Setting.SetActive(false);
       GrapicSetting.SetActive(false);
       MoveSetting.SetActive(false);

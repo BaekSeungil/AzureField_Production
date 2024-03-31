@@ -15,11 +15,11 @@ public class SoundOpton : MonoBehaviour
 
     private void Awake() 
     {
-        Music = FMODUnity.RuntimeManager.GetBus("bus:/BackGround/Music");
-        SFX = FMODUnity.RuntimeManager.GetBus("bus:/Events/UI");
-        SFX = FMODUnity.RuntimeManager.GetBus("bus:/Events/Ambient");
-        SFX = FMODUnity.RuntimeManager.GetBus("bus:/Events/SoundEffect");
-        Master = FMODUnity.RuntimeManager.GetBus("bus:/Banks/Master");
+        Music = FMODUnity.RuntimeManager.GetBus("bus:/Music");
+        SFX = FMODUnity.RuntimeManager.GetBus("bus:/UI");
+        SFX = FMODUnity.RuntimeManager.GetBus("bus:/Ambient");
+        //SFX = FMODUnity.RuntimeManager.GetBus("bus:/SoundEffect");
+        Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
         VolumeEvent = FMODUnity.RuntimeManager.CreateInstance("event:/SFX/VolumeEvent");
     }
 
