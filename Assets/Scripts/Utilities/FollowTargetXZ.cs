@@ -13,6 +13,7 @@ public class FollowTargetXZ : MonoBehaviour
 {
     public Transform target;
 
+    [SerializeField] private bool SetPositionToOffset = true;
     [SerializeField] private bool isCliped = false;     // 현재 오브젝트가 연속적으로 움직이길 원하면 false, clipSize에 따라 불연속적으로 움직이길 원하면 true
     [SerializeField] private float clipSize = 0.1f;     // 불연속적으로 움직일 때 움직이는 간격
 
@@ -20,7 +21,10 @@ public class FollowTargetXZ : MonoBehaviour
 
     private void Start()
     {
-        offset = transform.position;
+        if (SetPositionToOffset)
+            offset = transform.position;
+        else
+            offset = Vector3.zero;
     }
 
     private void Update()
