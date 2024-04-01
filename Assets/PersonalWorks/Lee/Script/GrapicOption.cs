@@ -18,7 +18,6 @@ public class GrapicOption : MonoBehaviour
    FullScreenMode screenMode;
 
    int resolutionNum;
-   bool isFull;
    private void Start() 
    {
       ViewUI();
@@ -31,13 +30,15 @@ public class GrapicOption : MonoBehaviour
 
    void ViewUI()
    {
-      for(int i = 0; i<Screen.resolutions.Length; i++)
-      {
-         if(Screen.resolutions[i].refreshRate == 60)
-         {
-            resolutions.Add(Screen.resolutions[i]);
-         }
-      }
+      //주시율 60HZ제한
+      // for(int i = 0; i<Screen.resolutions.Length; i++)
+      // {
+      //    if(Screen.resolutions[i].refreshRate == 60)
+      //    {
+      //       resolutions.Add(Screen.resolutions[i]);
+      //    }
+      // }
+      resolutions.AddRange(Screen.resolutions);
       resolutionDropDown.options.Clear();
       int optionNum = 0;
       foreach(Resolution item in resolutions)
@@ -50,8 +51,6 @@ public class GrapicOption : MonoBehaviour
          {
             resolutionDropDown.value = optionNum;
          }
-
-         Debug.Log(item.width + " X "+item.height);
          optionNum++;
       }
 
@@ -65,7 +64,7 @@ public class GrapicOption : MonoBehaviour
       resolutionNum = X;
    }
 
-   public void FullScreenBool()
+   public void FullScreenBool(bool isFull)
    {
       screenMode = isFull ? FullScreenMode.FullScreenWindow :
       FullScreenMode.Windowed;
