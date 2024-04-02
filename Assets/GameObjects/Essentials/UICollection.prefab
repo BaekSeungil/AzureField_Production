@@ -639,18 +639,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1026072868343993525}
         m_TargetAssemblyTypeName: GrapicOption, Assembly-CSharp
-        m_MethodName: SetPipeLine
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1026072868343993525}
-        m_TargetAssemblyTypeName: GrapicOption, Assembly-CSharp
         m_MethodName: DropDownChange
         m_Mode: 3
         m_Arguments:
@@ -1946,7 +1934,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1026072868343993525}
+        m_TargetAssemblyTypeName: GrapicOption, Assembly-CSharp
+        m_MethodName: FullScreenBool
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1540798267819159145
 GameObject:
@@ -7147,7 +7147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3294094871030720140
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7230,7 +7230,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a7d3c2d0b1205b48a5d6a88a6dade30, type: 2}
   Dropdown: {fileID: 7719201413378777944}
   resolutionDropDown: {fileID: 2606095360550743316}
-  fullButton: {fileID: 0}
+  fullButton: {fileID: 1781429300776508015}
 --- !u!1 &5103975618914639394
 GameObject:
   m_ObjectHideFlags: 0
