@@ -55,6 +55,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
 
+
 #if UNITY_EDITOR
 #pragma warning disable CS0414
 
@@ -856,7 +857,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     IEnumerator ReefCrash()
     {
+        DisableForSequence();
+        SailboatQuit();
+
         yield return new WaitForSeconds(1.0f);
+
+        EnableForSequence();
     }
 
     /// <summary>
@@ -866,12 +872,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (collision.collider.gameObject.CompareTag("Reef"))
         {
-            //Debug.Log(rBody.velocity.magnitude);
-
+            ///<summary>
+            ///암초충돌감지
+            /// </summary>
             if (previousVelocity.magnitude - rBody.velocity.magnitude > 10)
             {
                 Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
                 Debug.Log("암초 대충돌!");
+                StartCoroutine(ReefCrash());
             }
 
         }
