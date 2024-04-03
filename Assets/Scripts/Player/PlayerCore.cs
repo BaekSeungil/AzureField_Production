@@ -55,6 +55,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
 
+
 #if UNITY_EDITOR
 #pragma warning disable CS0414
 
@@ -94,6 +95,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
+    private Vector3 previousVelocity;
     /// <summary>
     /// 현재 플레이어가 무언가를 들고 있는지 확인합니다.
     /// </summary>
@@ -167,6 +169,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         initialRigidbodyDrag = rBody.drag;
         headRigForward = headTarget.localPosition;
+        previousVelocity = rBody.velocity;
 
         layerIndex_Swim = animator.GetLayerIndex("SwimLayer");
         layerIndex_Boarding = animator.GetLayerIndex("BoardingLayer");
@@ -183,7 +186,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         // Raycast process
         RaycastHit groundHit;
-
         if (Physics.Raycast(RCO_foot.position, -groundNormal, out groundHit, groundCastDistance, ~groundIgnore))
         {
             grounding = true;
@@ -282,6 +284,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         else
             current_holding_item_debug = "NULL";
 #endif
+
+
+        //이전 프레임의 플레이어 속도
+        Vector3 currentVelocity = rBody.velocity;
+
+        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
+        Vector3 velocityChange = currentVelocity - previousVelocity;
+
+        // 1프레임 전의 속도를 출력합니다.
+        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
+
+        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
+        previousVelocity = currentVelocity;
+
     }
 
     private void LateUpdate()
@@ -618,7 +634,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-    #endregion 
+    #endregion
 
     #region InputCallbacks    
 // InputSystem 입력 이벤트
@@ -833,6 +849,39 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
             sound.Play();
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
+    /// </summary>
+    IEnumerator ReefCrash()
+    {
+        DisableForSequence();
+        SailboatQuit();
+
+        yield return new WaitForSeconds(1.0f);
+
+        EnableForSequence();
+    }
+
+    /// <summary>
+    /// 충돌감지
+    /// </summary>
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.gameObject.CompareTag("Reef"))
+        {
+            ///<summary>
+            ///암초충돌감지
+            /// </summary>
+            if (previousVelocity.magnitude - rBody.velocity.magnitude > 10)
+            {
+                Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
+                Debug.Log("암초 대충돌!");
+                StartCoroutine(ReefCrash());
+            }
+
         }
     }
 }
