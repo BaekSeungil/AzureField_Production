@@ -1,31 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EventBulidingUpDown : MonoBehaviour
 {
     [SerializeField] GameObject BulidingObjects;
-    public float MoveTime;
-    public float MoveSpeed;
-    private void OnTriggerEnter(Collider other) 
+    [SerializeField] GameObject target;
+    public float moveSpeed; 
+    bool Ismove = false;
+    private void Start()
     {
-        if(other.gameObject.tag=="Player")
-        {
-            Transform ObjectsTransform = BulidingObjects.transform;
+    }  
 
-            if(ObjectsTransform != null)
+    private void Update()
+    {
+        if(Ismove == true)
+        {
+            if (target != null)
             {
-                ObjectsTransform.position = new Vector3(0f,  MoveSpeed +( MoveTime * Time.deltaTime), 0f);
-            }
-            else
-            {
-                Debug.Log("오브젝트 탐지불가");
+                
+                Vector3 targetPosition = new Vector3(transform.position.x, target.transform.position.y, transform.position.z);
+
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             }
         }
+       
     }
 
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Player"))
+        {
+            Ismove = true;
+            Debug.Log("플레이어 확인");
+        }
+    }
 
 
 }
