@@ -285,7 +285,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = "NULL";
 #endif
 
-
         //이전 프레임의 플레이어 속도
         Vector3 currentVelocity = rBody.velocity;
 
