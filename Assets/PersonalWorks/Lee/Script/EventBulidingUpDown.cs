@@ -10,10 +10,6 @@ public class EventBulidingUpDown : MonoBehaviour
     [SerializeField] GameObject target;
     public float moveSpeed; 
     bool Ismove = false;
-    private void Start()
-    {
-    }  
-
     private void Update()
     {
         if(Ismove == true)
