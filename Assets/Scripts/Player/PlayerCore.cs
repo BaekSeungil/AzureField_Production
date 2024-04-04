@@ -499,7 +499,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (player.sailboat.SubmergeRate < -0.5f)
             {
                 player.rBody.drag = player.sailboatFullDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, -0.5f) * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
 
                 if (player.input.Player.Move.IsPressed())
                 {
