@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,7 +17,7 @@ public class Quickexit : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Keyboard.current.escapeKey.isPressed)
+        if (Keyboard.current.backquoteKey.isPressed)
         {
             progress += Time.fixedDeltaTime;
             canvas.alpha = Mathf.Lerp(canvas.alpha, 1f, 0.5f);
