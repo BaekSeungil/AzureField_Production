@@ -25,7 +25,7 @@ public class Elevator : MonoBehaviour
     [SerializeField] Transform[] Points;
     [SerializeField] MoveType moveType;
     public float moveSpeed; 
-    public bool Ismove = false;
+    public bool Canmove = false;
     bool reverse;
     int i;
 
@@ -40,7 +40,7 @@ public class Elevator : MonoBehaviour
         
         if(moveType == MoveType.MovingObjects)
         { 
-            Ismove = true;
+            Canmove = true;
             if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
             {
                 if(i==Points.Length - 1)
@@ -74,7 +74,7 @@ public class Elevator : MonoBehaviour
         
         if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
         {
-            Ismove = false;
+            Canmove = false;
             if(i==Points.Length - 1)
             {
                 reverse = true;
@@ -97,7 +97,7 @@ public class Elevator : MonoBehaviour
             }
         }
 
-        if(Ismove)
+        if(Canmove)
         {
             transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
             moveSpeed * Time.deltaTime);
