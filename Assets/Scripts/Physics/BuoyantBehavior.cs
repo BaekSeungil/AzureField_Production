@@ -146,15 +146,19 @@ public class BuoyantBehavior : MonoBehaviour
                 distance = other.bounds.max.y - transform.position.y - 0.5f;
             }
             submergeRate = -Mathf.Clamp(distance,0f,5f);
+
+            if (playerMode)
+            {
+                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down, ForceMode.Acceleration);
+            }
+            else
+            {
+                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
+            }
+
         }
-        if (playerMode)
-        {
-            rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down, ForceMode.Acceleration);
-        }
-        else
-        {
-            rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
-        }
+
+      
     }
 }
 
