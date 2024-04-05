@@ -91,6 +91,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     #endregion
 
+
     private Rigidbody rBody;
     private StudioEventEmitter sound;
     private Transform interestPoint;

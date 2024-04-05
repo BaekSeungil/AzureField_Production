@@ -4,8 +4,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
-using Unity.Entities;
-using TMPro.EditorUtilities;
 
 public class GrapicOption : MonoBehaviour
 {   
