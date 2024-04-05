@@ -285,7 +285,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = "NULL";
 #endif
 
-
         //이전 프레임의 플레이어 속도
         Vector3 currentVelocity = rBody.velocity;
 
@@ -500,7 +499,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (player.sailboat.SubmergeRate < -0.5f)
             {
                 player.rBody.drag = player.sailboatFullDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, -0.5f) * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
 
                 if (player.input.Player.Move.IsPressed())
                 {
