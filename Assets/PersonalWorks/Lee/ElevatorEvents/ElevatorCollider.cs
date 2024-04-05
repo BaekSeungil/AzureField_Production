@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class ElevatorCollider : MonoBehaviour
 {
+    Elevator elevator;
     // Start is called before the first frame update
-    void Start()
+
+    private void Awake() 
     {
-        
+        elevator = GetComponent<Elevator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other) 
     {
-        
+        if(other.gameObject.CompareTag("Player"))
+        {
+            elevator.Canmove = true;
+        }
     }
 }
