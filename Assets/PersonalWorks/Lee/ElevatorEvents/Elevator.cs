@@ -77,7 +77,7 @@ public class Elevator : MonoBehaviour
             if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
             {
                 Canmove = false;
-                if(i == Points.Length - i)
+                if(i == Points.Length - 1)
                 {
                     reverse = true;
                     i--;
@@ -85,7 +85,7 @@ public class Elevator : MonoBehaviour
                 }
                 else if(i==0)
                 {
-                    reverse = true;
+                    reverse = false;
                     i++;
                     return;
                 }
