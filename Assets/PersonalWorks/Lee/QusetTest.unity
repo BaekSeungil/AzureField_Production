@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 169041588}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,7 +168,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 174600806}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1955,7 +1955,7 @@ GameObject:
   - component: {fileID: 1112031827}
   - component: {fileID: 1112031826}
   - component: {fileID: 1112031825}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2060,7 +2060,7 @@ GameObject:
   - component: {fileID: 1155100805}
   - component: {fileID: 1155100804}
   - component: {fileID: 1155100803}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2162,7 +2162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1185408458}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -2720,12 +2720,12 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000000084912255
+      value: 0.000000008491225
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000013834734
+      value: 0.0000000013834732
       objectReference: {fileID: 0}
     - target: {fileID: 6832785402570513268, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -2775,7 +2775,7 @@ GameObject:
   - component: {fileID: 1635653441}
   - component: {fileID: 1635653440}
   - component: {fileID: 1635653439}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2877,7 +2877,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1692941643}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -2967,8 +2967,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1863007607}
   - component: {fileID: 1863007609}
-  - component: {fileID: 1863007608}
-  m_Layer: 0
+  - component: {fileID: 1863007610}
+  m_Layer: 8
   m_Name: DoorCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2990,26 +2990,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 169041588}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1863007608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1863007606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8fad24cf009ff646a186e8f8a4b6427, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LeftDoor_Prefab: {fileID: 1155100801}
-  RightDoor_Prefab: {fileID: 1635653437}
-  LeftPoint: {fileID: 1185408457}
-  RightPoint: {fileID: 1692941642}
-  openType: 0
-  doorType: 0
-  OpenDoor: 0
-  MoveSpeed: 2
 --- !u!65 &1863007609
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3031,6 +3011,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.9, y: 2.67, z: 3.52}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1863007610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863007606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fad24cf009ff646a186e8f8a4b6427, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftDoor_Prefab: {fileID: 1155100801}
+  RightDoor_Prefab: {fileID: 1635653437}
+  LeftPoint: {fileID: 1185408457}
+  RightPoint: {fileID: 1692941642}
+  openType: 0
+  doorType: 0
+  MoveSpeed: 2
 --- !u!1001 &1880895971
 PrefabInstance:
   m_ObjectHideFlags: 0

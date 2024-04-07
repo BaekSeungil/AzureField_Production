@@ -6,12 +6,12 @@ enum OpenType
 {
     Auto,
     Interaction,
-    Key
+    Stay
 };
 
 enum DoorType
 {
-    pos, // 미닫이문
+    Pos, // 미닫이문
     Rot // 회전문
 };
 
@@ -25,36 +25,44 @@ public class Door : MonoBehaviour
 
     [SerializeField] OpenType openType;
     [SerializeField] DoorType doorType;
-    public bool OpenDoor = false;
-    public float MoveSpeed;
 
-    private void Awake()
-    {
-    
-    }
+
+    bool OpenDoor;
+    public float MoveSpeed;
 
     private void Update()
     {
-        if(OpenDoor == true)
-        {   
-            if(openType == OpenType.Auto)
-            {
-                AutdoOpenDoor();
-            }
-            else if(openType == OpenType.Interaction)
-            {
-
-            }
-            else if(openType == OpenType.Key)
-            {
-                AutdoOpenDoor();
-            }
-        }
-
         if(OpenDoor)
-        {
-            return;
+        {   
+            if(doorType == DoorType.Pos)
+            {   
+               PosDoorType();
+            }
+
+            if(doorType == DoorType.Rot)
+            {
+
+            }
         }
+
+    }
+
+
+    private void PosDoorType()
+    {
+        if(openType == OpenType.Auto)
+        {
+            AutdoOpenDoor();
+        }
+        else if(openType == OpenType.Interaction)
+        {
+
+        }
+        else if(openType == OpenType.Stay)
+        {
+            AutdoOpenDoor();
+        }
+
     }
 
     private void AutdoOpenDoor()
@@ -72,17 +80,20 @@ public class Door : MonoBehaviour
          RightDoor_Prefab.transform.position = Vector3.MoveTowards(rightcurrentPos, rightTargetPos, MoveSpeed * Time.deltaTime);
 
     }
-    private void OnCollisionEnter(Collision other) 
+
+    
+    private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.CompareTag("Player"))
+        if(other.gameObject.layer == 6)
         {
             OpenDoor = true;
             Debug.Log("감지");
         }
     }
 
-    private void OnCollisionStay(Collision other) 
+    private void OnTriggerStay(Collider other) 
     {
         OpenDoor = true;
     }
+
 }
