@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -22,11 +23,14 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     private PlayableDirector playable;
     public PlayableDirector Playable { get { return playable; } }
 
+    private Queue<Sequence_Base> sequenceQueue;
+
     protected override void Awake()
     {
         base.Awake();
 
         playable = GetComponent<PlayableDirector>();
+        sequenceQueue = new Queue<Sequence_Base>();
         //SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -39,14 +43,48 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     private bool sequenceRunning = false;
     public bool IsSequenceRunning { get { return sequenceRunning; } }
 
-    public void StartSequence(Sequence_Base[] sequenceChain)
+    public void StartSequence(Sequence_Base sequence)
     {
-        if(sequenceRunning) { Debug.LogWarning("작동중인 시퀀스가 있습니다. 시작될 시퀀스가 무시됩니다."); return; }
+        if (sequenceRunning)
+        {
+            Debug.Log("작동중인 시퀀스가 있습니다. 하나의 시퀀스 큐에 추가됩니다.");
+                sequenceQueue.Enqueue(sequence);
+            
+            Debug.Log("현재 시퀀스 큐 : " + Debug_GetQueuedSequencesInfo());
+            return;
+        }
 
-        StartCoroutine(Cor_StartSequenceChain(sequenceChain));
+
+        sequenceQueue.Enqueue(sequence);
+
+        Debug.Log("현재 시퀀스 큐 : " + Debug_GetQueuedSequencesInfo());
+
+        StartCoroutine(Cor_StartSequenceQueue());
     }
 
-    private IEnumerator Cor_StartSequenceChain(Sequence_Base[] sequenceChain)
+    public void StartSequence(Sequence_Base[] sequenceChain)
+    {
+        if (sequenceRunning) {
+            Debug.Log("작동중인 시퀀스가 있습니다. " + (sequenceChain.Length + 1) + "개의 시퀀스가 시퀀스 큐에 추가됩니다.");
+            foreach (var seq in sequenceChain)
+            {
+                sequenceQueue.Enqueue(seq);
+            }
+            Debug.Log("현재 시퀀스 큐 : " + Debug_GetQueuedSequencesInfo());
+            return;
+        }
+
+        foreach (var seq in sequenceChain)
+        {
+            sequenceQueue.Enqueue(seq);
+        }
+
+        Debug.Log("현재 시퀀스 큐 : " + Debug_GetQueuedSequencesInfo());
+
+        StartCoroutine(Cor_StartSequenceQueue());
+    }
+
+    private IEnumerator Cor_StartSequenceQueue()
     {
         sequenceRunning = true;
         UI_PlaymenuBehavior playmenu = UI_PlaymenuBehavior.Instance;
@@ -54,12 +92,12 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         PlayerCore player = PlayerCore.Instance;
         player.DisableForSequence();
 
-        for (int i = 0; i < sequenceChain.Length; i++)
+        while (sequenceQueue.Count > 0)
         {
-            yield return StartCoroutine(sequenceChain[i].Sequence(this));
+            yield return StartCoroutine(sequenceQueue.Dequeue().Sequence(this));
         }
 
-        if(dialogue.DialogueOpened) { yield return dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
+        if (dialogue.DialogueOpened) { yield return dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         yield return null;
         playmenu.EnableInput();
@@ -76,14 +114,26 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         }
     }
 
-    //public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    //{
-    //    dialogue = DialogueBehavior.Instance;
-    //}
+    public static string Debug_GetQueuedSequencesInfo(string splitRule = ",")
+    {
+        if (!SequenceInvoker.IsInstanceValid) return "No Valid Sequence Invoker";
+        if (SequenceInvoker.Instance.sequenceQueue.Count == 0) return "SequenceQueue Is Empty";
 
-    //private void OnDestroy()
-    //{
-    //    SceneManager.sceneLoaded -= OnSceneLoaded;
-    //}
+        List<string> queuedSequencesInfo = new List<string>();
+        foreach(var q in SequenceInvoker.Instance.sequenceQueue)
+        {
+            queuedSequencesInfo.Add(q.GetType().Name);
+        }
+
+        string r = queuedSequencesInfo[0];
+
+        for(int i = 1; i < queuedSequencesInfo.Count; i++)
+        {
+            r += splitRule;
+            r += queuedSequencesInfo[i];
+        }
+
+        return r;
+    }
 
 }
