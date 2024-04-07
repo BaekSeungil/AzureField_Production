@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
