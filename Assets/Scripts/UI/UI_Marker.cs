@@ -61,7 +61,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
         Vector2 markerPosition = Vector2.zero;
 
 
-        if (TargetVisible(PlayerCore.Instance.transform.position))
+        if (TargetVisible(markerTarget.position))
         {
             outScreenMarkerImage.SetActive(false);
             markerImage.SetActive(true);
@@ -72,17 +72,24 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
             outScreenMarkerImage.SetActive(true);
             markerImage.SetActive(false);
             markerPosition = Camera.main.WorldToScreenPoint(markerTarget.position);
-            markerPosition = markerPosition.Clamp(new Vector2(-Screen.width + outScreenPadding, -Screen.height + 0f + outScreenPadding), new Vector2(Screen.width - outScreenPadding, Screen.height-outScreenPadding));
+            if (Vector3.Dot((markerTarget.position - Camera.main.transform.position), Camera.main.transform.forward) < 0) markerPosition = -markerPosition;
+            outScreenMarkerImage.transform.up = markerPosition-(new Vector2(Screen.width / 2f, Screen.height / 2f));
+
+            markerPosition = markerPosition.Clamp(new Vector2(0 + outScreenPadding, +0f + outScreenPadding), new Vector2(Screen.width - outScreenPadding, Screen.height - outScreenPadding));
+
+
+
         }
 
-        markerTransform.localPosition = markerPosition;
+        markerTransform.position = markerPosition;
     }
 
     private bool TargetVisible(Vector3 worldPos)
     {
         Vector3 point = Camera.main.WorldToViewportPoint(worldPos);
 
-        if (true)
+        
+        if (point.x > 0 +outScreenPadding/Screen.width && point.x <= 1 - outScreenPadding / Screen.width && point.y >= 0 + outScreenPadding / Screen.height && point.y <= 1 - outScreenPadding / Screen.height  && point.z > 0)
         {
             return true;
         }
