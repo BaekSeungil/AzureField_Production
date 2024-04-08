@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RuleConfig
   m_EditorClassIdentifier: 
   projectRules:
-  - Enabled: 1
+  - Enabled: 0
     EnabledOverridden: 1
     Type: Sirenix.OdinValidator.Editor.Validators.ShaderCompilerErrorsValidator,
       Sirenix.OdinValidator.Editor
@@ -31,6 +31,13 @@ MonoBehaviour:
       Render Pipeline Support/Shader/Standard Vertex Color.shadergraph\\\",\\\"SubAsset\\\":{\\\"AssetType\\\":{\\\"TypeName\\\":\\\"\\\"},\\\"InstanceID\\\":0,\\\"Index\\\":0},\\\"Hierarchy\\\":{\\\"SubNames\\\":[],\\\"SubIndices\\\":[]},\\\"Component\\\":{\\\"ComponentIndex\\\":0,\\\"ComponentType\\\":{\\\"TypeName\\\":\\\"\\\"}},\\\"Name\\\":\\\"Shader
       Graphs/Standard Vertex Color\\\",\\\"ObjectType\\\":{\\\"TypeName\\\":\\\"UnityEngine.Shader,
       UnityEngine.CoreModule\\\"}}\"\r\n        ]\r\n    }\r\n}"
+  - Enabled: 0
+    EnabledOverridden: 1
+    Type: Sirenix.OdinValidator.Editor.Validators.HugeTransformPositionsValidator,
+      Sirenix.OdinValidator.Editor
+    Override: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|Sirenix.OdinValidator.Editor.Validators.HugeTransformPositionsValidator,
+      Sirenix.OdinValidator.Editor\",\r\n    \"SizeLimit\": 100000,\r\n    \"Severity\":
+      1\r\n}"
   - Enabled: 0
     EnabledOverridden: 1
     Type: Sirenix.OdinValidator.Editor.Validators.DuplicateComponentsValidator, Sirenix.OdinValidator.Editor

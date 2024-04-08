@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.ShaderGraph.Internal;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,7 +18,6 @@ public class Elevator : MonoBehaviour
     엘레베이터 오브젝트를 작동 시킬 때는 반드시 엘레베이터 감지 콜라이더에 ElevatorCollider을
     추가해주셔야 작동합니다.
 
-
 */
     [SerializeField] int StartPoint;
     [SerializeField] Transform[] Points;
@@ -29,7 +27,7 @@ public class Elevator : MonoBehaviour
     bool reverse;
     int i;
 
-    private void Start()
+    private void Awake()
     {
         transform.position = Points[StartPoint].position;
         i = StartPoint;
@@ -40,10 +38,10 @@ public class Elevator : MonoBehaviour
         
         if(moveType == MoveType.MovingObjects)
         { 
-            Canmove = true;
             if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
             {
-                if(i==Points.Length - 1)
+                
+                if(i == Points.Length - 1)
                 {
                     reverse = true;
                     i--;
@@ -51,7 +49,41 @@ public class Elevator : MonoBehaviour
                 }
                 else if(i==0)
                 {
-                    reverse =true;
+                    reverse = false;
+                    i++;
+                    return;
+                }
+
+                if(reverse)
+                {
+                    i--;
+                   
+                }
+                else
+                {
+                    i++;
+                  
+                }
+            }
+           transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
+            moveSpeed * Time.deltaTime);
+
+        }
+
+        else if(moveType == MoveType.Elevator)
+        {
+            if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
+            {
+                Canmove = false;
+                if(i == Points.Length - 1)
+                {
+                    reverse = true;
+                    i--;
+                    return;
+                }
+                else if(i==0)
+                {
+                    reverse = false;
                     i++;
                     return;
                 }
@@ -65,43 +97,13 @@ public class Elevator : MonoBehaviour
                 }
             }
 
-          
-            transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
-            moveSpeed * Time.deltaTime);
-            
-        }
-
-        
-        if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
-        {
-            Canmove = false;
-            if(i==Points.Length - 1)
+            if(Canmove)
             {
-                reverse = true;
-                i--;
-                return;
-            }
-            else if(i==0)
-            {
-                reverse =true;
-                i++;
-                return;
-            }
-            if(reverse)
-            {
-                i++;
-            }
-            else
-            {
-                i--;
+                transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
+                moveSpeed * Time.deltaTime);
             }
         }
-
-        if(Canmove)
-        {
-            transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
-            moveSpeed * Time.deltaTime);
-        }
+      
     }
 
     private void OnTriggerEnter(Collider other) 
