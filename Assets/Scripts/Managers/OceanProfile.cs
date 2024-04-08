@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewOceanProfile", menuName = "CreateNewOceanProfile", order = 1)]
+[CreateAssetMenu(fileName = "NewOceanProfile", menuName = "새 오션 프로필 추가", order = 1)]
 public class OceanProfile : SerializedScriptableObject
 {
     //================================================
