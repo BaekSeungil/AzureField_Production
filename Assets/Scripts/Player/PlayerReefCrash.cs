@@ -24,6 +24,7 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
     private void Start()
     {
         previousVelocity = rBody.velocity;
+        player = PlayerCore.Instance;
     }
 
     private void Update()
