@@ -49,7 +49,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
-
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
 
@@ -91,6 +90,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
 
     #endregion
+
 
     private Rigidbody rBody;
     private StudioEventEmitter sound;
@@ -286,8 +286,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = "NULL";
 #endif
 
+        //이전 프레임의 플레이어 속도
+        Vector3 currentVelocity = rBody.velocity;
 
-        
+        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
+        Vector3 velocityChange = currentVelocity - previousVelocity;
+
+        // 1프레임 전의 속도를 출력합니다.
+        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
+
+        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
+        previousVelocity = currentVelocity;
 
     }
 
@@ -491,7 +500,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (player.sailboat.SubmergeRate < -0.5f)
             {
                 player.rBody.drag = player.sailboatFullDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, -0.5f) * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
 
                 if (player.input.Player.Move.IsPressed())
                 {
@@ -840,6 +849,39 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
             sound.Play();
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
+    /// </summary>
+    IEnumerator ReefCrash()
+    {
+        DisableForSequence();
+        SailboatQuit();
+
+        yield return new WaitForSeconds(1.0f);
+
+        EnableForSequence();
+    }
+
+    /// <summary>
+    /// 충돌감지
+    /// </summary>
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.gameObject.CompareTag("Reef"))
+        {
+            ///<summary>
+            ///암초충돌감지
+            /// </summary>
+            if (previousVelocity.magnitude - rBody.velocity.magnitude > 10)
+            {
+                Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
+                Debug.Log("암초 대충돌!");
+                StartCoroutine(ReefCrash());
+            }
+
         }
     }
 }
