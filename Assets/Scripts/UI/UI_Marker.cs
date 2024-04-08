@@ -15,8 +15,6 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
     [SerializeField] private GameObject markerImage;
     [SerializeField] private TextMeshProUGUI distance;
 
-    [SerializeField] private Transform debug_testMarker;
-
     private RectTransform markerTransform;
 
     private bool isMarkerActive = false;
@@ -26,6 +24,11 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
     {
         markerAnchor.SetActive(true);
         markerTarget = target;
+    }
+
+    public void EnableMarker()
+    {
+        markerAnchor.SetActive(true);
     }
 
     public void DisableMarker()
@@ -43,8 +46,6 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
     {
         outScreenMarkerImage.SetActive(false);
         markerAnchor.SetActive(false);
-
-        SetMarker(debug_testMarker);
     }
 
     private void Update()
