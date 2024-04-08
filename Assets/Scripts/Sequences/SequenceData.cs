@@ -16,7 +16,7 @@ using UnityEngine.Timeline;
 //
 //===============================
 
-[CreateAssetMenu(fileName = "NewSequenceData", menuName = "새 시퀀스 번들 에셋 추가t", order = 1)]
+[CreateAssetMenu(fileName = "NewSequenceData", menuName = "새 시퀀스 번들 에셋 추가", order = 1)]
 public class SequenceBundleAsset : SerializedScriptableObject
 {
     public Sequence_Base[] SequenceBundles;
