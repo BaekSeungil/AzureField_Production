@@ -120,8 +120,13 @@ public class FairwindQuest : MonoBehaviour
             Debug.Log("경로를 벗어남");
        }
     }
-
-    
+    /// <summary>
+    /// DropItemCrash에서 접근하기위한 함수
+    /// </summary>
+    public void AddTimer(float addTimer)
+    {
+        timer += addTimer;
+    }
 
 }
 
