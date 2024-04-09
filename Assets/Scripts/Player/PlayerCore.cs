@@ -341,11 +341,30 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         layerIndex_Boarding = animator.GetLayerIndex("BoardingLayer");
     }
 
+    private float headRigTarget = 0.7f;
+
     private void FixedUpdate()
     {
         // =================== CURRENT MOVEMENT FIXED UPDATE =========================
         CurrentMovement.OnFixedUpdate(this);
         // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+
+        if (interestPoint == null)
+        {
+            headTarget.parent = transform;
+            headRig.weight = Mathf.Lerp(headRig.weight, 0f, 0.05f);
+            headTarget.localPosition = Vector3.Lerp(headTarget.localPosition, headRigForward, 0.05f);
+        }
+        else
+        {
+            headTarget.parent = null;
+            headRig.weight = Mathf.Lerp(headRig.weight, headRigTarget, 0.05f);
+            headTarget.position = Vector3.Lerp(headTarget.position, interestPoint.position, 0.05f);
+
+
+            if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
+                interestPoint = null;
+        }
     }
 
     private void Update()
@@ -413,20 +432,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
 
         // etc.
-
-        if (interestPoint == null)
-        {
-            headTarget.parent = transform;
-            headTarget.localPosition = Vector3.Lerp(headTarget.localPosition, headRigForward, 0.1f);
-        }
-        else
-        {
-            headTarget.parent = null;
-            headTarget.position = Vector3.Lerp(headTarget.position, interestPoint.position, 0.1f);
-
-            if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
-                interestPoint = null;
-        }
 
 
         if (Input.Player.Interact.WasPressedThisFrame())
@@ -583,8 +588,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         public override void OnUpdate(PlayerCore player)
         {
             base.OnUpdate(player);
-            if (player.sprinting) player.animator.SetFloat("RunBlend", 1f, 0.5f, Time.deltaTime);
-            else player.animator.SetFloat("RunBlend", 0f, 0.5f, Time.deltaTime);
+            if (player.sprinting) player.animator.SetFloat("RunBlend", 1f, 0.1f, Time.deltaTime);
+            else player.animator.SetFloat("RunBlend", 0f, 0.1f, Time.deltaTime);
         }
 
         public override void OnMovementExit(PlayerCore player)
@@ -789,6 +794,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             player.animator.SetFloat("BoardBlend", player.rBody.velocity.y);
 
+            if( player.input.Player.Move.IsPressed())
+            {
+                player.animator.SetFloat("BoardPropellingBlend", 1f, 1f, Time.fixedDeltaTime);
+            }
+            else
+            {
+                player.animator.SetFloat("BoardPropellingBlend", 0f, 1f, Time.fixedDeltaTime);
+            }
+
             player.waterScratchSound.EventInstance.setParameterByName("BoardWaterScratch", Mathf.InverseLerp(0.5f, -0.5f, player.sailboat.SubmergeRate) * GustAmount * 1.5f);
 
             var em = player.sailingSwooshEffect.emission;
@@ -806,6 +820,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.useGravity = true;
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
+            player.animator.SetFloat("BoardPropellingBlend", 0f);
 
             var em = player.sailingSwooshEffect.emission;
             em.rateOverTimeMultiplier = 0f;
