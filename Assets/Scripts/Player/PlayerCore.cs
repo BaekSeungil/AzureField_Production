@@ -6,6 +6,35 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 
+[System.Serializable]
+public class PlayerAbilityAttribute
+{
+    public float MoveSpeed = 1.0f;
+    public float SprintMult = 1.0f;
+    public float SwimSpeed = 1.0f;
+    public float JumpPower = 1.0f;
+    public float SailboatAcceleration = 1.0f;
+
+    public static PlayerAbilityAttribute operator+ (PlayerAbilityAttribute a, PlayerAbilityAttribute b)
+    {
+        a.MoveSpeed += b.MoveSpeed;
+        a.SprintMult += b.SprintMult;
+        a.SwimSpeed += b.SwimSpeed;
+        a.JumpPower += b.JumpPower;
+        a.SailboatAcceleration += b.SailboatAcceleration;
+        return a;
+    }
+
+    public static PlayerAbilityAttribute operator- (PlayerAbilityAttribute a, PlayerAbilityAttribute b)
+    {
+        a.MoveSpeed -= b.MoveSpeed;
+        a.SprintMult -= b.SprintMult;
+        a.SwimSpeed -= b.SwimSpeed;
+        a.JumpPower -= b.JumpPower;
+        a.SailboatAcceleration -= b.SailboatAcceleration;
+        return a;
+    }
+}
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
     //============================================
@@ -55,6 +84,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
 
+    [ReadOnly] public PlayerAbilityAttribute PermernentAttribute;                   // 영구적인 패시브 적용 수치
+
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -90,7 +121,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
 
     #endregion
-
 
     private Rigidbody rBody;
     private StudioEventEmitter sound;
@@ -136,6 +166,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
         }
     }
+
 
     public void SailboatQuit()
     {
