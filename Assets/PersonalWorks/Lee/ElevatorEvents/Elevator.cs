@@ -10,6 +10,13 @@ enum MoveType
     MovingObjects
 };
 
+enum ElevatorType
+{   
+    Auto,
+    Interaction
+
+};
+
 public class Elevator : MonoBehaviour
 {
 /*
@@ -21,7 +28,12 @@ public class Elevator : MonoBehaviour
 */
     [SerializeField] int StartPoint;
     [SerializeField] Transform[] Points;
+    [SerializeField] ElevatorType elevatorType;
     [SerializeField] MoveType moveType;
+    
+    static private Elevator instance;
+    static public Elevator Instace{get{return instance;}}
+
     public float moveSpeed; 
     public bool Canmove = false;
     bool reverse;
@@ -108,9 +120,13 @@ public class Elevator : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.CompareTag("Player"))
+        if(elevatorType == ElevatorType.Auto)
         {
-           Canmove = true;
+            if(other.gameObject.CompareTag("Player"))
+            {
+            Canmove = true;
+            }
+
         }
     }
 

@@ -2812,12 +2812,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000016795445
+      value: -0.00000001679544
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000037379984
+      value: -0.0000000037379975
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -2887,17 +2887,17 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.16080931
+      value: -0.16080932
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000008491224
+      value: 0.000000008491225
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000001383473
+      value: 0.0000000013834732
       objectReference: {fileID: 0}
     - target: {fileID: 6832785402570513268, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -3245,6 +3245,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6101826904504868188, guid: 6714b237c3bf25748adae0f6f760a222,
         type: 3}
+    - target: {fileID: 6101826904504868188, guid: 6714b237c3bf25748adae0f6f760a222,
+        type: 3}
+      propertyPath: eventsOnStartInteract.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101826904504868188, guid: 6714b237c3bf25748adae0f6f760a222,
+        type: 3}
+      propertyPath: eventsOnStartInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6101826904504868188, guid: 6714b237c3bf25748adae0f6f760a222,
+        type: 3}
+      propertyPath: eventsOnStartInteract.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6995271706803249137, guid: 6714b237c3bf25748adae0f6f760a222,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3365,7 +3380,6 @@ GameObject:
   - component: {fileID: 2005404841}
   - component: {fileID: 2005404840}
   - component: {fileID: 2005404844}
-  - component: {fileID: 2005404849}
   - component: {fileID: 2005404847}
   - component: {fileID: 2005404848}
   m_Layer: 8
@@ -3478,6 +3492,7 @@ MonoBehaviour:
   - {fileID: 435784128}
   - {fileID: 830355259}
   - {fileID: 1516927969}
+  elevatorType: 1
   moveType: 0
   moveSpeed: 8
   Canmove: 0
@@ -3514,18 +3529,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.59, y: 0.64, z: 0.79}
   m_Center: {x: 0, y: 0.8, z: 0}
---- !u!114 &2005404849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2005404839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5608b8891755d764a90d0c4609d21b3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2143398994
 GameObject:
   m_ObjectHideFlags: 0
