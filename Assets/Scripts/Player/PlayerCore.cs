@@ -167,6 +167,54 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    /// <summary>
+    /// 영구적인 플레이어 속성을 적용합니다.
+    /// </summary>
+    /// <param name="attr">속성</param>
+    public void SetPermernentAttribute(PlayerAbilityAttribute attr)
+    {
+        
+    }
+
+    /// <summary>
+    /// 일시적으로 플레이어 수치를 적용합니다.
+    /// </summary>
+    /// <param name="attr">속성</param>
+    /// <param name="time">시간</param>
+    public void SetTempoaryAttribute(PlayerAbilityAttribute attr, float time)
+    {
+
+    }
+
+    /// <summary>
+    /// 일시적으로 플레이어 속성을 ID를 붙여 적용합니다.
+    /// </summary>
+    /// <param name="attr">속성</param>
+    /// <param name="ID"></param>
+    public void SetAttributeWithID(PlayerAbilityAttribute attr, string ID)
+    {
+
+    }
+
+    /// <summary>
+    ///  ID가 붙어있는 플레이어 속성을 해제합니다.
+    /// </summary>
+    /// <param name="ID"></param>
+    public void CancelAttributeWithID(string ID)
+    {
+
+    }
+
+    /// <summary>
+    /// 일시적으로 플레이어 속성을 ID를 붙여 적용합니다. yield return 으로 코루틴에 사용할 수 있습니다.
+    /// </summary>
+    /// <param name="attr">속성</param>
+    /// <param name="time">시간</param>
+    /// <returns></returns>
+    public IEnumerator Cor_SetTempoaryAttribute(PlayerAbilityAttribute attr, float time)
+    {
+        yield return null;
+    }
 
     public void SailboatQuit()
     {
