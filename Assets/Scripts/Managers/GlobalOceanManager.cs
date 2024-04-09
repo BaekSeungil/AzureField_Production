@@ -24,7 +24,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     [SerializeField] private Material[] ReferencingMaterials;                           // OceanSurface.mat을 가지고 있는 오브젝트들, 아래 속성들과 머트리얼의 속성을 맟추기 위해 필요
 
     [Title("GlobalWaveProperties")]
-    [SerializeField,OnValueChanged("GUI_ProfileChanged"),DisableInPlayMode()] private OceanProfile defaultOceanProfile; // 초기 오션 프로파일
+    [SerializeField] private OceanProfile defaultOceanProfile; // 초기 오션 프로파일
     private OceanProfile activeOceanProfile;
     [SerializeField, ReadOnly] private float islandregionIntensityFactor = 1.0f;
     public float IslandregionIntensityFactor
@@ -34,13 +34,18 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     }
     public float Intensity { get { return intensity * IslandregionIntensityFactor; } }  // (읽기 전용) 최종 파도 강도
 
-    [SerializeField,DisableInPlayMode()] private float rotation;                        // Gerstner 파도 속성 : 파도 회전값
-    [SerializeField,DisableInPlayMode()] private float depth;                           // Gerstner 파도 속성 : depth 값
-    [SerializeField,DisableInPlayMode()] private float phase;                           // Gerstner 파도 속성 : phase 값
-    [SerializeField,DisableInPlayMode()] private float gravity;                         // Gerstner 파도 속성 : gravity 값
+    [SerializeField,DisableInPlayMode(),OnValueChanged("UpdateReferencingMaterials")] 
+    private float rotation;                        // Gerstner 파도 속성 : 파도 회전값
+    [SerializeField,DisableInPlayMode(), OnValueChanged("UpdateReferencingMaterials")] 
+    private float depth;                           // Gerstner 파도 속성 : depth 값
+    [SerializeField,DisableInPlayMode(), OnValueChanged("UpdateReferencingMaterials")] 
+    private float phase;                           // Gerstner 파도 속성 : phase 값
+    [SerializeField,DisableInPlayMode(), OnValueChanged("UpdateReferencingMaterials")] 
+    private float gravity;                         // Gerstner 파도 속성 : gravity 값
 
     [Title("ProfileControlledPorperties")]
     [SerializeField, ReadOnly,ColorUsage(false,true)] private Color oceanEmmision;
+    [SerializeField, ReadOnly, ColorUsage(false, true)] private Color oceanTipEmmision;
     [SerializeField, ReadOnly] private float intensity;
     [Title("")]
     [SerializeField, ReadOnly] private Vector3 Wave1_Vector;
@@ -173,6 +178,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         foreach(Material m in ReferencingMaterials)
         {
             m.SetColor("_Emmision", oceanEmmision);
+            m.SetColor("_TipEmission", oceanTipEmmision);
             m.SetFloat("_Intensity",Intensity);
             m.SetFloat("_Rotation", rotation);
             m.SetFloat("_Depth",depth);
@@ -218,6 +224,9 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
         activeOceanProfile = oceanProfile;
         oceanEmmision = oceanProfile.OceanColor;
+        oceanTipEmmision = oceanProfile.OceanTipColor;
+
+        intensity = oceanProfile.OceanIntensity;
 
         Wave1_Vector = oceanProfile.Waveform1.vector;
         Wave1_Amplitude = oceanProfile.Waveform1.amplitude;
@@ -412,7 +421,10 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         return result;
     }
 
-    private void GUI_ProfileChanged()
+#if UNITY_EDITOR
+    [Button(ButtonSizes.Small,Name = "DefaultOceanProfile 적용"),PropertyOrder(-1)]
+#endif
+    private void GUI_ChangeProfile()
     {
         SetWaveImmedietly(defaultOceanProfile);
     }

@@ -24,6 +24,24 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
         input.Enable();
     }
 
+    private void Update()
+    {
+        if(cursorState == CursorMode.CursorVisible)
+        {
+            if(Cursor.visible == false)
+            {
+                DisableFreelook();
+            }
+        }
+        else
+        {
+            if (Cursor.visible == true)
+            {
+                EnableFreelook();
+            }
+        }
+    }
+
     public void EnableFreelook()
     {
         cursorState = CursorMode.Freelook;
