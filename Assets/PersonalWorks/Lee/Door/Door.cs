@@ -117,6 +117,10 @@ public class Door : MonoBehaviour
             LeftDoor_Prefab.transform.rotation = Quaternion.RotateTowards(LeftDoor_Prefab.transform.rotation, leftTargetRotation, MoveSpeed * Time.deltaTime);
             RightDoor_Prefab.transform.rotation = Quaternion.RotateTowards(RightDoor_Prefab.transform.rotation, rightTargetRotation, MoveSpeed * Time.deltaTime);
         }
+        else if(OpenDoor == false)
+        {
+            CloseDoor();
+        }
         
 
     }
@@ -134,6 +138,10 @@ public class Door : MonoBehaviour
 
             // 우측 문을 이동
             RightDoor_Prefab.transform.position = Vector3.MoveTowards(rightcurrentPos, rightTargetPos, MoveSpeed * Time.deltaTime);
+        }
+        else if(OpenDoor == false)
+        {
+            CloseDoor();
         }
        
 
