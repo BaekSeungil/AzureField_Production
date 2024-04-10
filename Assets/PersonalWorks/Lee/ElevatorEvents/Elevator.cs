@@ -73,28 +73,12 @@ public class Elevator : MonoBehaviour
         if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
         {
                 
-            if(i == Points.Length - 1)
-            {
-                reverse = true;
-                i--;
-                return;
-            }
-            else if(i==0)
-            {
-                reverse = false;
-                i++;
-                return;
-            }
+            i++;
 
-            if(reverse)
+            // i가 Points 배열의 길이를 초과하는 경우, 처음 위치로 되돌아가기
+            if (i >= Points.Length)
             {
-                i--;
-                
-            }
-            else
-            {
-                i++;
-                
+                i = 0;
             }
         }
         transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
