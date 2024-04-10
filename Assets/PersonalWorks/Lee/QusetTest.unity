@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 21250847}
   - component: {fileID: 21250849}
   - component: {fileID: 21250850}
+  - component: {fileID: 21250851}
   m_Layer: 8
   m_Name: elevatorCOLL
   m_TagString: Untagged
@@ -211,7 +212,22 @@ MonoBehaviour:
   eventsOnStartInteract:
     m_PersistentCalls:
       m_Calls: []
-  sequenceAsset: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &21250851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 21250846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects: []
   references:
     version: 2
     RefIds: []
@@ -3023,12 +3039,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000016795445
+      value: 0.000000016795445
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000037379984
+      value: 0.0000000037379984
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -3103,12 +3119,12 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000000084912255
+      value: 0.00000000849037
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000013834734
+      value: 0.0000000013833339
       objectReference: {fileID: 0}
     - target: {fileID: 6832785402570513268, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -3737,7 +3753,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.59, y: 0.64, z: 0.79}
   m_Center: {x: 0, y: 0.8, z: 0}

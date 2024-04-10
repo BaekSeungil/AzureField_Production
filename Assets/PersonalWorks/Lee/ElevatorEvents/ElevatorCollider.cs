@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 public class ElevatorCollider : Interactable_Base
 {
-    [SerializeField] private bool interestPlayer = true;
     [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
 
 
@@ -14,16 +13,15 @@ public class ElevatorCollider : Interactable_Base
      Elevator elevator;
 
 
-    private void Awake() 
+   
+    private void Update() 
     {
-         elevator = Elevator.instance;
-         elevator = GetComponent<Elevator>();
+        elevator = Elevator.instance;
     }
 
     public override void Interact()
     {
-        // 엘레베이터의 Canmove 변수를 true로 설정
-        if (elevator != null )
+        if (elevator != null && elevator.GetElevatorType() == ElevatorType.Interaction)
         {
             elevator.Canmove = true;
         }

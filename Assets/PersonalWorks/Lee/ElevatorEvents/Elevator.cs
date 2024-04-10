@@ -10,7 +10,7 @@ enum MoveType
     MovingObjects
 };
 
-enum ElevatorType
+public enum ElevatorType
 {   
     Auto,
     Interaction
@@ -43,11 +43,16 @@ public class Elevator : MonoBehaviour
     {
         transform.position = Points[StartPoint].position;
         i = StartPoint;
+        instance = this;
+    }
+    public ElevatorType GetElevatorType()
+    {
+        return elevatorType;
     }
 
     private void Update() 
     {
-        
+
         if(moveType == MoveType.MovingObjects)
         { 
            MoveFloor();
