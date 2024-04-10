@@ -7,29 +7,27 @@ public class ElevatorCollider : Interactable_Base
 {
     [SerializeField] private bool interestPlayer = true;
     [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
-    [SerializeField] private SequenceBundleAsset sequenceAsset; 
 
-    Elevator elevator;
+
   
     // Start is called before the first frame update
+     Elevator elevator;
+
 
     private void Awake() 
     {
-        
-        
-    }
-
-    private void Update() 
-    {
-        
+         elevator = Elevator.instance;
+         elevator = GetComponent<Elevator>();
     }
 
     public override void Interact()
     {
-        eventsOnStartInteract.Invoke();
-        if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-        SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
-        if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(transform);
-        
+        // 엘레베이터의 Canmove 변수를 true로 설정
+        if (elevator != null )
+        {
+            elevator.Canmove = true;
+        }
     }
+
+ 
 }
