@@ -2002,6 +2002,7 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   interestPlayer: 1
+  interestPoint: {fileID: 0}
   eventsOnStartInteract:
     m_PersistentCalls:
       m_Calls: []
@@ -6079,6 +6080,12 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 6148677557217899656}
+--- !u!4 &717155989 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3608430002527798768, guid: 24cac4c607214ca488cf4884ceded62e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4166800768733318793}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &729378820
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16618,6 +16625,16 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1948297003437733242, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
+      propertyPath: m_Follow
+      value: 
+      objectReference: {fileID: 1896692427081648218}
+    - target: {fileID: 1948297003437733242, guid: 233293587716d554a8f2357c5d1ccc48,
+        type: 3}
+      propertyPath: m_LookAt
+      value: 
+      objectReference: {fileID: 717155989}
+    - target: {fileID: 1948297003437733242, guid: 233293587716d554a8f2357c5d1ccc48,
+        type: 3}
       propertyPath: m_Rigs.Array.data[0]
       value: 
       objectReference: {fileID: 6148677557217899666}
@@ -16631,48 +16648,6 @@ PrefabInstance:
       propertyPath: m_Rigs.Array.data[2]
       value: 
       objectReference: {fileID: 688465879}
-    - target: {fileID: 0}
-      propertyPath: m_BindingMode
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.z
-      value: -4.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_BindingMode
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.z
-      value: -4.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.FieldOfView
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.NearClipPlane
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 1948297003437733242, guid: 233293587716d554a8f2357c5d1ccc48,
-        type: 3}
-      propertyPath: m_Follow
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1948297003437733242, guid: 233293587716d554a8f2357c5d1ccc48,
-        type: 3}
-      propertyPath: m_LookAt
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -16732,18 +16707,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.0000000037379975
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_BindingMode
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_FollowOffset.z
-      value: -4.72
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -16824,22 +16787,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.000000001383473
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.FieldOfView
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.NearClipPlane
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.FieldOfView
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_Lens.NearClipPlane
-      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 9221778620721048584, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
