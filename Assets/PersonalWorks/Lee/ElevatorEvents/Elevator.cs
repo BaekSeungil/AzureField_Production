@@ -120,18 +120,6 @@ public class Elevator : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter(Collider other) 
-    {
-        if(elevatorType == ElevatorType.Auto)
-        {
-            if(other.gameObject.CompareTag("Player"))
-            {
-                Canmove = true;
-            }
-
-        }
-    }
-
 }
 
 
