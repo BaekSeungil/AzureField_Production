@@ -27,5 +27,14 @@ public class ElevatorCollider : Interactable_Base
         }
     }
 
- 
+    private void OnTriggerEnter(Collider other) 
+    {
+        if (elevator != null && elevator.GetElevatorType() == ElevatorType.Auto)
+        {
+            if(other.gameObject.CompareTag("Player"))
+            {
+            elevator.Canmove = true;
+            }
+        }
+    }
 }
