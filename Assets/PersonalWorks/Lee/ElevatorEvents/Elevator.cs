@@ -10,6 +10,13 @@ enum MoveType
     MovingObjects
 };
 
+public enum ElevatorType
+{   
+    Auto,
+    Interaction
+
+};
+
 public class Elevator : MonoBehaviour
 {
 /*
@@ -21,7 +28,12 @@ public class Elevator : MonoBehaviour
 */
     [SerializeField] int StartPoint;
     [SerializeField] Transform[] Points;
+    [SerializeField] ElevatorType elevatorType;
     [SerializeField] MoveType moveType;
+    
+    static public Elevator instance;
+    static public Elevator Instace{get{return instance;}}
+
     public float moveSpeed; 
     public bool Canmove = false;
     bool reverse;
@@ -31,48 +43,67 @@ public class Elevator : MonoBehaviour
     {
         transform.position = Points[StartPoint].position;
         i = StartPoint;
+        instance = this;
+    }
+    public ElevatorType GetElevatorType()
+    {
+        return elevatorType;
     }
 
     private void Update() 
     {
-        
+
         if(moveType == MoveType.MovingObjects)
         { 
-            if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
-            {
-                
-                if(i == Points.Length - 1)
-                {
-                    reverse = true;
-                    i--;
-                    return;
-                }
-                else if(i==0)
-                {
-                    reverse = false;
-                    i++;
-                    return;
-                }
-
-                if(reverse)
-                {
-                    i--;
-                   
-                }
-                else
-                {
-                    i++;
-                  
-                }
-            }
-           transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
-            moveSpeed * Time.deltaTime);
+           MoveFloor();
 
         }
-
         else if(moveType == MoveType.Elevator)
         {
-            if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
+            MoveElevator();
+        }
+      
+    }
+
+   
+
+
+    private void MoveFloor()
+    {
+        if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
+        {
+                
+            if(i == Points.Length - 1)
+            {
+                reverse = true;
+                i--;
+                return;
+            }
+            else if(i==0)
+            {
+                reverse = false;
+                i++;
+                return;
+            }
+
+            if(reverse)
+            {
+                i--;
+                
+            }
+            else
+            {
+                i++;
+                
+            }
+        }
+        transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
+        moveSpeed * Time.deltaTime);
+    }
+
+    private void MoveElevator()
+    {
+        if(Vector3.Distance(transform.position, Points[i].position)< 0.01f)
             {
                 Canmove = false;
                 if(i == Points.Length - 1)
@@ -102,15 +133,18 @@ public class Elevator : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position,Points[i].position,
                 moveSpeed * Time.deltaTime);
             }
-        }
-      
+        
     }
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.CompareTag("Player"))
+        if(elevatorType == ElevatorType.Auto)
         {
-           Canmove = true;
+            if(other.gameObject.CompareTag("Player"))
+            {
+                Canmove = true;
+            }
+
         }
     }
 

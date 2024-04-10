@@ -1,22 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class ElevatorCollider : MonoBehaviour
+public class ElevatorCollider : Interactable_Base
 {
-    Elevator elevator;
-    // Start is called before the first frame update
+    [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
 
-    private void Awake() 
+
+  
+    // Start is called before the first frame update
+     Elevator elevator;
+
+
+   
+    private void Update() 
     {
-        elevator = GetComponent<Elevator>();
+        elevator = Elevator.instance;
     }
 
-    private void OnTriggerEnter(Collider other) 
+    public override void Interact()
     {
-        if(other.gameObject.CompareTag("Player"))
+        if (elevator != null && elevator.GetElevatorType() == ElevatorType.Interaction)
         {
             elevator.Canmove = true;
         }
     }
+
+ 
 }
