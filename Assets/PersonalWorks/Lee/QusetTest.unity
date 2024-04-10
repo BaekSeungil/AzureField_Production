@@ -2684,12 +2684,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000016795436
+      value: 0.00000001679544
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000003737997
+      value: 0.0000000037379975
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -2759,17 +2759,17 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.16080932
+      value: -0.16080931
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000008520025
+      value: -0.000000008490998
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000013881657
+      value: -0.0000000013834364
       objectReference: {fileID: 0}
     - target: {fileID: 6832785402570513268, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -3012,6 +3012,8 @@ GameObject:
   - component: {fileID: 1863007607}
   - component: {fileID: 1863007609}
   - component: {fileID: 1863007610}
+  - component: {fileID: 1863007612}
+  - component: {fileID: 1863007613}
   m_Layer: 8
   m_Name: DoorCollider
   m_TagString: Untagged
@@ -3064,6 +3066,58 @@ MonoBehaviour:
   m_GameObject: {fileID: 1863007606}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5a51eb201379842b1dedc03c2826a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:3a715556fda27954a99eef4a69db4cc8
+    m_TableEntryReference:
+      m_KeyId: 15897534599004160
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  eventsOnStartInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &1863007612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863007606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &1863007613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863007606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8fad24cf009ff646a186e8f8a4b6427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -3073,9 +3127,10 @@ MonoBehaviour:
   RightPoint: {fileID: 1692941642}
   rotationAxis: {fileID: 607484935}
   openAngle: 90
-  openType: 0
+  openType: 1
   doorType: 1
-  MoveSpeed: 5
+  OpenDoor: 0
+  MoveSpeed: 10
 --- !u!1001 &1880895971
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3517,10 +3572,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3148060502630491991, guid: 91f339502b8ce8a47bca73b30b4b5cce,
         type: 3}
+    - target: {fileID: 5171759238851806613, guid: 91f339502b8ce8a47bca73b30b4b5cce,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.27
+      objectReference: {fileID: 0}
     - target: {fileID: 5474694544244267968, guid: 91f339502b8ce8a47bca73b30b4b5cce,
         type: 3}
       propertyPath: m_Name
       value: ElevatorObject
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046386275165271343, guid: 91f339502b8ce8a47bca73b30b4b5cce,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.415
       objectReference: {fileID: 0}
     - target: {fileID: 7608249027486519318, guid: 91f339502b8ce8a47bca73b30b4b5cce,
         type: 3}
