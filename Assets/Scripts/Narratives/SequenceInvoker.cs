@@ -84,6 +84,21 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         StartCoroutine(Cor_StartSequenceQueue());
     }
 
+    public void ForceAbortAllSequences()
+    {
+        Debug.Log("진행중인 시퀀스가 종료되었습니다. " + Debug_GetQueuedSequencesInfo());
+
+        StopAllCoroutines();
+
+        sequenceRunning = false;
+        sequenceQueue.Clear();
+
+        if (dialogue.DialogueOpened) { dialogue.StopAllCoroutines(); dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
+
+        UI_PlaymenuBehavior.Instance.EnableInput();
+        PlayerCore.Instance.EnableForSequence();
+    }
+
     private IEnumerator Cor_StartSequenceQueue()
     {
         sequenceRunning = true;
@@ -112,6 +127,11 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         {
             yield return StartCoroutine(sequenceChain[i].Sequence(this));
         }
+    }
+
+    public IEnumerator Cor_RecurciveSequenceChain(Sequence_Base sequence)
+    {
+        yield return StartCoroutine(sequence.Sequence(this));
     }
 
     public static string Debug_GetQueuedSequencesInfo(string splitRule = ",")
