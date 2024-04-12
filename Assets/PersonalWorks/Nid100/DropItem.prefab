@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1947621898706923830}
   - component: {fileID: 4142272532831571215}
   - component: {fileID: 2544537901681323488}
+  - component: {fileID: 7459546970586897031}
   - component: {fileID: 2912569216782390962}
   - component: {fileID: 5576579102788881860}
   m_Layer: 0
@@ -85,6 +86,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!54 &7459546970586897031
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367641305679651735}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!65 &2912569216782390962
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -100,7 +128,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -126,6 +154,6 @@ MonoBehaviour:
   addSprintSpeed: 0
   addSwimSpeed: 0
   addJumpPower: 0
-  addBoatSpeed: 0
-  addSpeedTime: 0
+  addBoatSpeed: 30
+  addSpeedTime: 10
   itemActive: 1

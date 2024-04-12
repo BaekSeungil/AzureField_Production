@@ -32,15 +32,20 @@ public class DropItemCrash : MonoBehaviour
     IEnumerator CrashEvent()
     {
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
-        fairwind.AddTimer(addChallengeTime);
+        if (fairwind != null)
+        {
+            fairwind.AddTimer(addChallengeTime);
+        }
         yield return new WaitForSeconds(addSpeedTime);
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        //Debug.Log("아이템 충돌");
+        if (other.tag == "Player")
         {
+            //Debug.Log("아이템 충돌2");
             if (itemActive == true)
             {
                 StartCoroutine(CrashEvent());
