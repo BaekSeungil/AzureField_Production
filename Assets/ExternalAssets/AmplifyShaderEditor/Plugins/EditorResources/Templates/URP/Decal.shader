@@ -173,15 +173,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -331,10 +331,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			PackedVaryings Vert(Attributes inputMesh /*ase_vert_input*/ )
@@ -520,15 +516,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -660,10 +656,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			PackedVaryings Vert(Attributes inputMesh /*ase_vert_input*/ )
@@ -872,15 +864,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1040,10 +1032,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void InitializeInputData(PackedVaryings input, float3 positionWS, half3 normalWS, half3 viewDirectionWS, out InputData inputData)
@@ -1348,15 +1336,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
@@ -1516,10 +1504,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void InitializeInputData(PackedVaryings input, float3 positionWS, half3 normalWS, half3 viewDirectionWS, out InputData inputData)
@@ -1821,15 +1805,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1991,10 +1975,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
@@ -2174,15 +2154,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -2339,10 +2319,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
@@ -2554,15 +2530,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -2734,10 +2710,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
@@ -3037,15 +3009,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
@@ -3217,10 +3189,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			void MeshDecalsPositionZBias(inout PackedVaryings input)
@@ -3486,15 +3454,15 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
-			/*ase_srp_cond_begin:>=140010*/
-            #if ASE_SRP_VERSION >=140010
+			/*ase_unity_cond_begin:>=20220316*/
+            #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
-			/*ase_srp_cond_end*/
+			/*ase_unity_cond_end*/
 
-			/*ase_srp_cond_begin:<140010*/
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_srp_cond_end*/
+			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -3591,10 +3559,6 @@ Shader  /*ase_name*/"Hidden/Universal/Decal"/*end*/
 
             #ifdef DECAL_RECONSTRUCT_NORMAL
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
-            #endif
-
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
             #endif
 
 			PackedVaryings Vert(Attributes inputMesh /*ase_vert_input*/ )

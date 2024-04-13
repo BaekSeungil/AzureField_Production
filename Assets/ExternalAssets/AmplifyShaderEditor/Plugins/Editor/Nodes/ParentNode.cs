@@ -2492,6 +2492,16 @@ namespace AmplifyShaderEditor
 			return null;
 		}
 
+		public InputPort GetInputPortByName( string name )
+		{
+			return InputPorts.Find( x => x.Name.Equals( name ) );
+		}
+
+		public InputPort GetInputPortByExternalLinkId( string internalDataName )
+		{
+			return InputPorts.Find( x => x.ExternalLinkId.Equals( internalDataName ) );
+		}
+
 		public OutputPort GetOutputPortByUniqueId( int id )
 		{
 			if( m_outputPortsDict.ContainsKey( id ) )
@@ -3505,7 +3515,7 @@ namespace AmplifyShaderEditor
 			if( m_cachedPortId == -1 )
 				m_cachedPortId = Shader.PropertyToID( "_Port" );
 
-			if (!Preferences.GlobalDisablePreviews)
+			if (!Preferences.User.DisablePreviews)
 			{
 				RenderTexture temp = RenderTexture.active;
 				RenderTexture beforeMask = RenderTexture.GetTemporary(Constants.PreviewSize, Constants.PreviewSize, 0, Constants.PreviewFormat, RenderTextureReadWrite.Linear);
