@@ -34,6 +34,37 @@ Transform:
   - {fileID: 7062528746919170568}
   m_Father: {fileID: 2930847644886406987}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &685746059132895244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2840583760801654571}
+  m_Layer: 6
+  m_Name: SailboatSpineConstraint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2840583760801654571
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685746059132895244}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2930847644886406987}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &732998664942637140
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,7 +431,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2930847644886406987
 Transform:
   m_ObjectHideFlags: 0
@@ -418,6 +449,7 @@ Transform:
   - {fileID: 549003014287698940}
   - {fileID: 7253382862389929239}
   - {fileID: 34557165189775635}
+  - {fileID: 2840583760801654571}
   m_Father: {fileID: 20681564530110160}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5073862818154871201
@@ -752,7 +784,7 @@ Transform:
   m_GameObject: {fileID: 3323590569851705261}
   serializedVersion: 2
   m_LocalRotation: {x: -0.6441014, y: -0.5187447, z: -0.36290666, w: -0.42934373}
-  m_LocalPosition: {x: -0.027, y: 0.116, z: 0.193}
+  m_LocalPosition: {x: -0.027, y: 0.108, z: 0.23299901}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -860,7 +892,7 @@ Transform:
   m_GameObject: {fileID: 3481135830841591949}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5870044, y: -0.6699975, z: -0.44210884, w: -0.10520942}
-  m_LocalPosition: {x: 0.15200062, y: 0.07699999, z: -0.359999}
+  m_LocalPosition: {x: 0.15200062, y: 0.07699999, z: -0.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1025,7 +1057,7 @@ GameObject:
   - component: {fileID: 6987935362511948318}
   - component: {fileID: 5506795783478576598}
   m_Layer: 0
-  m_Name: SailboatLegRig
+  m_Name: SailboatRig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1046,6 +1078,7 @@ Transform:
   m_Children:
   - {fileID: 3522123293367687430}
   - {fileID: 2120955984664315501}
+  - {fileID: 2597909735509953661}
   m_Father: {fileID: 5986335189477094576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5506795783478576598
@@ -1634,6 +1667,85 @@ MonoBehaviour:
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
+--- !u!1 &8796265210507506464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2597909735509953661}
+  - component: {fileID: 3567182239838694523}
+  m_Layer: 0
+  m_Name: SpineRig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2597909735509953661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8796265210507506464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6987935362511948318}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3567182239838694523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8796265210507506464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb90b913935e644baaa86c076d788e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Weight: 0.659
+  m_Data:
+    m_ConstrainedObject: {fileID: 6442556657026005364}
+    m_SourceObjects:
+      m_Length: 2
+      m_Item0:
+        transform: {fileID: 2840583760801654571}
+        weight: 1
+      m_Item1:
+        transform: {fileID: 7713886869948703929}
+        weight: 1
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_ConstrainedAxes:
+      x: 1
+      y: 1
+      z: 1
+    m_MaintainOffset: 0
 --- !u!1001 &2427693300091365203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1806,6 +1918,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8490071852379449602}
     m_Modifications:
+    - target: {fileID: 3875949871694566938, guid: 36284c2764c858d429ab87b9a39dbeab,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 03b3ffc8f908a2643abd333c50f3daf3, type: 2}
     - target: {fileID: 7692981753669423981, guid: 36284c2764c858d429ab87b9a39dbeab,
         type: 3}
       propertyPath: m_Name
@@ -2241,7 +2358,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6365957438239387146}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
   m_Name: 

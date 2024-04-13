@@ -1045,6 +1045,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     /// <summary>
+    /// DropItemCrash가 플레이어 변수에 접근하기 위한 함수
+    /// </summary>>
+    public void DropItemCrash(float addMoveSpeed, float addSprintSpeed, float addSwimSpeed, float addJumpPower, float addBoatSpeed)
+    {
+        moveSpeed += addMoveSpeed;
+        sprintSpeed += addSprintSpeed;
+        swimSpeed += addSwimSpeed;
+        jumpPower += addJumpPower;
+        sailboatAccelerationForce += addBoatSpeed;
+
+
+    }
+
+    /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
     /// </summary>
     IEnumerator ReefCrash()

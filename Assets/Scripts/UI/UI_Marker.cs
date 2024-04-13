@@ -1,9 +1,10 @@
-using FMODUnity;
+using DG.Tweening;
 using Sirenix.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
 {
@@ -33,7 +34,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
 
     public void DisableMarker()
     {
-        markerAnchor.SetActive(false);
+        markerAnchor.GetComponent<DOTweenAnimation>().DOPlayAllById("Close");
     }
 
     protected override void Awake()
@@ -62,11 +63,16 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
         Vector2 markerPosition = Vector2.zero;
 
 
-        if (TargetVisible(markerTarget.position))
+        if (IsTargetVisible(markerTarget.position))
         {
+            Image img = markerImage.GetComponent<Image>();
             outScreenMarkerImage.SetActive(false);
             markerImage.SetActive(true);
+            float alphaCalculation = 1-Vector3.Dot(Camera.main.transform.forward,(markerTarget.position - Camera.main.transform.position).normalized);
+            alphaCalculation = Mathf.Clamp01(Unity.Mathematics.math.remap(0f, 0.3f, 0f, 5.0f, alphaCalculation));
+            img.color = new Color(img.color.r, img.color.g, img.color.b, alphaCalculation);
             markerPosition = Camera.main.WorldToScreenPoint(markerTarget.position);
+            
         }
         else
         {
@@ -85,7 +91,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
         markerTransform.position = markerPosition;
     }
 
-    private bool TargetVisible(Vector3 worldPos)
+    private bool IsTargetVisible(Vector3 worldPos)
     {
         Vector3 point = Camera.main.WorldToViewportPoint(worldPos);
 

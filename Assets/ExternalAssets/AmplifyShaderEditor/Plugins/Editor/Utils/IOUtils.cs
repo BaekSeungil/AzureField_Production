@@ -444,7 +444,8 @@ namespace AmplifyShaderEditor
 			if( !Initialized )
 			{
 				Initialized = true;
-				if( EditorPrefs.GetBool( Preferences.PrefDefineSymbol , true ) )
+				Preferences.Initialize();
+				if ( Preferences.Project.DefineSymbol )
 					SetAmplifyDefineSymbolOnBuildTargetGroup( EditorUserBuildSettings.selectedBuildTargetGroup );
 				//Array BuildTargetGroupValues = Enum.GetValues( typeof(  BuildTargetGroup ));
 				//for ( int i = 0; i < BuildTargetGroupValues.Length; i++ )

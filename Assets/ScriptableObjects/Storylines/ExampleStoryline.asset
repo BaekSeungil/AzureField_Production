@@ -31,22 +31,32 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   objectives:
-  - m_TableReference:
-      m_TableCollectionName: GUID:6faf168416139814fb59ed56f467cdf8
-    m_TableEntryReference:
-      m_KeyId: 15487276874067968
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  - m_TableReference:
-      m_TableCollectionName: GUID:6faf168416139814fb59ed56f467cdf8
-    m_TableEntryReference:
-      m_KeyId: 15487276836319232
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
+  - objectiveText:
+      m_TableReference:
+        m_TableCollectionName: GUID:6faf168416139814fb59ed56f467cdf8
+      m_TableEntryReference:
+        m_KeyId: 15487276874067968
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    sequenceOnStart: {fileID: 11400000, guid: 4679a1dcae746784ba287840276e0a57, type: 2}
+    sequenceOnFinished: {fileID: 0}
+    destinationTransformName: TestQuestTarget1
+  - objectiveText:
+      m_TableReference:
+        m_TableCollectionName: GUID:6faf168416139814fb59ed56f467cdf8
+      m_TableEntryReference:
+        m_KeyId: 15487276836319232
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    sequenceOnStart: {fileID: 0}
+    sequenceOnFinished: {fileID: 11400000, guid: 895221a92348a3f4485d59ce9223ec21,
+      type: 2}
+    destinationTransformName: TestQuestTarget2
+  nextStorylineKey: 
   references:
     version: 2
     RefIds: []
