@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UI_Objective : MonoBehaviour
+public class UI_Objective : StaticSerializedMonoBehaviour<UI_Objective>
 {
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private TextMeshProUGUI questTitleText;
     [SerializeField] private TextMeshProUGUI objectiveText;
-    [SerializeField] private DOTweenAnimation moveCloseAnimation;
+    [SerializeField] private GameObject moveCloseAnimation;
 
     private void Start()
     {
@@ -33,6 +33,6 @@ public class UI_Objective : MonoBehaviour
 
     public void CloseObjective()
     {
-        moveCloseAnimation.DOPlayById("Close");
+        //moveCloseAnimation.GetComponent<DOTweenAnimation>().DOPlayAllById("Close");
     }
 }

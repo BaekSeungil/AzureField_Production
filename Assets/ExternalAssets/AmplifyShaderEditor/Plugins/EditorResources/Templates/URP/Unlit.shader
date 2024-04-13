@@ -2101,6 +2101,10 @@ Shader /*ase_name*/ "Hidden/Universal/Unlit" /*end*/
 
 			HLSLPROGRAM
 
+			/*ase_srp_cond_begin:<140007*/
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+			/*ase_srp_cond_end*/
+
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -2115,6 +2119,12 @@ Shader /*ase_name*/ "Hidden/Universal/Unlit" /*end*/
 			#define VARYINGS_NEED_NORMAL_WS
 
 			#define SHADERPASS SHADERPASS_DEPTHNORMALSONLY
+
+			/*ase_srp_cond_begin:>=140007*/
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+			/*ase_srp_cond_end*/
 
 			/*ase_srp_cond_begin:>=140007*/
 			#if ASE_SRP_VERSION >=140007
