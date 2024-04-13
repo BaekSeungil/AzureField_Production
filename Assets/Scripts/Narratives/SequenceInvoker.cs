@@ -32,10 +32,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();
         //SceneManager.sceneLoaded += OnSceneLoaded;
-    }
 
-    private void Start()
-    {
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
     }
