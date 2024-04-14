@@ -1,5 +1,7 @@
+using AmplifyShaderEditor;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -53,6 +55,10 @@ public class MiniMap_Base : MonoBehaviour
     private void Update()
     {
 
+       float zoom = 0.5f;
+       ZoomMap(zoom);
+       UpdateMiniMapIcons();
+       CenterMapOnIcon();
     }
 
     public void RegisterMinimapWorldObject(MiniMap_Object miniMap_Object, bool followObject = false)
@@ -109,11 +115,8 @@ public class MiniMap_Base : MonoBehaviour
             currentMiniMapMode = MiniMapMod.Fullscreen;
             contentRectTransform.transform.localScale = Vector3.one *
             defaultScaleWhenFullScreen;           
-            break;
-            
+            break;   
         }
-      
-      
     }
 
     private void ZoomMap(float zoom)
@@ -139,8 +142,29 @@ public class MiniMap_Base : MonoBehaviour
         }
     }
 
+    private void UpdateMiniMapIcons()
+    {
+        float iconscale = 1 / contentRectTransform.transform.localScale.x;
+        foreach(var kvp in miniMapWorldObjectLookup)
+        {
+            var miniMap_Object = kvp.Value;
+            var miniMapIcon = kvp.Value;
+            var mapPosition = WorldPositionToMapPosition(miniMap_Object.transform.position);
+
+            miniMapIcon.rectTransform.anchoredPosition = mapPosition;
+            var rotation = miniMap_Object.transform.rotation.eulerAngles;
+            miniMapIcon.iconRectTrans.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+
+        }
 
 
+    }
+
+    private Vector2 WorldPositionToMapPosition(Vector3 worldPos)
+    {
+        var pos = new Vector2(worldPos.x, worldPos.z);
+        return transformationMatix.MultiplyPoint3x4(pos);
+    }
 
     private void CalculateTransformationMatrix()
     {
