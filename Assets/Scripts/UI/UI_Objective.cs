@@ -9,7 +9,6 @@ public class UI_Objective : StaticSerializedMonoBehaviour<UI_Objective>
     [SerializeField] private GameObject visualGroup;
     [SerializeField] private TextMeshProUGUI questTitleText;
     [SerializeField] private TextMeshProUGUI objectiveText;
-    [SerializeField] private GameObject moveCloseAnimation;
 
     private void Start()
     {
@@ -33,6 +32,6 @@ public class UI_Objective : StaticSerializedMonoBehaviour<UI_Objective>
 
     public void CloseObjective()
     {
-        //moveCloseAnimation.GetComponent<DOTweenAnimation>().DOPlayAllById("Close");
+        visualGroup.SetActive(false);
     }
 }
