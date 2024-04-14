@@ -23,18 +23,19 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
 
     public void SetMarker(Transform target)
     {
-        markerAnchor.SetActive(true);
+        EnableMarker();
         markerTarget = target;
     }
 
     public void EnableMarker()
     {
+        markerAnchor.SetActive(false);
         markerAnchor.SetActive(true);
     }
 
     public void DisableMarker()
     {
-        markerAnchor.GetComponent<DOTweenAnimation>().DOPlayAllById("Close");
+        markerAnchor.SetActive(false);
     }
 
     protected override void Awake()
@@ -72,7 +73,8 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
             alphaCalculation = Mathf.Clamp01(Unity.Mathematics.math.remap(0f, 0.3f, 0f, 5.0f, alphaCalculation));
             img.color = new Color(img.color.r, img.color.g, img.color.b, alphaCalculation);
             markerPosition = Camera.main.WorldToScreenPoint(markerTarget.position);
-            
+            markerPosition = Vector2.Lerp(markerTransform.position, markerPosition, 0.7f);
+
         }
         else
         {
@@ -83,7 +85,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
             outScreenMarkerImage.transform.up = markerPosition-(new Vector2(Screen.width / 2f, Screen.height / 2f));
 
             markerPosition = markerPosition.Clamp(new Vector2(0 + outScreenPadding, +0f + outScreenPadding), new Vector2(Screen.width - outScreenPadding, Screen.height - outScreenPadding));
-
+            markerPosition = Vector2.Lerp(markerTransform.position, markerPosition,0.7f);
 
 
         }
