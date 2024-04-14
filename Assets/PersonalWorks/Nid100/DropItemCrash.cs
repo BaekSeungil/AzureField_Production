@@ -7,7 +7,7 @@ public class DropItemCrash : MonoBehaviour
 {
     [SerializeField] private GameObject DropItem;
     [SerializeField] private PlayerCore player;
-    [SerializeField] private FairwindQuest fairwind;
+    [SerializeField] private FairwindChallengeInstance fairwind;
     [SerializeField] private float addChallengeTime = 0f;                                  // 순풍의 도전 추가시간
     [SerializeField] private float addMoveSpeed = 0f;                               // 추가이동 속도
     [SerializeField] private float addSprintSpeed = 0f;                             // 추가달리기 속도
@@ -29,12 +29,16 @@ public class DropItemCrash : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// 순풍의 도전 시간추가 및 플레이어 능력치 변경 코루틴
+    /// </summary>
+    /// <returns></returns>
     IEnumerator CrashEvent()
     {
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
         if (fairwind != null)
         {
-            fairwind.AddTimer(addChallengeTime);
+            FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
         }
         yield return new WaitForSeconds(addSpeedTime);
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
