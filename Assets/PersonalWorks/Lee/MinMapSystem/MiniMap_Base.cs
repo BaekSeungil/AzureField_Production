@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum MiniMapMod
 {
@@ -55,7 +56,7 @@ public class MiniMap_Base : MonoBehaviour
     private void Update()
     {
 
-       float zoom = 0.5f;
+       float zoom = Mouse.current.scroll.ReadValue().y;
        ZoomMap(zoom);
        UpdateMiniMapIcons();
        CenterMapOnIcon();
