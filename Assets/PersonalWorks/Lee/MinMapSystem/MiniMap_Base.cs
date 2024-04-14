@@ -55,6 +55,10 @@ public class MiniMap_Base : MonoBehaviour
 
     private void Update()
     {
+        if(Keyboard.current[Key.M].wasPressedThisFrame)
+        {
+            SetMinimapMode(currentMiniMapMode == MiniMapMod.Mini ? MiniMapMod.Fullscreen : MiniMapMod.Mini);
+        }
 
        float zoom = Mouse.current.scroll.ReadValue().y;
        ZoomMap(zoom);
