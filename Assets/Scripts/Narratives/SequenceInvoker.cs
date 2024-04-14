@@ -29,12 +29,14 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     {
         base.Awake();
 
+        dialogue = UI_DialogueBehavior.Instance;
+        inventoryContainer = PlayerInventoryContainer.Instance;
+
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();
         //SceneManager.sceneLoaded += OnSceneLoaded;
 
-        dialogue = UI_DialogueBehavior.Instance;
-        inventoryContainer = PlayerInventoryContainer.Instance;
+
     }
 
     private bool sequenceRunning = false;
