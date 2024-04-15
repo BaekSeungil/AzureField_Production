@@ -22,5 +22,5 @@ public class StorylineData : SerializedScriptableObject
     public LocalizedString QuestNameText {  get { return questNameText; } }
     [SerializeField, LabelText("퀘스트 목표 텍스트들")] private ObjectiveUnit[] objectives;
     public ObjectiveUnit[] Objectives { get { return objectives; } }
-    [SerializeField] private string nextStorylineKey;
+    [SerializeField, LabelText("다음 퀘스트 키")] private string nextStorylineKey;
 }
