@@ -26,8 +26,9 @@ public class MiniMap_Base : MonoBehaviour
     RectTransform scrollViewRectTransform;
     [SerializeField]
     RectTransform contentRectTransform;
-    [SerializeField]
-    MiniMap_Icon miniMapPrefab;
+
+
+    public MiniMap_Icon miniMapPrefab;
 
     Matrix4x4 transformationMatix;
 
