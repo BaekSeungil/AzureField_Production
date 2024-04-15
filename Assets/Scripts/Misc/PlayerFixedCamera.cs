@@ -30,6 +30,5 @@ public class PlayerFixedCamera : MonoBehaviour
         {
             Vcam.gameObject.SetActive(false);
         }
-
     }
 }
