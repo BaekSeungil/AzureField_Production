@@ -23,6 +23,7 @@ public class OceanProfile : SerializedScriptableObject
     {
         public Vector3 vector;              // 파도 벡터
         public float amplitude;             // 파도 강도
+        public float gravity;               // 파도 속도
     }
 
     [SerializeField] private Waveform waveform1;                                // 1번 파형
@@ -34,12 +35,17 @@ public class OceanProfile : SerializedScriptableObject
     [SerializeField] private Waveform waveform4;                                // 4번 파형
     public Waveform Waveform4 { get { return waveform4; } }
 
-    public void InitilzeOceanProfile(Color _color,Color _tipColor, float _oceanIntensity, Vector3 _wv1, float _wa1, Vector3 _wv2, float _wa2, Vector3 _wv3, float _wa3, Vector3 _wv4, float _wa4) 
+    public void InitilzeOceanProfile(Color _color,Color _tipColor, 
+        float _oceanIntensity, 
+        Vector3 _wv1, float _wa1, float _wg1, 
+        Vector3 _wv2, float _wa2, float _wg2, 
+        Vector3 _wv3, float _wa3, float _wg3,
+        Vector3 _wv4, float _wa4, float _wg4) 
     {   
         oceanColor = _color; oceanTipColor = _tipColor; oceanIntensity = _oceanIntensity; 
-        waveform1.vector = _wv1; waveform1.amplitude = _wa1;
-        waveform2.vector = _wv2; waveform2.amplitude = _wa2;
-        waveform3.vector = _wv3; waveform3.amplitude = _wa3;
-        waveform4.vector = _wv4; waveform4.amplitude = _wa4;
+        waveform1.vector = _wv1; waveform1.amplitude = _wa1; waveform1.gravity = _wg1;
+        waveform2.vector = _wv2; waveform2.amplitude = _wa2; waveform2.gravity = _wg2;
+        waveform3.vector = _wv3; waveform3.amplitude = _wa3; waveform3.gravity = _wg3;
+        waveform4.vector = _wv4; waveform4.amplitude = _wa4; waveform4.gravity = _wg4;
     }
 }
