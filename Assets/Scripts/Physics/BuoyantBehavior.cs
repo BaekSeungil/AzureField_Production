@@ -18,6 +18,7 @@ public class BuoyantBehavior : MonoBehaviour
 {
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
+ 
 
     [SerializeField, ReadOnly] private float submergeRate = 0.0f;
     public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
@@ -53,52 +54,7 @@ public class BuoyantBehavior : MonoBehaviour
     private void FixedUpdate()
     {
         waterDetected = false;
-        //if (floatingPoint.Length > 0)
-        //{
-        //    if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide) ||
-        //        Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide))
-        //    {
-        //        Debug.Log("WaterLayermask detected");
 
-        //        RaycastHit upNearest = new RaycastHit();
-        //        RaycastHit downNearest = new RaycastHit();
-
-        //        upNearest.distance = float.PositiveInfinity;
-        //        downNearest.distance = float.PositiveInfinity;
-
-        //        RaycastHit[] upHits, downHits;
-
-        //        upHits = Physics.RaycastAll(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask,QueryTriggerInteraction.Collide);
-        //        downHits = Physics.RaycastAll(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide);
-
-        //        if ((upHits != null || upHits.Length > 0) && (downHits != null || downHits.Length > 0))
-        //        {
-        //            for(int i = 0; i < upHits.Length; i++)
-        //            {
-        //                if(upNearest.distance > upHits[i].distance)
-        //                {
-        //                    upNearest = upHits[i];
-        //                }
-        //            }
-        //            for(int i = 0;i < downHits.Length; i++)
-        //            {
-        //                if(downNearest.distance > downHits[i].distance)
-        //                {
-        //                    downNearest = downHits[i];
-        //                }
-        //            }
-
-        //            if( Vector3.Dot(upNearest.normal,downNearest.normal) > 0)
-        //            {
-        //                waterDetected = true;
-        //                submergeRate = Mathf.Clamp01(upNearest.distance);
-        //                Debug.Log("WATER DETECTED");
-        //            }
-        //        }
-        //        else
-        //            waterDetected = false;
-
-        //    }
         if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
@@ -129,27 +85,46 @@ public class BuoyantBehavior : MonoBehaviour
 
     }
 
-    const float bouyancymagnitude = 20f;
+    const float bouyancymagnitude = 30f;
+    const float topDistance = 5f;
+    const float playerOffset = 0.5f;
+    float distance = 0f;
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.layer == 4)
         {
             waterDetected = true;
-            float distance = 0;
+            distance = 1f;
             if (!playerMode)
             {
-                distance = other.bounds.max.y - transform.position.y;
+                RaycastHit[] rhits = Physics.RaycastAll(transform.position + Vector3.up, Vector3.down, topDistance,4);
+                if (rhits != null && rhits.Length != 0)
+                {
+                    distance = topDistance - rhits[0].distance;
+                }
+                else
+                    distance = topDistance;
+
             }
             else
             {
-                distance = other.bounds.max.y - transform.position.y - 0.5f;
+                RaycastHit[] rhits = Physics.RaycastAll(transform.position + Vector3.up + Vector3.down * playerOffset, Vector3.down, topDistance,4);
+                if (rhits != null && rhits.Length != 0)
+                {
+                    {
+                        distance = topDistance - rhits[0].distance;
+                    }
+                }
+                else
+                    distance = topDistance;
+
             }
             submergeRate = -Mathf.Clamp(distance,0f,5f);
 
             if (playerMode)
             {
-                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down, ForceMode.Acceleration);
+                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down*playerOffset, ForceMode.Acceleration);
             }
             else
             {
@@ -160,5 +135,16 @@ public class BuoyantBehavior : MonoBehaviour
 
       
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position + Vector3.up * distance,1f);
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawRay(transform.position + Vector3.up - Vector3.down * playerOffset, Vector3.down);
+    }
+
+#endif
 }
 
