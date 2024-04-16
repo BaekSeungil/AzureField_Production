@@ -7,6 +7,7 @@ using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using UnityEngine.Rendering.LookDev;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 [System.Serializable]
 public class PlayerAbilityAttribute
@@ -365,6 +366,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
                 interestPoint = null;
         }
+
+
+        //이전 프레임의 플레이어 속도
+        Vector3 currentVelocity = rBody.velocity;
+
+        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
+        Vector3 velocityChange = currentVelocity - previousVelocity;
+
+        // 1프레임 전의 속도를 출력합니다.
+        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
+
+        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
+        previousVelocity = currentVelocity;
     }
 
     private void Update()
@@ -468,17 +482,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
 #endif
 
-        //이전 프레임의 플레이어 속도
-        Vector3 currentVelocity = rBody.velocity;
-
-        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
-        Vector3 velocityChange = currentVelocity - previousVelocity;
-
-        // 1프레임 전의 속도를 출력합니다.
-        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
-
-        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
-        previousVelocity = currentVelocity;
 
     }
 
@@ -1064,13 +1067,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     IEnumerator ReefCrash()
     {
         DisableForSequence();
-        SailboatQuit();
+
+        animator.SetTrigger("BoardingColided");
 
         yield return new WaitForSeconds(1.0f);
 
+        SailboatQuit();
         EnableForSequence();
     }
 
+
+    private float reefCrashDelta = 7.0f;
+    private float reboundForce = 10f;
     /// <summary>
     /// 충돌감지
     /// </summary>
@@ -1081,10 +1089,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             ///<summary>
             ///암초충돌감지
             /// </summary>
-            if (previousVelocity.magnitude - rBody.velocity.magnitude > 10)
+            if (previousVelocity.magnitude - rBody.velocity.magnitude > reefCrashDelta)
             {
                 Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
                 Debug.Log("암초 대충돌!");
+                rBody.AddForce(Vector3.ProjectOnPlane(-previousVelocity,Vector3.up).normalized * reboundForce,ForceMode.Impulse);
                 StartCoroutine(ReefCrash());
             }
 
