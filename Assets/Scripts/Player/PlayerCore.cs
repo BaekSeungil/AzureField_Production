@@ -167,7 +167,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_Boarding;
 
     private MovementState currentMovement_hidden;
-    private MovementState CurrentMovement
+    public MovementState CurrentMovement
     {
         get { return currentMovement_hidden; }
         set
@@ -504,7 +504,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     //
     //============================================
 
-    protected class MovementState
+    public class MovementState
     {
         /// <summary>
         /// 해당 state로 들어올 때 이 함수가 호출됩니다.
