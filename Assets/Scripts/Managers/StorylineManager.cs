@@ -1,4 +1,4 @@
-using NUnit.Framework.Internal;
+using FMODUnity;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using System.Collections;
@@ -9,17 +9,21 @@ using UnityEngine.Timeline;
 public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 {
     [SerializeField,Required] private StorylineStash storylineStashAsset;
+    [SerializeField] private EventReference sound_questUpdate;
     private StorylineStash storylineStashInstance;
     private string activeStorylineKey;
+    public string ActiveStorylineKey { get { return  activeStorylineKey; } }
     private StorylineData activeStoryline;
     public StorylineData ActiveStoryline { get { return activeStoryline; } }
+    public bool IsActiveStorylineExists {  get { return activeStoryline != null; } }
 
     [SerializeField, FoldoutGroup("Debug")] private bool InvokeDefaultOnStart = false;
     [SerializeField, FoldoutGroup("Debug")] private string defaultStorylineID = "EXAMPLE";
     [SerializeField, ReadOnly, FoldoutGroup("Debug")] private string debug_active_storyline;
     [SerializeField, ReadOnly ,FoldoutGroup("Debug")] private int debug_objective_index = 0;
 
-    int currentIndex = 0;
+    private int currentIndex = 0;
+    public int CurrentIndex { get { return currentIndex; } }
 
     protected override void Awake()
     {
@@ -45,7 +49,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     public void MakeProgressStroyline(string KeyIndexPair)
     {
         string[] parsed = KeyIndexPair.Split(",");
-        Debug.Log(parsed[0] + " / " + parsed[1]);
+        Debug.Log(" 스토리라인 진행됨 : "+ parsed[0] + " / " + parsed[1]);
         int index = 0;
 
         if(parsed.Length == 2) 
@@ -57,8 +61,6 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
         {
             Debug.LogError("MakeProgressStoryline : 값을 잘못 입력하였습니다. [키],[번호] 형식으로 입력하세요");
         }
-
-        Debug.Log("Index : " + currentIndex);
 
         if (storylineStashInstance.packedStoryline.ContainsKey(parsed[0]))
         {
@@ -124,7 +126,9 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
             {
                 UI_Marker.Instance.DisableMarker();
             }
-            
+
+
+            RuntimeManager.PlayOneShot(sound_questUpdate);
 
             yield return new WaitUntil(() => progress == true);
             progress = false;
@@ -140,7 +144,8 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
         }
 
-        Debug.Log("Close");
+        activeStoryline = null;
+        activeStorylineKey = string.Empty;
         UI_Objective.Instance.CloseObjective();
         UI_Marker.Instance.DisableMarker();
     }

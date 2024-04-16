@@ -929,6 +929,7 @@ namespace AmplifyShaderEditor
 		public static readonly string InlinePattern = @"\/\*ase_inline_begin\*\/(.*?)\/\*ase_inline_end\*\/";
 
 		public static readonly string SRPConditionPattern = @"\/\*ase_srp_cond_begin:([==|!=|>=|<=|>|<]*)(\d*)\*\/(?s)(.*?)\s\/\*ase_srp_cond_end\*\/";
+		public static readonly string UnityConditionPattern = @"\/\*ase_unity_cond_begin:([==|!=|>=|<=|>|<]*)(\d*)\*\/(?s)(.*?)\s\/\*ase_unity_cond_end\*\/";
 
 		public static readonly string SubShaderLODPattern = @"\sLOD\s+(\d+)";
 
@@ -1759,7 +1760,7 @@ namespace AmplifyShaderEditor
 					}
 					else
 					{
-						// @diogo: fell here? ignore SRP conditional
+						// @diogo: fell here? ignore conditional
 						body = body.Replace( signature, string.Empty );
 					}
 
@@ -1767,7 +1768,74 @@ namespace AmplifyShaderEditor
 					processedSignatures.Add( signature );
 				}
 			}
-			return body;			
+			return body;
+		}
+
+		public static string ProcessUnityConditionals( string body )
+		{
+			var versionParts = Application.unityVersion.Split( '.', 'f' );
+			if ( versionParts.Length != 4 || versionParts[ 0 ].Length < 4 )
+			{
+				// @diogo: invalid Unity version format; ignore these conditionals
+				return body;
+			}
+
+			bool testMajor = int.TryParse( versionParts[ 0 ], out int major );
+			bool testMinor = int.TryParse( versionParts[ 1 ], out int minor );
+			bool testPatch = int.TryParse( versionParts[ 2 ], out int patch );
+			if ( !testMajor || !testMinor || !testPatch )
+			{
+				// @diogo: invalid Unity version format; ignore these conditionals
+				return body;
+			}
+
+			int unityVersion = major * 10000 + minor * 100 + patch;
+			var processedSignatures = new HashSet<string>();
+			
+			foreach ( Match match in Regex.Matches( body, UnityConditionPattern ) )
+			{
+				string signature;
+				if ( match.Success && match.Groups.Count == 4 && !processedSignatures.Contains( signature = match.Groups[ 0 ].Value ) )
+				{
+					string comparisonOp = match.Groups[ 1 ].Value;
+					bool validVersion = int.TryParse( match.Groups[ 2 ].Value, out int version );
+					string content = match.Groups[ 3 ].Value;
+			
+					if ( validVersion && !string.IsNullOrEmpty( comparisonOp ) && version >= 20190000 )
+					{
+						bool passed = false;
+						switch ( comparisonOp )
+						{
+							case "==": passed = ( unityVersion == version ); break;
+							case "!=": passed = ( unityVersion != version ); break;
+							case ">=": passed = ( unityVersion >= version ); break;
+							case "<=": passed = ( unityVersion <= version ); break;
+							case ">" : passed = ( unityVersion > version ); break;
+							case "<" : passed = ( unityVersion < version ); break;
+						}
+			
+						if ( passed )
+						{
+							// @diogo: test passed? include conditional text
+							body = body.Replace( signature, content );
+						}
+						else
+						{
+							// @diogo: test failed? exclude conditional text
+							body = body.Replace( signature, string.Empty );
+						}
+					}
+					else
+					{
+						// @diogo: fell here? ignore conditional
+						body = body.Replace( signature, string.Empty );
+					}
+			
+					// @diogo: mark as processed to prevent duplicates
+					processedSignatures.Add( signature );
+				}
+			}
+			return body;
 		}
 
 		public static void FetchLocalVars( string body, ref List<TemplateLocalVarData> localVarList, TemplateFunctionData vertexFunction, TemplateFunctionData fragFunction )
