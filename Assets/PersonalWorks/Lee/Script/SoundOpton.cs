@@ -21,7 +21,7 @@ public class SoundOpton : MonoBehaviour
       SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/UI");
       SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/SFX");
       Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
-      VolumeEvent = FMODUnity.RuntimeManager.CreateInstance("event:/SFX/VolumeEvent");
+      //VolumeEvent = FMODUnity.RuntimeManager.CreateInstance("event:/SFX/VolumeEvent");
     }
 
     void Update()
