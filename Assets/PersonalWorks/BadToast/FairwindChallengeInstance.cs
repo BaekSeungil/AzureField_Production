@@ -89,7 +89,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         for (int i = 0; i < bezierKnots.Length; i++)
         {
             if (WorldPosition)
-                positionList[i] = AZFUtilities.F3ToVec3(bezierKnots[i].Position) + transform.position;
+                positionList[i] = transform.localToWorldMatrix.MultiplyPoint3x4(AZFUtilities.F3ToVec3(bezierKnots[i].Position));
             else
                 positionList[i] = AZFUtilities.F3ToVec3(bezierKnots[i].Position);
         }
@@ -123,11 +123,27 @@ public class FairwindChallengeInstance : MonoBehaviour
         activeChallenge = null;
     }
 
+    /// <summary>
+    /// (static) 진행중인 순풍의 도전에 시간을 추가합니다;
+    /// </summary>
+    /// <param name="time"> 시간 </param>
+    /// <returns>true : 진행중인 순풍의 도전이 있어 시간을 추가하는데 성공하였습니다. false : 진행중인 순풍의 도전이 없어 시간을 추가할 수 없었습니다.</returns>
+    public static bool AddTimerToActiveChallenge(float time)
+    {
+        if (IsActiveChallengeExists) return false;
+
+        ActiveChallenge.timelimit += time;
+        return true;
+
+    }
+
     public float GetDistanceFromRoute(Vector3 point,out Vector3 pointOnSpline,out float t)
     {
         float3 p;
-        float distance = SplineUtility.GetNearestPoint(RouteSpline, new float3(point.x - transform.position.x, point.y - transform.position.y, point.z - transform.position.z), out p, out t);
-        pointOnSpline = new Vector3(p.x + transform.position.x, p.y + transform.position.y, p.z + transform.position.z);
+        point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
+        float distance = SplineUtility.GetNearestPoint(RouteSpline, new float3(point.x, point.y, point.z), out p, out t);
+        pointOnSpline = new Vector3(p.x, p.y, p.z);
+        pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
 
         return distance;
     }
@@ -334,7 +350,7 @@ public class FairwindChallengeInstance : MonoBehaviour
                 for (int i = 1; i < knotCount - 1; i++)
                 {
                     Gizmos.color = Color.magenta;
-                    Gizmos.DrawWireSphere(AZFUtilities.F3ToVec3(knots[i].Position) + transform.position, triggerDistance);
+                    Gizmos.DrawWireSphere(transform.localToWorldMatrix.MultiplyPoint3x4(AZFUtilities.F3ToVec3(knots[i].Position)), triggerDistance);
                 }
             }
 
