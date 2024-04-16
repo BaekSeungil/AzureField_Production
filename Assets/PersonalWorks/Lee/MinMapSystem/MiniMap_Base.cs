@@ -27,9 +27,9 @@ public class MiniMap_Base : MonoBehaviour
     [SerializeField]
     RectTransform contentRectTransform;
 
-    [SerializeField] GameObject MinimapObj;
+    [SerializeField] private CanvasGroup MinimapObj;
 
-    public MiniMap_Icon miniMapPrefab;
+    [SerializeField] MiniMap_Icon miniMapPrefab;
 
     Matrix4x4 transformationMatix;
 
@@ -38,7 +38,7 @@ public class MiniMap_Base : MonoBehaviour
     private Vector2 scrollViewDefaultSize;
     private Vector2 scrollViewDefaultPosition;
 
-    static private bool setMap = false;
+   private bool setMap;
 
     Dictionary<MiniMap_Object,MiniMap_Icon> miniMapWorldObjectLookup =
     new Dictionary<MiniMap_Object, MiniMap_Icon>();
@@ -60,15 +60,15 @@ public class MiniMap_Base : MonoBehaviour
     {
         if(Keyboard.current[Key.M].wasPressedThisFrame)
         {
-            //SetMinimapMode(currentMiniMapMode == MiniMapMod.Mini ? MiniMapMod.Fullscreen : MiniMapMod.Mini);
-            if(setMap)
-            {
-                SetObj();
-            }
-            else
-            {
-                DeltObj();
-            };
+            SetMinimapMode(currentMiniMapMode == MiniMapMod.Mini ? MiniMapMod.Fullscreen : MiniMapMod.Mini);
+            // if(setMap)
+            // {
+            //     SetObj();
+            // }
+            // else
+            // {
+            //     DeltObj();
+            // };
         }
  
 
@@ -80,12 +80,12 @@ public class MiniMap_Base : MonoBehaviour
 
     private void SetObj()
     {
-        MinimapObj.SetActive(true);
+        MinimapObj.gameObject.SetActive(true);
     }
 
     private void DeltObj()
     {
-        MinimapObj.SetActive(false);
+        MinimapObj.gameObject.SetActive(false);
     }
 
     public void RegisterMinimapWorldObject(MiniMap_Object miniMap_Object, bool followObject = false)
