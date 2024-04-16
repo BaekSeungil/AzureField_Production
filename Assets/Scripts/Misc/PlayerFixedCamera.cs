@@ -8,22 +8,20 @@ public class PlayerFixedCamera : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera Vcam;
     private PlayerCore player;
 
-    private void Awake()
+    private void OnEnable()
     {
         player = PlayerCore.Instance;
-        Vcam.gameObject.SetActive(false);
-
+        Debug.Log(Vcam != null);
         Vcam.LookAt = player.transform;
+        Vcam.gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Enter");
         if (other.CompareTag("Player"))
         {
             Vcam.gameObject.SetActive(true);
         }
-
     }
 
     private void OnTriggerExit(Collider other)
@@ -32,6 +30,5 @@ public class PlayerFixedCamera : MonoBehaviour
         {
             Vcam.gameObject.SetActive(false);
         }
-
     }
 }

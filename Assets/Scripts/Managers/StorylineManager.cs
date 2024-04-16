@@ -12,15 +12,18 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     [SerializeField] private EventReference sound_questUpdate;
     private StorylineStash storylineStashInstance;
     private string activeStorylineKey;
+    public string ActiveStorylineKey { get { return  activeStorylineKey; } }
     private StorylineData activeStoryline;
     public StorylineData ActiveStoryline { get { return activeStoryline; } }
+    public bool IsActiveStorylineExists {  get { return activeStoryline != null; } }
 
     [SerializeField, FoldoutGroup("Debug")] private bool InvokeDefaultOnStart = false;
     [SerializeField, FoldoutGroup("Debug")] private string defaultStorylineID = "EXAMPLE";
     [SerializeField, ReadOnly, FoldoutGroup("Debug")] private string debug_active_storyline;
     [SerializeField, ReadOnly ,FoldoutGroup("Debug")] private int debug_objective_index = 0;
 
-    int currentIndex = 0;
+    private int currentIndex = 0;
+    public int CurrentIndex { get { return currentIndex; } }
 
     protected override void Awake()
     {
@@ -141,6 +144,8 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
         }
 
+        activeStoryline = null;
+        activeStorylineKey = string.Empty;
         UI_Objective.Instance.CloseObjective();
         UI_Marker.Instance.DisableMarker();
     }
