@@ -9,48 +9,7 @@ using UnityEngine.Rendering.LookDev;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-[System.Serializable]
-public class PlayerAbilityAttribute
-{
-    public float MoveSpeed = 1.0f;
-    public float SwimSpeed = 1.0f;
-    public float JumpPower = 1.0f;
-    public float SailboatAcceleration = 1.0f;
-    public float SailboatGliding = 1.0f;
 
-    public static PlayerAbilityAttribute operator+ (PlayerAbilityAttribute a, PlayerAbilityAttribute b)
-    {
-        PlayerAbilityAttribute attr = new PlayerAbilityAttribute();
-        attr.MoveSpeed = a.MoveSpeed + b.MoveSpeed;
-        attr.SwimSpeed = a.SwimSpeed + b.SwimSpeed;
-        attr.JumpPower = a.JumpPower + b.JumpPower;
-        attr.SailboatAcceleration = a.SailboatAcceleration + b.SailboatAcceleration;
-        attr.SailboatGliding = a.SailboatGliding + b.SailboatGliding;
-        return attr;
-    }
-
-    public static PlayerAbilityAttribute operator- (PlayerAbilityAttribute a, PlayerAbilityAttribute b)
-    {
-        PlayerAbilityAttribute attr = new PlayerAbilityAttribute();
-        attr.MoveSpeed = a.MoveSpeed - b.MoveSpeed;
-        attr.SwimSpeed = a.SwimSpeed - b.SwimSpeed;
-        attr.JumpPower = a.JumpPower - b.JumpPower;
-        attr.SailboatAcceleration = a.SailboatAcceleration -  b.SailboatAcceleration;
-        attr.SailboatGliding = a.SailboatGliding - b.SailboatGliding;
-        return attr;
-    }
-
-    public static PlayerAbilityAttribute operator* (PlayerAbilityAttribute a, PlayerAbilityAttribute b)
-    {
-        PlayerAbilityAttribute attr = new PlayerAbilityAttribute();
-        attr.MoveSpeed = a.MoveSpeed * b.MoveSpeed;
-        attr.SwimSpeed = a.SwimSpeed * b.SwimSpeed;
-        attr.JumpPower = a.JumpPower * b.JumpPower;
-        attr.SailboatAcceleration = a.SailboatAcceleration * b.SailboatAcceleration;
-        attr.SailboatGliding = a.SailboatGliding * b.SailboatGliding;
-        return attr;
-    }
-}
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
     //============================================
@@ -64,7 +23,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #region ================ Properties ================
     [Title("ControlProperties")]
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
-    [SerializeField] private float sprintSpeed = 2.0f;                             // 달리기 속도
+    [SerializeField] private float sprintSpeedMult = 2.0f;                             // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
     [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 파워  
     [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소 (곱연산)
@@ -112,7 +71,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
     [SerializeField, ReadOnly, LabelText("Horizontal velocity magnitude")] private float velocity_hor_debug;
     [SerializeField, ReadOnly, LabelText("Current holding item")] private string current_holding_item_debug;
-    [SerializeField, ReadOnly, LabelText("Active Player Attribute")] private List<PlayerAbilityAttribute> current_attribute_debug;
 #pragma warning restore CS0414
 #endif
 
@@ -185,100 +143,207 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     #region ================ PlayerAbilityAttributes ================
 
-    class AttrUnit
+    public enum AbilityAttribute
     {
-        public string ID;
-        public float time;
-        public PlayerAbilityAttribute attribute;
+        MoveSpeed,
+        SwimSpeed,
+        JumpPower,
+        SailboatAcceleration,
+        SailboatGliding
     }
-    [ReadOnly] private PlayerAbilityAttribute permernentAttribute;
-    [ReadOnly] private List<AttrUnit> timeAttrs;
-    [ReadOnly] private List<AttrUnit> IDAttrs;
+
+    public class AbilityAttributeUnit
+    {
+        public AbilityAttribute attribute;
+        public float value = 1.0f;
+        public float time = 0f;
+        public string ID = string.Empty;
+
+    }
+
+    [ShowInInspector, ReadOnly] private List<AbilityAttributeUnit> permenentAttributes;
+    [ShowInInspector, ReadOnly] private List<AbilityAttributeUnit> timeAttributes;
+    [ShowInInspector, ReadOnly] private List<AbilityAttributeUnit> IDAttributes;
 
     public float FinalMoveSpeed
     {
         get
         {
-            float agg = moveSpeed * permernentAttribute.MoveSpeed;
-            foreach (var a in timeAttrs) { agg *= a.attribute.MoveSpeed; }
-            foreach (var a in IDAttrs) { agg *= a.attribute.MoveSpeed; }
-            return agg;
+            float result = moveSpeed;
+
+            for (int i = 0; i < permenentAttributes.Count; i++) 
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.MoveSpeed)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.MoveSpeed)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.MoveSpeed)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
         }
     }
+
     public float FinalSwimSpeed
     {
         get
         {
-            float agg = swimSpeed * permernentAttribute.SwimSpeed;
-            foreach (var a in timeAttrs) { agg *= a.attribute.SwimSpeed; }
-            foreach (var a in IDAttrs) { agg *= a.attribute.SwimSpeed; }
-            return agg;
+            float result = swimSpeed;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.SwimSpeed)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.SwimSpeed)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.SwimSpeed)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
         }
     }
+
     public float FinalJumpPower
     {
         get
         {
-            float agg = jumpPower * permernentAttribute.JumpPower;
-            foreach (var a in timeAttrs) { agg *= a.attribute.JumpPower; }
-            foreach (var a in IDAttrs) { agg *= a.attribute.JumpPower; }
-            return agg;
+            float result = jumpPower;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.JumpPower)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.JumpPower)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.JumpPower)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
         }
     }
+
     public float FinalSailboatAcceleration
     {
         get
         {
-            float agg = sailboatAccelerationForce * permernentAttribute.SailboatAcceleration;
-            foreach (var a in timeAttrs) { agg *= a.attribute.SailboatAcceleration; }
-            foreach (var a in IDAttrs) { agg *= a.attribute.SailboatAcceleration; }
-            return agg;
+            float result = sailboatAccelerationForce;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.SailboatAcceleration)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.SailboatAcceleration)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.SailboatAcceleration)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
         }
     }
+
     public float FinalSailboatGliding
     {
         get
         {
-            float agg = sailboatGliding * permernentAttribute.SailboatGliding;
-            foreach (var a in timeAttrs) { agg += a.attribute.SailboatGliding;}
-            foreach (var a in IDAttrs) { agg *= a.attribute.SailboatGliding; }
-            return agg;
+            float result = sailboatGliding;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.SailboatGliding)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.SailboatGliding)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.SailboatGliding)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
         }
     }
 
 
     /// <summary>
-    /// 영구적인 플레이어 속성을 적용합니다.
+    /// 영구적인 플레이어 속성 값을 더합니다.
     /// </summary>
     /// <param name="attr">속성</param>
-    public void SetPermernentAttribute(PlayerAbilityAttribute attr)
+    public void AddPermernentAttribute(AbilityAttribute ability, float value)
     {
-        permernentAttribute *= attr;
+        for(int i = 0; i < permenentAttributes.Count;i++) 
+        {
+            if (permenentAttributes[i].attribute == ability)
+            {
+                permenentAttributes[i].value += value;
+                return;
+            }
+        }
+
+        AbilityAttributeUnit newAttr = new AbilityAttributeUnit();
+        newAttr.attribute = ability; newAttr.value = value;
+        permenentAttributes.Add(newAttr);
     }
 
     /// <summary>
-    /// 일시적으로 플레이어 수치를 적용합니다.
+    /// 일시적으로 플레이어 수치를 적용합니다.(곱연산)
     /// </summary>
     /// <param name="attr">속성</param>
     /// <param name="time">시간</param>
-    public void SetTempoaryAttribute(PlayerAbilityAttribute attr, float time)
+    public void SetTempoaryAttribute(AbilityAttribute ability, float value ,float time)
     {
-        AttrUnit atr = new AttrUnit();
-        atr.attribute = attr; atr.time = time;
-        timeAttrs.Add(atr);
+        AbilityAttributeUnit newAttr = new AbilityAttributeUnit();
+        newAttr.attribute = ability; newAttr.value = value; newAttr.time = time;
+        timeAttributes.Add(newAttr);
     }
 
     /// <summary>
-    /// 일시적으로 플레이어 속성을 ID를 붙여 적용합니다.
+    /// 일시적으로 플레이어 속성을 ID를 붙여 적용합니다.(곱연산) 이미 있는 ID에 값을 적용할 경우 기존 값을 바꿉니다.
     /// </summary>
     /// <param name="attr">속성</param>
     /// <param name="ID"></param>
-    public void SetAttributeWithID(PlayerAbilityAttribute attr, string ID)
+    public void SetAttributeWithID(AbilityAttribute ability,float value, string ID)
     {
-        AttrUnit atr = new AttrUnit();
-        atr.attribute = attr; atr.ID = ID;
-        IDAttrs.Add(atr);
+        for(int i = 0; i < IDAttributes.Count;i++) 
+        {
+            if (IDAttributes[i].ID.Equals(ID))
+            {
+                IDAttributes[i].value = value;
+                return;
+            }
+        }
+
+        AbilityAttributeUnit newAttr = new AbilityAttributeUnit();
+        newAttr.attribute = ability; newAttr.value = value; newAttr.ID = ID;
+        IDAttributes.Add(newAttr);
     }
+
 
     /// <summary>
     ///  ID가 붙어있는 플레이어 속성을 해제합니다.
@@ -286,16 +351,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// <param name="ID"></param>
     public void CancelAttributeWithID(string ID)
     {
-        foreach(var a in IDAttrs)
+        for(int i =  0; i < IDAttributes.Count; i++)
         {
-            if(a.ID == ID)
+            if (IDAttributes[i].ID == ID)
             {
-                IDAttrs.Remove(a);
+                IDAttributes.RemoveAt(i);
                 return;
             }
         }
-        
-        Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" +  ID);
+
+        Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" + ID);
     }
 
     #endregion
@@ -319,8 +384,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         input.Player.Jump.performed += OnJump;
         input.Player.ToggleSailboat.performed += OnToggleSailboat;
 
-        IDAttrs = new List<AttrUnit>();
-        timeAttrs = new List<AttrUnit>();
+        permenentAttributes = new List<AbilityAttributeUnit>();
+        timeAttributes = new List<AbilityAttributeUnit>();
+        IDAttributes = new List<AbilityAttributeUnit>();
 
         CurrentMovement = new Movement_Ground();
 
@@ -426,6 +492,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         CurrentMovement.OnUpdate(this);
         // =================== CURRENT MOVEMENT UPDATE =========================
 
+        // Time ability attribute update
+        for (int ta = 0; ta < timeAttributes.Count; ta++)
+        {
+            timeAttributes[ta].time -= Time.deltaTime;
+            if (timeAttributes[ta].time < 0)
+            {
+                timeAttributes.RemoveAt(ta);
+                ta--;
+            }
+        }
+
+
         // animation & audio controls
         if (CurrentMovement.GetType() == typeof(Movement_Swimming))
             animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 1.0f, 0.2f));
@@ -453,12 +531,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             ReleaseHoldingItem();
         }
 
-        for(int i = 0; i < timeAttrs.Count; i++)
-        {
-            timeAttrs[i].time -= Time.deltaTime;
-            if (timeAttrs[i].time < 0f) timeAttrs.Remove(timeAttrs[i]);
-        }
-
 
         // info update
 #if UNITY_EDITOR
@@ -474,11 +546,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = currentHoldingItem.gameObject.name;
         else
             current_holding_item_debug = "NULL";
-
-        current_attribute_debug.Clear();
-        current_attribute_debug.Append(permernentAttribute);
-        foreach (var a in IDAttrs) current_attribute_debug.Append(a.attribute);
-        foreach (var a in timeAttrs) current_attribute_debug.Append(a.attribute);
 
 #endif
 
@@ -547,7 +614,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
 
-                float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeed : player.moveSpeed;
+                float adjuestedScale = (player.sprinting && player.grounding) ? player.FinalMoveSpeed * player.sprintSpeedMult : player.FinalMoveSpeed;
                 Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal) * adjuestedScale;
 
                 Vector3 finalVelocity = slopedMoveVelocity * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
@@ -628,7 +695,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             {
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
 
-                Vector3 finalVelocity = lookTransformedVector * player.swimSpeed;
+                Vector3 finalVelocity = lookTransformedVector * player.FinalSwimSpeed;
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
                 player.transform.rotation = Quaternion.RotateTowards(
@@ -691,7 +758,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (player.input.Player.Move.IsPressed())
                 {
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                    player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce);
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
                 }
             }
             else if (player.sailboat.SubmergeRate < 0.01f)
@@ -703,7 +770,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (player.input.Player.Move.IsPressed())
                 {
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
-                    player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce * ns_boost, ForceMode.Acceleration);
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
 
                 if (!enterFlag)
@@ -727,7 +794,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     if (player.input.Player.Move.IsPressed())
                     {
                         Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                        player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce * ns_boost, ForceMode.Acceleration);
+                        player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                     }
                 }
 
@@ -740,7 +807,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.SailboatForward.IsPressed())
                 {
-                    player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl);
+                    player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl * player.FinalSailboatGliding);
 
                     player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
                     Quaternion.Euler(-10f, euler.y, euler.z), 0.05f);
@@ -856,7 +923,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             if (Vector3.Angle(groundNormal, Vector3.up) < maxClimbSlope)
             {
-                rBody.velocity += Vector3.up * jumpPower;
+                rBody.velocity += Vector3.up * FinalJumpPower;
                 animator.SetFloat("AirboneBlend", 0f);
                 PlayFootstepSound();
             }
@@ -1053,7 +1120,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void DropItemCrash(float addMoveSpeed, float addSprintSpeed, float addSwimSpeed, float addJumpPower, float addBoatSpeed)
     {
         moveSpeed += addMoveSpeed;
-        sprintSpeed += addSprintSpeed;
+        sprintSpeedMult += addSprintSpeed;
         swimSpeed += addSwimSpeed;
         jumpPower += addJumpPower;
         sailboatAccelerationForce += addBoatSpeed;
