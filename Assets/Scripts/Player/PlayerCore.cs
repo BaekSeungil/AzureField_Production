@@ -784,10 +784,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
-                    float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
-
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x,lookInput_y).normalized, Vector3.up);
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration,ForceMode.Acceleration);
                 }
             }
@@ -799,10 +796,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
-                    float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
-
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x, lookInput_y).normalized, Vector3.up);
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
 
@@ -826,10 +820,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.drag = player.sailboatMinimumDrag;
                     if (player.input.Player.Move.IsPressed())
                     {
-                        float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
-                        float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
-
-                        Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x, lookInput_y).normalized, Vector3.up);
+                        Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                         player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                     }
                 }
