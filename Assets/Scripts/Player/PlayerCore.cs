@@ -43,6 +43,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float sailboatByouancy = 1.0f;                         // 조각배 기본 부력
     [SerializeField] private float sailboatGravity = 1.0f;                          // 조각배 중력
     [SerializeField] private float sailboatAccelerationForce = 50f;                 // 조각배 가속력
+    [SerializeField] private float sailboatSteering = 1.0f;                         // 조각배 선회력
     [SerializeField] private float sailboatSlopeInfluenceForce = 20f;               // 조각배 수면 각도 영향력
     [SerializeField] private float sailboatNearsurf = 0.5f;                         // 조각배 저공비행 취급 높이
     [SerializeField] private float sailboatNearsurfBoost = 1.2f;                    // 조각배 저공비행 추가속도
@@ -148,6 +149,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         MoveSpeed,
         SwimSpeed,
         JumpPower,
+        Steering,
         SailboatAcceleration,
         SailboatGliding
     }
@@ -284,6 +286,31 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < IDAttributes.Count; i++)
             {
                 if (IDAttributes[i].attribute == AbilityAttribute.SailboatGliding)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalSteering
+    {
+        get
+        {
+            float result = sailboatSteering;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.Steering)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.Steering)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.Steering)
                     result *= IDAttributes[i].value;
             }
             return result;
@@ -757,8 +784,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
+                    float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
+                    float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
+
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x,lookInput_y).normalized, Vector3.up);
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration,ForceMode.Acceleration);
                 }
             }
             else if (player.sailboat.SubmergeRate < 0.01f)
@@ -769,7 +799,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
+                    float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
+                    float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
+
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x, lookInput_y).normalized, Vector3.up);
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
 
@@ -793,7 +826,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.drag = player.sailboatMinimumDrag;
                     if (player.input.Player.Move.IsPressed())
                     {
-                        Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                        float lookInput_x = player.input.Player.Move.ReadValue<Vector2>().x * player.FinalSteering;
+                        float lookInput_y = player.input.Player.Move.ReadValue<Vector2>().y;
+
+                        Vector3 lookTransformedVector = player.GetLookMoveVector(new Vector2(lookInput_x, lookInput_y).normalized, Vector3.up);
                         player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                     }
                 }
@@ -1146,6 +1182,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private float reefCrashDelta = 7.0f;
     private float reboundForce = 10f;
+    float boatGroundingCounter = 0f;
+
     /// <summary>
     /// 충돌감지
     /// </summary>
@@ -1165,5 +1203,28 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
         }
+
+        if (((1 << collision.gameObject.layer) & groundIgnore) == 0)
+        {
+            boatGroundingCounter = 2f;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (((1 << collision.gameObject.layer) & groundIgnore) == 0)
+        {
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
+            {
+                boatGroundingCounter -= Time.deltaTime;
+
+                if (boatGroundingCounter < 0f)
+                {
+                    CurrentMovement = new Movement_Ground();
+                    boatGroundingCounter = 2f;
+                }
+            }
+        }
+            
     }
 }
