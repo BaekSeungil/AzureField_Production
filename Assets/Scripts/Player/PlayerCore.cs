@@ -5,9 +5,6 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
-using UnityEngine.Rendering.LookDev;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
@@ -23,7 +20,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #region ================ Properties ================
     [Title("ControlProperties")]
     [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
-    [SerializeField] private float sprintSpeedMult = 2.0f;                             // 달리기 속도
+    [SerializeField] private float sprintSpeedMult = 2.0f;                         // 달리기 속도
     [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
     [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 파워  
     [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소 (곱연산)
@@ -31,7 +28,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [Title("Physics")]
     [SerializeField, Range(0f, 1f)] private float horizontalDrag = 0.5f;            // 키 입력이 없을 때 수평 이동 마찰력
     [SerializeField, Range(20f, 70f)] private float maxClimbSlope = 60f;            // 최고 이동가능 경사면
-    [SerializeField] private float groundCastDistance = 0.1f;                       // 바닥 인식 거리
+    [SerializeField] private float groundCastDistance = 0.05f;                      // 바닥 인식 거리
     [SerializeField] private LayerMask groundIgnore;                                // 바닥 인식 제외 레이어
     [SerializeField, Range(0f, 0.8f)] private float waterWalkDragging = 0.5f;       // 물에서 걸을 때 받는 항력
     [SerializeField] private float swimRigidbodyDrag = 10.0f;                       // 수영모드 시 변경되는 리지드바디 Drag 값
@@ -77,8 +74,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Animator animator;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform RCO_foot;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
@@ -478,7 +475,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         // Raycast process
         RaycastHit groundHit;
-        if (Physics.Raycast(RCO_foot.position, -groundNormal, out groundHit, groundCastDistance, ~groundIgnore))
+        if (Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
+            && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f )
         {
             grounding = true;
             groundNormal = groundHit.normal;
@@ -1092,8 +1090,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     private void PlayFootstepSound()
     {
         RaycastHit hit;
-        Ray ray = new Ray(RCO_foot.position, Vector3.down);
-        if (Physics.Raycast(RCO_foot.position, -groundNormal, out hit, groundCastDistance, ~groundIgnore))
+        if (Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out hit,bottomColider.radius + groundCastDistance, ~groundIgnore))
         {
             SoundMaterialBehavior soundMaterialComp;
             SoundMaterial soundMaterial = SoundMaterial.Default;
@@ -1102,7 +1099,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             if (hit.collider.TryGetComponent(out soundMaterialComp))
             {
-                soundMaterial = soundMaterialComp.GetSoundMaterial(RCO_foot.position);
+                soundMaterial = soundMaterialComp.GetSoundMaterial(transform.position);
 
                 switch (soundMaterial)
                 {
@@ -1170,7 +1167,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         EnableForSequence();
     }
 
-
     private float reefCrashDelta = 7.0f;
     private float reboundForce = 10f;
     float boatGroundingCounter = 0f;
@@ -1218,4 +1214,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
             
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal*(bottomColider.radius + groundCastDistance));
+    }
+#endif
 }
