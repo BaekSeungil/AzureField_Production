@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,7 +16,9 @@ public class Interactable_Holding : Interactable_Base
     public Transform rightHandPoint;        // 플레이어가 아이템을 잡을 때 오른손의 위치와 각도를 나타냅니다.
 
     private bool isHolding = false;
+#pragma warning disable CS0108
     [SerializeField] private Rigidbody rigidbody;
+#pragma warning restore CS0108
     [SerializeField] private Collider collision;
 
     public override void Interact()

@@ -16,7 +16,8 @@ public class IslandArea : MonoBehaviour
     //
     //================================================
 
-    [SerializeField] private string islandID;               
+    [SerializeField] private string islandID;
+    [SerializeField] private Transform spawnTransform;
     public string IslandID { get { return islandID; } }                         // 섬 구분 ID
     [SerializeField] private LocalizedString islandName;    
     public LocalizedString IslandName { get { return islandName; } }            // 섬 이름 ( UI )
@@ -32,6 +33,7 @@ public class IslandArea : MonoBehaviour
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
+
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -58,8 +60,13 @@ public class IslandArea : MonoBehaviour
         }
     }
 
+    private float enterInterval = 10f;
+    private float enterTimer = 0f;
+
     private void Update()
     {
+        enterTimer += Time.deltaTime;
+
         if(playerPosition != null)
         {
             float distanceValue = GetAreaInterpolation(playerPosition.position);
@@ -69,10 +76,13 @@ public class IslandArea : MonoBehaviour
 
             if (playerEnterFlag == false)
             {
-                if(Vector3.Distance(playerPosition.position,transform.position) < innerArea)
+                if (Vector3.Distance(playerPosition.position, transform.position) < innerArea)
                 {
                     playerEnterFlag = true;
-                    OnInnerAreaEnter();
+                    if (EnterUIFilter())
+                    {
+                        OnInnerAreaEnter();
+                    }
                 }
             }
             else
@@ -128,7 +138,15 @@ public class IslandArea : MonoBehaviour
         {
             regionEnter.OnRegionEnter(islandName.GetLocalizedString());
             RuntimeManager.PlayOneShot(sound_Enter);
+            AreaControl.RecentLandRecord(islandID, spawnTransform.position);
         }
+    }
+
+    private bool EnterUIFilter()
+    {
+        if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
+        if (enterTimer < enterInterval) { enterTimer = 0f; return false; }
+        return true;
     }
 
     private void OnDrawGizmosSelected()
