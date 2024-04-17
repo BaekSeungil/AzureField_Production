@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class RiverManager : MonoBehaviour
 {
@@ -30,10 +31,10 @@ public class RiverManager : MonoBehaviour
     {
         Flow();
     }
-
     private void Flow() 
     {
-        playerPoint.position = Vector3.MoveTowards(playerPoint.position, flowPoint.position, flowPower);
+        if (player.CurrentMovement.GetType() == typeof(PlayerCore.Movement_Swimming) || player.CurrentMovement.GetType() == typeof(PlayerCore.Movement_Sailboat))
+            playerPoint.position = Vector3.MoveTowards(playerPoint.position, flowPoint.position, flowPower);
     }
 
     void PlayerAreaCheck()
