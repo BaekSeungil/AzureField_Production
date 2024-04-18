@@ -283,7 +283,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
             else
             {
-                timer_routeCountdown = distanceAllowence;
+                timer_routeCountdown = distanceAllowenceTime;
                 UI_FairwindInfo.Instance.ToggleAlertUI(false);
             }
         }

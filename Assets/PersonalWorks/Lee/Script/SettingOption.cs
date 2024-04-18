@@ -48,7 +48,7 @@ public class SettingOption : MonoBehaviour
     }
     public void Resume()
     {
-        //CursorLocker.Instance.EnableFreelook();
+        CursorLocker.Instance.EnableFreelook();
         backPanel.SetActive(false);
         Setting.SetActive(false);
         GrapicSetting.SetActive(false);
@@ -61,7 +61,7 @@ public class SettingOption : MonoBehaviour
 
     public void Pause()
     {
-        //CursorLocker.Instance.DisableFreelook();
+        CursorLocker.Instance.DisableFreelook();
         backPanel.SetActive(true);
         Setting.SetActive(true);
         Time.timeScale = 0f;
