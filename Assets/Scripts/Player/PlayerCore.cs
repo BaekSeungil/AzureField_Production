@@ -47,10 +47,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float sailboatFullDrag = 10.0f;                        // 조각배 완전 침수시 마찰력
     [SerializeField] private float sailboatScratchDrag = 1.0f;                      // 조각배 살짝 침수시 마찰력
     [SerializeField] private float sailboatMinimumDrag = 0.0f;                      // 조각배 최소 마찰력
+    [SerializeField] private float sailboatGlidingDrag = 2.0f;                      // 조각배 활공 마찰력
     [SerializeField] private float sailboatVerticalControl = 10.0f;                 // 조각배 상하컨트롤 추가 힘
     [SerializeField] private float sailboatGliding = 1.0f;                          // 조각배 활공력
     [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
+
+    [Title("SailboatSkillProperties")]
+    [SerializeField] private float sbBoosterSpeedMult = 2.0f;
+    [SerializeField] private float sbBoosterDuration = 2.0f;
+    [SerializeField] private float sbBoosterCooldownTime = 2.0f;
+
 
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
@@ -336,7 +343,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     /// <summary>
-    /// 일시적으로 플레이어 수치를 적용합니다.(곱연산)
+    /// 일시적으로 플레이어 수치를 적용합니다.
     /// </summary>
     /// <param name="attr">속성</param>
     /// <param name="time">시간</param>
@@ -786,7 +793,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration,ForceMode.Acceleration);
                 }
             }
-            else if (player.sailboat.SubmergeRate < 0.01f)
+            else if (player.sailboat.SubmergeRate < -0.05f)
             {
                 player.rBody.drag = player.sailboatScratchDrag;
                 player.rBody.AddForce(Vector3.up * -sailboat.SubmergeRate * player.sailboatByouancy, ForceMode.Acceleration);
@@ -795,7 +802,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (player.input.Player.Move.IsPressed())
                 {
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration, ForceMode.Acceleration);
                 }
 
                 if (!enterFlag)
@@ -809,17 +816,29 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     }
                 }
             }
+            else if(player.sailboat.SubmergeRate < player.sailboatNearsurf)
+            {
+                player.rBody.drag = player.sailboatMinimumDrag;
+                player.rBody.AddForce(Vector3.up * -sailboat.SubmergeRate * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
+
+                if (player.input.Player.Move.IsPressed())
+                {
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration, ForceMode.Acceleration);
+                }
+            }
             else
             {
                 enterFlag = false;
 
                 if (!player.Grounding)
                 {
-                    player.rBody.drag = player.sailboatMinimumDrag;
+                    player.rBody.drag = player.sailboatGlidingDrag;
                     if (player.input.Player.Move.IsPressed())
                     {
                         Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                        player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
+                        player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration, ForceMode.Acceleration);
                     }
                 }
 
