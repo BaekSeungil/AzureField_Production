@@ -17,7 +17,7 @@ public class MiniMap_Base : MonoBehaviour
     public static MiniMap_Base Instance;
     [SerializeField] Vector2 worldsize;
     [SerializeField] 
-    Vector2 fullScrennDimensions = new Vector2(1000,1000);
+    Vector2 fullScrennDimensions = new Vector2(1920,1080);
     [SerializeField] float zoomSpeed = 0.1f;
     [SerializeField] float maxZoom= 10f;
     [SerializeField] float minZoom = 1f;
@@ -31,6 +31,7 @@ public class MiniMap_Base : MonoBehaviour
 
     [SerializeField] MiniMap_Icon miniMapPrefab;
 
+    [SerializeField] GameObject Player;
     Matrix4x4 transformationMatix;
 
     private MiniMapMod currentMiniMapMode =  MiniMapMod.Mini;
@@ -164,33 +165,46 @@ public class MiniMap_Base : MonoBehaviour
         {
             float mapScale = contentRectTransform.transform.localScale.x;
 
-            contentRectTransform.anchoredPosition = (-followIcon.rectTransform.anchoredPosition * mapScale);
+            contentRectTransform.anchoredPosition = (followIcon.rectTransform.anchoredPosition * mapScale);
 
         }
     }
 
     private void UpdateMiniMapIcons()
     {
-        float iconscale = 1 / contentRectTransform.transform.localScale.x;
-        foreach(var kvp in miniMapWorldObjectLookup)
-        {
-            var miniMap_Object = kvp.Value;
-            var miniMapIcon = kvp.Value;
-            var mapPosition = WorldPositionToMapPosition(miniMap_Object.transform.position);
+        foreach (var kvp in miniMapWorldObjectLookup)
+    {
+        var miniMap_Object = kvp.Key;
+        var miniMapIcon = kvp.Value;
+        
+        // 세계 좌표를 미니맵 좌표로 변환
+        var mapPosition = WorldPositionToMapPosition(miniMap_Object.transform.position);
 
-            miniMapIcon.rectTransform.anchoredPosition = mapPosition;
-            var rotation = miniMap_Object.transform.rotation.eulerAngles;
-            miniMapIcon.iconRectTrans.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+        // 미니맵 아이콘 위치 업데이트
+        miniMapIcon.rectTransform.anchoredPosition = mapPosition;
 
-        }
+        // 미니맵 아이콘 회전 업데이트 (선택 사항)
+        var rotation = miniMap_Object.transform.rotation.eulerAngles;
+        miniMapIcon.iconRectTrans.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+    }
 
 
     }
 
     private Vector2 WorldPositionToMapPosition(Vector3 worldPos)
     {
-        var pos = new Vector2(worldPos.x, worldPos.z);
-        return transformationMatix.MultiplyPoint3x4(pos);
+         // 세계 좌표를 미니맵의 로컬 좌표로 변환
+        var localPos = worldPos - Player.transform.position;
+
+        // 세계 크기와 미니맵 크기 사이의 비율 계산
+        var ratioX = localPos.x / worldsize.x;
+        var ratioY = localPos.z / worldsize.y;
+
+        // 미니맵의 크기를 기반으로 로컬 좌표를 변환하여 미니맵 좌표로 반환
+        var mapPos = new Vector2(ratioX * scrollViewRectTransform.rect.width, ratioY * scrollViewRectTransform.rect.height);
+
+        return mapPos;
+       
     }
 
     private void CalculateTransformationMatrix()
