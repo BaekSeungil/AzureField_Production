@@ -505,6 +505,7 @@ Transform:
   - {fileID: 5986335189477094576}
   - {fileID: 7187445262357277532}
   - {fileID: 8270539253178338030}
+  - {fileID: 6373320624650887012}
   - {fileID: 3472872107921748815}
   - {fileID: 7357841844735380075}
   - {fileID: 2930847644886406987}
@@ -548,7 +549,7 @@ MonoBehaviour:
   groundIgnore:
     serializedVersion: 2
     m_Bits: 88
-  waterWalkDragging: 0.5
+  waterWalkDragging: 0.474
   swimRigidbodyDrag: 10
   swimUpforce: 10
   grounding: 0
@@ -556,7 +557,7 @@ MonoBehaviour:
   sailboatByouancy: 100
   sailboatGravity: 20
   sailboatAccelerationForce: 20
-  sailboatSlopeInfluenceForce: -20
+  sailboatSlopeInfluenceForce: 20
   sailboatNearsurf: 0.3
   sailboatNearsurfBoost: 1.2
   sailboatFullDrag: 5
@@ -800,9 +801,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8270539253178338030}
   - component: {fileID: 8977674688113420054}
-  - component: {fileID: 8615245710302226736}
   m_Layer: 6
-  m_Name: Collider
+  m_Name: BodyCollider
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -846,27 +846,6 @@ CapsuleCollider:
   m_Height: 1.4
   m_Direction: 1
   m_Center: {x: 0, y: 0.74, z: 0}
---- !u!135 &8615245710302226736
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3453164161655631342}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.18
-  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &3481135830841591949
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +877,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7614590944922003835}
   m_LocalEulerAnglesHint: {x: -27.963, y: -228.354, z: 95.201}
+--- !u!1 &3927624695352479384
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6373320624650887012}
+  - component: {fileID: 326693713506391476}
+  m_Layer: 0
+  m_Name: BottomCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6373320624650887012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3927624695352479384}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 20681564530110160}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &326693713506391476
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3927624695352479384}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.18
+  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &4158229310138543841
 GameObject:
   m_ObjectHideFlags: 0

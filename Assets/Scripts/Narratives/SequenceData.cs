@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
@@ -96,6 +97,38 @@ public class Sequence_DialogueBranch : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
 }
+
+public class Sequence_Animation : Sequence_Base
+{
+    [InfoBox("씬에서 게임오브젝트를 찾아 애니메이션 컴포넌트를 이용해 애니메이션 클립을 재생합니다.")]
+    public string objectName;
+    public AnimationClip animationClip;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        GameObject target = GameObject.Find(objectName);
+        if(target != null)
+        {
+            Animation anim;
+            if(target.TryGetComponent<Animation>(out anim))
+            {
+                anim.clip = animationClip;
+                anim.Play();
+            }
+            else
+            {
+                Debug.LogWarning("(Sequence_Animation) 게임 오브젝트에 애니메이션 컴포넌트가 없습니다. : " + objectName);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("(Sequence_Animation) 게임 오브젝트를 찾을 수 없었습니다. : " + objectName);
+        }
+
+        yield return null;
+    }
+}
+
 
 /// <summary>
 /// 타임라인을 재생합니다.

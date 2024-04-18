@@ -6,12 +6,15 @@ Shader "BK/StandardLayered"
 	{
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
+		[Header(Mesh Maps)][Space(10)]_Color("Main Color", Color) = (1,1,1,1)
+		_MainTex("Albedo", 2D) = "white" {}
 		_BumpMap("Normal", 2D) = "bump" {}
 		_NormalPower("Normal Power", Range( 0 , 1)) = 1
 		_MetallicGlossMap("Metallic (R) Occlusion (G) Smoothness (A)", 2D) = "black" {}
 		_MetallicPower("Metallic Power", Range( 0 , 1)) = 0
 		_SmoothnessPower("Smoothness Power", Range( 0 , 1)) = 0
 		_OcclusionPower("Occlusion Power", Range( 0 , 1)) = 0
+		[Space(10)][Header(Second Maps)][Space(10)]_LayerAlbedo("Albedo", 2D) = "white" {}
 		_LayerNormalMap("Normal", 2D) = "bump" {}
 		_SecondNormalPower("Normal Power", Range( 0 , 1)) = 1
 		_LayerMetallicGlossMap("Metallic (R) Occlusion (G) Smoothness (A)", 2D) = "bump" {}
@@ -23,6 +26,7 @@ Shader "BK/StandardLayered"
 		_LayerPosition("Layer Position", Float) = 0
 		_LayerContrast("Layer Contrast", Float) = 0
 		[Space(10)][Header(Layer Maps)][Space(10)]_2ndColor("Color", Color) = (1,1,1,1)
+		_DetailAlbedo("Albedo", 2D) = "white" {}
 		_DetailNormalMap("Normal", 2D) = "bump" {}
 		_2ndNormalPower("Normal Power", Range( 0 , 1)) = 1
 		_BlendPower("BlendPower", Range( 0 , 1)) = 0.2
@@ -346,21 +350,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -393,15 +399,18 @@ Shader "BK/StandardLayered"
 				int _PassValue;
 			#endif
 
+			sampler2D _MainTex;
+			sampler2D _LayerAlbedo;
+			sampler2D _DetailAlbedo;
+			sampler2D _DetailNormalMap;
 			sampler2D _BumpMap;
 			sampler2D _LayerNormalMap;
-			sampler2D _DetailNormalMap;
 			sampler2D _MetallicGlossMap;
 			sampler2D _LayerMetallicGlossMap;
 			sampler2D _DetailMetallicGlossMap;
 
 
-			inline float3 TriplanarSampling150( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			inline float4 TriplanarSampling148( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
 			{
 				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
 				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
@@ -410,10 +419,19 @@ Shader "BK/StandardLayered"
 				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
 				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
 				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
-				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
-				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
-				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
-				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
+			
+			inline float4 TriplanarSampling60( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
 			}
 			
 			inline float3 TriplanarSampling63( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
@@ -436,6 +454,21 @@ Shader "BK/StandardLayered"
 				float t = 0.5 * ( 1.0 - contrastValue );
 				return mul( float4x4( contrastValue,0,0,t, 0,contrastValue,0,t, 0,0,contrastValue,t, 0,0,0,1 ), colorTarget );
 			}
+			inline float3 TriplanarSampling150( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
+				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
+				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
+				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+			}
+			
 			inline float4 TriplanarSampling152( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
 			{
 				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
@@ -669,17 +702,14 @@ Shader "BK/StandardLayered"
 
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
-				float2 uv_BumpMap = IN.ase_texcoord8.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
-				float3 unpack3 = UnpackNormalScale( tex2D( _BumpMap, uv_BumpMap ), _NormalPower );
-				unpack3.z = lerp( 1, unpack3.z, saturate(_NormalPower) );
+				float2 uv_MainTex = IN.ase_texcoord8.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 				float2 appendResult146 = (float2(_Tiling2 , _Tiling2));
 				float2 LayerUVs147 = appendResult146;
-				float3x3 ase_worldToTangent = float3x3(WorldTangent,WorldBiTangent,WorldNormal);
-				float3 triplanar150 = TriplanarSampling150( _LayerNormalMap, WorldPosition, WorldNormal, 1.0, LayerUVs147, _SecondNormalPower, 0 );
-				float3 tanTriplanarNormal150 = mul( ase_worldToTangent, triplanar150 );
-				float3 temp_output_138_0 = BlendNormal( unpack3 , tanTriplanarNormal150 );
+				float4 triplanar148 = TriplanarSampling148( _LayerAlbedo, WorldPosition, WorldNormal, 1.0, LayerUVs147, 1.0, 0 );
 				float2 appendResult71 = (float2(_Tiling , _Tiling));
 				float2 DetailUVs48 = appendResult71;
+				float4 triplanar60 = TriplanarSampling60( _DetailAlbedo, WorldPosition, WorldNormal, 1.0, DetailUVs48, 1.0, 0 );
+				float3x3 ase_worldToTangent = float3x3(WorldTangent,WorldBiTangent,WorldNormal);
 				float3 triplanar63 = TriplanarSampling63( _DetailNormalMap, WorldPosition, WorldNormal, 1.0, DetailUVs48, _2ndNormalPower, 0 );
 				float3 tanTriplanarNormal63 = mul( ase_worldToTangent, triplanar63 );
 				float3 tanToWorld0 = float3( WorldTangent.x, WorldBiTangent.x, WorldNormal.x );
@@ -687,7 +717,7 @@ Shader "BK/StandardLayered"
 				float3 tanToWorld2 = float3( WorldTangent.z, WorldBiTangent.z, WorldNormal.z );
 				float3 tanNormal14 = tanTriplanarNormal63;
 				float3 worldNormal14 = float3(dot(tanToWorld0,tanNormal14), dot(tanToWorld1,tanNormal14), dot(tanToWorld2,tanNormal14));
-				float4 temp_cast_0 = (worldNormal14.y).xxxx;
+				float4 temp_cast_2 = (worldNormal14.y).xxxx;
 				#if defined(_VERTEXCOLORCHANNEL_R)
 				float staticSwitch162 = IN.ase_color.r;
 				#elif defined(_VERTEXCOLORCHANNEL_G)
@@ -700,12 +730,21 @@ Shader "BK/StandardLayered"
 				float staticSwitch162 = IN.ase_color.b;
 				#endif
 				float saferPower109 = abs( staticSwitch162 );
-				float4 temp_cast_1 = (pow( saferPower109 , _LayerPosition )).xxxx;
-				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_1) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
-				float4 temp_cast_2 = (( 1.0 - _LayerPower )).xxxx;
-				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_2 ) * clampResult105 ) ):( temp_cast_0 )) + _LayerPower ) ) );
-				float4 temp_cast_3 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
-				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_3 ) );
+				float4 temp_cast_3 = (pow( saferPower109 , _LayerPosition )).xxxx;
+				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_3) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
+				float4 temp_cast_4 = (( 1.0 - _LayerPower )).xxxx;
+				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_4 ) * clampResult105 ) ):( temp_cast_2 )) + _LayerPower ) ) );
+				float4 temp_cast_5 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
+				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_5 ) );
+				float4 lerpResult26 = lerp( ( _Color * ( tex2D( _MainTex, uv_MainTex ) * triplanar148 ) ) , ( _2ndColor * triplanar60 ) , BlendAlpha85);
+				float4 Albedo116 = lerpResult26;
+				
+				float2 uv_BumpMap = IN.ase_texcoord8.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
+				float3 unpack3 = UnpackNormalScale( tex2D( _BumpMap, uv_BumpMap ), _NormalPower );
+				unpack3.z = lerp( 1, unpack3.z, saturate(_NormalPower) );
+				float3 triplanar150 = TriplanarSampling150( _LayerNormalMap, WorldPosition, WorldNormal, 1.0, LayerUVs147, _SecondNormalPower, 0 );
+				float3 tanTriplanarNormal150 = mul( ase_worldToTangent, triplanar150 );
+				float3 temp_output_138_0 = BlendNormal( unpack3 , tanTriplanarNormal150 );
 				float3 lerpResult13 = lerp( temp_output_138_0 , tanTriplanarNormal63 , BlendAlpha85.rgb);
 				float4 color81 = IsGammaSpace() ? float4(0.01176471,0,1,1) : float4(0.0009105813,0,1,1);
 				float4 lerpResult78 = lerp( color81 , float4( tanTriplanarNormal63 , 0.0 ) , BlendAlpha85);
@@ -726,7 +765,7 @@ Shader "BK/StandardLayered"
 				float Occlusion122 = pow( lerpResult33 , _OcclusionPower );
 				
 
-				float3 BaseColor = float3(0.5, 0.5, 0.5);
+				float3 BaseColor = Albedo116.rgb;
 				float3 Normal = Normal118;
 				float3 Emission = 0;
 				float3 Specular = 0.5;
@@ -1060,21 +1099,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -1400,21 +1441,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -1665,7 +1708,11 @@ Shader "BK/StandardLayered"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/MetaInput.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_VERT_NORMAL
+			#define ASE_NEEDS_FRAG_COLOR
+			#pragma shader_feature_local _VERTEXCOLORCHANNEL_R _VERTEXCOLORCHANNEL_G _VERTEXCOLORCHANNEL_B _VERTEXCOLORCHANNEL_A
+
 
 			struct VertexInput
 			{
@@ -1674,7 +1721,8 @@ Shader "BK/StandardLayered"
 				float4 texcoord0 : TEXCOORD0;
 				float4 texcoord1 : TEXCOORD1;
 				float4 texcoord2 : TEXCOORD2;
-				
+				float4 ase_tangent : TANGENT;
+				float4 ase_color : COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -1691,27 +1739,33 @@ Shader "BK/StandardLayered"
 					float4 VizUV : TEXCOORD2;
 					float4 LightCoord : TEXCOORD3;
 				#endif
-				
+				float4 ase_texcoord4 : TEXCOORD4;
+				float4 ase_texcoord5 : TEXCOORD5;
+				float4 ase_texcoord6 : TEXCOORD6;
+				float4 ase_texcoord7 : TEXCOORD7;
+				float4 ase_color : COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -1744,9 +1798,57 @@ Shader "BK/StandardLayered"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _MainTex;
+			sampler2D _LayerAlbedo;
+			sampler2D _DetailAlbedo;
+			sampler2D _DetailNormalMap;
 
+
+			inline float4 TriplanarSampling148( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
 			
+			inline float4 TriplanarSampling60( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
+			
+			inline float3 TriplanarSampling63( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
+				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
+				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
+				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+			}
+			
+			float4 CalculateContrast( float contrastValue, float4 colorTarget )
+			{
+				float t = 0.5 * ( 1.0 - contrastValue );
+				return mul( float4x4( contrastValue,0,0,t, 0,contrastValue,0,t, 0,0,contrastValue,t, 0,0,0,1 ), colorTarget );
+			}
+
 			VertexOutput VertexFunction( VertexInput v  )
 			{
 				VertexOutput o = (VertexOutput)0;
@@ -1754,7 +1856,22 @@ Shader "BK/StandardLayered"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
+				float3 ase_worldNormal = TransformObjectToWorldNormal(v.normalOS);
+				o.ase_texcoord5.xyz = ase_worldNormal;
+				float3 ase_worldTangent = TransformObjectToWorldDir(v.ase_tangent.xyz);
+				o.ase_texcoord6.xyz = ase_worldTangent;
+				float ase_vertexTangentSign = v.ase_tangent.w * ( unity_WorldTransformParams.w >= 0.0 ? 1.0 : -1.0 );
+				float3 ase_worldBitangent = cross( ase_worldNormal, ase_worldTangent ) * ase_vertexTangentSign;
+				o.ase_texcoord7.xyz = ase_worldBitangent;
 				
+				o.ase_texcoord4.xy = v.texcoord0.xy;
+				o.ase_color = v.ase_color;
+				
+				//setting value to unused interpolator channels and avoid initialization warnings
+				o.ase_texcoord4.zw = 0;
+				o.ase_texcoord5.w = 0;
+				o.ase_texcoord6.w = 0;
+				o.ase_texcoord7.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -1806,7 +1923,9 @@ Shader "BK/StandardLayered"
 				float4 texcoord0 : TEXCOORD0;
 				float4 texcoord1 : TEXCOORD1;
 				float4 texcoord2 : TEXCOORD2;
-				
+				float4 ase_tangent : TANGENT;
+				float4 ase_color : COLOR;
+
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -1826,7 +1945,8 @@ Shader "BK/StandardLayered"
 				o.texcoord0 = v.texcoord0;
 				o.texcoord1 = v.texcoord1;
 				o.texcoord2 = v.texcoord2;
-				
+				o.ase_tangent = v.ase_tangent;
+				o.ase_color = v.ase_color;
 				return o;
 			}
 
@@ -1868,7 +1988,8 @@ Shader "BK/StandardLayered"
 				o.texcoord0 = patch[0].texcoord0 * bary.x + patch[1].texcoord0 * bary.y + patch[2].texcoord0 * bary.z;
 				o.texcoord1 = patch[0].texcoord1 * bary.x + patch[1].texcoord1 * bary.y + patch[2].texcoord1 * bary.z;
 				o.texcoord2 = patch[0].texcoord2 * bary.x + patch[1].texcoord2 * bary.y + patch[2].texcoord2 * bary.z;
-				
+				o.ase_tangent = patch[0].ase_tangent * bary.x + patch[1].ase_tangent * bary.y + patch[2].ase_tangent * bary.z;
+				o.ase_color = patch[0].ase_color * bary.x + patch[1].ase_color * bary.y + patch[2].ase_color * bary.z;
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -1905,9 +2026,48 @@ Shader "BK/StandardLayered"
 					#endif
 				#endif
 
+				float2 uv_MainTex = IN.ase_texcoord4.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+				float2 appendResult146 = (float2(_Tiling2 , _Tiling2));
+				float2 LayerUVs147 = appendResult146;
+				float3 ase_worldNormal = IN.ase_texcoord5.xyz;
+				float4 triplanar148 = TriplanarSampling148( _LayerAlbedo, WorldPosition, ase_worldNormal, 1.0, LayerUVs147, 1.0, 0 );
+				float2 appendResult71 = (float2(_Tiling , _Tiling));
+				float2 DetailUVs48 = appendResult71;
+				float4 triplanar60 = TriplanarSampling60( _DetailAlbedo, WorldPosition, ase_worldNormal, 1.0, DetailUVs48, 1.0, 0 );
+				float3 ase_worldTangent = IN.ase_texcoord6.xyz;
+				float3 ase_worldBitangent = IN.ase_texcoord7.xyz;
+				float3x3 ase_worldToTangent = float3x3(ase_worldTangent,ase_worldBitangent,ase_worldNormal);
+				float3 triplanar63 = TriplanarSampling63( _DetailNormalMap, WorldPosition, ase_worldNormal, 1.0, DetailUVs48, _2ndNormalPower, 0 );
+				float3 tanTriplanarNormal63 = mul( ase_worldToTangent, triplanar63 );
+				float3 tanToWorld0 = float3( ase_worldTangent.x, ase_worldBitangent.x, ase_worldNormal.x );
+				float3 tanToWorld1 = float3( ase_worldTangent.y, ase_worldBitangent.y, ase_worldNormal.y );
+				float3 tanToWorld2 = float3( ase_worldTangent.z, ase_worldBitangent.z, ase_worldNormal.z );
+				float3 tanNormal14 = tanTriplanarNormal63;
+				float3 worldNormal14 = float3(dot(tanToWorld0,tanNormal14), dot(tanToWorld1,tanNormal14), dot(tanToWorld2,tanNormal14));
+				float4 temp_cast_2 = (worldNormal14.y).xxxx;
+				#if defined(_VERTEXCOLORCHANNEL_R)
+				float staticSwitch162 = IN.ase_color.r;
+				#elif defined(_VERTEXCOLORCHANNEL_G)
+				float staticSwitch162 = IN.ase_color.g;
+				#elif defined(_VERTEXCOLORCHANNEL_B)
+				float staticSwitch162 = IN.ase_color.b;
+				#elif defined(_VERTEXCOLORCHANNEL_A)
+				float staticSwitch162 = IN.ase_color.a;
+				#else
+				float staticSwitch162 = IN.ase_color.b;
+				#endif
+				float saferPower109 = abs( staticSwitch162 );
+				float4 temp_cast_3 = (pow( saferPower109 , _LayerPosition )).xxxx;
+				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_3) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
+				float4 temp_cast_4 = (( 1.0 - _LayerPower )).xxxx;
+				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_4 ) * clampResult105 ) ):( temp_cast_2 )) + _LayerPower ) ) );
+				float4 temp_cast_5 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
+				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_5 ) );
+				float4 lerpResult26 = lerp( ( _Color * ( tex2D( _MainTex, uv_MainTex ) * triplanar148 ) ) , ( _2ndColor * triplanar60 ) , BlendAlpha85);
+				float4 Albedo116 = lerpResult26;
 				
 
-				float3 BaseColor = float3(0.5, 0.5, 0.5);
+				float3 BaseColor = Albedo116.rgb;
 				float3 Emission = 0;
 				float Alpha = 1;
 				float AlphaClipThreshold = 0.5;
@@ -1975,13 +2135,19 @@ Shader "BK/StandardLayered"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
+			#define ASE_NEEDS_VERT_NORMAL
+			#define ASE_NEEDS_FRAG_COLOR
+			#pragma shader_feature_local _VERTEXCOLORCHANNEL_R _VERTEXCOLORCHANNEL_G _VERTEXCOLORCHANNEL_B _VERTEXCOLORCHANNEL_A
+
 
 			struct VertexInput
 			{
 				float4 positionOS : POSITION;
 				float3 normalOS : NORMAL;
-				
+				float4 ase_texcoord : TEXCOORD0;
+				float4 ase_tangent : TANGENT;
+				float4 ase_color : COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -1994,27 +2160,33 @@ Shader "BK/StandardLayered"
 				#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR) && defined(ASE_NEEDS_FRAG_SHADOWCOORDS)
 					float4 shadowCoord : TEXCOORD1;
 				#endif
-				
+				float4 ase_texcoord2 : TEXCOORD2;
+				float4 ase_texcoord3 : TEXCOORD3;
+				float4 ase_texcoord4 : TEXCOORD4;
+				float4 ase_texcoord5 : TEXCOORD5;
+				float4 ase_color : COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -2047,9 +2219,57 @@ Shader "BK/StandardLayered"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _MainTex;
+			sampler2D _LayerAlbedo;
+			sampler2D _DetailAlbedo;
+			sampler2D _DetailNormalMap;
 
+
+			inline float4 TriplanarSampling148( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
 			
+			inline float4 TriplanarSampling60( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
+			
+			inline float3 TriplanarSampling63( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
+				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
+				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
+				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+			}
+			
+			float4 CalculateContrast( float contrastValue, float4 colorTarget )
+			{
+				float t = 0.5 * ( 1.0 - contrastValue );
+				return mul( float4x4( contrastValue,0,0,t, 0,contrastValue,0,t, 0,0,contrastValue,t, 0,0,0,1 ), colorTarget );
+			}
+
 			VertexOutput VertexFunction( VertexInput v  )
 			{
 				VertexOutput o = (VertexOutput)0;
@@ -2057,7 +2277,22 @@ Shader "BK/StandardLayered"
 				UNITY_TRANSFER_INSTANCE_ID( v, o );
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO( o );
 
+				float3 ase_worldNormal = TransformObjectToWorldNormal(v.normalOS);
+				o.ase_texcoord3.xyz = ase_worldNormal;
+				float3 ase_worldTangent = TransformObjectToWorldDir(v.ase_tangent.xyz);
+				o.ase_texcoord4.xyz = ase_worldTangent;
+				float ase_vertexTangentSign = v.ase_tangent.w * ( unity_WorldTransformParams.w >= 0.0 ? 1.0 : -1.0 );
+				float3 ase_worldBitangent = cross( ase_worldNormal, ase_worldTangent ) * ase_vertexTangentSign;
+				o.ase_texcoord5.xyz = ase_worldBitangent;
 				
+				o.ase_texcoord2.xy = v.ase_texcoord.xy;
+				o.ase_color = v.ase_color;
+				
+				//setting value to unused interpolator channels and avoid initialization warnings
+				o.ase_texcoord2.zw = 0;
+				o.ase_texcoord3.w = 0;
+				o.ase_texcoord4.w = 0;
+				o.ase_texcoord5.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -2095,7 +2330,10 @@ Shader "BK/StandardLayered"
 			{
 				float4 vertex : INTERNALTESSPOS;
 				float3 normalOS : NORMAL;
-				
+				float4 ase_texcoord : TEXCOORD0;
+				float4 ase_tangent : TANGENT;
+				float4 ase_color : COLOR;
+
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -2112,7 +2350,9 @@ Shader "BK/StandardLayered"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				o.vertex = v.positionOS;
 				o.normalOS = v.normalOS;
-				
+				o.ase_texcoord = v.ase_texcoord;
+				o.ase_tangent = v.ase_tangent;
+				o.ase_color = v.ase_color;
 				return o;
 			}
 
@@ -2151,7 +2391,9 @@ Shader "BK/StandardLayered"
 				VertexInput o = (VertexInput) 0;
 				o.positionOS = patch[0].vertex * bary.x + patch[1].vertex * bary.y + patch[2].vertex * bary.z;
 				o.normalOS = patch[0].normalOS * bary.x + patch[1].normalOS * bary.y + patch[2].normalOS * bary.z;
-				
+				o.ase_texcoord = patch[0].ase_texcoord * bary.x + patch[1].ase_texcoord * bary.y + patch[2].ase_texcoord * bary.z;
+				o.ase_tangent = patch[0].ase_tangent * bary.x + patch[1].ase_tangent * bary.y + patch[2].ase_tangent * bary.z;
+				o.ase_color = patch[0].ase_color * bary.x + patch[1].ase_color * bary.y + patch[2].ase_color * bary.z;
 				#if defined(ASE_PHONG_TESSELLATION)
 				float3 pp[3];
 				for (int i = 0; i < 3; ++i)
@@ -2188,9 +2430,48 @@ Shader "BK/StandardLayered"
 					#endif
 				#endif
 
+				float2 uv_MainTex = IN.ase_texcoord2.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+				float2 appendResult146 = (float2(_Tiling2 , _Tiling2));
+				float2 LayerUVs147 = appendResult146;
+				float3 ase_worldNormal = IN.ase_texcoord3.xyz;
+				float4 triplanar148 = TriplanarSampling148( _LayerAlbedo, WorldPosition, ase_worldNormal, 1.0, LayerUVs147, 1.0, 0 );
+				float2 appendResult71 = (float2(_Tiling , _Tiling));
+				float2 DetailUVs48 = appendResult71;
+				float4 triplanar60 = TriplanarSampling60( _DetailAlbedo, WorldPosition, ase_worldNormal, 1.0, DetailUVs48, 1.0, 0 );
+				float3 ase_worldTangent = IN.ase_texcoord4.xyz;
+				float3 ase_worldBitangent = IN.ase_texcoord5.xyz;
+				float3x3 ase_worldToTangent = float3x3(ase_worldTangent,ase_worldBitangent,ase_worldNormal);
+				float3 triplanar63 = TriplanarSampling63( _DetailNormalMap, WorldPosition, ase_worldNormal, 1.0, DetailUVs48, _2ndNormalPower, 0 );
+				float3 tanTriplanarNormal63 = mul( ase_worldToTangent, triplanar63 );
+				float3 tanToWorld0 = float3( ase_worldTangent.x, ase_worldBitangent.x, ase_worldNormal.x );
+				float3 tanToWorld1 = float3( ase_worldTangent.y, ase_worldBitangent.y, ase_worldNormal.y );
+				float3 tanToWorld2 = float3( ase_worldTangent.z, ase_worldBitangent.z, ase_worldNormal.z );
+				float3 tanNormal14 = tanTriplanarNormal63;
+				float3 worldNormal14 = float3(dot(tanToWorld0,tanNormal14), dot(tanToWorld1,tanNormal14), dot(tanToWorld2,tanNormal14));
+				float4 temp_cast_2 = (worldNormal14.y).xxxx;
+				#if defined(_VERTEXCOLORCHANNEL_R)
+				float staticSwitch162 = IN.ase_color.r;
+				#elif defined(_VERTEXCOLORCHANNEL_G)
+				float staticSwitch162 = IN.ase_color.g;
+				#elif defined(_VERTEXCOLORCHANNEL_B)
+				float staticSwitch162 = IN.ase_color.b;
+				#elif defined(_VERTEXCOLORCHANNEL_A)
+				float staticSwitch162 = IN.ase_color.a;
+				#else
+				float staticSwitch162 = IN.ase_color.b;
+				#endif
+				float saferPower109 = abs( staticSwitch162 );
+				float4 temp_cast_3 = (pow( saferPower109 , _LayerPosition )).xxxx;
+				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_3) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
+				float4 temp_cast_4 = (( 1.0 - _LayerPower )).xxxx;
+				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_4 ) * clampResult105 ) ):( temp_cast_2 )) + _LayerPower ) ) );
+				float4 temp_cast_5 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
+				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_5 ) );
+				float4 lerpResult26 = lerp( ( _Color * ( tex2D( _MainTex, uv_MainTex ) * triplanar148 ) ) , ( _2ndColor * triplanar60 ) , BlendAlpha85);
+				float4 Albedo116 = lerpResult26;
 				
 
-				float3 BaseColor = float3(0.5, 0.5, 0.5);
+				float3 BaseColor = Albedo116.rgb;
 				float Alpha = 1;
 				float AlphaClipThreshold = 0.5;
 
@@ -2320,21 +2601,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -2831,21 +3114,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -2878,9 +3163,12 @@ Shader "BK/StandardLayered"
 				int _PassValue;
 			#endif
 
+			sampler2D _MainTex;
+			sampler2D _LayerAlbedo;
+			sampler2D _DetailAlbedo;
+			sampler2D _DetailNormalMap;
 			sampler2D _BumpMap;
 			sampler2D _LayerNormalMap;
-			sampler2D _DetailNormalMap;
 			sampler2D _MetallicGlossMap;
 			sampler2D _LayerMetallicGlossMap;
 			sampler2D _DetailMetallicGlossMap;
@@ -2888,7 +3176,7 @@ Shader "BK/StandardLayered"
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
 
-			inline float3 TriplanarSampling150( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			inline float4 TriplanarSampling148( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
 			{
 				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
 				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
@@ -2897,10 +3185,19 @@ Shader "BK/StandardLayered"
 				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
 				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
 				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
-				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
-				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
-				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
-				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
+			}
+			
+			inline float4 TriplanarSampling60( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				return xNorm * projNormal.x + yNorm * projNormal.y + zNorm * projNormal.z;
 			}
 			
 			inline float3 TriplanarSampling63( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
@@ -2923,6 +3220,21 @@ Shader "BK/StandardLayered"
 				float t = 0.5 * ( 1.0 - contrastValue );
 				return mul( float4x4( contrastValue,0,0,t, 0,contrastValue,0,t, 0,0,contrastValue,t, 0,0,0,1 ), colorTarget );
 			}
+			inline float3 TriplanarSampling150( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
+			{
+				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
+				projNormal /= ( projNormal.x + projNormal.y + projNormal.z ) + 0.00001;
+				float3 nsign = sign( worldNormal );
+				half4 xNorm; half4 yNorm; half4 zNorm;
+				xNorm = tex2D( topTexMap, tiling * worldPos.zy * float2(  nsign.x, 1.0 ) );
+				yNorm = tex2D( topTexMap, tiling * worldPos.xz * float2(  nsign.y, 1.0 ) );
+				zNorm = tex2D( topTexMap, tiling * worldPos.xy * float2( -nsign.z, 1.0 ) );
+				xNorm.xyz  = half3( UnpackNormalScale( xNorm, normalScale.y ).xy * float2(  nsign.x, 1.0 ) + worldNormal.zy, worldNormal.x ).zyx;
+				yNorm.xyz  = half3( UnpackNormalScale( yNorm, normalScale.x ).xy * float2(  nsign.y, 1.0 ) + worldNormal.xz, worldNormal.y ).xzy;
+				zNorm.xyz  = half3( UnpackNormalScale( zNorm, normalScale.y ).xy * float2( -nsign.z, 1.0 ) + worldNormal.xy, worldNormal.z ).xyz;
+				return normalize( xNorm.xyz * projNormal.x + yNorm.xyz * projNormal.y + zNorm.xyz * projNormal.z );
+			}
+			
 			inline float4 TriplanarSampling152( sampler2D topTexMap, float3 worldPos, float3 worldNormal, float falloff, float2 tiling, float3 normalScale, float3 index )
 			{
 				float3 projNormal = ( pow( abs( worldNormal ), falloff ) );
@@ -3149,17 +3461,14 @@ Shader "BK/StandardLayered"
 
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
-				float2 uv_BumpMap = IN.ase_texcoord8.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
-				float3 unpack3 = UnpackNormalScale( tex2D( _BumpMap, uv_BumpMap ), _NormalPower );
-				unpack3.z = lerp( 1, unpack3.z, saturate(_NormalPower) );
+				float2 uv_MainTex = IN.ase_texcoord8.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 				float2 appendResult146 = (float2(_Tiling2 , _Tiling2));
 				float2 LayerUVs147 = appendResult146;
-				float3x3 ase_worldToTangent = float3x3(WorldTangent,WorldBiTangent,WorldNormal);
-				float3 triplanar150 = TriplanarSampling150( _LayerNormalMap, WorldPosition, WorldNormal, 1.0, LayerUVs147, _SecondNormalPower, 0 );
-				float3 tanTriplanarNormal150 = mul( ase_worldToTangent, triplanar150 );
-				float3 temp_output_138_0 = BlendNormal( unpack3 , tanTriplanarNormal150 );
+				float4 triplanar148 = TriplanarSampling148( _LayerAlbedo, WorldPosition, WorldNormal, 1.0, LayerUVs147, 1.0, 0 );
 				float2 appendResult71 = (float2(_Tiling , _Tiling));
 				float2 DetailUVs48 = appendResult71;
+				float4 triplanar60 = TriplanarSampling60( _DetailAlbedo, WorldPosition, WorldNormal, 1.0, DetailUVs48, 1.0, 0 );
+				float3x3 ase_worldToTangent = float3x3(WorldTangent,WorldBiTangent,WorldNormal);
 				float3 triplanar63 = TriplanarSampling63( _DetailNormalMap, WorldPosition, WorldNormal, 1.0, DetailUVs48, _2ndNormalPower, 0 );
 				float3 tanTriplanarNormal63 = mul( ase_worldToTangent, triplanar63 );
 				float3 tanToWorld0 = float3( WorldTangent.x, WorldBiTangent.x, WorldNormal.x );
@@ -3167,7 +3476,7 @@ Shader "BK/StandardLayered"
 				float3 tanToWorld2 = float3( WorldTangent.z, WorldBiTangent.z, WorldNormal.z );
 				float3 tanNormal14 = tanTriplanarNormal63;
 				float3 worldNormal14 = float3(dot(tanToWorld0,tanNormal14), dot(tanToWorld1,tanNormal14), dot(tanToWorld2,tanNormal14));
-				float4 temp_cast_0 = (worldNormal14.y).xxxx;
+				float4 temp_cast_2 = (worldNormal14.y).xxxx;
 				#if defined(_VERTEXCOLORCHANNEL_R)
 				float staticSwitch162 = IN.ase_color.r;
 				#elif defined(_VERTEXCOLORCHANNEL_G)
@@ -3180,12 +3489,21 @@ Shader "BK/StandardLayered"
 				float staticSwitch162 = IN.ase_color.b;
 				#endif
 				float saferPower109 = abs( staticSwitch162 );
-				float4 temp_cast_1 = (pow( saferPower109 , _LayerPosition )).xxxx;
-				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_1) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
-				float4 temp_cast_2 = (( 1.0 - _LayerPower )).xxxx;
-				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_2 ) * clampResult105 ) ):( temp_cast_0 )) + _LayerPower ) ) );
-				float4 temp_cast_3 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
-				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_3 ) );
+				float4 temp_cast_3 = (pow( saferPower109 , _LayerPosition )).xxxx;
+				float4 clampResult105 = clamp( CalculateContrast(_LayerContrast,temp_cast_3) , float4( 0,0,0,0 ) , float4( 1,1,1,0 ) );
+				float4 temp_cast_4 = (( 1.0 - _LayerPower )).xxxx;
+				float4 saferPower24 = abs( saturate( ( (( _UseVertexColor )?( ( pow( clampResult105 , temp_cast_4 ) * clampResult105 ) ):( temp_cast_2 )) + _LayerPower ) ) );
+				float4 temp_cast_5 = ((0.001 + (_LayerThreshold - 0.0) * (1.0 - 0.001) / (1.0 - 0.0))).xxxx;
+				float4 BlendAlpha85 = ( _2ndColor.a * pow( saferPower24 , temp_cast_5 ) );
+				float4 lerpResult26 = lerp( ( _Color * ( tex2D( _MainTex, uv_MainTex ) * triplanar148 ) ) , ( _2ndColor * triplanar60 ) , BlendAlpha85);
+				float4 Albedo116 = lerpResult26;
+				
+				float2 uv_BumpMap = IN.ase_texcoord8.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
+				float3 unpack3 = UnpackNormalScale( tex2D( _BumpMap, uv_BumpMap ), _NormalPower );
+				unpack3.z = lerp( 1, unpack3.z, saturate(_NormalPower) );
+				float3 triplanar150 = TriplanarSampling150( _LayerNormalMap, WorldPosition, WorldNormal, 1.0, LayerUVs147, _SecondNormalPower, 0 );
+				float3 tanTriplanarNormal150 = mul( ase_worldToTangent, triplanar150 );
+				float3 temp_output_138_0 = BlendNormal( unpack3 , tanTriplanarNormal150 );
 				float3 lerpResult13 = lerp( temp_output_138_0 , tanTriplanarNormal63 , BlendAlpha85.rgb);
 				float4 color81 = IsGammaSpace() ? float4(0.01176471,0,1,1) : float4(0.0009105813,0,1,1);
 				float4 lerpResult78 = lerp( color81 , float4( tanTriplanarNormal63 , 0.0 ) , BlendAlpha85);
@@ -3206,7 +3524,7 @@ Shader "BK/StandardLayered"
 				float Occlusion122 = pow( lerpResult33 , _OcclusionPower );
 				
 
-				float3 BaseColor = float3(0.5, 0.5, 0.5);
+				float3 BaseColor = Albedo116.rgb;
 				float3 Normal = Normal118;
 				float3 Emission = 0;
 				float3 Specular = 0.5;
@@ -3393,21 +3711,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -3669,21 +3989,23 @@ Shader "BK/StandardLayered"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _BumpMap_ST;
-			float4 _MetallicGlossMap_ST;
+			float4 _Color;
+			float4 _MainTex_ST;
 			float4 _2ndColor;
+			float4 _MetallicGlossMap_ST;
+			float4 _BumpMap_ST;
 			float _MetallicPower;
 			float _BlendPower;
+			float _SecondNormalPower;
+			float _NormalPower;
 			float _LayerThreshold;
 			float _LayerPower;
 			float _LayerPosition;
 			float _LayerContrast;
-			float _UseVertexColor;
 			float _2ndNormalPower;
+			float _UseVertexColor;
 			float _Tiling;
-			float _SecondNormalPower;
 			float _Tiling2;
-			float _NormalPower;
 			float _SmoothnessPower;
 			float _OcclusionPower;
 			#ifdef ASE_TRANSMISSION
@@ -4085,9 +4407,10 @@ WireConnection;109;0;162;0
 WireConnection;109;1;110;0
 WireConnection;24;0;17;0
 WireConnection;24;1;163;0
+WireConnection;188;0;117;0
 WireConnection;188;1;119;0
 WireConnection;188;3;123;0
 WireConnection;188;4;124;0
 WireConnection;188;5;125;0
 ASEEND*/
-//CHKSM=BD6A8EC9ED3EDE26E31BFFF6A33C623E2C6B6E04
+//CHKSM=0E81BFF1506BF3B91B53DAA5B2A91B7B8C09C069
