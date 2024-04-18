@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
@@ -97,38 +96,6 @@ public class Sequence_DialogueBranch : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
 }
-
-public class Sequence_Animation : Sequence_Base
-{
-    [InfoBox("씬에서 게임오브젝트를 찾아 애니메이션 컴포넌트를 이용해 애니메이션 클립을 재생합니다.")]
-    public string objectName;
-    public AnimationClip animationClip;
-
-    public override IEnumerator Sequence(SequenceInvoker invoker)
-    {
-        GameObject target = GameObject.Find(objectName);
-        if(target != null)
-        {
-            Animation anim;
-            if(target.TryGetComponent<Animation>(out anim))
-            {
-                anim.clip = animationClip;
-                anim.Play();
-            }
-            else
-            {
-                Debug.LogWarning("(Sequence_Animation) 게임 오브젝트에 애니메이션 컴포넌트가 없습니다. : " + objectName);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("(Sequence_Animation) 게임 오브젝트를 찾을 수 없었습니다. : " + objectName);
-        }
-
-        yield return null;
-    }
-}
-
 
 /// <summary>
 /// 타임라인을 재생합니다.
@@ -285,31 +252,4 @@ public class Sequence_BranchByParameter : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(defaultSequence.SequenceBundles));
     }
 
-}
-
-
-[System.Serializable]
-public class Sequence_BranchByStorylineProgress : Sequence_Base
-{
-    [InfoBox("현재 진행중인 스토리라인의 키와 번호가 이곳에 입력한 키와 번호가 일치하면 특정 시퀀스에셋을 재생합니다.", InfoMessageType = InfoMessageType.None)]
-    public string Key;                      // 스토리라인 Key값
-    public int Index;                       // 스토리라인 번호값
-    public SequenceBundleAsset sequence;   // 만족시 재생할 시퀀스
-
-    public override IEnumerator Sequence(SequenceInvoker invoker)
-    {
-        StorylineManager stline = invoker.Storyline;
-
-        if (!stline.IsActiveStorylineExists) { Debug.Log("(Sequence_BranchByStorylineProgress) 진행중인 스토리라인 없음."); yield break; }
-        if (stline.ActiveStorylineKey == Key && stline.CurrentIndex == Index)
-        {
-            invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequence.SequenceBundles));
-            yield return null;
-        }
-        else
-        {
-            Debug.Log("(Sequence_BranchByStorylineProgress) 진행중인 스토리라인 : " + stline.ActiveStorylineKey + " " + stline.CurrentIndex + " 비교한 스토리라인 : " + Key + " " + Index);
-            yield break;
-        }
-    }
 }

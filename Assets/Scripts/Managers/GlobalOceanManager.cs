@@ -383,7 +383,6 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
-        job.gravities.Dispose();
 
         return result;
     }
@@ -424,7 +423,6 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
-        job.gravities.Dispose();
 
         return result;
     }
