@@ -1,22 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ElevatorCollider : MonoBehaviour
 {
-    Elevator elevator;
+ 
     // Start is called before the first frame update
+     Elevator elevator;
 
-    private void Awake() 
+
+   
+    private void Update() 
     {
-        elevator = GetComponent<Elevator>();
+        elevator = Elevator.instance;
     }
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.CompareTag("Player"))
+        if (elevator != null && elevator.GetElevatorType() == ElevatorType.Auto)
         {
-            elevator.Canmove = true;
+            if(other.gameObject.CompareTag("Player"))
+            {
+                elevator.Canmove = true;
+            }
         }
     }
 }

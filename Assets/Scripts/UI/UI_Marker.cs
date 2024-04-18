@@ -1,9 +1,10 @@
-using FMODUnity;
+using DG.Tweening;
 using Sirenix.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
 {
@@ -15,8 +16,6 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
     [SerializeField] private GameObject markerImage;
     [SerializeField] private TextMeshProUGUI distance;
 
-    [SerializeField] private Transform debug_testMarker;
-
     private RectTransform markerTransform;
 
     private bool isMarkerActive = false;
@@ -24,8 +23,14 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
 
     public void SetMarker(Transform target)
     {
-        markerAnchor.SetActive(true);
+        EnableMarker();
         markerTarget = target;
+    }
+
+    public void EnableMarker()
+    {
+        markerAnchor.SetActive(false);
+        markerAnchor.SetActive(true);
     }
 
     public void DisableMarker()
@@ -43,8 +48,6 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
     {
         outScreenMarkerImage.SetActive(false);
         markerAnchor.SetActive(false);
-
-        SetMarker(debug_testMarker);
     }
 
     private void Update()
@@ -61,11 +64,17 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
         Vector2 markerPosition = Vector2.zero;
 
 
-        if (TargetVisible(markerTarget.position))
+        if (IsTargetVisible(markerTarget.position))
         {
+            Image img = markerImage.GetComponent<Image>();
             outScreenMarkerImage.SetActive(false);
             markerImage.SetActive(true);
+            float alphaCalculation = 1-Vector3.Dot(Camera.main.transform.forward,(markerTarget.position - Camera.main.transform.position).normalized);
+            alphaCalculation = Mathf.Clamp01(Unity.Mathematics.math.remap(0f, 0.3f, 0f, 5.0f, alphaCalculation));
+            img.color = new Color(img.color.r, img.color.g, img.color.b, alphaCalculation);
             markerPosition = Camera.main.WorldToScreenPoint(markerTarget.position);
+            markerPosition = Vector2.Lerp(markerTransform.position, markerPosition, 0.4f);
+
         }
         else
         {
@@ -76,7 +85,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
             outScreenMarkerImage.transform.up = markerPosition-(new Vector2(Screen.width / 2f, Screen.height / 2f));
 
             markerPosition = markerPosition.Clamp(new Vector2(0 + outScreenPadding, +0f + outScreenPadding), new Vector2(Screen.width - outScreenPadding, Screen.height - outScreenPadding));
-
+            markerPosition = Vector2.Lerp(markerTransform.position, markerPosition,0.4f);
 
 
         }
@@ -84,7 +93,7 @@ public class UI_Marker : StaticSerializedMonoBehaviour<UI_Marker>
         markerTransform.position = markerPosition;
     }
 
-    private bool TargetVisible(Vector3 worldPos)
+    private bool IsTargetVisible(Vector3 worldPos)
     {
         Vector3 point = Camera.main.WorldToViewportPoint(worldPos);
 

@@ -93,7 +93,7 @@ Transform:
   - {fileID: 8498663940401250673}
   - {fileID: 5469309674652115810}
   - {fileID: 2133899150875136363}
-  - {fileID: 7922194865658601345}
+  - {fileID: 5153891880802920984}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5112255907539919439
@@ -260,25 +260,29 @@ MonoBehaviour:
   debug_static_objcect: GlobalOceanManager
   ReferencingMaterials:
   - {fileID: 2100000, guid: fe7eed72c9481bb4cb2301770721d4b4, type: 2}
-  defaultOceanProfile: {fileID: 11400000, guid: f746c12690da5284780d1d9562e9ba2e,
+  defaultOceanProfile: {fileID: 11400000, guid: 43267430f48d58b44b51281579537125,
     type: 2}
   islandregionIntensityFactor: 1
   rotation: 0
   depth: 50
   phase: 0
-  gravity: 0.2
-  oceanEmmision: {r: 0, g: 0.40392157, b: 1, a: 1}
-  oceanTipEmmision: {r: 0, g: 0.6999998, b: 1, a: 0}
+  gravity: 0.8
+  oceanEmmision: {r: 0, g: 0.23026323, b: 0.6603774, a: 1}
+  oceanTipEmmision: {r: 0, g: 0.7088351, b: 1, a: 0}
   intensity: 1
   Wave1_Vector: {x: 0.5, y: 0, z: 0.1}
   Wave1_Amplitude: 1
+  Wave1_Gravity: 0
   Wave2_Vector: {x: 0, y: 0, z: 0.3}
   Wave2_Amplitude: 0.2
+  Wave2_Gravity: 0
   Wave3_Vector: {x: 0.3, y: 0, z: 0}
   Wave3_Amplitude: 0.2
+  Wave3_Gravity: 0
   Wave4_Vector: {x: 0.01, y: 0, z: 0.01}
   Wave4_Amplitude: 0
---- !u!1 &7337313917232735869
+  Wave4_Gravity: 0
+--- !u!1 &6624214450781807373
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -286,22 +290,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7922194865658601345}
-  - component: {fileID: 3506284878018688120}
+  - component: {fileID: 5153891880802920984}
+  - component: {fileID: 6494712199531698583}
   m_Layer: 0
-  m_Name: StorylineInvoker
+  m_Name: StorylineManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7922194865658601345
+--- !u!4 &5153891880802920984
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7337313917232735869}
+  m_GameObject: {fileID: 6624214450781807373}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -310,16 +314,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5357016282118697668}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3506284878018688120
+--- !u!114 &6494712199531698583
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7337313917232735869}
+  m_GameObject: {fileID: 6624214450781807373}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff74a85d6585794aafe8fc899cf9adb, type: 3}
+  m_Script: {fileID: 11500000, guid: 306448448ef26674c90a08df51daea18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
@@ -332,6 +336,19 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   debug_static_objcect: 
+  storylineStashAsset: {fileID: 11400000, guid: 51f103a256492974884f2d75342ab78c,
+    type: 2}
+  sound_questUpdate:
+    Guid:
+      Data1: 433720588
+      Data2: 1257189384
+      Data3: -1535233899
+      Data4: -129268931
+    Path: event:/UI/QuestUpdated
+  InvokeDefaultOnStart: 1
+  defaultStorylineID: EXAMPLE
+  debug_active_storyline: 
+  debug_objective_index: 0
 --- !u!1 &8299926666524005979
 GameObject:
   m_ObjectHideFlags: 0

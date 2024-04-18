@@ -49,16 +49,20 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     [SerializeField, ReadOnly] private float intensity;
     [Title("")]
     [SerializeField, ReadOnly] private Vector3 Wave1_Vector;
-    [SerializeField, ReadOnly] private float Wave1_Amplitude;                
+    [SerializeField, ReadOnly] private float Wave1_Amplitude;
+    [SerializeField, ReadOnly] private float Wave1_Gravity;
     [Title("")]
     [SerializeField, ReadOnly] private Vector3 Wave2_Vector;
     [SerializeField, ReadOnly] private float Wave2_Amplitude;
+    [SerializeField, ReadOnly] private float Wave2_Gravity;
     [Title("")]
     [SerializeField, ReadOnly] private Vector3 Wave3_Vector;
     [SerializeField, ReadOnly] private float Wave3_Amplitude;
+    [SerializeField, ReadOnly] private float Wave3_Gravity;
     [Title("")]
     [SerializeField, ReadOnly] private Vector3 Wave4_Vector;
     [SerializeField, ReadOnly] private float Wave4_Amplitude;
+    [SerializeField, ReadOnly] private float Wave4_Gravity;
 
     private struct WavePositionJob : IJob
     {
@@ -74,10 +78,11 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
         public NativeArray<Vector3> waveVectors;
         public NativeArray<float> waveAmplitudes;
+        public NativeArray<float> gravities;
 
-        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude)
+        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude, float localGravity)
         {
-            float freq = Mathf.Sqrt(gravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
+            float freq = Mathf.Sqrt(gravity * localGravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
             float theta = (direction.x * position.x + direction.z * position.z) - freq * time - phase;
 
             float x = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.x / direction.magnitude * Mathf.Sin(theta));
@@ -96,7 +101,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             for (int i = 0; i < waveVectors.Length; i++)
             {
                 Vector3 rotatedVector = Quaternion.AngleAxis(rotation, Vector3.up) * waveVectors[i];
-                result += SingleGerstnerWavePosition(input, rotatedVector, waveAmplitudes[i]);
+                result += SingleGerstnerWavePosition(input, rotatedVector, waveAmplitudes[i], gravities[i]);
             }
 
             output[0] = result;
@@ -118,10 +123,11 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
         public NativeArray<Vector3> waveVectors;
         public NativeArray<float> waveAmplitudes;
+        public NativeArray<float> gravities;
 
-        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude, bool calculateY = true)
+        private Vector3 SingleGerstnerWavePosition(Vector3 position, Vector3 direction, float amplitude, float localGravity ,bool calculateY = true)
         {
-            float freq = Mathf.Sqrt(gravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
+            float freq = Mathf.Sqrt(gravity * localGravity * direction.magnitude * (float)(System.Math.Tanh(depth * direction.magnitude)));
             float theta = (direction.x * position.x + direction.z * position.z) - freq * time - phase;
 
             float x = -(amplitude * intensity / ((float)(System.Math.Tanh(direction.magnitude * depth))) * direction.x / direction.magnitude * Mathf.Sin(theta));
@@ -141,7 +147,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             for (int i = 0; i < waveVectors.Length; i++)
             {
                 Vector3 rotatedVector = Quaternion.AngleAxis(rotation, Vector3.up) * waveVectors[i];
-                result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i],calculateY);
+                result += SingleGerstnerWavePosition(input, waveVectors[i], waveAmplitudes[i], gravities[i],calculateY);
             }
 
             return result;
@@ -186,30 +192,18 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             m.SetFloat("_Gravity",gravity);
             m.SetVector("_Direction1",Wave1_Vector);
             m.SetFloat("_Amplitude1",Wave1_Amplitude);
+            m.SetFloat("_Gravity1", Wave1_Gravity);
             m.SetVector("_Direction2",Wave2_Vector);
             m.SetFloat("_Amplitude2",Wave2_Amplitude);
+            m.SetFloat("_Gravity2", Wave2_Gravity);
             m.SetVector("_Direction3",Wave3_Vector);
             m.SetFloat("_Amplitude3",Wave3_Amplitude);
+            m.SetFloat("_Gravity3", Wave3_Gravity);
             m.SetVector("_Direction4",Wave4_Vector);
             m.SetFloat("_Amplitude4",Wave4_Amplitude);
+            m.SetFloat("_Gravity4", Wave4_Gravity);
         }    
     }
-
-    //private OceanProfile InterpolateOceanProfiles(OceanProfile from, OceanProfile to, float t)
-    //{
-    //    Debug.Log("FROM IS NULL : " + (from == null) + ", TO IS NULL : " + (to == null));
-    //    OceanProfile result = ScriptableObject.CreateInstance<OceanProfile>();
-
-    //    result.InitilzeOceanProfile(
-    //        Color.Lerp(from.OceanColor, to.OceanColor, t), Mathf.Lerp(from.OceanIntensity, to.OceanIntensity, t),
-    //        Vector3.Lerp(from.Waveform1.vector, to.Waveform1.vector, t), Mathf.Lerp(from.Waveform1.amplitude, to.Waveform1.amplitude, t),
-    //        Vector3.Lerp(from.Waveform2.vector, to.Waveform2.vector, t), Mathf.Lerp(from.Waveform2.amplitude, to.Waveform2.amplitude, t),
-    //        Vector3.Lerp(from.Waveform3.vector, to.Waveform3.vector, t), Mathf.Lerp(from.Waveform3.amplitude, to.Waveform3.amplitude, t),
-    //        Vector3.Lerp(from.Waveform4.vector, to.Waveform4.vector, t), Mathf.Lerp(from.Waveform4.amplitude, to.Waveform4.amplitude, t)
-    //        );
-
-    //    return result;
-    //}
 
     /// <summary>
     /// 바다 상태를 즉시 바꿉니다.
@@ -230,15 +224,19 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
         Wave1_Vector = oceanProfile.Waveform1.vector;
         Wave1_Amplitude = oceanProfile.Waveform1.amplitude;
+        Wave1_Gravity = oceanProfile.Waveform1.gravity;
 
         Wave2_Vector = oceanProfile.Waveform2.vector;
         Wave2_Amplitude = oceanProfile.Waveform2.amplitude;
+        Wave2_Gravity = oceanProfile.Waveform2.gravity;
 
         Wave3_Vector = oceanProfile.Waveform3.vector;
         Wave3_Amplitude = oceanProfile.Waveform3.amplitude;
+        Wave3_Gravity = oceanProfile.Waveform3.gravity;
 
         Wave4_Vector = oceanProfile.Waveform4.vector;
         Wave4_Amplitude = oceanProfile.Waveform4.amplitude;
+        Wave4_Gravity = oceanProfile.Waveform4.gravity;
 
         UpdateReferencingMaterials();
     }
@@ -327,15 +325,19 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
             Wave1_Vector = Vector3.Lerp(opro_origin.Waveform1.vector, to.Waveform1.vector, evaluated);
             Wave1_Amplitude = Mathf.Lerp(opro_origin.Waveform1.amplitude, to.Waveform1.amplitude, evaluated);
+            Wave1_Gravity = Mathf.Lerp(opro_origin.Waveform1.gravity, to.Waveform1.gravity, evaluated);
 
             Wave2_Vector = Vector3.Lerp(opro_origin.Waveform2.vector, to.Waveform2.vector, evaluated);
             Wave2_Amplitude = Mathf.Lerp(opro_origin.Waveform2.amplitude, to.Waveform2.amplitude, evaluated);
+            Wave2_Gravity = Mathf.Lerp(opro_origin.Waveform2.gravity, to.Waveform2.gravity, evaluated);
 
             Wave3_Vector = Vector3.Lerp(opro_origin.Waveform3.vector, to.Waveform3.vector, evaluated);
             Wave3_Amplitude = Mathf.Lerp(opro_origin.Waveform3.amplitude, to.Waveform3.amplitude, evaluated);
+            Wave3_Gravity = Mathf.Lerp(opro_origin.Waveform3.gravity, to.Waveform3.gravity, evaluated);
 
             Wave4_Vector = Vector3.Lerp(opro_origin.Waveform4.vector, to.Waveform4.vector, evaluated);
             Wave4_Amplitude = Mathf.Lerp(opro_origin.Waveform4.amplitude, to.Waveform4.amplitude, evaluated);
+            Wave4_Gravity = Mathf.Lerp(opro_origin.Waveform4.gravity, to.Waveform4.gravity, evaluated);
 
             UpdateReferencingMaterials();
             yield return null;
@@ -355,6 +357,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     {
         Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
         float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
+        float[] gravs = new float[] { Wave1_Gravity, Wave2_Gravity, Wave3_Gravity, Wave4_Gravity };
 
         WavePositionJob job = new WavePositionJob()
         {
@@ -369,6 +372,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
             waveVectors = new NativeArray<Vector3>(vecs, Allocator.Persistent),
             waveAmplitudes = new NativeArray<float>(amps, Allocator.Persistent),
+            gravities = new NativeArray<float>(gravs, Allocator.Persistent)
         };
 
         JobHandle handle = job.Schedule();
@@ -379,6 +383,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
+        job.gravities.Dispose();
 
         return result;
     }
@@ -392,6 +397,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     {
         Vector3[] vecs = new Vector3[] { Wave1_Vector, Wave2_Vector, Wave3_Vector, Wave4_Vector };
         float[] amps = new float[] { Wave1_Amplitude, Wave2_Amplitude, Wave3_Amplitude, Wave4_Amplitude };
+        float[] gravs = new float[] { Wave1_Gravity, Wave2_Gravity, Wave3_Gravity, Wave4_Gravity };
 
         WaveHeightJob job = new WaveHeightJob()
         {
@@ -406,6 +412,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 
             waveVectors = new NativeArray<Vector3>(vecs, Allocator.TempJob),
             waveAmplitudes = new NativeArray<float>(amps, Allocator.TempJob),
+            gravities = new NativeArray<float>(gravs, Allocator.TempJob)
         };
 
 
@@ -417,6 +424,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         job.output.Dispose();
         job.waveVectors.Dispose();
         job.waveAmplitudes.Dispose();
+        job.gravities.Dispose();
 
         return result;
     }
