@@ -22,7 +22,7 @@ public class ElevatorCollider : MonoBehaviour
         {
             if(other.gameObject.CompareTag("Player"))
             {
-            elevator.Canmove = true;
+                elevator.Canmove = true;
             }
         }
     }
