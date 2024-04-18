@@ -80,6 +80,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, ReadOnly] private Vector3 groundNormal = Vector3.up;           // 디버그 : 바닥 법선
 
     [Title("SailboatProperties")]
+    [SerializeField] private float sailboatSteering = 1.0f;                         // 조각배 기본 조향력
     [SerializeField] private float sailboatByouancy = 1.0f;                         // 조각배 기본 부력
     [SerializeField] private float sailboatGravity = 1.0f;                          // 조각배 중력
     [SerializeField] private float sailboatAccelerationForce = 50f;                 // 조각배 가속력
@@ -88,9 +89,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float sailboatNearsurfBoost = 1.2f;                    // 조각배 저공비행 추가속도
     [SerializeField] private float sailboatFullDrag = 10.0f;                        // 조각배 완전 침수시 마찰력
     [SerializeField] private float sailboatScratchDrag = 1.0f;                      // 조각배 살짝 침수시 마찰력
-    [SerializeField] private float sailboatMinimumDrag = 0.0f;                      // 조각배 최소 마찰력
+    [SerializeField] private float sailboatGlidingDrag = 0.0f;                      // 조각배 최소 마찰력
     [SerializeField] private float sailboatVerticalControl = 10.0f;                 // 조각배 상하컨트롤 추가 힘
     [SerializeField] private float sailboatGliding = 1.0f;                          // 조각배 활공력
+    [SerializeField] private float sailboatAutoOffTime = 3.0f;                      // 조각배 자동 해제 시간
     [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
@@ -245,6 +247,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    public float FinalSailboatSteereing
+    {
+        get
+        {
+            float agg = sailboatSteering * permernentAttribute.SailboatGliding;
+            foreach (var a in timeAttrs) { agg += a.attribute.SailboatGliding; }
+            foreach (var a in IDAttrs) { agg *= a.attribute.SailboatGliding; }
+            return agg;
+        }
+    }
 
     /// <summary>
     /// 영구적인 플레이어 속성을 적용합니다.
@@ -655,8 +667,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// </summary>
     protected class Movement_Sailboat : MovementState
     {
+
+        Vector3 directionCache;
+        float GustAmount = 0.0f;
+        bool enterFlag = false;
+
         public override void OnMovementEnter(PlayerCore player)
         {
+            directionCache = player.transform.forward;
             base.OnMovementEnter(player);
             player.sailboat.gameObject.SetActive(true);
             player.sailboatFootRig.weight = 1.0f;
@@ -665,11 +683,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.animator.SetBool("Boarding", true);
             player.animator.SetTrigger("BoardingEnter");
             player.animator.SetFloat("BoardBlend", 0.0f);
+            UI_SailboatSkillInfo.Instance.ToggleInfo(true);
         }
 
-        Vector3 directionCache = Vector3.forward;
-        float GustAmount = 0.0f;
-        bool enterFlag = false;
+        private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
+        {
+            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSailboatSteereing, 0f, input.y);
+            lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up).normalized;
+            return lookTransformedVector;
+        }
 
         public override void OnFixedUpdate(PlayerCore player)
         {
@@ -678,28 +700,28 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             SailboatBehavior sailboat = player.sailboat;
             GustAmount = Mathf.InverseLerp(player.gustStartVelocity, player.gustMaxVelocity, Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude);
 
-            float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f ? player.sailboatNearsurfBoost : 1.0f;
+            float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.5f ? player.sailboatNearsurfBoost : 1.0f;
 
-            if (player.sailboat.SubmergeRate < -0.5f)
+            if (player.sailboat.SubmergeRate < -1.5f)
             {
                 player.rBody.drag = player.sailboatFullDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f)/3f * player.sailboatByouancy, ForceMode.Acceleration);
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                    Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce);
                 }
             }
-            else if (player.sailboat.SubmergeRate < 0.01f)
+            else if (player.sailboat.SubmergeRate < 0.5f)
             {
                 player.rBody.drag = player.sailboatScratchDrag;
-                player.rBody.AddForce(Vector3.up * -sailboat.SubmergeRate * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
+                    Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
                     player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce * ns_boost, ForceMode.Acceleration);
                 }
 
@@ -720,11 +742,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (!player.Grounding)
                 {
-                    player.rBody.drag = player.sailboatMinimumDrag;
+                    player.rBody.drag = player.sailboatGlidingDrag;
                     if (player.input.Player.Move.IsPressed())
                     {
-                        Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                        player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce * ns_boost, ForceMode.Acceleration);
+                        Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                        player.rBody.AddForce(lookTransformedVector * player.sailboatAccelerationForce, ForceMode.Acceleration);
                     }
                 }
 
@@ -821,6 +843,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
+            UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+
 
             var em = player.sailingSwooshEffect.emission;
             em.rateOverTimeMultiplier = 0f;
@@ -959,6 +983,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
+        if(CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
     }
 
 /// <summary>
@@ -969,6 +994,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         input.Player.Enable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
+        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
     }
 
 /// <summary>
@@ -1071,6 +1097,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         EnableForSequence();
     }
 
+    float boatGroundingTimer = 0f;
+
     /// <summary>
     /// 충돌감지
     /// </summary>
@@ -1088,6 +1116,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 StartCoroutine(ReefCrash());
             }
 
+        }
+
+        if(((1 << collision.collider.gameObject.layer) | groundIgnore) == 0)
+        {
+            boatGroundingTimer = sailboatAutoOffTime;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+
+        if (((1 << collision.collider.gameObject.layer) | groundIgnore) == 0)
+        {
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
+            {
+                boatGroundingTimer -= sailboatAutoOffTime;
+                if(boatGroundingTimer < 0)
+                {
+                    CurrentMovement = new Movement_Ground();
+                }
+            }
         }
     }
 }
