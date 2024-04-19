@@ -4,6 +4,7 @@ using UnityEngine;
 public class DropItemCrash : MonoBehaviour
 {
     [SerializeField] private GameObject DropItem;
+    [SerializeField] private MeshRenderer DropItemRenderer;
     [SerializeField] private PlayerCore player;
     [SerializeField] private float addChallengeTime = 0f;                                  // 순풍의 도전 추가시간
     [SerializeField] private float addMoveSpeed = 0f;                               // 추가이동 속도
@@ -23,7 +24,6 @@ public class DropItemCrash : MonoBehaviour
 
     void Update()
     {
-        
     }
 
     /// <summary>
@@ -33,25 +33,27 @@ public class DropItemCrash : MonoBehaviour
     IEnumerator CrashEvent()
     {
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
-
         FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
-
+        DropItemRenderer.enabled = !DropItemRenderer.enabled;
         yield return new WaitForSeconds(addSpeedTime);
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
+        DropItem.SetActive(false);
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
         //Debug.Log("아이템 충돌");
         if (other.tag == "Player")
-        {
+        {      
             //Debug.Log("아이템 충돌2");
             if (itemActive == true)
             {
+                
                 StartCoroutine(CrashEvent());
                 itemActive = false;
             }
-            Destroy(DropItem);
+            
         }
     }
 
