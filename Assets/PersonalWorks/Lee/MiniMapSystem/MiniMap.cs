@@ -140,7 +140,7 @@ namespace MapScripts
     {
         #region Map Data
         // 맵 데이터 조정 클래스
-        public static GameMapData Datainstance;
+        public static GameMapData DataInstance;
         public Transform sceneMax;
         public Vector3 sceneMaxV3;
         public Transform sceneMin;
@@ -171,12 +171,12 @@ namespace MapScripts
 
         public static GameMapData GetInstance()
         {
-            if (Datainstance == null)
+            if (DataInstance == null)
             {
-                Datainstance = new GameMapData();
+                DataInstance = new GameMapData();
             }
 
-            return Datainstance;
+            return DataInstance;
         }
         
 
