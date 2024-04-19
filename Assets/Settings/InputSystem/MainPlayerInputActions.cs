@@ -46,15 +46,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Fire"",
-                    ""type"": ""Button"",
-                    ""id"": ""07106bd5-dcda-4357-91ae-c4b7c8ef0092"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Jump"",
                     ""type"": ""Value"",
                     ""id"": ""6f4449a7-a0c0-4494-8a10-d908a9256938"",
@@ -112,6 +103,24 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""OpenPlaymenu"",
                     ""type"": ""Button"",
                     ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SailboatBooster"",
+                    ""type"": ""Button"",
+                    ""id"": ""07106bd5-dcda-4357-91ae-c4b7c8ef0092"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SailboatLeapup"",
+                    ""type"": ""Button"",
+                    ""id"": ""30d3e30c-ff5f-4ce7-827e-a0dad87cb4de"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -275,39 +284,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""143bb1cd-cc10-4eca-a2f0-a3664166fe91"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""05f6913d-c316-48b2-a6bb-e225f14c7960"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ee3d0cd2-254e-47a7-a8cb-bc94d9658c54"",
-                    ""path"": ""<Joystick>/trigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ed97d573-5df9-4764-86c1-4a17acdea1fb"",
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
@@ -380,6 +356,28 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e35a4b3-6605-4032-b301-08f1be4b3b60"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatLeapup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05f6913d-c316-48b2-a6bb-e225f14c7960"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatBooster"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -987,7 +985,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
@@ -995,6 +992,8 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_SailboatForward = m_Player.FindAction("SailboatForward", throwIfNotFound: true);
         m_Player_SailboatBackward = m_Player.FindAction("SailboatBackward", throwIfNotFound: true);
         m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
+        m_Player_SailboatBooster = m_Player.FindAction("SailboatBooster", throwIfNotFound: true);
+        m_Player_SailboatLeapup = m_Player.FindAction("SailboatLeapup", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1072,7 +1071,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Sprint;
@@ -1080,13 +1078,14 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_SailboatForward;
     private readonly InputAction m_Player_SailboatBackward;
     private readonly InputAction m_Player_OpenPlaymenu;
+    private readonly InputAction m_Player_SailboatBooster;
+    private readonly InputAction m_Player_SailboatLeapup;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
         public PlayerActions(@MainPlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
@@ -1094,6 +1093,8 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @SailboatForward => m_Wrapper.m_Player_SailboatForward;
         public InputAction @SailboatBackward => m_Wrapper.m_Player_SailboatBackward;
         public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
+        public InputAction @SailboatBooster => m_Wrapper.m_Player_SailboatBooster;
+        public InputAction @SailboatLeapup => m_Wrapper.m_Player_SailboatLeapup;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1109,9 +1110,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Fire.started += instance.OnFire;
-            @Fire.performed += instance.OnFire;
-            @Fire.canceled += instance.OnFire;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
@@ -1133,6 +1131,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @OpenPlaymenu.started += instance.OnOpenPlaymenu;
             @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
             @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
+            @SailboatBooster.started += instance.OnSailboatBooster;
+            @SailboatBooster.performed += instance.OnSailboatBooster;
+            @SailboatBooster.canceled += instance.OnSailboatBooster;
+            @SailboatLeapup.started += instance.OnSailboatLeapup;
+            @SailboatLeapup.performed += instance.OnSailboatLeapup;
+            @SailboatLeapup.canceled += instance.OnSailboatLeapup;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1143,9 +1147,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Fire.started -= instance.OnFire;
-            @Fire.performed -= instance.OnFire;
-            @Fire.canceled -= instance.OnFire;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
@@ -1167,6 +1168,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
             @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
             @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
+            @SailboatBooster.started -= instance.OnSailboatBooster;
+            @SailboatBooster.performed -= instance.OnSailboatBooster;
+            @SailboatBooster.canceled -= instance.OnSailboatBooster;
+            @SailboatLeapup.started -= instance.OnSailboatLeapup;
+            @SailboatLeapup.performed -= instance.OnSailboatLeapup;
+            @SailboatLeapup.canceled -= instance.OnSailboatLeapup;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1367,7 +1374,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnFire(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
@@ -1375,6 +1381,8 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnSailboatForward(InputAction.CallbackContext context);
         void OnSailboatBackward(InputAction.CallbackContext context);
         void OnOpenPlaymenu(InputAction.CallbackContext context);
+        void OnSailboatBooster(InputAction.CallbackContext context);
+        void OnSailboatLeapup(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

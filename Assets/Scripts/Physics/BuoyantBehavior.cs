@@ -53,52 +53,7 @@ public class BuoyantBehavior : MonoBehaviour
     private void FixedUpdate()
     {
         waterDetected = false;
-        //if (floatingPoint.Length > 0)
-        //{
-        //    if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide) ||
-        //        Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide))
-        //    {
-        //        Debug.Log("WaterLayermask detected");
 
-        //        RaycastHit upNearest = new RaycastHit();
-        //        RaycastHit downNearest = new RaycastHit();
-
-        //        upNearest.distance = float.PositiveInfinity;
-        //        downNearest.distance = float.PositiveInfinity;
-
-        //        RaycastHit[] upHits, downHits;
-
-        //        upHits = Physics.RaycastAll(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask,QueryTriggerInteraction.Collide);
-        //        downHits = Physics.RaycastAll(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask, QueryTriggerInteraction.Collide);
-
-        //        if ((upHits != null || upHits.Length > 0) && (downHits != null || downHits.Length > 0))
-        //        {
-        //            for(int i = 0; i < upHits.Length; i++)
-        //            {
-        //                if(upNearest.distance > upHits[i].distance)
-        //                {
-        //                    upNearest = upHits[i];
-        //                }
-        //            }
-        //            for(int i = 0;i < downHits.Length; i++)
-        //            {
-        //                if(downNearest.distance > downHits[i].distance)
-        //                {
-        //                    downNearest = downHits[i];
-        //                }
-        //            }
-
-        //            if( Vector3.Dot(upNearest.normal,downNearest.normal) > 0)
-        //            {
-        //                waterDetected = true;
-        //                submergeRate = Mathf.Clamp01(upNearest.distance);
-        //                Debug.Log("WATER DETECTED");
-        //            }
-        //        }
-        //        else
-        //            waterDetected = false;
-
-        //    }
         if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
