@@ -65,6 +65,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     public void OpenPlaymenu(PlaymenuElement playmenu = PlaymenuElement.Inventory)
     {
         visualGroup.SetActive(true);
+        CursorLocker.Instance.DisableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.DisableForSequence(); }
@@ -89,6 +90,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     public void ClosePlaymenu()
     {
         visualGroup.SetActive(false);
+        CursorLocker.Instance.EnableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.EnableForSequence(); }

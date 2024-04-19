@@ -58,6 +58,61 @@ MonoBehaviour:
       Data: 
   debug_static_objcect: 
   money: 0
+--- !u!1 &1854832126883220474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1527392707313168767}
+  - component: {fileID: 6006377178273211698}
+  m_Layer: 0
+  m_Name: Speedline
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1527392707313168767
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854832126883220474}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5357016282118697668}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6006377178273211698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854832126883220474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb66436abda0cf448611894e3e1971b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  debug_static_objcect: 
+  speedLineMaterial: {fileID: 2100000, guid: 5f20e4983dc62a64cbf4f879cd49d23f, type: 2}
 --- !u!1 &3256007357495940006
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,6 +149,7 @@ Transform:
   - {fileID: 5469309674652115810}
   - {fileID: 2133899150875136363}
   - {fileID: 5153891880802920984}
+  - {fileID: 1527392707313168767}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5112255907539919439
@@ -260,7 +316,7 @@ MonoBehaviour:
   debug_static_objcect: GlobalOceanManager
   ReferencingMaterials:
   - {fileID: 2100000, guid: fe7eed72c9481bb4cb2301770721d4b4, type: 2}
-  defaultOceanProfile: {fileID: 11400000, guid: 43267430f48d58b44b51281579537125,
+  defaultOceanProfile: {fileID: 11400000, guid: f746c12690da5284780d1d9562e9ba2e,
     type: 2}
   islandregionIntensityFactor: 1
   rotation: 0
@@ -270,18 +326,18 @@ MonoBehaviour:
   oceanEmmision: {r: 0, g: 0.23026323, b: 0.6603774, a: 1}
   oceanTipEmmision: {r: 0, g: 0.7088351, b: 1, a: 0}
   intensity: 1
-  Wave1_Vector: {x: 0.5, y: 0, z: 0.1}
+  Wave1_Vector: {x: 0.2, y: 0, z: 0.1}
   Wave1_Amplitude: 1
-  Wave1_Gravity: 0
-  Wave2_Vector: {x: 0, y: 0, z: 0.3}
+  Wave1_Gravity: 1
+  Wave2_Vector: {x: 0.3, y: 0, z: -0.01}
   Wave2_Amplitude: 0.2
-  Wave2_Gravity: 0
-  Wave3_Vector: {x: 0.3, y: 0, z: 0}
-  Wave3_Amplitude: 0.2
-  Wave3_Gravity: 0
+  Wave2_Gravity: 1
+  Wave3_Vector: {x: 0.4, y: 0, z: 0}
+  Wave3_Amplitude: 0.21
+  Wave3_Gravity: 1
   Wave4_Vector: {x: 0.01, y: 0, z: 0.01}
   Wave4_Amplitude: 0
-  Wave4_Gravity: 0
+  Wave4_Gravity: 1
 --- !u!1 &6624214450781807373
 GameObject:
   m_ObjectHideFlags: 0

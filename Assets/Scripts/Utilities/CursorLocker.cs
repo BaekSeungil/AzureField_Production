@@ -17,6 +17,8 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
 
     private MainPlayerInputActions input;
 
+    private int duplicateStack = 0;
+
     protected override void Awake()
     {
         base.Awake();
@@ -44,6 +46,11 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
 
     public void EnableFreelook()
     {
+        if(duplicateStack != 0)
+        {
+            duplicateStack--; return;
+        }
+
         cursorState = CursorMode.Freelook;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -51,6 +58,11 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
 
     public void DisableFreelook()
     {
+        if(cursorState == CursorMode.CursorVisible)
+        {
+            duplicateStack++;
+        }
+
         cursorState = CursorMode.CursorVisible;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
