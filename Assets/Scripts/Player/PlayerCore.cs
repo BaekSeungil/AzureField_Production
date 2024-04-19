@@ -59,6 +59,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float boosterMult = 2.0f;
     [SerializeField] private float boosterDuration = 1.0f;
     [SerializeField] private float boosterCooldown = 1.0f;
+    [SerializeField] private float leapupPower = 10f;
+    [SerializeField] private float leapupCooldown = 1.0f;
 
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
@@ -81,6 +83,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #pragma warning restore CS0414
 #endif
 
+    #region ChildReferences
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Animator animator;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform RCO_foot;
@@ -101,6 +104,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
+    #endregion
+
 
     #endregion
 
@@ -131,6 +136,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     int layerIndex_Swim;
     int layerIndex_Boarding;
+
+    float boosterTimer;
+    float boosterCooldownTimer;
+    float leapupTime;
+    float leapupCooldownTimer;
+
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -467,6 +478,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (Vector3.Distance(transform.position, interestPoint.position) > interestDistance)
                 interestPoint = null;
         }
+
+        //이전 프레임의 플레이어 속도
+        Vector3 currentVelocity = rBody.velocity;
+
+        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
+        Vector3 velocityChange = currentVelocity - previousVelocity;
+
+        // 1프레임 전의 속도를 출력합니다.
+        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
+
+        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
+        previousVelocity = currentVelocity;
     }
 
     private void Update()
@@ -517,9 +540,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         // animation & audio controls
         if (CurrentMovement.GetType() == typeof(Movement_Swimming))
-            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 1.0f, 0.2f));
+            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 1.0f, Time.deltaTime * 20f * 0.2f));
         else
-            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 0.0f, 0.2f));
+            animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 0.0f, Time.deltaTime * 20f * 0.2f));
 
         if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
             animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 1.0f, 0.2f));
@@ -572,17 +595,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
 #endif
 
-        //이전 프레임의 플레이어 속도
-        Vector3 currentVelocity = rBody.velocity;
 
-        // 이전 프레임과 현재 프레임의 속도를 비교하여 속도의 변화를 확인합니다.
-        Vector3 velocityChange = currentVelocity - previousVelocity;
-
-        // 1프레임 전의 속도를 출력합니다.
-        //Debug.Log("1프레임 전의 속도: " + previousVelocity.magnitude);
-
-        // 현재 프레임의 속도를 이전 프레임의 속도로 업데이트합니다.
-        previousVelocity = currentVelocity;
 
     }
 
