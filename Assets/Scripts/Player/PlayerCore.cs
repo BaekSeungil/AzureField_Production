@@ -142,6 +142,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     bool boosterActive = false;
 
+    //플레이어 상태 참고용 변수
+    public string movementStateRefernce;
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -665,6 +667,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// </summary>
     protected class Movement_Ground : MovementState
     {
+        public override void OnMovementEnter(PlayerCore player)
+        {
+            player.movementStateRefernce = "Ground";
+        }
+
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
@@ -734,9 +741,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-/// <summary>
-/// 플레이어가 수영중인 상황일 때
-/// </summary>
+    /// <summary>
+    /// 플레이어가 수영중인 상황일 때
+    /// </summary>
     protected class Movement_Swimming : MovementState
     {
         public override void OnMovementEnter(PlayerCore player)
@@ -745,6 +752,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             base.OnMovementEnter(player);
             player.animator.SetBool("Swimming", true);
             player.animator.SetTrigger("SwimmingEnter");
+            player.movementStateRefernce = "Swimming";
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -808,6 +816,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.animator.SetTrigger("BoardingEnter");
             player.animator.SetFloat("BoardBlend", 0.0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+            player.movementStateRefernce = "Sailboat";
         }
 
         private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
