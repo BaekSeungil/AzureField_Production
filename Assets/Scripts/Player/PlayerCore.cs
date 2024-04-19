@@ -55,6 +55,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
     [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
 
+    [Title("SailboatSkills")]
+    [SerializeField] private float boosterMult = 2.0f;
+    [SerializeField] private float boosterDuration = 1.0f;
+    [SerializeField] private float boosterCooldown = 1.0f;
+
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
 
@@ -775,8 +780,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
         {
-            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-            lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up).normalized;
+            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+            lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
 
@@ -840,7 +845,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, 0f, 1f) * player.sailboatGravity, ForceMode.Acceleration);
             }
 
-            if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 2.0f)
+            if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 5.0f)
             {
                 Vector3 euler = player.sailboasModelPivot.localRotation.eulerAngles;
 
@@ -849,7 +854,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl);
 
                     player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
-                    Quaternion.Euler(-10f, euler.y, euler.z), 0.05f);
+                    Quaternion.Euler(-35f, euler.y, euler.z), 0.05f);
                 }
                 else if (player.input.Player.SailboatBackward.IsPressed())
                 {
@@ -870,7 +875,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 {
                     sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
                         Quaternion.LookRotation(player.rBody.velocity, sailboat.SurfacePlane.normal),
-                        0.4f);
+                        0.1f);
 
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
@@ -879,13 +884,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                     directionCache = Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up);
                 }
+                else
+                {
+                    sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
+                }
             }
             else
             {
-                sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
-                    Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal),
-                    0.4f);
+                //sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
+                //    Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal),
+                //    0.4f);
+
+                sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
+
 
             if( sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
             {

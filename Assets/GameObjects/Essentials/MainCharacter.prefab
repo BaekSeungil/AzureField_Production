@@ -558,17 +558,20 @@ MonoBehaviour:
   sailboatByouancy: 100
   sailboatGravity: 20
   sailboatAccelerationForce: 20
-  sailboatSlopeInfluenceForce: 20
+  sailboatSlopeInfluenceForce: 10
   sailboatNearsurf: 2
   sailboatNearsurfBoost: 1.5
   sailboatFullDrag: 5
-  sailboatScratchDrag: 1
+  sailboatScratchDrag: 1.3
   sailboatGlidingDrag: 1.3
   sailboatVerticalControl: 10
   sailboatGliding: 1
   sailboatAutoOffTime: 3
   gustStartVelocity: 10
   gustMaxVelocity: 20
+  boosterMult: 2
+  boosterDuration: 1
+  boosterCooldown: 1
   sound_splash:
     Guid:
       Data1: 213218266
@@ -587,7 +590,7 @@ MonoBehaviour:
   buoyant: {fileID: 6957682740961274984}
   RCO_foot: {fileID: 3472872107921748815}
   collider: {fileID: 8977674688113420054}
-  bottomColider: {fileID: 0}
+  bottomColider: {fileID: 6388041857430243377}
   sailboat: {fileID: 5073862818154871201}
   sailboasModelPivot: {fileID: 7614590944922003835}
   sailingSplashEffect: {fileID: 7345993481336719136}
