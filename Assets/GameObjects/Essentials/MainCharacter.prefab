@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 647024030046943862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -230,6 +230,7 @@ Transform:
   m_Children:
   - {fileID: 5508079697194273263}
   - {fileID: 6013110237019304564}
+  - {fileID: 4317587698790946336}
   m_Father: {fileID: 20681564530110160}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2143619148283791258
@@ -566,12 +567,14 @@ MonoBehaviour:
   sailboatGlidingDrag: 1.3
   sailboatVerticalControl: 10
   sailboatGliding: 1
-  sailboatAutoOffTime: 3
+  sailboatAutoOffTime: 1
   gustStartVelocity: 10
   gustMaxVelocity: 20
   boosterMult: 2
-  boosterDuration: 1
-  boosterCooldown: 1
+  boosterDuration: 5
+  boosterCooldown: 5
+  leapupPower: 10
+  leapupCooldown: 1
   sound_splash:
     Guid:
       Data1: 213218266
@@ -606,6 +609,7 @@ MonoBehaviour:
   holdObjectRig: {fileID: 2115874347509897372}
   gustSound: {fileID: 5892454862008243834}
   waterScratchSound: {fileID: 518152145542751021}
+  sailboatEngineSound: {fileID: 6917492484742745192}
 --- !u!54 &8225453746728407008
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -790,7 +794,7 @@ Transform:
   m_GameObject: {fileID: 3323590569851705261}
   serializedVersion: 2
   m_LocalRotation: {x: -0.6441014, y: -0.5187447, z: -0.36290666, w: -0.42934373}
-  m_LocalPosition: {x: -0.027, y: 0.108, z: 0.23299901}
+  m_LocalPosition: {x: 0.035, y: 0.108, z: 0.277}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -876,7 +880,7 @@ Transform:
   m_GameObject: {fileID: 3481135830841591949}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5870044, y: -0.6699975, z: -0.44210884, w: -0.10520942}
-  m_LocalPosition: {x: 0.15200062, y: 0.07699999, z: -0.32}
+  m_LocalPosition: {x: -0.051, y: 0.074, z: -0.246}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -968,6 +972,71 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
+--- !u!1 &4364648312673083034
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4317587698790946336}
+  - component: {fileID: 6917492484742745192}
+  m_Layer: 6
+  m_Name: SailboatEngine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4317587698790946336
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4364648312673083034}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5235012561708466846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6917492484742745192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4364648312673083034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -2105393224
+      Data2: 1294377629
+      Data3: 1379350661
+      Data4: -1158198
+    Path: event:/SoundEffect/SailboatEngine
+  Event: 
+  PlayEvent: 11
+  StopEvent: 12
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: SailboatEngine
+    Value: 0
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &4787329265921919357
 GameObject:
   m_ObjectHideFlags: 0
