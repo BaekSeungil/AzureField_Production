@@ -139,7 +139,7 @@ namespace MapScripts
             mapCavasRect.localScale = Vector3.one * clampedScale;
         }
 
-        public void MapMove(GameMapData mapData, Vector3 moveTemp)
+        public static void MapMove(GameMapData mapData, Vector3 moveTemp)
         {
             mapData.mapCanvasRect.localPosition += moveTemp;
         }
