@@ -601,11 +601,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = currentHoldingItem.gameObject.name;
         else
             current_holding_item_debug = "NULL";
-
 #endif
-
-
-
     }
 
     private void LateUpdate()
@@ -1053,6 +1049,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterCoroutine = null;
 
         boosterRecharging = true;
+        SpeedLineControl.Instance.SetSpeedLine(0.0f, 0.5f);
 
         animator.SetBool("Booster", false);
     }
@@ -1064,13 +1061,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         SetAttributeWithID(AbilityAttribute.SailboatAcceleration, boosterMult, "SailboatBooster");
 
+
         for(float t = boosterDuration; t > 0; t -= Time.deltaTime)
         {
             boosterGauge = t / boosterDuration;
             UI_SailboatSkillInfo.Instance.SetBoosterRing(boosterGauge);
+            SpeedLineControl.Instance.SetSpeedLine(Mathf.Clamp01(rBody.velocity.magnitude / 40f)*2.0f);
             yield return null;
         }
 
+        SpeedLineControl.Instance.SetSpeedLine(0.0f, 0.5f);
         animator.SetBool("Booster", false);
         boosterRecharging = true;
         CancelAttributeWithID("SailboatBooster");
@@ -1299,7 +1299,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Debug.Log("암초 대충돌!");
                 StartCoroutine(ReefCrash());
             }
-
         }
 
         if(((1 << collision.collider.gameObject.layer) & groundIgnore) == 0)
@@ -1329,6 +1328,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
+    
+        
     }
 #endif
 }
