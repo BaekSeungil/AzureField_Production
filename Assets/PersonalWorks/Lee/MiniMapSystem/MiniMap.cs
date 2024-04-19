@@ -39,7 +39,11 @@ namespace MapScripts
         // Update is called once per frame
         void Update()
         {
+           GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
+
             float zoom = Mouse.current.scroll.ReadValue().y;
+
+           gameMaputilities.MapZoom(zoom);
 
         }
 
@@ -51,6 +55,18 @@ namespace MapScripts
             }
 
             return MiniMapInstance;
+        }
+
+        public void MapImageSwith(float[] floor, Sprite[] imagelist, Transform player, Image map_Image)
+        {
+            for(int i = floor.Length -1; i> -1; i--)
+            {
+                if(player.position.y >= floor[i])
+                {
+                    map_Image.sprite = imagelist[i];
+                    break;
+                }
+            }
         }
     }
 
@@ -74,7 +90,7 @@ namespace MapScripts
         // 맵 줌 관련 기능
 
         private static Vector2 halfVector2 = new Vector2(0.5f,0.5f);
-        public static void SetminiMapmode(MapMode mod)
+        public void SetminiMapmode(MapMode mod)
         {   
             
             GameMapData gameMapData1= GameMapData.GetInstance();
@@ -108,10 +124,7 @@ namespace MapScripts
             }
         }
 
-
-
-
-        public static void MapZoom(float zoom)
+        public void MapZoom(float zoom)
         {
             if(zoom == 0)
             return;
@@ -126,9 +139,10 @@ namespace MapScripts
             mapCavasRect.localScale = Vector3.one * clampedScale;
         }
 
-
-
-
+        public void MapMove(GameMapData mapData, Vector3 moveTemp)
+        {
+            mapData.mapCanvasRect.localPosition += moveTemp;
+        }
 
 
         #endregion
