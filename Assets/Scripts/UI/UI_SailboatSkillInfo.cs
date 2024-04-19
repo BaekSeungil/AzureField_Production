@@ -9,7 +9,9 @@ using UnityEngine.UI;
 public class UI_SailboatSkillInfo : StaticSerializedMonoBehaviour<UI_SailboatSkillInfo>
 {
     [SerializeField] private Image boosterRing;
-    [SerializeField] private Image LeapupRing;
+    [SerializeField] private DOTweenAnimation boosterAnimation;
+    [SerializeField] private Image leapupRing;
+    [SerializeField] private DOTweenAnimation leapupAnimation;
     [SerializeField] private DOTweenAnimation tweenAnimation;
 
     public void ToggleInfo(bool value)
@@ -30,9 +32,19 @@ public class UI_SailboatSkillInfo : StaticSerializedMonoBehaviour<UI_SailboatSki
         boosterRing.fillAmount = value;
     }
 
+    public void AnimateBoosterRing()
+    {
+        boosterAnimation.DORestart();
+    }
+
     public void SetLeapupRing(float value)
     {
         value = Mathf.Clamp01(value);
-        LeapupRing.fillAmount = value;
+        leapupRing.fillAmount = value;
+    }
+
+    public void AnimateLeapupRing()
+    {
+        leapupAnimation.DORestart();
     }
 }
