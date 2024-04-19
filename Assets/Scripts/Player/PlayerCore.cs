@@ -737,7 +737,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// <summary>
 /// 플레이어가 수영중인 상황일 때
 /// </summary>
-    protected class Movement_Swimming : MovementState
+    public class Movement_Swimming : MovementState
     {
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -788,7 +788,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// <summary>
 /// 플레이어가 조각배를 타는 상황일 때
 /// </summary>
-    protected class Movement_Sailboat : MovementState
+    public class Movement_Sailboat : MovementState
     {
 
         Vector3 directionCache;
