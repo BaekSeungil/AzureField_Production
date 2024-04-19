@@ -130,9 +130,11 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <returns>true : 진행중인 순풍의 도전이 있어 시간을 추가하는데 성공하였습니다. false : 진행중인 순풍의 도전이 없어 시간을 추가할 수 없었습니다.</returns>
     public static bool AddTimerToActiveChallenge(float time)
     {
-        if (IsActiveChallengeExists) return false;
+        if (!IsActiveChallengeExists) return false;
 
-        ActiveChallenge.timelimit += time;
+        Debug.Log(ActiveChallenge.name);
+
+        ActiveChallenge.timer_playCountdown += time;
         return true;
 
     }

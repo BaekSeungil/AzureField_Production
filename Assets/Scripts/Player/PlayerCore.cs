@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using AmplifyShaderEditor;
+using static UnityEngine.Rendering.DebugUI;
 
 
 
@@ -65,6 +66,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
 
+
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
 
@@ -104,6 +106,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
     [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     #endregion
 
 
@@ -136,6 +139,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     int layerIndex_Swim;
     int layerIndex_Boarding;
+
+    bool boosterActive = false;
 
 
     private MovementState currentMovement_hidden;
@@ -542,7 +547,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             animator.SetLayerWeight(layerIndex_Swim, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Swim), 0.0f, Time.deltaTime * 20f * 0.2f));
 
         if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
+        {
             animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 1.0f, 0.2f));
+            
+        }
         else
         {
             animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 0.0f, 0.2f));
@@ -585,6 +593,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 UI_SailboatSkillInfo.Instance.SetBoosterRing(1f);
                 UI_SailboatSkillInfo.Instance.AnimateBoosterRing();
             }
+        }
+
+        if (CurrentMovement.GetType() != typeof(Movement_Sailboat))
+        {
+            sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 0f);
         }
 
         // info update
@@ -787,6 +800,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             directionCache = player.transform.forward;
             base.OnMovementEnter(player);
             player.sailboat.gameObject.SetActive(true);
+            player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 0f);
             player.sailboatFootRig.weight = 1.0f;
             player.buoyant.enabled = false;
             player.rBody.useGravity = false;
@@ -801,6 +815,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
+        }
+
+        public override void OnUpdate(PlayerCore player)
+        {
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -917,28 +935,35 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
 
-            if( sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
-            {
-                if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
-                {
-                    player.sailingSprayEffect.Play();
-                }
-                else
-                {
-                    player.sailingSprayEffect.Stop();
-                }
-            }
+            //if( sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
+            //{
+            //    if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
+            //    {
+            //        player.sailingSprayEffect.Play();
+            //    }
+            //    else
+            //    {
+            //        player.sailingSprayEffect.Stop();
+            //    }
+            //}
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
             player.animator.SetFloat("BoardBlend", player.rBody.velocity.y);
 
-            if( player.input.Player.Move.IsPressed())
+            float value = player.sailboatEngineSound.Params[0].Value;
+
+            if (player.input.Player.Move.IsPressed())
             {
+                if (player.boosterActive)
+                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 1f);
+                else
+                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", Mathf.Clamp(player.rBody.velocity.magnitude/40f,0f,0.8f));
                 player.animator.SetFloat("BoardPropellingBlend", 1f, 1f, Time.fixedDeltaTime);
             }
             else
             {
+                player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 0f);
                 player.animator.SetFloat("BoardPropellingBlend", 0f, 1f, Time.fixedDeltaTime);
             }
 
@@ -1039,6 +1064,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     float boosterGauge = 0f;
     bool boosterRecharging = false;
 
+
     public void AbortBooster()
     {
         if (boosterCoroutine == null) return;
@@ -1050,8 +1076,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         boosterRecharging = true;
         SpeedLineControl.Instance.SetSpeedLine(0.0f, 0.5f);
-
         animator.SetBool("Booster", false);
+        boosterActive = false;
     }
 
     IEnumerator Cor_Booster()
@@ -1061,6 +1087,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         SetAttributeWithID(AbilityAttribute.SailboatAcceleration, boosterMult, "SailboatBooster");
 
+        boosterActive = true;
 
         for(float t = boosterDuration; t > 0; t -= Time.deltaTime)
         {
@@ -1069,6 +1096,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             SpeedLineControl.Instance.SetSpeedLine(Mathf.Clamp01(rBody.velocity.magnitude / 40f)*2.0f);
             yield return null;
         }
+
+        boosterActive = false;
 
         SpeedLineControl.Instance.SetSpeedLine(0.0f, 0.5f);
         animator.SetBool("Booster", false);
