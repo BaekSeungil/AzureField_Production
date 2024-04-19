@@ -505,6 +505,7 @@ Transform:
   - {fileID: 5986335189477094576}
   - {fileID: 7187445262357277532}
   - {fileID: 8270539253178338030}
+  - {fileID: 3769731042819200817}
   - {fileID: 3472872107921748815}
   - {fileID: 7357841844735380075}
   - {fileID: 2930847644886406987}
@@ -538,7 +539,7 @@ MonoBehaviour:
     SerializationNodes: []
   debug_static_objcect: 
   moveSpeed: 7
-  sprintSpeed: 10
+  sprintSpeedMult: 2
   swimSpeed: 5
   jumpPower: 15
   holdingMoveSpeedMult: 0.7
@@ -553,19 +554,24 @@ MonoBehaviour:
   swimUpforce: 10
   grounding: 0
   groundNormal: {x: 0, y: 1, z: 0}
+  sailboatSteering: 1
   sailboatByouancy: 100
   sailboatGravity: 20
   sailboatAccelerationForce: 20
-  sailboatSlopeInfluenceForce: -20
-  sailboatNearsurf: 0.3
-  sailboatNearsurfBoost: 1.2
+  sailboatSlopeInfluenceForce: 10
+  sailboatNearsurf: 2
+  sailboatNearsurfBoost: 1.5
   sailboatFullDrag: 5
-  sailboatScratchDrag: 1.5
-  sailboatMinimumDrag: 1
+  sailboatScratchDrag: 1.3
+  sailboatGlidingDrag: 1.3
   sailboatVerticalControl: 10
   sailboatGliding: 1
+  sailboatAutoOffTime: 3
   gustStartVelocity: 10
   gustMaxVelocity: 20
+  boosterMult: 2
+  boosterDuration: 1
+  boosterCooldown: 1
   sound_splash:
     Guid:
       Data1: 213218266
@@ -580,11 +586,11 @@ MonoBehaviour:
   velocity_mag_debug: 0
   velocity_hor_debug: 0
   current_holding_item_debug: 
-  current_attribute_debug: []
   animator: {fileID: 428845783522881226}
   buoyant: {fileID: 6957682740961274984}
   RCO_foot: {fileID: 3472872107921748815}
   collider: {fileID: 8977674688113420054}
+  bottomColider: {fileID: 6388041857430243377}
   sailboat: {fileID: 5073862818154871201}
   sailboasModelPivot: {fileID: 7614590944922003835}
   sailingSplashEffect: {fileID: 7345993481336719136}
@@ -800,9 +806,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8270539253178338030}
   - component: {fileID: 8977674688113420054}
-  - component: {fileID: 8615245710302226736}
   m_Layer: 6
-  m_Name: Collider
+  m_Name: SideCollider
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -846,27 +851,6 @@ CapsuleCollider:
   m_Height: 1.4
   m_Direction: 1
   m_Center: {x: 0, y: 0.74, z: 0}
---- !u!135 &8615245710302226736
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3453164161655631342}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.18
-  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &3481135830841591949
 GameObject:
   m_ObjectHideFlags: 0
@@ -984,6 +968,59 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
+--- !u!1 &4787329265921919357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3769731042819200817}
+  - component: {fileID: 6388041857430243377}
+  m_Layer: 0
+  m_Name: BottomCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3769731042819200817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787329265921919357}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 20681564530110160}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &6388041857430243377
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787329265921919357}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.18
+  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &5164855793128549954
 GameObject:
   m_ObjectHideFlags: 0

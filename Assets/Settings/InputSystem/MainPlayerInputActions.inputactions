@@ -24,15 +24,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Fire",
-                    "type": "Button",
-                    "id": "07106bd5-dcda-4357-91ae-c4b7c8ef0092",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Jump",
                     "type": "Value",
                     "id": "6f4449a7-a0c0-4494-8a10-d908a9256938",
@@ -90,6 +81,24 @@
                     "name": "OpenPlaymenu",
                     "type": "Button",
                     "id": "1eea5282-6957-48dc-a9b4-ed83fa99d978",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SailboatBooster",
+                    "type": "Button",
+                    "id": "07106bd5-dcda-4357-91ae-c4b7c8ef0092",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SailboatLeapup",
+                    "type": "Button",
+                    "id": "30d3e30c-ff5f-4ce7-827e-a0dad87cb4de",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -253,39 +262,6 @@
                 },
                 {
                     "name": "",
-                    "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "05f6913d-c316-48b2-a6bb-e225f14c7960",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ee3d0cd2-254e-47a7-a8cb-bc94d9658c54",
-                    "path": "<Joystick>/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ed97d573-5df9-4764-86c1-4a17acdea1fb",
                     "path": "<Keyboard>/f",
                     "interactions": "",
@@ -358,6 +334,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "OpenPlaymenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3e35a4b3-6605-4032-b301-08f1be4b3b60",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SailboatLeapup",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "05f6913d-c316-48b2-a6bb-e225f14c7960",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SailboatBooster",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
