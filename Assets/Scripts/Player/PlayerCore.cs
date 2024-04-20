@@ -8,7 +8,13 @@ using FMODUnity;
 using AmplifyShaderEditor;
 using static UnityEngine.Rendering.DebugUI;
 
-
+public enum PlayerMovementState
+{
+    None,
+    Ground,
+    Swimming,
+    Sailboat
+}
 
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
@@ -159,6 +165,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 currentMovement_hidden = value;
                 currentMovement_hidden.OnMovementEnter(this);
             }
+        }
+    }
+
+    /// <summary>
+    /// 현재 플레이어의 CurrentMovement정보를 받아올 수 있습니다.
+    /// </summary>
+    public PlayerMovementState CurrentPlayerState
+    {
+        get
+        {
+            if (CurrentMovement.GetType() == typeof(Movement_Ground)) return PlayerMovementState.Ground;
+            else if (CurrentMovement.GetType() == typeof(Movement_Swimming)) return PlayerMovementState.Swimming;
+            else if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) return PlayerMovementState.Sailboat;
+            else return PlayerMovementState.None;
         }
     }
 
