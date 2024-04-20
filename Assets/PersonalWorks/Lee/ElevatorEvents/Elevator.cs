@@ -10,10 +10,11 @@ enum MoveType
     MovingObjects
 };
 
+[System.Serializable]
 public enum ElevatorType
 {   
-    Auto,
-    Interaction
+    Auto = 0,
+    Interaction = 1
 
 };
 
@@ -28,7 +29,7 @@ public class Elevator : MonoBehaviour
 */
     [SerializeField] int StartPoint;
     [SerializeField] Transform[] Points;
-    [SerializeField] ElevatorType elevatorType;
+    [SerializeField] public ElevatorType elevatorType;
     [SerializeField] MoveType moveType;
     
     static public Elevator instance;
@@ -41,15 +42,22 @@ public class Elevator : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // 이전에 생성된 다른 인스턴스를 파괴합니다.
+        }
         transform.position = Points[StartPoint].position;
         i = StartPoint;
-        instance = this;
-    }
-    public ElevatorType GetElevatorType()
-    {
-        return elevatorType;
     }
 
+    private void Start() 
+    {
+        instance = this;
+    }
     private void Update() 
     {
 
@@ -120,6 +128,9 @@ public class Elevator : MonoBehaviour
         
     }
 
+  
+
 }
+
 
 
