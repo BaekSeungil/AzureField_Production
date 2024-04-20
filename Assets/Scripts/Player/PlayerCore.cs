@@ -1384,10 +1384,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+
         Gizmos.color = Color.magenta;
-        Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
-    
-        
+        if (bottomColider != null)
+        {
+            Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
+        }
     }
 #endif
 }
