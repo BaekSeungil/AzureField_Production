@@ -48,9 +48,27 @@ namespace MapScripts
         }
 
 
+        public void IconPos(GameMapData gameMapData, Transform player, RectTransform playerIcon)
+        {
+            //var
+        }
 
         public void MapPosTrackTarget(GameMapData mapdata, Vector3 player)
-        {
+        {   
+            var temp_map_pos = new Vector3();
+            var temp_player_pos = player - mapdata.MapPoint;
+            temp_map_pos.x =
+            Mathf.Clamp((-temp_player_pos.x / mapdata.sceneSize.x*mapdata.mapCanvasRect.rect.width),
+            -((mapdata.mapCanvasRect.rect.width / 2)- (mapdata.maskRect.rect.width/2)),
+            (mapdata.mapCanvasRect.rect.width /2)- (mapdata.maskRect.rect.width/2));
+
+            temp_player_pos.y =
+            Mathf.Clamp((-temp_player_pos.z / mapdata.sceneSize.y* mapdata.mapCanvasRect.rect.height),
+            ((-mapdata.mapCanvasRect.rect.height / 2)- (mapdata.maskRect.rect.height/2)),
+            (mapdata.mapCanvasRect.rect.height/2)-(mapdata.maskRect.rect.height /2));
+
+            mapdata.mapCanvasRect.localPosition = temp_map_pos;
+
 
         }
 
