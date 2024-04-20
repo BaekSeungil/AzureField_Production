@@ -47,14 +47,11 @@ namespace MapScripts
 
         }
 
-        public static MiniMap GetMiniMapInstance()
-        {
-            if(MiniMapInstance == null)
-            {
-                return new MiniMap();
-            }
 
-            return MiniMapInstance;
+
+        public void MapPosTrackTarget(GameMapData mapdata, Vector3 player)
+        {
+
         }
 
         public void MapImageSwith(float[] floor, Sprite[] imagelist, Transform player, Image map_Image)
@@ -67,6 +64,16 @@ namespace MapScripts
                     break;
                 }
             }
+        }
+
+        public static MiniMap GetMiniMapInstance()
+        {
+            if(MiniMapInstance == null)
+            {
+                return new MiniMap();
+            }
+
+            return MiniMapInstance;
         }
     }
 
