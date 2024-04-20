@@ -8,7 +8,13 @@ using FMODUnity;
 using AmplifyShaderEditor;
 using static UnityEngine.Rendering.DebugUI;
 
-
+public enum PlayerMovementState
+{
+    None,
+    Ground,
+    Swimming,
+    Sailboat
+}
 
 public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 {
@@ -86,27 +92,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #endif
 
     #region ChildReferences
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Animator animator;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform RCO_foot;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform headTarget;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig headRig;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig handRig;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
-    [SerializeField, Required, FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
+    [SerializeField, FoldoutGroup("ChildReferences")] private Animator animator;
+    [SerializeField, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform RCO_foot;
+    [SerializeField , FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
+    [SerializeField , FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
+    [SerializeField , FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
+    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
+    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
+    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform headTarget;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Rig headRig;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Rig handRig;
+    [SerializeField , FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
+    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
+    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
+    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     #endregion
 
 
@@ -142,6 +148,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     bool boosterActive = false;
 
+    //플레이어 상태 참고용 변수
+    public string movementStateRefernce;
 
     private MovementState currentMovement_hidden;
     private MovementState CurrentMovement
@@ -157,6 +165,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 currentMovement_hidden = value;
                 currentMovement_hidden.OnMovementEnter(this);
             }
+        }
+    }
+
+    /// <summary>
+    /// 현재 플레이어의 CurrentMovement정보를 받아올 수 있습니다.
+    /// </summary>
+    public PlayerMovementState CurrentPlayerState
+    {
+        get
+        {
+            if (CurrentMovement.GetType() == typeof(Movement_Ground)) return PlayerMovementState.Ground;
+            else if (CurrentMovement.GetType() == typeof(Movement_Swimming)) return PlayerMovementState.Swimming;
+            else if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) return PlayerMovementState.Sailboat;
+            else return PlayerMovementState.None;
         }
     }
 
@@ -665,6 +687,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// </summary>
     protected class Movement_Ground : MovementState
     {
+        public override void OnMovementEnter(PlayerCore player)
+        {
+            player.movementStateRefernce = "Ground";
+        }
+
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
@@ -734,9 +761,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-/// <summary>
-/// 플레이어가 수영중인 상황일 때
-/// </summary>
+    /// <summary>
+    /// 플레이어가 수영중인 상황일 때
+    /// </summary>
     protected class Movement_Swimming : MovementState
     {
         public override void OnMovementEnter(PlayerCore player)
@@ -745,6 +772,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             base.OnMovementEnter(player);
             player.animator.SetBool("Swimming", true);
             player.animator.SetTrigger("SwimmingEnter");
+            player.movementStateRefernce = "Swimming";
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -808,6 +836,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.animator.SetTrigger("BoardingEnter");
             player.animator.SetFloat("BoardBlend", 0.0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+            player.movementStateRefernce = "Sailboat";
         }
 
         private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
@@ -1355,10 +1384,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+
         Gizmos.color = Color.magenta;
-        Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
-    
-        
+        if (bottomColider != null)
+        {
+            Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
+        }
     }
 #endif
 }
