@@ -110,7 +110,7 @@ public class Sequence_Timeline : Sequence_Base
     {
         PlayableDirector playable = invoker.Playable;
         playable.Play(timeline);
-        yield return new WaitUntil(() => playable.time >= playable.duration);
+        yield return new WaitUntil(() => playable.state != PlayState.Playing);
     }
 }
 
