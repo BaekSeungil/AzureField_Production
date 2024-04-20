@@ -33,7 +33,7 @@ public class RiverManager : MonoBehaviour
     }
     private void Flow() 
     {
-        if (player.GetType() == typeof(PlayerCore.Movement_Swimming) || player.GetType() == typeof(PlayerCore.Movement_Sailboat))
+        if (player.movementStateRefernce == "Swimming" || player.movementStateRefernce == "Sailboat")
             playerPoint.position = Vector3.MoveTowards(playerPoint.position, flowPoint.position, flowPower);
     }
 
