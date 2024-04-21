@@ -32,7 +32,7 @@ namespace MapScripts
         // Start is called before the first frame update
         void Start()
         {
-
+            MapDataInitialization(mapdataInfo);
         }
 
         // Update is called once per frame
@@ -60,6 +60,31 @@ namespace MapScripts
             {
                 if(mapdata.mapimage != null && mapdata.maskRect != null && mapdata.mapCanvasRect != null)
                 {
+                    break;
+                }
+
+                switch(child.gameObject.name)
+                {
+                    case "map":
+                    mapdata.mapCanvasRect = child.GetComponent<RectTransform>();
+                    mapdata.mapimage = child.GetComponent<Image>();
+                    if(mapdata.mapSprite == null)
+                    {
+                        mapdata.mapimage.sprite = mapdata.mapSprite[0];
+                        child.GetComponent<Image>().SetNativeSize();
+                    }
+                    break;
+
+                    case "mask":
+                    mapdata.maskRect = child.GetComponent<RectTransform>();
+                    break;
+
+                    case "GameMap":
+                    mapdata.mapCanvasRect = child.GetComponent<RectTransform>();
+                    if(child.TryGetComponent(out CanvasGroup group))
+                    {
+                        
+                    }
                     break;
                 }
             }
