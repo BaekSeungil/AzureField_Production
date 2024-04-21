@@ -19,6 +19,8 @@ namespace MapScripts
     public class MiniMap : MonoBehaviour
     {
         public static MiniMap MiniMapInstance;
+
+        public GameMapData mapdataInfo = new GameMapData();
         public MapMode mapMode;
 
         public Transform player;
@@ -36,13 +38,49 @@ namespace MapScripts
         // Update is called once per frame
         void Update()
         {
-           GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
+            MapUpdate(player);
+        }
 
+        public void MapDataInitialization(GameMapData mapdata)
+        {
+            if(mapdata.sceneMax != null && mapdata.sceneMin != null)
+            {
+                mapdata.sceneMaxV3 = mapdata.sceneMax.position;
+                mapdata.sceneMinV3 = mapdata.sceneMin.position;
+            }
 
+            if(mapdata.sceneMaxV3 != null && mapdata.sceneMinV3 != null)
+            {
+                mapdata.sceneSize.y = mapdata.sceneMaxV3.z - mapdata.sceneMinV3.z;
+                mapdata.sceneSize.x = mapdata.sceneMaxV3.x - mapdata.sceneMinV3.x;
+                mapdata.MapPoint = (mapdata.sceneMaxV3 + mapdata.sceneMinV3) /2;
+            }
+
+            foreach(Transform child in this.gameObject.GetComponentInChildren<Transform>(true))
+            {
+                if(mapdata.mapimage != null && mapdata.maskRect != null && mapdata.mapCanvasRect != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void MapUpdate(Transform Playerpos)
+        {
+            if(mapdataInfo.TrackPlayer)
+            {
+                MapPosTrackTarget(mapdataInfo, Playerpos.position);
+                IconPos(mapdataInfo, Playerpos,playerIcon);
+            }
+
+            GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
             float zoom = Mouse.current.scroll.ReadValue().y;
+            gameMaputilities.MapZoom(zoom);
 
-           gameMaputilities.MapZoom(zoom);
-
+            if(mapdataInfo.floor.Length > 1)
+            {
+                MapImageSwith(mapdataInfo.floor, mapdataInfo.mapSprite, Playerpos, mapdataInfo.mapimage);
+            }
         }
 
         public void IconSpin(RectTransform icon, float angle = 0f)
