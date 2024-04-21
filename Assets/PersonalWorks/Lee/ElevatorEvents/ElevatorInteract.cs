@@ -21,7 +21,7 @@ public class ElevatorInteract : Interactable_Base
     {
        if (elevator != null && elevator.elevatorType == ElevatorType.Interaction)
         {
-           
+            eventsOnStartInteract.Invoke();
             elevator.Canmove = true;
             
         }
