@@ -99,6 +99,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
     [SerializeField , FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
     [SerializeField , FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
+    [SerializeField , FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
     [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
     [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
     [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
@@ -543,10 +544,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         // Movement state change condition
         if (buoyant.SubmergeRateZeroClamped < -0.1f)
         {
-
             if (CurrentMovement.GetType() == typeof(Movement_Ground) && !grounding)
             {
-                if (rBody.velocity.y < -0.5f) RuntimeManager.PlayOneShot(sound_splash);
+                if (rBody.velocity.y < -0.5f)
+                {
+                    if (GlobalOceanManager.IsInstanceValid)
+                    {
+                        Instantiate(normalSplashEffectPrefab, new Vector3(transform.position.x,GlobalOceanManager.Instance.GetWaveHeight(transform.position),transform.position.z), Quaternion.identity);
+                    }
+                    RuntimeManager.PlayOneShot(sound_splash);
+                }
                 CurrentMovement = new Movement_Swimming();
             }
         }
