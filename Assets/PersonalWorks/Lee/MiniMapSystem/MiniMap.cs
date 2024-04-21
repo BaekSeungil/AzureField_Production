@@ -19,38 +19,134 @@ namespace MapScripts
     public class MiniMap : MonoBehaviour
     {
         public static MiniMap MiniMapInstance;
+
+        public GameMapData mapdataInfo = new GameMapData();
         public MapMode mapMode;
 
         public Transform player;
 
         public RectTransform playerIcon;
-        
-
-
-        
-        public bool enableMap = false;
+       
+        public bool enableMap = true;
 
         // Start is called before the first frame update
         void Start()
         {
-
+            MapDataInitialization(mapdataInfo);
         }
 
         // Update is called once per frame
         void Update()
         {
-           GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
-
-            float zoom = Mouse.current.scroll.ReadValue().y;
-
-           gameMaputilities.MapZoom(zoom);
-
+            MapUpdate(player);
         }
 
+        public void MapDataInitialization(GameMapData mapdata)
+        {
+            if(mapdata.sceneMax != null && mapdata.sceneMin != null)
+            {
+                mapdata.sceneMaxV3 = mapdata.sceneMax.position;
+                mapdata.sceneMinV3 = mapdata.sceneMin.position;
+            }
 
+            if(mapdata.sceneMaxV3 != null && mapdata.sceneMinV3 != null)
+            {
+                mapdata.sceneSize.y = mapdata.sceneMaxV3.z - mapdata.sceneMinV3.z;
+                mapdata.sceneSize.x = mapdata.sceneMaxV3.x - mapdata.sceneMinV3.x;
+                mapdata.MapPoint = (mapdata.sceneMaxV3 + mapdata.sceneMinV3) /2;
+            }
+
+            foreach(Transform child in this.gameObject.GetComponentInChildren<Transform>(true))
+            {
+                if(mapdata.mapimage != null && mapdata.maskRect != null && mapdata.mapCanvasRect != null)
+                {
+                    break;
+                }
+
+                switch(child.gameObject.name)
+                {
+                    case "map":
+                    mapdata.mapCanvasRect = child.GetComponent<RectTransform>();
+                    mapdata.mapimage = child.GetComponent<Image>();
+                    if(mapdata.mapSprite == null)
+                    {
+                        mapdata.mapimage.sprite = mapdata.mapSprite[0];
+                        child.GetComponent<Image>().SetNativeSize();
+                    }
+                    break;
+
+                    case "mask":
+                    mapdata.maskRect = child.GetComponent<RectTransform>();
+                    break;
+
+                    case "GameMap":
+                    mapdata.mapCanvasRect = child.GetComponent<RectTransform>();
+                    if(child.TryGetComponent(out CanvasGroup group))
+                    {
+                        
+                    }
+                    break;
+                }
+            }
+        }
+
+        public void MapUpdate(Transform Playerpos)
+        {
+            if(mapdataInfo.TrackPlayer)
+            {
+                MapPosTrackTarget(mapdataInfo, Playerpos.position);
+                IconPos(mapdataInfo, Playerpos,playerIcon);
+            }
+
+            GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
+            float zoom = Mouse.current.scroll.ReadValue().y;
+            gameMaputilities.MapZoom(zoom);
+
+            if(mapdataInfo.floor.Length > 1)
+            {
+                MapImageSwith(mapdataInfo.floor, mapdataInfo.mapSprite, Playerpos, mapdataInfo.mapimage);
+            }
+        }
+
+        public void IconSpin(RectTransform icon, float angle = 0f)
+        {
+            var temp_Spin_Value = new Vector3();
+            temp_Spin_Value.x = 0;
+            temp_Spin_Value.y = 0;
+            temp_Spin_Value.z = angle;
+            icon.localRotation = Quaternion.Euler(temp_Spin_Value);
+        }
+
+        public void IconPos(GameMapData gameMapData, Transform player, RectTransform playerIcon)
+        {
+            var temp_player_pos_1 = new Vector3();
+            var temp_player_pos_2 = player.position - gameMapData.MapPoint;
+            
+            temp_player_pos_1.x = Mathf.Clamp((temp_player_pos_2.x / gameMapData.sceneSize.x * 
+            gameMapData.mapCanvasRect.rect.width),-gameMapData.mapCanvasRect.rect.width /2, gameMapData.mapCanvasRect.rect.width/2);
+
+            temp_player_pos_1.y = Mathf.Clamp((temp_player_pos_2.z / gameMapData.sceneSize.y * gameMapData.mapCanvasRect.rect.height),
+            -gameMapData.mapCanvasRect.rect.height / 2, gameMapData.mapCanvasRect.rect.height /2);
+
+            playerIcon.localPosition = temp_player_pos_1;
+        }
 
         public void MapPosTrackTarget(GameMapData mapdata, Vector3 player)
-        {
+        {   
+            var temp_map_pos = new Vector3();
+            var temp_player_pos = player - mapdata.MapPoint;
+            temp_map_pos.x =
+            Mathf.Clamp((-temp_player_pos.x / mapdata.sceneSize.x*mapdata.mapCanvasRect.rect.width),
+            -((mapdata.mapCanvasRect.rect.width / 2)- (mapdata.maskRect.rect.width/2)),
+            (mapdata.mapCanvasRect.rect.width /2)- (mapdata.maskRect.rect.width/2));
+
+            temp_player_pos.y =
+            Mathf.Clamp((-temp_player_pos.z / mapdata.sceneSize.y* mapdata.mapCanvasRect.rect.height),
+            ((-mapdata.mapCanvasRect.rect.height / 2)- (mapdata.maskRect.rect.height/2)),
+            (mapdata.mapCanvasRect.rect.height/2)-(mapdata.maskRect.rect.height /2));
+
+            mapdata.mapCanvasRect.localPosition = temp_map_pos;
+
 
         }
 
