@@ -24,11 +24,8 @@ namespace MapScripts
         public Transform player;
 
         public RectTransform playerIcon;
-        
-
-
-        
-        public bool enableMap = false;
+       
+        public bool enableMap = true;
 
         // Start is called before the first frame update
         void Start()
@@ -41,16 +38,34 @@ namespace MapScripts
         {
            GameMaputilities gameMaputilities= GameMaputilities.GetGameMaputilities();
 
+
             float zoom = Mouse.current.scroll.ReadValue().y;
 
            gameMaputilities.MapZoom(zoom);
 
         }
 
+        public void IconSpin(RectTransform icon, float angle = 0f)
+        {
+            var temp_Spin_Value = new Vector3();
+            temp_Spin_Value.x = 0;
+            temp_Spin_Value.y = 0;
+            temp_Spin_Value.z = angle;
+            icon.localRotation = Quaternion.Euler(temp_Spin_Value);
+        }
 
         public void IconPos(GameMapData gameMapData, Transform player, RectTransform playerIcon)
         {
-            //var
+            var temp_player_pos_1 = new Vector3();
+            var temp_player_pos_2 = player.position - gameMapData.MapPoint;
+            
+            temp_player_pos_1.x = Mathf.Clamp((temp_player_pos_2.x / gameMapData.sceneSize.x * 
+            gameMapData.mapCanvasRect.rect.width),-gameMapData.mapCanvasRect.rect.width /2, gameMapData.mapCanvasRect.rect.width/2);
+
+            temp_player_pos_1.y = Mathf.Clamp((temp_player_pos_2.z / gameMapData.sceneSize.y * gameMapData.mapCanvasRect.rect.height),
+            -gameMapData.mapCanvasRect.rect.height / 2, gameMapData.mapCanvasRect.rect.height /2);
+
+            playerIcon.localPosition = temp_player_pos_1;
         }
 
         public void MapPosTrackTarget(GameMapData mapdata, Vector3 player)
