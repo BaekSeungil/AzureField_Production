@@ -44,6 +44,7 @@ public class BuoyantBehavior : MonoBehaviour
         if (GlobalOceanManager.Instance == null)
         {
             Debug.Log("BuoyancyBehavior를 사용하려면 Global Ocean Manager를 생성하세요!");
+            this.enabled = false;
         }
     }
 
