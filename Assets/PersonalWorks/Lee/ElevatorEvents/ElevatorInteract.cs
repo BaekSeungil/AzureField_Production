@@ -7,22 +7,20 @@ public class ElevatorInteract : Interactable_Base
 {
     [SerializeField] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
 
-
+     [SerializeField] private Elevator targetElevator;
   
     // Start is called before the first frame update
-    private Elevator elevator;
-
-    private void Start() 
+    public Elevator TargetElevator
     {
-        elevator = Elevator.instance;
+        get { return targetElevator; }
+        set { targetElevator = value; }
     }
-
     public override void Interact()
     {
-       if (elevator != null && elevator.elevatorType == ElevatorType.Interaction)
+       if (targetElevator != null && targetElevator.elevatorType == ElevatorType.Interaction)
         {
             eventsOnStartInteract.Invoke();
-            elevator.Canmove = true;
+            targetElevator.Canmove = true;
             
         }
     }
