@@ -5,8 +5,7 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
-using AmplifyShaderEditor;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public enum PlayerMovementState
 {
