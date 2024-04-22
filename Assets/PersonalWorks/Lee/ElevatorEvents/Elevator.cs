@@ -46,11 +46,6 @@ public class Elevator : MonoBehaviour
         transform.position = Points[StartPoint].position;
         i = StartPoint;
     }
-
-    private void Start() 
-    {
-        instance = this;
-    }
     private void Update() 
     {
 
