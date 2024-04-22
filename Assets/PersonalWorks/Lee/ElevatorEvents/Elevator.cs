@@ -40,7 +40,7 @@ public class Elevator : MonoBehaviour
     bool reverse;
     int i;
 
-    private void Awake()
+    public virtual void Awake()
     {
         instance = this;
         transform.position = Points[StartPoint].position;
