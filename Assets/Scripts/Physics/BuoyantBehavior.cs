@@ -1,8 +1,6 @@
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Entities.UniversalDelegates;
 using UnityEngine;
@@ -20,27 +18,13 @@ public class BuoyantBehavior : MonoBehaviour
 {
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
-    public Vector3 FloatingpointAverage
-    { get
-        {
-            Vector3 average = Vector3.zero;
-            for(int i = 0; i < floatingPoint.Length; i++)
-            {
-                average += floatingPoint[i].position;
-            }
-            average /= floatingPoint.Length;
 
-            return average;
-        }
-    }
-
- 
     [SerializeField, ReadOnly] private float submergeRate = 0.0f;
-    public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }    // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
-    public float SubmergeRate01 { get { return Mathf.Clamp01(submergeRate); } }                                         // 물체가 얼마나 침수됐는지 표현합니다.( 0과 1사이의 값으로 표현됩니다. )
-    public float SubmergeRate { get { return submergeRate; } }                                                          // 물체가 얼마나 침수됐는지 표현합니다.
+    public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
+    public float SubmergeRate01 { get { return Mathf.Clamp01(submergeRate); } }                                     // 물체가 얼마나 침수됐는지 표현합니다.( 0과 1사이의 값으로 표현됩니다. )
+    public float SubmergeRate { get { return submergeRate; } }                                                      // 물체가 얼마나 침수됐는지 표현합니다.
     private bool waterDetected = false;
-    public bool WaterDetected { get { return waterDetected; } }                                                         // 물체의 아래나 위에 연산 가능한 물이 있는지 나타냅니다.
+    public bool WaterDetected { get { return waterDetected; } }                                                        // 물체의 아래나 위에 연산 가능한 물이 있는지 나타냅니다.
 
     Rigidbody rbody;
 
@@ -60,6 +44,7 @@ public class BuoyantBehavior : MonoBehaviour
         if (GlobalOceanManager.Instance == null)
         {
             Debug.Log("BuoyancyBehavior를 사용하려면 Global Ocean Manager를 생성하세요!");
+            this.enabled = false;
         }
     }
 
@@ -98,42 +83,38 @@ public class BuoyantBehavior : MonoBehaviour
             waterDetected = false;
         }
 
-
-
     }
 
-    const float topDistance = 5;
-    const float playerOffset = 0.6f;
-    float hitDistance = 0;
+    const float bouyancymagnitude = 20f;
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.layer == 4)
         {
             waterDetected = true;
-            hitDistance = topDistance;
-
-            RaycastHit[] rHits = Physics.RaycastAll(transform.position + Vector3.up * topDistance, Vector3.down, topDistance * 2f, waterLayerMask);
-
-            if (rHits != null && rHits.Length > 0)
-                hitDistance = topDistance - rHits[0].distance;
-
-            submergeRate = -hitDistance;
-
+            float distance = 0;
             if (!playerMode)
-                rbody.AddForce(Vector3.up * Mathf.Clamp(hitDistance, -1f, 1f) * Time.deltaTime * 1 / Time.fixedDeltaTime * bouyancyPower, ForceMode.Acceleration);
+            {
+                distance = other.bounds.max.y - transform.position.y;
+            }
             else
-                rbody.AddForce(Vector3.up * Mathf.Clamp(hitDistance - playerOffset, -1f, 1f) * Time.deltaTime * 1 / Time.fixedDeltaTime * bouyancyPower, ForceMode.Acceleration);
+            {
+                distance = other.bounds.max.y - transform.position.y - 0.5f;
+            }
+            submergeRate = -Mathf.Clamp(distance,0f,5f);
+
+            if (playerMode)
+            {
+                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down, ForceMode.Acceleration);
+            }
+            else
+            {
+                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
+            }
+
         }
-    }
 
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position + Vector3.up * hitDistance,0.5f);
+      
     }
-
-#endif
 }
 

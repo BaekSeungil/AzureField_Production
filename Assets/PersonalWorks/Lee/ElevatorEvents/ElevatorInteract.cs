@@ -10,20 +10,20 @@ public class ElevatorInteract : Interactable_Base
 
   
     // Start is called before the first frame update
-     Elevator elevator;
+    private Elevator elevator;
 
-
-   
-    private void Update() 
+    private void Start() 
     {
         elevator = Elevator.instance;
     }
 
     public override void Interact()
     {
-        if (elevator != null && elevator.GetElevatorType() == ElevatorType.Interaction)
+       if (elevator != null && elevator.elevatorType == ElevatorType.Interaction)
         {
+            eventsOnStartInteract.Invoke();
             elevator.Canmove = true;
+            
         }
     }
 

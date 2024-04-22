@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 647024030046943862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -230,6 +230,7 @@ Transform:
   m_Children:
   - {fileID: 5508079697194273263}
   - {fileID: 6013110237019304564}
+  - {fileID: 4317587698790946336}
   m_Father: {fileID: 20681564530110160}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2143619148283791258
@@ -505,7 +506,7 @@ Transform:
   - {fileID: 5986335189477094576}
   - {fileID: 7187445262357277532}
   - {fileID: 8270539253178338030}
-  - {fileID: 6373320624650887012}
+  - {fileID: 3769731042819200817}
   - {fileID: 3472872107921748815}
   - {fileID: 7357841844735380075}
   - {fileID: 2930847644886406987}
@@ -539,7 +540,7 @@ MonoBehaviour:
     SerializationNodes: []
   debug_static_objcect: 
   moveSpeed: 7
-  sprintSpeed: 10
+  sprintSpeedMult: 2
   swimSpeed: 5
   jumpPower: 15
   holdingMoveSpeedMult: 0.7
@@ -549,24 +550,31 @@ MonoBehaviour:
   groundIgnore:
     serializedVersion: 2
     m_Bits: 88
-  waterWalkDragging: 0.474
+  waterWalkDragging: 0.5
   swimRigidbodyDrag: 10
   swimUpforce: 10
   grounding: 0
   groundNormal: {x: 0, y: 1, z: 0}
+  sailboatSteering: 1
   sailboatByouancy: 100
   sailboatGravity: 20
   sailboatAccelerationForce: 20
-  sailboatSlopeInfluenceForce: 20
-  sailboatNearsurf: 0.3
-  sailboatNearsurfBoost: 1.2
+  sailboatSlopeInfluenceForce: 10
+  sailboatNearsurf: 2
+  sailboatNearsurfBoost: 1.5
   sailboatFullDrag: 5
-  sailboatScratchDrag: 1.5
-  sailboatMinimumDrag: 1
+  sailboatScratchDrag: 1.3
+  sailboatGlidingDrag: 1.3
   sailboatVerticalControl: 10
   sailboatGliding: 1
+  sailboatAutoOffTime: 1
   gustStartVelocity: 10
   gustMaxVelocity: 20
+  boosterMult: 2
+  boosterDuration: 5
+  boosterCooldown: 5
+  leapupPower: 10
+  leapupCooldown: 1
   sound_splash:
     Guid:
       Data1: 213218266
@@ -581,13 +589,15 @@ MonoBehaviour:
   velocity_mag_debug: 0
   velocity_hor_debug: 0
   current_holding_item_debug: 
-  current_attribute_debug: []
   animator: {fileID: 428845783522881226}
   buoyant: {fileID: 6957682740961274984}
   RCO_foot: {fileID: 3472872107921748815}
   collider: {fileID: 8977674688113420054}
+  bottomColider: {fileID: 6388041857430243377}
   sailboat: {fileID: 5073862818154871201}
   sailboasModelPivot: {fileID: 7614590944922003835}
+  normalSplashEffectPrefab: {fileID: 3231274048436350310, guid: a40b1e9ade46b03409acae5f6ada87bd,
+    type: 3}
   sailingSplashEffect: {fileID: 7345993481336719136}
   sailingSprayEffect: {fileID: 8267336590717266484}
   sailingSwooshEffect: {fileID: 7868278243730152003}
@@ -601,6 +611,8 @@ MonoBehaviour:
   holdObjectRig: {fileID: 2115874347509897372}
   gustSound: {fileID: 5892454862008243834}
   waterScratchSound: {fileID: 518152145542751021}
+  sailboatEngineSound: {fileID: 6917492484742745192}
+  movementStateRefernce: 
 --- !u!54 &8225453746728407008
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -785,7 +797,7 @@ Transform:
   m_GameObject: {fileID: 3323590569851705261}
   serializedVersion: 2
   m_LocalRotation: {x: -0.6441014, y: -0.5187447, z: -0.36290666, w: -0.42934373}
-  m_LocalPosition: {x: -0.027, y: 0.108, z: 0.23299901}
+  m_LocalPosition: {x: 0.035, y: 0.108, z: 0.277}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -802,7 +814,7 @@ GameObject:
   - component: {fileID: 8270539253178338030}
   - component: {fileID: 8977674688113420054}
   m_Layer: 6
-  m_Name: BodyCollider
+  m_Name: SideCollider
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -871,65 +883,12 @@ Transform:
   m_GameObject: {fileID: 3481135830841591949}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5870044, y: -0.6699975, z: -0.44210884, w: -0.10520942}
-  m_LocalPosition: {x: 0.15200062, y: 0.07699999, z: -0.32}
+  m_LocalPosition: {x: -0.051, y: 0.074, z: -0.246}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7614590944922003835}
   m_LocalEulerAnglesHint: {x: -27.963, y: -228.354, z: 95.201}
---- !u!1 &3927624695352479384
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6373320624650887012}
-  - component: {fileID: 326693713506391476}
-  m_Layer: 0
-  m_Name: BottomCollider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6373320624650887012
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3927624695352479384}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 20681564530110160}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &326693713506391476
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3927624695352479384}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.18
-  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &4158229310138543841
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,6 +975,124 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
+--- !u!1 &4364648312673083034
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4317587698790946336}
+  - component: {fileID: 6917492484742745192}
+  m_Layer: 6
+  m_Name: SailboatEngine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4317587698790946336
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4364648312673083034}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5235012561708466846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6917492484742745192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4364648312673083034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -2105393224
+      Data2: 1294377629
+      Data3: 1379350661
+      Data4: -1158198
+    Path: event:/SoundEffect/SailboatEngine
+  Event: 
+  PlayEvent: 11
+  StopEvent: 12
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: SailboatEngine
+    Value: 0
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!1 &4787329265921919357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3769731042819200817}
+  - component: {fileID: 6388041857430243377}
+  m_Layer: 0
+  m_Name: BottomCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3769731042819200817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787329265921919357}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 20681564530110160}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &6388041857430243377
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787329265921919357}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.18
+  m_Center: {x: 0, y: 0.18, z: 0}
 --- !u!1 &5164855793128549954
 GameObject:
   m_ObjectHideFlags: 0
@@ -2390,7 +2467,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6365957438239387146}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
   m_Name: 

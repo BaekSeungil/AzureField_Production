@@ -25,7 +25,7 @@ public class Door : MonoBehaviour
     [SerializeField] GameObject RightPoint;
 
     [SerializeField] Transform rotationAxis; // 회전 축
-    [SerializeField] float openAngle = 90f; // 회전할 각도
+    [SerializeField] float openAngle = 45f; // 회전할 각도
 
     [SerializeField] OpenType openType;
     [SerializeField] DoorType doorType;
@@ -110,8 +110,8 @@ public class Door : MonoBehaviour
             float targetAngle = Mathf.Clamp(currentAngle + openAngle, 0f, 90f);
 
             // 회전하는 각도만큼 좌측 문과 우측 문을 회전
-            Quaternion leftTargetRotation = Quaternion.Euler(0f, -targetAngle, 0f);
-            Quaternion rightTargetRotation = Quaternion.Euler(0f, +targetAngle, 0f);
+            Quaternion leftTargetRotation = Quaternion.Euler(0f, +targetAngle, 0f);
+            Quaternion rightTargetRotation = Quaternion.Euler(0f, -targetAngle, 0f);
 
             // 좌측 문과 우측 문의 회전 로테이션 설정
             LeftDoor_Prefab.transform.rotation = Quaternion.RotateTowards(LeftDoor_Prefab.transform.rotation, leftTargetRotation, MoveSpeed * Time.deltaTime);
