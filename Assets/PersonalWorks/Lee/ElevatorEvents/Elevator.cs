@@ -46,10 +46,7 @@ public class Elevator : MonoBehaviour
         {
             instance = this;
         }
-        else
-        {
-            Destroy(gameObject); // 이전에 생성된 다른 인스턴스를 파괴합니다.
-        }
+
         transform.position = Points[StartPoint].position;
         i = StartPoint;
     }
