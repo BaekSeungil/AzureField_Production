@@ -42,11 +42,7 @@ public class Elevator : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-
+        instance = this;
         transform.position = Points[StartPoint].position;
         i = StartPoint;
     }
