@@ -40,23 +40,11 @@ public class Elevator : MonoBehaviour
     bool reverse;
     int i;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject); // 이전에 생성된 다른 인스턴스를 파괴합니다.
-        }
-        transform.position = Points[StartPoint].position;
-        i = StartPoint;
-    }
-
-    private void Start() 
+    public virtual void Awake()
     {
         instance = this;
+        transform.position = Points[StartPoint].position;
+        i = StartPoint;
     }
     private void Update() 
     {
