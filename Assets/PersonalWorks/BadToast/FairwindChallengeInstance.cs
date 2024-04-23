@@ -76,6 +76,8 @@ public class FairwindChallengeInstance : MonoBehaviour
 
     private Vector3 nearestFromPlayer;
 
+    private bool isChallengeDone = false;
+
     /// <summary>
     /// 해당 순풍의 도전의 스플라인의 연결지점들을 가져옵니다.
     /// </summary>
@@ -158,6 +160,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         timer_playCountdown = timelimit;
         UI_FairwindInfo.Instance.ToggleFairwindUI(true);
         extrude.gameObject.SetActive(true);
+        isChallengeDone = false;
 
         FairwindProgress = StartCoroutine(Cor_FairwindMainProgress());
 
@@ -204,6 +207,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
         }
 
+        isChallengeDone = true;
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
@@ -256,7 +260,9 @@ public class FairwindChallengeInstance : MonoBehaviour
         if (currentState == ChallengeState.Closed) return;
         else if (currentState == ChallengeState.Active)
         {
-            timer_playCountdown -= Time.deltaTime;
+            if (!isChallengeDone)
+                timer_playCountdown -= Time.deltaTime;
+
             UI_FairwindInfo.Instance.SetFairwindCountdown(timer_playCountdown);
 
             if (timer_playCountdown <= 0f)
@@ -269,7 +275,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
             float t = 0;
-            if(GetDistanceFromRoute(PlayerCore.Instance.transform.position,out nearestFromPlayer, out t) > distanceAllowence)
+            if (GetDistanceFromRoute(PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
             {
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
