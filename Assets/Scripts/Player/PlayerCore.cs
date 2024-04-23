@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
+using Cinemachine.Utility;
 
 public enum PlayerMovementState
 {
@@ -101,6 +102,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect_HighVel;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
@@ -894,8 +896,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     if (player.rBody.velocity.y < -1f)
                     {
                         RuntimeManager.PlayOneShot(player.sound_splash);
-
-                        player.sailingSplashEffect.Emit(5);
+                        if (player.rBody.velocity.ProjectOntoPlane(Vector3.up).magnitude > 10f)
+                        {
+                            player.sailingSprayEffect_HighVel.Play(true);
+                        }
+                        else
+                        {
+                            player.sailingSplashEffect.Play();
+                        }
                     }
                 }
             }
@@ -970,17 +978,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
 
-            //if( sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
-            //{
-            //    if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
-            //    {
-            //        player.sailingSprayEffect.Play();
-            //    }
-            //    else
-            //    {
-            //        player.sailingSprayEffect.Stop();
-            //    }
-            //}
+            if (sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
+            {
+                if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
+                {
+                    player.sailingSprayEffect.Play(true);
+                }
+                else
+                {
+                    player.sailingSprayEffect.Stop(true);
+                }
+            }
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
