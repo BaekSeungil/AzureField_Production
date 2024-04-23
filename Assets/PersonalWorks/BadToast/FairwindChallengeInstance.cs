@@ -74,6 +74,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private float timer_playCountdown = -1f;
     private float timer_routeCountdown = 0f;
 
+    private SplineSlice<Spline> activeSplineSegment;
     private Vector3 nearestFromPlayer;
 
     private bool isChallengeDone = false;
@@ -106,6 +107,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     {
         FairwindProgress = null;
         extrude.gameObject.SetActive(false);
+        PlayerCore.Instance.DisableIndicator();
         lightPilarObject.transform.position = new Vector3(startKnotPosition.x, lightPilarObject.transform.position.y, startKnotPosition.z);
         StopAllCoroutines();
         currentState = ChallengeState.Aborted;
@@ -141,16 +143,28 @@ public class FairwindChallengeInstance : MonoBehaviour
 
     }
 
-    public float GetDistanceFromRoute(Vector3 point,out Vector3 pointOnSpline,out float t)
+    public float GetDistanceFromSpline(Spline spline,Vector3 point,out Vector3 pointOnSpline,out float t)
     {
         float3 p;
         point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
-        float distance = SplineUtility.GetNearestPoint(RouteSpline, new float3(point.x, point.y, point.z), out p, out t);
+        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t);
         pointOnSpline = new Vector3(p.x, p.y, p.z);
         pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
 
         return distance;
     }
+
+    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t)
+    {
+        float3 p;
+        point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
+        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t);
+        pointOnSpline = new Vector3(p.x, p.y, p.z);
+        pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
+
+        return distance;
+    }
+
 
     private void OnChallengeActivated()
     {
@@ -174,8 +188,12 @@ public class FairwindChallengeInstance : MonoBehaviour
         for (int i = 0; i < routeKnotList.Length - 1; i++)
         {
             activeKnotIndex++;
+
             float prevF = RouteSpline.ConvertIndexUnit(activeKnotIndex - 1, PathIndexUnit.Knot, PathIndexUnit.Normalized);
             float nextF = RouteSpline.ConvertIndexUnit(activeKnotIndex, PathIndexUnit.Knot, PathIndexUnit.Normalized);
+
+            activeSplineSegment = new SplineSlice<Spline>(RouteSpline, new SplineRange(i,2,SliceDirection.Forward));
+
             yield return StartCoroutine(Cor_ChangeDestination(prevF, nextF));
             yield return new WaitUntil(() => (GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
             FMODUnity.RuntimeManager.PlayOneShot(sound_Checkpoint);
@@ -208,6 +226,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
 
         isChallengeDone = true;
+        PlayerCore.Instance.DisableIndicator();
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
@@ -275,11 +294,12 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
             float t = 0;
-            if (GetDistanceFromRoute(PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
+            if (GetDistanceFromSpline(activeSplineSegment,PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
             {
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
                 timer_routeCountdown -= Time.deltaTime;
+                PlayerCore.Instance.EnableIndicator(nearestFromPlayer);
 
                 if (timer_routeCountdown <= 0f)
                 {
@@ -293,6 +313,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             {
                 timer_routeCountdown = distanceAllowenceTime;
                 UI_FairwindInfo.Instance.ToggleAlertUI(false);
+                PlayerCore.Instance.DisableIndicator();
             }
         }
         else if (currentState == ChallengeState.Standby)
@@ -335,7 +356,7 @@ public class FairwindChallengeInstance : MonoBehaviour
                 Gizmos.DrawLine(nearestFromPlayer, PlayerCore.Instance.transform.position);
                 Vector3 o;
                 float t;
-                UnityEditor.Handles.Label(PlayerCore.Instance.transform.position + Vector3.down * 2f, ((int)GetDistanceFromRoute(PlayerCore.Instance.transform.position, out o, out t)).ToString()+ " M"); ;
+                UnityEditor.Handles.Label(PlayerCore.Instance.transform.position + Vector3.down * 2f, ((int)GetDistanceFromSpline(activeSplineSegment,PlayerCore.Instance.transform.position, out o, out t)).ToString()+ " M"); ;
             }
 
             GetRoutePositions(out routeKnotList);

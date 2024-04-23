@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,9 +17,15 @@ public class DirectionIndicator : MonoBehaviour
         if (visualGroup.activeInHierarchy)
         {
             if (isTransformMode)
-                directionTransformObject.forward = (target_transform.position - PlayerCore.Instance.transform.position).normalized;
+            {
+                Vector3 direction = (target_transform.position - PlayerCore.Instance.transform.position);
+                directionTransformObject.forward = new Vector3(direction.x, 0f, direction.z);
+            }
             if (!isTransformMode)
-                directionTransformObject.forward = (target_vector - PlayerCore.Instance.transform.position).normalized;
+            {
+                Vector3 direction = (target_vector - PlayerCore.Instance.transform.position).normalized;
+                directionTransformObject.forward = new Vector3(direction.x, 0f, direction.z);
+            }
         }
     }
 
