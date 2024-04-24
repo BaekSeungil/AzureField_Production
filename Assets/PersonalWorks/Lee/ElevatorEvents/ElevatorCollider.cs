@@ -7,21 +7,21 @@ public class ElevatorCollider : MonoBehaviour
 {
  
     // Start is called before the first frame update
-    private Elevator elevator;
-
-   
-    private void Start() 
+    [SerializeField] private Elevator targetElevator;
+  
+    // Start is called before the first frame update
+    public Elevator TargetElevator
     {
-        elevator = Elevator.instance;
+        get { return targetElevator; }
+        set { targetElevator = value; }
     }
-
     private void OnTriggerEnter(Collider other) 
     {
-        if (elevator != null && elevator.elevatorType == ElevatorType.Auto)
+        if (TargetElevator != null && TargetElevator.elevatorType == ElevatorType.Auto)
         {
             if(other.gameObject.CompareTag("Player"))
             {
-                elevator.Canmove = true;
+                TargetElevator.Canmove = true;
             }
         }
     }

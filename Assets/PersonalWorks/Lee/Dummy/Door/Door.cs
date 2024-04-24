@@ -27,7 +27,7 @@ public class Door : MonoBehaviour
     [SerializeField] Transform rotationAxis; // 회전 축
     [SerializeField] float openAngle = 45f; // 회전할 각도
 
-    [SerializeField] OpenType openType;
+    [SerializeField] public OpenType openType;
     [SerializeField] DoorType doorType;
 
     static public Door instance;
@@ -36,12 +36,6 @@ public class Door : MonoBehaviour
     public bool OpenDoor;
     bool KeyCode;
     public float MoveSpeed;
-
-
-    public OpenType GetOpenType()
-    {
-        return openType;
-    }
 
     private void Awake() 
     {
