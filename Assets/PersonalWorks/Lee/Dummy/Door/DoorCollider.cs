@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DoorCollider : MonoBehaviour
-{
-    Door door;
-
-    void Update()
+{    
+    [SerializeField] Door TargetDoor;
+ 
+    public Door targetDoor
     {
-        door = Door.Instance;
+        get { return TargetDoor; }
+        set { targetDoor = value; }
     }
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(door != null && door.GetOpenType() == OpenType.Auto)
+        if(TargetDoor != null && TargetDoor.openType == OpenType.Auto)
         {
             if(other.gameObject.layer == 6)
             {
-                door.OpenDoor = true;
+                TargetDoor.OpenDoor = true;
                 Debug.Log("감지");
             }
         }   
@@ -26,11 +27,11 @@ public class DoorCollider : MonoBehaviour
 
     private void OnTriggerExit(Collider other) 
     {
-        if(door != null && door.GetOpenType() == OpenType.Auto)
+        if(TargetDoor != null && TargetDoor.openType == OpenType.Auto)
         {
             if(other.gameObject.layer == 6)
             {
-                door.OpenDoor = false;
+                TargetDoor.OpenDoor = false;
                 Debug.Log("감지");
             }
         }   
