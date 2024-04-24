@@ -1034,6 +1034,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             base.OnMovementExit(player);
             player.AbortBooster();
+            player.sailingSprayEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             player.sailboat.gameObject.SetActive(false);
             player.sailboatFootRig.weight = 0.0f;
             player.buoyant.enabled = true;
