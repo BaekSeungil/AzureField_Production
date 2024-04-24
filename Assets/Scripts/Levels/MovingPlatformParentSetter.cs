@@ -19,9 +19,4 @@ public class MovingPlatformParentSetter : MonoBehaviour
             other.attachedRigidbody.transform.SetParent(null);
         }
     }
-
-    // Start is called before the first frame update
-
-
-
 }
