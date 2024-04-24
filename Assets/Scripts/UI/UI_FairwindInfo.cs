@@ -70,6 +70,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void SetFairwindCountdown(float time)
     {
+        if (time < 0f) time = 0f;
         if (!visualGroup.activeInHierarchy) return;
         fairwindCountdown_integer.text = ((int)time).ToString();
         fairwindCountdown_frac.text = (((int)(time*100))%100).ToString();
@@ -77,6 +78,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
     public void SetAlertCountdown(float time)
     {
+        if (time < 0f) time = 0f;
         if (!alertObject.activeInHierarchy) return;
         alertCountdown_integer.text = ((int)time).ToString();
         alertCountdown_frac.text = (((int)(time * 100)) % 100).ToString();

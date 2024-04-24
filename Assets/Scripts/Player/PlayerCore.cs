@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
-
+using Cinemachine.Utility;
 
 public enum PlayerMovementState
 {
@@ -91,28 +91,30 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 #endif
 
     #region ChildReferences
-    [SerializeField, FoldoutGroup("ChildReferences")] private Animator animator;
-    [SerializeField, FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform RCO_foot;
-    [SerializeField , FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
-    [SerializeField , FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
-    [SerializeField , FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
-    [SerializeField , FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
-    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
-    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
-    [SerializeField , FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform headTarget;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Rig headRig;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Rig handRig;
-    [SerializeField , FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
-    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
-    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
-    [SerializeField , FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private DirectionIndicator directionIndicator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator animator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private BuoyantBehavior buoyant;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform RCO_foot;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect_HighVel;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig headRig;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig handRig;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig holdObjectRig;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     #endregion
 
 
@@ -872,7 +874,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
                 }
             }
@@ -884,7 +886,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.Move.IsPressed())
                 {
-                    Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
+                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
 
@@ -894,8 +896,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     if (player.rBody.velocity.y < -1f)
                     {
                         RuntimeManager.PlayOneShot(player.sound_splash);
-
-                        player.sailingSplashEffect.Emit(5);
+                        if (player.rBody.velocity.ProjectOntoPlane(Vector3.up).magnitude > 10f)
+                        {
+                            player.sailingSprayEffect_HighVel.Play(true);
+                        }
+                        else
+                        {
+                            player.sailingSplashEffect.Play();
+                        }
                     }
                 }
             }
@@ -908,7 +916,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.drag = player.sailboatGlidingDrag;
                     if (player.input.Player.Move.IsPressed())
                     {
-                        Vector3 lookTransformedVector = GetSailboatHeadingVector(player, player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                        Vector3 lookTransformedVector = player.GetLookMoveVector( player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                         player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration, ForceMode.Acceleration);
                     }
                 }
@@ -970,17 +978,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
 
-            //if( sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
-            //{
-            //    if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
-            //    {
-            //        player.sailingSprayEffect.Play();
-            //    }
-            //    else
-            //    {
-            //        player.sailingSprayEffect.Stop();
-            //    }
-            //}
+            if (sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
+            {
+                if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
+                {
+                    player.sailingSprayEffect.Play(true);
+                }
+                else
+                {
+                    player.sailingSprayEffect.Stop(true);
+                }
+            }
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
@@ -1245,6 +1253,32 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
         if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
         if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+    }
+
+    /// <summary>
+    /// 플레이어 방향 지시를 활성화합니다.
+    /// </summary>
+    /// <param name="target">목표 지점</param>
+    public void EnableIndicator(Vector3 target)
+    {
+        directionIndicator.EnableIndicator(target);
+    }
+
+    /// <summary>
+    /// 플레이어 방향 지시를 활성화합니다.
+    /// </summary>
+    /// <param name="target">목표 지점</param>
+    public void EnableIndicator(Transform target)
+    {
+        directionIndicator.EnableIndicator(target);
+    }
+
+    /// <summary>
+    /// 플레이어 방향 지시를 끕니다.
+    /// </summary>
+    public void DisableIndicator() 
+    {
+        directionIndicator.DisableIndicator();
     }
 
 /// <summary>
