@@ -980,21 +980,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
 
-            float effectMax = 3f;
-            float effectMin = 0f;
-
-            if (sailboat.SubmergeRate < effectMax && sailboat.SubmergeRate > effectMin)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1.0f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
 
+                Vector3 surfacePos = player.transform.position;
+
                 if (GlobalOceanManager.IsInstanceValid)
-                    player.sailingSprayEffect.transform.position = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
+                    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
+
+                player.sailingSprayEffect.transform.position = surfacePos;
 
                 if (!player.sailingSprayEffect.isPlaying)
                 {
                     player.sailingSprayEffect.Play(true);
-                    var effectMain = player.sailingSprayEffect.main;
-                    effectMain.startSize = Mathf.Clamp01(Mathf.InverseLerp(0f, effectMax, sailboat.SubmergeRate))* 3f;
                 }
             }
             else
