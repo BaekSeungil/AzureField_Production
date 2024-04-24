@@ -100,9 +100,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
-    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
-    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect_HighVel;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect_HighVel;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
@@ -898,11 +897,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         RuntimeManager.PlayOneShot(player.sound_splash);
                         if (player.rBody.velocity.ProjectOntoPlane(Vector3.up).magnitude > 10f)
                         {
-                            player.sailingSprayEffect_HighVel.Play(true);
+                            if (!player.sailingSplashEffect_HighVel.isPlaying)
+                                player.sailingSplashEffect_HighVel.Play(true);
                         }
                         else
                         {
-                            player.sailingSplashEffect.Play();
+                            if (GlobalOceanManager.IsInstanceValid)
+                            {
+                                Instantiate(player.normalSplashEffectPrefab, new Vector3(player.transform.position.x, GlobalOceanManager.Instance.GetWaveHeight(player.transform.position), player.transform.position.z), Quaternion.identity);
+                            }
                         }
                     }
                 }
@@ -977,17 +980,26 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
 
-
-            if (sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.1f)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1.0f)
             {
-                if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 13f)
+                Vector3 pos = player.sailingSprayEffect.transform.position;
+
+                Vector3 surfacePos = player.transform.position;
+
+                if (GlobalOceanManager.IsInstanceValid)
+                    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
+
+                player.sailingSprayEffect.transform.position = surfacePos;
+
+                if (!player.sailingSprayEffect.isPlaying)
                 {
                     player.sailingSprayEffect.Play(true);
                 }
-                else
-                {
-                    player.sailingSprayEffect.Stop(true);
-                }
+            }
+            else
+            {
+                if (player.sailingSprayEffect.isPlaying)
+                    player.sailingSprayEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
