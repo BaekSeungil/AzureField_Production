@@ -7,20 +7,19 @@ public class DoorInstance : Interactable_Base
 {
 
     [SerializeField] protected UnityEvent eventsOnStartInteract; 
-
-    Door door;
-
-    // Update is called once per frame
-    void Update()
+    [SerializeField] Door TargetDoor;
+ 
+    public Door targetDoor
     {
-        door = Door.Instance;
+        get { return TargetDoor; }
+        set { targetDoor = value; }
     }
 
      public override void Interact()
     {
-        if (door != null && door.GetOpenType() == OpenType.Interaction)
+        if (targetDoor != null && targetDoor.openType == OpenType.Interaction)
         {
-            door.OpenDoor = true;
+            targetDoor.OpenDoor = true;
         }
     }
 

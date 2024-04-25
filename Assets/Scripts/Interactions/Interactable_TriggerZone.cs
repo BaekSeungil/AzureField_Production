@@ -27,9 +27,13 @@ public class Interactable_TriggerZone : Interactable_Base
 
     public override void Interact()
     {
-        eventsOnStartInteract.Invoke();
+        if (eventsOnStartInteract != null)
+            eventsOnStartInteract.Invoke();
+
         if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-        SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+        if (sequenceAsset != null)
+            SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
         if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
     }
