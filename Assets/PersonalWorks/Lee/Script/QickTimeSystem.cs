@@ -19,6 +19,11 @@ public class QickTimeSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CountButton();
+    }
+
+    public void CountButton()
+    {
         if(Keyboard.current[Key.A].wasPressedThisFrame)
         {
             fillAmount += 0.2f;
