@@ -20,11 +20,11 @@ public class MiniMapCamera : MonoBehaviour
         transform.position = new Vector3(targetPos.x,
         targetPos.y + camerHeghit, targetPos.z);
 
-        if(setting.rotateWidthTheTarget)
-        {
-            Quaternion targetRotation = setting.targetFollow.transform.rotation;
+     //    if(setting.rotateWidthTheTarget)
+     //    {
+     //        Quaternion targetRotation = setting.targetFollow.transform.rotation;
 
-            transform.rotation = Quaternion.Euler(90, targetRotation.eulerAngles.y, 0);
-        }
+     //        transform.rotation = Quaternion.Euler(90, targetRotation.eulerAngles.y, 0);
+     //    }
    }
 }
