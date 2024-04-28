@@ -8,6 +8,10 @@ using Mono.Cecil.Cil;
 public class QickTimeSystem : MonoBehaviour
 {
 
+    public GameObject DisPlayBox;
+    public GameObject PassBox;
+    public int QTEGen;
+    
     public float fillAmount = 0;
     public float timeThreshold = 0;
     // Start is called before the first frame update
@@ -19,10 +23,10 @@ public class QickTimeSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CountButton();
+        
     }
 
-    public void CountButton()
+    public void WaitingForKey()
     {
         if(Keyboard.current[Key.A].wasPressedThisFrame)
         {
@@ -30,9 +34,10 @@ public class QickTimeSystem : MonoBehaviour
         }
         timeThreshold += Time.deltaTime;
 
-        if(timeThreshold> 0.1f)
+        if(timeThreshold> 0.5f)
         {
-
+            timeThreshold = 0;
+            fillAmount -= 0.2f;
         }
         timeThreshold = 0;
         fillAmount -= 0.02f;
