@@ -504,6 +504,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 interestPoint = null;
         }
 
+        if (reefbounceOnOff == true)
+        {
+            ReefBoundce();
+        }
+
         //이전 프레임의 플레이어 속도
         Vector3 currentVelocity = rBody.velocity;
 
@@ -1385,13 +1390,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     IEnumerator ReefCrash()
     {
         DisableForSequence();
+        reefbounceOnOff = true;
+        
         SailboatQuit();
+        //rBody.AddForce(Vector3.back * reefCrashPower, ForceMode.Impulse);
+        //rBody.AddForce(Vector3.down * reefCrashPower, ForceMode.Impulse);
+        yield return new WaitForSeconds(reefCrashbindTime);
 
-        yield return new WaitForSeconds(1.0f);
-
+        reefbounceOnOff = false;
         EnableForSequence();
     }
-
+    bool reefbounceOnOff = false;
+    float reefCrashbindTime = 3.0f;
+    float reefCrashPower = 5.0f;
     float boatGroundingTimer = 0f;
 
     /// <summary>
@@ -1409,6 +1420,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
                 Debug.Log("암초 대충돌!");
                 StartCoroutine(ReefCrash());
+                
             }
         }
 
@@ -1416,6 +1428,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             boatGroundingTimer = sailboatAutoOffTime;
         }
+    }
+
+    private void ReefBoundce() 
+    {
+        Vector3 pushDirection = -transform.forward; // 플레이어가 보는 방향의 반대 방향
+        rBody.AddForce(pushDirection * reefCrashPower, ForceMode.Impulse);
     }
 
     private void OnCollisionStay(Collision collision)

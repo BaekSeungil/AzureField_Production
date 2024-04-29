@@ -8,7 +8,8 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
     [SerializeField] private PlayerCore player;
     [SerializeField] private float reefCrashMaxVelocity = 13.0f;                    //암초대충돌 감지속도
     [SerializeField] private float reefCrashMinVelocity = 3.0f;                     //암초대충돌 감속감지속도
-    [SerializeField] private float reefCrashBindTime = 1.0f;                     //암초대충돌 시 기절시간
+    [SerializeField] private float reefCrashBindTime = 5.0f;                     //암초대충돌 시 기절시간
+    [SerializeField] private float reefCrashPower = 50.0f;                           //암초대충돌 시 밀려나는 힘
     private Rigidbody rBody;
     private Vector3 previousVelocity;
 
@@ -48,7 +49,7 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
     {
         player.DisableForSequence();
         player.SailboatQuit();
-
+        
         yield return new WaitForSeconds(reefCrashBindTime);
 
         player.EnableForSequence();
@@ -68,6 +69,7 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
             if (previousVelocity.magnitude > reefCrashMaxVelocity && rBody.velocity.magnitude < reefCrashMinVelocity)
             {
                 Debug.Log("대충돌" + previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
+                rBody.AddForce(Vector3.back * reefCrashPower, ForceMode.Impulse);
                 StartCoroutine(ReefCrash());
             }
 
