@@ -176,6 +176,8 @@ public class QickTimeSystem : MonoBehaviour
         }
     }
 
+
+
     protected void setupGUI()
     {
         var ui  = getUI();
