@@ -3,49 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using Mono.Cecil.Cil;
+
 
 public class QickTimeSystem : MonoBehaviour
 {
 
-    public GameObject DisPlayBox;
-    public GameObject PassBox;
-    public int QTEGen;
+   [Header("옵션 구성")]
+   [SerializeField]public float slowMotionTimeScale = 0.1f;
+
+   [HideInInspector]
+   private bool IsEventStart;
+   private bool isAllButtonPressed;
+   private bool isFall;
+   private bool isEnd;
+   private bool wrongKeyPressed;
+   private float currentTime;
+   private float smoothTimeUpdate;
+   private float rememberTimeScalse;
+
+   protected void Update() 
+   {
     
-    public float fillAmount = 0;
-    public float timeThreshold = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void WaitingForKey()
-    {
-        if(Keyboard.current[Key.A].wasPressedThisFrame)
-        {
-            fillAmount += 0.2f;
-        }
-        timeThreshold += Time.deltaTime;
-
-        if(timeThreshold> 0.5f)
-        {
-            timeThreshold = 0;
-            fillAmount -= 0.2f;
-        }
-        timeThreshold = 0;
-        fillAmount -= 0.02f;
-        
-        if(fillAmount < 0)
-        {
-            fillAmount = 0;
-        }
-        GetComponent<Image>().fillAmount = fillAmount;
-    }
+   }
 }
