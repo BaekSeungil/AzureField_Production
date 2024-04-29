@@ -22,7 +22,6 @@ public class QickTimeSystem : MonoBehaviour
    private float currentTime;
    private float smoothTimeUpdate;
    private float rememberTimeScalse;
-
    private List<QTEKey> keys = new List<QTEKey>();
    protected void Update() 
    {
