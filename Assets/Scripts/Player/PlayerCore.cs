@@ -990,14 +990,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
 
-            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1.0f)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
 
                 Vector3 surfacePos = player.transform.position;
 
-                if (GlobalOceanManager.IsInstanceValid)
-                    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
+                //if (GlobalOceanManager.IsInstanceValid)
+                //    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
 
                 player.sailingSprayEffect.transform.position = surfacePos;
 
