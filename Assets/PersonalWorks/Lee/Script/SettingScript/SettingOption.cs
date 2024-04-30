@@ -10,25 +10,23 @@ using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using FMOD;
 
-public class SettingOption : MonoBehaviour
+public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
 {
-
-
     [SerializeField] public GameObject Setting;
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
     [SerializeField] public GameObject MoveSetting;
     [SerializeField] private GameObject backPanel;
 
-    MainPlayerInputActions inputs;
+    MainPlayerInputActions settigUI_inputs;
 
 
     private static bool GameIsPaused = false;
 
-    private void Awake()
+    protected override void Awake()
     {
-        inputs = new MainPlayerInputActions();
-        inputs.UI.Enable();
+        settigUI_inputs = new MainPlayerInputActions();
+        settigUI_inputs.UI.Enable();
     }
 
     private void Update()
@@ -37,10 +35,12 @@ public class SettingOption : MonoBehaviour
         {
             if (GameIsPaused)
             {
+                UI_InputManager.Instance.UI_Input.Enable();
                 Resume();
             }
             else
             {
+                UI_InputManager.Instance.UI_Input.Disable();
                 Pause();
             }
         }

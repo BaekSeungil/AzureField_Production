@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ public class ItemObtainInfo : StaticSerializedMonoBehaviour<ItemObtainInfo>
 
     public IEnumerator Cor_OpenWindow(ItemData item, int quantity = 1)
     {
-        MainPlayerInputActions input = new MainPlayerInputActions();
+        MainPlayerInputActions input = UI_InputManager.Instance.UI_Input;
         input.Enable();
         RuntimeManager.PlayOneShot(sound_obtainSound);
 
