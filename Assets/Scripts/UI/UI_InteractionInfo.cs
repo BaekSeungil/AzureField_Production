@@ -26,7 +26,7 @@ public class UI_InteractionInfo : StaticSerializedMonoBehaviour<UI_InteractionIn
     const float yOffsetTarget = 100f;
     float yOffset = 0;
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (visualGroup.gameObject.activeInHierarchy && worldObjectTarget != null)
         {
@@ -35,11 +35,16 @@ public class UI_InteractionInfo : StaticSerializedMonoBehaviour<UI_InteractionIn
                 if (PlayerCore.Instance.IsHoldingSomething || !PlayerCore.Instance.Input.Player.enabled) HideCurrentInfo();
             }
 
+            if (yOffset <= yOffsetTarget - 1f)
+                yOffset = Mathf.Lerp(yOffset, yOffsetTarget, 0.5f);
+            else
+                yOffset = yOffsetTarget;
+
             if (worldObjectTarget != null)
                 panelRect.position = Camera.main.WorldToScreenPoint(worldObjectTarget.position) + Vector3.up * yOffset;
 
             textMesh.rectTransform.anchoredPosition = panelRect.anchoredPosition;
-            yOffset = Mathf.Lerp(yOffset, yOffsetTarget, 0.2f);
+
         }
     }
 

@@ -32,4 +32,22 @@ public class GlobalGameParameters : StaticSerializedMonoBehaviour<GlobalGamePara
             }
         }
     }
+
+    /// <summary>
+    /// 글로벌 패러미터를 설정합니다.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool SetGlobalParameter(string key, int value)
+    {
+        if (data.ContainsKey(key))
+        {
+            Debug.Log("글로벌 패러미터 설정됨 | " + key + " = " + value);
+            data[key] = value;
+            return true;
+        }
+        else
+            return false;
+    }
 }
