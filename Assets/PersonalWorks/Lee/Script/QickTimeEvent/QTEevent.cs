@@ -49,4 +49,19 @@ public class QTEevent : MonoBehaviour
     public UnityEvent onEnd;
     public UnityEvent onSuccess;
     public UnityEvent onFail;
+
+    public static QTEevent instance;
+
+    private void Awake() 
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+
+
+    }
+        
+    
+
 }

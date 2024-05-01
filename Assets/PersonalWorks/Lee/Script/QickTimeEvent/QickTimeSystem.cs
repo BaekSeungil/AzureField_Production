@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using Unity.Transforms;
 
 public class QickTimeSystem : MonoBehaviour
 {
@@ -23,6 +24,14 @@ public class QickTimeSystem : MonoBehaviour
    private float smoothTimeUpdate;
    private float rememberTimeScalse;
    private List<QTEKey> keys = new List<QTEKey>();
+
+    public static QickTimeSystem instance;
+    private void Awake() 
+    {
+        if(instance ==null)
+        instance = this;
+    }
+
    protected void Update() 
    {
         if(!IsEventStart || eventData == null || isPause)
@@ -41,8 +50,10 @@ public class QickTimeSystem : MonoBehaviour
         }
    }
 
-   public void StartEvent(QTEevent eventTable)
+   public void StartEvent()
    {
+        QTEevent eventTable = QTEevent.instance;
+        
         if(Keyboard.current == null)
         {
             UnityEngine.Debug.Log("No keyborad connected");
