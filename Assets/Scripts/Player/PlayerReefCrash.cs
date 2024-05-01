@@ -47,12 +47,12 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
     /// </summary>
     IEnumerator ReefCrash()
     {
-        player.DisableForSequence();
+        player.DisableControlls();
         player.SailboatQuit();
         
         yield return new WaitForSeconds(reefCrashBindTime);
 
-        player.EnableForSequence();
+        player.EnableControlls();
     }
 
     /// <summary>

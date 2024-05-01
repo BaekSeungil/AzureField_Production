@@ -102,9 +102,9 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
             {
                 if (sequence.IsSequenceRunning) SequenceInvoker.Instance.ForceAbortAllSequences();
 
-                PlayerCore.Instance.DisableForSequence(); UI_PlaymenuBehavior.Instance.DisableInput();
+                PlayerCore.Instance.DisableControlls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return SequenceInvoker.Instance.Cor_RecurciveSequenceChain(activeStoryline.Objectives[i].sequenceOnStart.SequenceBundles);
-                PlayerCore.Instance.EnableForSequence(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
             UI_Objective.Instance.OpenObjective(activeStoryline.QuestNameText.GetLocalizedString(), activeStoryline.Objectives[i].objectiveText.GetLocalizedString());
@@ -134,9 +134,9 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
             {
                 if (sequence.IsSequenceRunning) SequenceInvoker.Instance.ForceAbortAllSequences();
 
-                PlayerCore.Instance.DisableForSequence(); UI_PlaymenuBehavior.Instance.DisableInput();
+                PlayerCore.Instance.DisableControlls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return sequence.Cor_RecurciveSequenceChain(activeStoryline.Objectives[i].sequenceOnFinished.SequenceBundles);
-                PlayerCore.Instance.EnableForSequence(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
         }

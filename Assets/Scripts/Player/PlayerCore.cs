@@ -67,10 +67,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float boosterCooldown = 1.0f;
     [SerializeField] private float leapupPower = 10f;
     [SerializeField] private float leapupCooldown = 1.0f;
+    [SerializeField] private float leapupDuration = 0.5f;
+    [SerializeField] private AnimationCurve leapupForceCurve;
 
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
-
 
     [Title("Others")]
     [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
@@ -146,8 +147,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     int layerIndex_Swim;
     int layerIndex_Boarding;
+    int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    bool leapupActive = false;
 
     //플레이어 상태 참고용 변수
     public string movementStateRefernce;
@@ -477,6 +480,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         layerIndex_Swim = animator.GetLayerIndex("SwimLayer");
         layerIndex_Boarding = animator.GetLayerIndex("BoardingLayer");
+        layerIndex_ItemHolding = animator.GetLayerIndex("ItemHoldingLayer");
     }
 
     private float headRigTarget = 0.7f;
@@ -504,10 +508,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 interestPoint = null;
         }
 
-        if (reefbounceOnOff == true)
-        {
-            ReefBoundce();
-        }
 
         //이전 프레임의 플레이어 속도
         Vector3 currentVelocity = rBody.velocity;
@@ -599,9 +599,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         // etc.
 
 
-        if (Input.Player.Interact.WasPressedThisFrame())
+        if (IsHoldingSomething)
         {
-            ReleaseHoldingItem();
+            if (Input.Player.Interact.WasPressedThisFrame())
+            {
+                StartCoroutine(Cor_PlaceItem());
+            }
         }
 
         // Time ability attribute update
@@ -626,6 +629,28 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 boosterGauge = boosterCooldown;
                 UI_SailboatSkillInfo.Instance.SetBoosterRing(1f);
                 UI_SailboatSkillInfo.Instance.AnimateBoosterRing();
+            }
+        }
+
+        if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
+        {
+            if (sailboat.SubmergeRate < 1.0f && rBody.velocity.y < 0)
+            {
+                leapupRechargeTriggered = true;
+            }
+        }
+
+        if(leapupRecharging && leapupRechargeTriggered)
+        {
+            leapupGauge += Time.deltaTime;
+            UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge/leapupCooldown);
+
+            if(leapupGauge > leapupCooldown)
+            {
+                leapupRecharging = false;
+                leapupGauge = leapupCooldown;
+                UI_SailboatSkillInfo.Instance.SetLeapupRing(1f);
+                UI_SailboatSkillInfo.Instance.AnimateLeapupRing();
             }
         }
 
@@ -985,14 +1010,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
 
-            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1.0f)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
 
                 Vector3 surfacePos = player.transform.position;
 
-                if (GlobalOceanManager.IsInstanceValid)
-                    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
+                //if (GlobalOceanManager.IsInstanceValid)
+                //    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
 
                 player.sailingSprayEffect.transform.position = surfacePos;
 
@@ -1112,7 +1137,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private void OnLeapupStart(InputAction.CallbackContext context)
     {
-        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) return;
+        if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
+        if (leapupRecharging) return; 
         if (leapupCoroutine != null) return;
 
         leapupCoroutine = StartCoroutine(Cor_Leapup());
@@ -1123,7 +1149,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     Coroutine boosterCoroutine;
     Coroutine leapupCoroutine;
     float boosterGauge = 0f;
+    float leapupGauge = 0f;
     bool boosterRecharging = false;
+    bool leapupRecharging = false;
+    bool leapupRechargeTriggered = false;
 
 
     public void AbortBooster()
@@ -1169,7 +1198,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     IEnumerator Cor_Leapup()
     {
-        yield return null;
+        leapupGauge = 1f;
+
+        Debug.Log("Leapup"); 
+        
+        leapupActive = true;
+
+        for(float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
+        {
+            rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
+            leapupGauge = t / leapupDuration;
+            UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
+            yield return new WaitForFixedUpdate();
+        }
+
+        leapupActive = false;
+        leapupRecharging = true;
+        leapupRechargeTriggered = false;
 
         leapupCoroutine = null;
     }
@@ -1195,7 +1240,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public bool HoldItem(Transform leftHand, Transform rightHand,Interactable_Holding holdingItem)
     {
         if (holdItemCoroutineFlag) return false;
-        if (currentHoldingItem != null) { ReleaseHoldingItem(); return false; }
+
+        if (currentHoldingItem != null) {
+            return false; 
+        }
         else
         {
             StartCoroutine(Cor_HoldItem(leftHand, rightHand, holdingItem));
@@ -1204,14 +1252,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     float holdItemAnimTime = 1.0f;
-
+    float releaseItemAnimTime = 1.0f;
+    float itemAnimationTime = 1.0f;
 
     private IEnumerator Cor_HoldItem(Transform leftHand, Transform rightHand, Interactable_Holding holdingItem)
     {
-        animator.SetTrigger("ItemPickup");
         bool inputWasEnabled = Input.Player.enabled;
         Input.Player.Disable();
         holdItemCoroutineFlag = true;
+        animator.SetTrigger("ItemHold");
 
         yield return new WaitForSeconds(holdItemAnimTime / 2f);
 
@@ -1220,13 +1269,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdingItem.transform.parent = holdingItemTarget;
         handRig.weight = 1.0f;
 
-        for (float t = 0; t < holdItemAnimTime / 2f; t += Time.deltaTime)
+        animator.SetLayerWeight(layerIndex_ItemHolding, 0f);
+
+        for (float t = 0; t < itemAnimationTime / 2f; t += Time.deltaTime)
         {
             holdingItem.transform.localPosition = Vector3.Lerp(holdingItem.transform.localPosition, Vector3.zero, 0.4f);
             holdingItem.transform.localRotation = Quaternion.Lerp(holdingItem.transform.localRotation, Quaternion.Euler(Vector3.zero), 0.4f);
-            holdObjectRig.weight = Mathf.InverseLerp(0,holdItemAnimTime*0.45f,t);
+            holdObjectRig.weight = Mathf.InverseLerp(0,itemAnimationTime*0.45f,t);
             yield return null;
         }
+
+        animator.SetLayerWeight(layerIndex_ItemHolding, 1f);
 
         if (inputWasEnabled)
             Input.Player.Enable();
@@ -1236,14 +1289,49 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         currentHoldingItem = holdingItem;
     }
 
-/// <summary>
-/// 현재 들고있는 아이템이 있으면 즉시 놓습니다.
-/// </summary>
+    private IEnumerator Cor_PlaceItem()
+    {
+        if (currentHoldingItem == null) yield break;
+
+        bool inputWasEnabled = Input.Player.enabled;
+        Input.Player.Disable();
+        handRig.weight = 0.0f;
+        animator.SetTrigger("ItemRelease");
+        holdItemCoroutineFlag = true;
+        currentHoldingItem.Release();
+
+        yield return new WaitForSeconds(releaseItemAnimTime / 2f);
+
+        currentHoldingItem.transform.parent = null;
+        animator.SetLayerWeight(layerIndex_ItemHolding, 1f);
+
+        for (float t = itemAnimationTime / 2f; t > 0; t -= Time.deltaTime)
+        {
+            holdObjectRig.weight = Mathf.InverseLerp(0, itemAnimationTime * 0.45f, t);
+            yield return null;
+        }
+
+        if (inputWasEnabled)
+            Input.Player.Enable();
+
+        animator.SetLayerWeight(layerIndex_ItemHolding, 0f);
+
+        currentHoldingItem = null;
+        holdItemCoroutineFlag = false;
+        handRig.weight = 0.0f;
+        holdObjectRig.weight = 0.0f;
+
+    }
+
+    /// <summary>
+    /// 현재 들고있는 아이템이 있으면 즉시 놓습니다.
+    /// </summary>
     public void ReleaseHoldingItem()
     {
         if (currentHoldingItem == null) return;
 
         currentHoldingItem.transform.parent = null;
+        animator.SetLayerWeight(layerIndex_ItemHolding, 0f);
         currentHoldingItem.Release();
         currentHoldingItem = null;
         handRig.weight = 0.0f;
@@ -1251,10 +1339,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
 
+
 /// <summary>
 ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
 /// </summary>
-    public void DisableForSequence()
+    public void DisableControlls()
     {
         input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
@@ -1265,7 +1354,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// <summary>
 /// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
 /// </summary>
-    public void EnableForSequence()
+    public void EnableControlls()
     {
         input.Player.Enable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
@@ -1389,20 +1478,26 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     IEnumerator ReefCrash()
     {
-        DisableForSequence();
-        reefbounceOnOff = true;
-        
+        DisableControlls();
+        animator.SetTrigger("ReefCrash");
+
+        rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
+        rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);
+        yield return new WaitForSeconds(reefCrashStifftime);
+
+
         SailboatQuit();
         //rBody.AddForce(Vector3.back * reefCrashPower, ForceMode.Impulse);
         //rBody.AddForce(Vector3.down * reefCrashPower, ForceMode.Impulse);
         yield return new WaitForSeconds(reefCrashbindTime);
 
-        reefbounceOnOff = false;
-        EnableForSequence();
+
+        EnableControlls();
     }
-    bool reefbounceOnOff = false;
+
+    float reefCrashStifftime = 0.5f;
     float reefCrashbindTime = 3.0f;
-    float reefCrashPower = 5.0f;
+    float reefCrashPower = 15.0f;
     float boatGroundingTimer = 0f;
 
     /// <summary>
@@ -1412,15 +1507,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (collision.collider.gameObject.CompareTag("Reef"))
         {
-            ///<summary>
-            ///암초충돌감지
-            /// </summary>
+            //암초충돌감지
             if (previousVelocity.magnitude - rBody.velocity.magnitude > 10)
             {
-                Debug.Log(previousVelocity.magnitude + ", " + rBody.velocity.magnitude);
-                Debug.Log("암초 대충돌!");
                 StartCoroutine(ReefCrash());
-                
             }
         }
 
@@ -1430,16 +1520,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-    private void ReefBoundce() 
-    {
-        Vector3 pushDirection = -transform.forward; // 플레이어가 보는 방향의 반대 방향
-        rBody.AddForce(pushDirection * reefCrashPower, ForceMode.Impulse);
-    }
-
     private void OnCollisionStay(Collision collision)
     {
-
-        if (((1 << collision.collider.gameObject.layer) & groundIgnore) == 0)
+        if (((1 << collision.collider.gameObject.layer) & groundIgnore) == 0 && grounding)
         {
             if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
             {
