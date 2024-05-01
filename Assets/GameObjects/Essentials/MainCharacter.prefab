@@ -936,8 +936,35 @@ MonoBehaviour:
   boosterMult: 2
   boosterDuration: 5
   boosterCooldown: 5
-  leapupPower: 10
+  leapupPower: 3
   leapupCooldown: 1
+  leapupDuration: 0.5
+  leapupForceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  driftSteer: 0.5
+  driftKickPower: 10
   sound_splash:
     Guid:
       Data1: 213218266
@@ -959,7 +986,7 @@ MonoBehaviour:
   collider: {fileID: 8977674688113420054}
   bottomColider: {fileID: 6388041857430243377}
   sailboat: {fileID: 5073862818154871201}
-  sailboasModelPivot: {fileID: 7614590944922003835}
+  sailboatModelPivot: {fileID: 7614590944922003835}
   normalSplashEffectPrefab: {fileID: 3231274048436350310, guid: a40b1e9ade46b03409acae5f6ada87bd,
     type: 3}
   sailingSprayEffect: {fileID: 6397659904177703378}
@@ -976,6 +1003,7 @@ MonoBehaviour:
   gustSound: {fileID: 5892454862008243834}
   waterScratchSound: {fileID: 518152145542751021}
   sailboatEngineSound: {fileID: 6917492484742745192}
+  availableForDrift: 0
   movementStateRefernce: 
 --- !u!54 &8225453746728407008
 Rigidbody:
