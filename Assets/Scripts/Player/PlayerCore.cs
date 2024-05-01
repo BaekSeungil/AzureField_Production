@@ -67,6 +67,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float boosterCooldown = 1.0f;
     [SerializeField] private float leapupPower = 10f;
     [SerializeField] private float leapupCooldown = 1.0f;
+    [SerializeField] private float leapupDuration = 0.5f;
+    [SerializeField] private AnimationCurve leapupForceCurve;
 
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
@@ -148,6 +150,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    bool leapupActive = false;
 
     //플레이어 상태 참고용 변수
     public string movementStateRefernce;
@@ -626,6 +629,28 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 boosterGauge = boosterCooldown;
                 UI_SailboatSkillInfo.Instance.SetBoosterRing(1f);
                 UI_SailboatSkillInfo.Instance.AnimateBoosterRing();
+            }
+        }
+
+        if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
+        {
+            if (sailboat.SubmergeRate < 1.0f && rBody.velocity.y < 0)
+            {
+                leapupRechargeTriggered = true;
+            }
+        }
+
+        if(leapupRecharging && leapupRechargeTriggered)
+        {
+            leapupGauge += Time.deltaTime;
+            UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge/leapupCooldown);
+
+            if(leapupGauge > leapupCooldown)
+            {
+                leapupRecharging = false;
+                leapupGauge = leapupCooldown;
+                UI_SailboatSkillInfo.Instance.SetLeapupRing(1f);
+                UI_SailboatSkillInfo.Instance.AnimateLeapupRing();
             }
         }
 
@@ -1112,7 +1137,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private void OnLeapupStart(InputAction.CallbackContext context)
     {
-        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) return;
+        if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
+        if (leapupRecharging) return; 
         if (leapupCoroutine != null) return;
 
         leapupCoroutine = StartCoroutine(Cor_Leapup());
@@ -1123,7 +1149,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     Coroutine boosterCoroutine;
     Coroutine leapupCoroutine;
     float boosterGauge = 0f;
+    float leapupGauge = 0f;
     bool boosterRecharging = false;
+    bool leapupRecharging = false;
+    bool leapupRechargeTriggered = false;
 
 
     public void AbortBooster()
@@ -1169,7 +1198,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     IEnumerator Cor_Leapup()
     {
-        yield return null;
+        leapupGauge = 1f;
+
+        Debug.Log("Leapup"); 
+        
+        leapupActive = true;
+
+        for(float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
+        {
+            rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
+            leapupGauge = t / leapupDuration;
+            UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
+            yield return new WaitForFixedUpdate();
+        }
+
+        leapupActive = false;
+        leapupRecharging = true;
+        leapupRechargeTriggered = false;
 
         leapupCoroutine = null;
     }
@@ -1473,11 +1518,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             boatGroundingTimer = sailboatAutoOffTime;
         }
-    }
-
-    private void ReefBoundce() 
-    {
-
     }
 
     private void OnCollisionStay(Collision collision)
