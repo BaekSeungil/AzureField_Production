@@ -1,53 +1,75 @@
 using Mono.Cecil.Cil;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
-public class MiniMapSetting : MonoBehaviour
+public class MiniMapSetting : StaticSerializedMonoBehaviour<MiniMapSetting>
 {
-    public Transform targetFollow;
-    public bool rotateWidthTheTarget = true;
-    [SerializeField] public GameObject minimap;
-
-    [SerializeField] RectTransform scrollViewRectTransform;
-
-    [SerializeField] RectTransform contentRectTransform;
-
-    [SerializeField] float zoomSpeed = 0.1f;
-    [SerializeField] float maxZoom= 10f;
-    [SerializeField] float minZoom = 1f;
-
-    private Vector2 scrollViewDeaultSize;
-    private Vector2 scrollViewDefaultPos;
+    [SerializeField] private bool rotateWidthTheTarget = true;
+    [SerializeField] private GameObject minimap;
+    [SerializeField] private Camera minimapCamera;
+    [SerializeField] private RectTransform cursorTransform;
+    [SerializeField] private RectTransform northpointTransform;
+    [SerializeField] private AnimationCurve sizeTranisitionCurve;
 
     private bool SetMinimap = false;
 
-    private void Awake() 
+    private MainPlayerInputActions input;
+    public MainPlayerInputActions Input { get { return input; } }
+
+
+    protected override void Awake()
     {
-        scrollViewDeaultSize = scrollViewRectTransform.sizeDelta;
-        scrollViewDefaultPos = scrollViewRectTransform.anchoredPosition;
+        base.Awake();
+        input = new MainPlayerInputActions();
     }
 
-    void Update() 
+    private void OnEnable()
     {
-        if(Keyboard.current[Key.M].wasPressedThisFrame)
+        input.UI.MapToggle.performed += ToggleMap;
+    }
+
+    private void OnDisable()
+    {
+        input.UI.MapToggle.performed -= ToggleMap;
+    }
+
+    private void Update()
+    {
+        if (PlayerCore.IsInstanceValid)
         {
-            if(SetMinimap)
+            if (rotateWidthTheTarget)
             {
-                Outmap();
-                
+                minimapCamera.transform.rotation = Quaternion.Euler(90f, 0f, Mathf.Rad2Deg * Mathf.Atan2(Camera.main.transform.forward.z, Camera.main.transform.forward.x) - 90f);
+                northpointTransform.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * Mathf.Atan2(-Camera.main.transform.forward.z, Camera.main.transform.forward.x) +90f);
+                cursorTransform.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
             }
             else
             {
-                Setmap();
+                minimapCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                northpointTransform.transform.rotation = Quaternion.Euler(0f, 0f,0f);
+                cursorTransform.rotation = Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * Mathf.Atan2(Camera.main.transform.forward.z, Camera.main.transform.forward.x) - 90f);
             }
-        }
 
-        // float zoom = Mouse.current.scroll.ReadValue().y;
-        // ZoomMap(zoom);
+        }
     }
 
+    public void ToggleMap(InputAction.CallbackContext context)
+    {
+
+        if (SetMinimap)
+        {
+            Outmap();
+
+        }
+        else
+        {
+            Setmap();
+        }
+
+    }
 
     public void Setmap()
     {
@@ -61,16 +83,27 @@ public class MiniMapSetting : MonoBehaviour
         SetMinimap = false;
     }
 
-    private void ZoomMap(float zoom)
-    {
-        if(zoom == 0)
-        return;
+    float transitionTime = 1.5f;
 
-        float currentMapScale = contentRectTransform.localScale.x;
-        float zoomAmount = (zoom > 0 ? zoomSpeed : -zoomSpeed) * currentMapScale;
-        float newScale = currentMapScale + zoomAmount;
-        float clampedScale = Mathf.Clamp(newScale, minZoom, maxZoom);
-        contentRectTransform.localScale = Vector3.one * clampedScale;
+    [Button()]
+    public void SetMapSize(float size)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Cor_SetMapSize(size, transitionTime));
+
+    }
+
+    IEnumerator Cor_SetMapSize(float size, float animationTime)
+    {
+        float startSize = minimapCamera.orthographicSize;
+
+        for(float t = 0; t < 1f; t+=Time.fixedDeltaTime / animationTime)
+        {
+            minimapCamera.orthographicSize = Mathf.Lerp(startSize, size, sizeTranisitionCurve.Evaluate(t));
+            yield return new WaitForFixedUpdate();
+        }
+
+        minimapCamera.orthographicSize = size;
     }
 
 

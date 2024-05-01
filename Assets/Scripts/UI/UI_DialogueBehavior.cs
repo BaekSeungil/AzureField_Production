@@ -61,9 +61,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
     {
         base.Awake();
 
-        input = new MainPlayerInputActions();
-        input.UI.Enable();
-        input.UI.Positive.performed += OnPressedPositive;
+        input = UI_InputManager.Instance.UI_Input;
     }
 
     private void Start()

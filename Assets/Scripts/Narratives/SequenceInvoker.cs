@@ -95,7 +95,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         if (dialogue.DialogueOpened) { dialogue.StopAllCoroutines(); dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         UI_PlaymenuBehavior.Instance.EnableInput();
-        PlayerCore.Instance.EnableForSequence();
+        PlayerCore.Instance.EnableControlls();
     }
 
     private IEnumerator Cor_StartSequenceQueue()
@@ -104,7 +104,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         UI_PlaymenuBehavior playmenu = UI_PlaymenuBehavior.Instance;
         playmenu.DisableInput();
         PlayerCore player = PlayerCore.Instance;
-        player.DisableForSequence();
+        player.DisableControlls();
 
         while (sequenceQueue.Count > 0)
         {
@@ -115,7 +115,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 
         yield return null;
         playmenu.EnableInput();
-        player.EnableForSequence();
+        player.EnableControlls();
 
         sequenceRunning = false;
     }
