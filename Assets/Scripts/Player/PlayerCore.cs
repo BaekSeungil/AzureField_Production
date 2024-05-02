@@ -911,8 +911,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && sailboat.SubmergeRate < 1.0f)
             {
-                IsDriftEngaged = true;
-                Debug.Log("DriftEngaged");
+                //IsDriftEngaged = true;
+                //Debug.Log("DriftEngaged");
             }
 
             if (!IsDriftEngaged)
