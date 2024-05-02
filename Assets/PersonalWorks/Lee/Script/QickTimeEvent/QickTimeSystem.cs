@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using Unity.Transforms;
+using System.Diagnostics.Tracing;
 
-public class QickTimeSystem : MonoBehaviour
+public class QickTimeSystem : QTEevent
 {
 
    [Header("옵션 구성")]
@@ -22,12 +24,16 @@ public class QickTimeSystem : MonoBehaviour
    private float currentTime;
    private float smoothTimeUpdate;
    private float rememberTimeScalse;
-   private List<QTEKey> keys = new List<QTEKey>();
+
+
+
    protected void Update() 
-   {
+   {      
         if(!IsEventStart || eventData == null || isPause)
-        return;
-        updateTime();
+        {
+            return;
+        }
+
         if(keys.Count == 0 || isFail)
         {
             doFinally();
@@ -39,10 +45,14 @@ public class QickTimeSystem : MonoBehaviour
                 checkKeyboardInput(eventData.keys[i]);
             }
         }
+        updateTime();
+        StartEvent(eventData);
    }
 
    public void StartEvent(QTEevent eventTable)
    {
+        eventTable = QTEevent.Instacne;
+        
         if(Keyboard.current == null)
         {
             UnityEngine.Debug.Log("No keyborad connected");
@@ -72,6 +82,7 @@ public class QickTimeSystem : MonoBehaviour
         currentTime = eventData.time;
         smoothTimeUpdate = currentTime;
         setupGUI();
+        updateTime();
         StartCoroutine(countDown());
    }
 
@@ -103,7 +114,6 @@ public class QickTimeSystem : MonoBehaviour
         }
         isEnd = true;
         IsEventStart = false;
-        Time.timeScale = rememberTimeScalse;
         var ui = getUI();
         if(ui.eventUI != null)
         {
@@ -113,14 +123,15 @@ public class QickTimeSystem : MonoBehaviour
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail)
+        if(eventData.onFail != null && isFail==true)
         {
             eventData.onFail.Invoke();
         }
-        if(eventData.onSuccess != null && isAllButtonPressed)
+        if(eventData.onSuccess != null && isAllButtonPressed ==true)
         {
             eventData.onSuccess.Invoke();
         }
+        Time.timeScale = 1f;
         eventData = null;
    }
 
@@ -143,16 +154,6 @@ public class QickTimeSystem : MonoBehaviour
         isFail = wrongKeyPressed;
     }
 
-    protected void updateTime()
-    {
-        smoothTimeUpdate -= Time.unscaledTime;
-        var ui = getUI();
-        if(ui.eventTimerImage != null)
-        {
-            ui.eventTimerImage.fillAmount = smoothTimeUpdate / eventData.time;
-        }
-    }
-
     public void pause()
     {
         isPause = true;
@@ -165,11 +166,11 @@ public class QickTimeSystem : MonoBehaviour
 
     public void checkKeyboardInput(QTEKey key)
     {
-        if(Input.GetKeyDown(key.keybordKey))
+        if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
         {
             keys.Remove(key);
         }
-        if(Input.GetKeyUp(key.keybordKey)&& eventData.pressType 
+        if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
         == QTEPressType.Simultaneously)
         {
             keys.Add(key);
@@ -178,18 +179,21 @@ public class QickTimeSystem : MonoBehaviour
 
 
 
-    protected void setupGUI()
+    private void setupGUI()
     {
         var ui  = getUI();
         if(ui.eventTimerImage != null)
         {
-            ui.eventTimerImage.fillAmount = 1;
+            ui.eventTimerImage.fillAmount = 1f;
         }
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
-            eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey + "+");
-            eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
+             if (eventData.keys.Count > 0) 
+            {
+                eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey + "+");
+                eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
+            }
         }
         if(ui.eventUI != null)
         {
@@ -197,9 +201,19 @@ public class QickTimeSystem : MonoBehaviour
         }
     }
 
-   protected QTEUI getUI()
+   private QTEUI getUI()
    {
         var ui = eventData.keyboardUI;
         return ui;
    }
+
+    private void updateTime()
+    {
+        smoothTimeUpdate = Time.unscaledTime;
+        var ui = getUI();
+        if(ui.eventTimerImage != null)
+        {
+            ui.eventTimerImage.fillAmount = smoothTimeUpdate / eventData.time;
+        }
+    }
 }
