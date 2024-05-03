@@ -858,12 +858,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-/// <summary>
-/// 플레이어가 조각배를 타는 상황일 때
-/// </summary>
+    /// <summary>
+    /// 플레이어가 조각배를 타는 상황일 때
+    /// </summary>
     protected class Movement_Sailboat : MovementState
     {
-
         Vector3 directionCache;
         float GustAmount = 0.0f;
         bool enterFlag = false;
@@ -889,13 +888,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
         {
-            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
 
         public override void OnUpdate(PlayerCore player)
         {
+            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 1.0f)
+            {
+                IsDriftEngaged = true;
+                Debug.Log("DriftEngaged");
+            }
+
+            if(IsDriftEngaged && player.input.Player.SailboatDrift.WasReleasedThisFrame())
+            {
+                IsDriftEngaged = false;
+            }
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -908,12 +917,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.5f ? player.sailboatNearsurfBoost : 1.0f;
 
             Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
-
-            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && sailboat.SubmergeRate < 1.0f)
-            {
-                IsDriftEngaged = true;
-                Debug.Log("DriftEngaged");
-            }
 
             if (!IsDriftEngaged)
             {
@@ -978,54 +981,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, 0f, 1f) * player.sailboatGravity, ForceMode.Acceleration);
                 }
             }
-            else if (IsDriftEngaged)
+            else if(!IsDriftEngaged)
             {
-                player.rBody.drag = player.sailboatScratchDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
-
-                if (player.input.Player.Move.IsPressed())
-                {
-                    Vector3 lookTransformedVector = GetSailboatHeadingVector(player, moveInput, sailboat.SurfacePlane.normal);
-                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
-                }
 
             }
 
-            if (IsDriftEngaged)
-            {
-                driftRotation = Mathf.Lerp(driftRotation, moveInput.x * driftRotatilonMax, player.driftSteer);
 
-                //player.sailboatModelPivot.localRotation =   Quaternion.Slerp(player.sailboatModelPivot.localRotation,
-                //                                            Quaternion.Euler(0f, 0f, driftRotation) * Quaternion.LookRotation(player.rBody.velocity, sailboat.SurfacePlane.normal),
-                //                                            0.1f);
 
-                sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
-                                              Quaternion.LookRotation(player.rBody.velocity, sailboat.SurfacePlane.normal),
-                                              0.1f);
-
-                Vector3 euler = player.sailboatModelPivot.localRotation.eulerAngles;
-                Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
-                player.sailboatModelPivot.localRotation = Quaternion.Slerp(player.sailboatModelPivot.localRotation,
-                                                          Quaternion.Euler(euler.x, euler.y, -lean * 30f), 0.05f);
-
-                directionCache = Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up);
-
-                if (!player.input.Player.SailboatDrift.IsPressed())
-                {
-                    IsDriftEngaged = false;
-                    driftRotation = 0f;
-
-                    player.sailboatModelPivot.localRotation = Quaternion.Euler(euler.x, euler.y, -lean * 30f);
-                    sailboat.transform.rotation = player.sailboatModelPivot.transform.rotation;
-
-                    player.rBody.AddForce(sailboat.transform.forward * player.driftKickPower, ForceMode.VelocityChange);
-
-                    Debug.Log("DriftReleased");
-
-                }
-            }
-            else if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 5.0f)
+            if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 5.0f)
             {
                 Vector3 euler = player.sailboatModelPivot.localRotation.eulerAngles;
 
@@ -1080,9 +1043,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
-
                 Vector3 surfacePos = player.transform.position;
-
                 player.sailingSprayEffect.transform.position = surfacePos;
 
                 if (!player.sailingSprayEffect.isPlaying)
@@ -1105,7 +1066,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (player.boosterActive)
                     player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 1f);
                 else
-                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", Mathf.Clamp(player.rBody.velocity.magnitude/40f,0f,0.8f));
+                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", Mathf.Clamp(player.rBody.velocity.magnitude / 40f, 0f, 0.8f));
                 player.animator.SetFloat("BoardPropellingBlend", 1f, 1f, Time.fixedDeltaTime);
             }
             else
