@@ -918,6 +918,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
 
+            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && sailboat.SubmergeRate < 1.0f)
+            {
+                //IsDriftEngaged = true;
+                //Debug.Log("DriftEngaged");
+            }
+
             if (!IsDriftEngaged)
             {
                 if (player.sailboat.SubmergeRate < -1.5f)
