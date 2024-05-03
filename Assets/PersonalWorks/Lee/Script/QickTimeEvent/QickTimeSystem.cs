@@ -33,7 +33,6 @@ public class QickTimeSystem : QTEevent
         {
             return;
         }
-
         if(keys.Count == 0 || isFail)
         {
             doFinally();
@@ -45,8 +44,8 @@ public class QickTimeSystem : QTEevent
                 checkKeyboardInput(eventData.keys[i]);
             }
         }
-        updateTime();
         StartEvent(eventData);
+        updateTimer();
    }
 
    public void StartEvent(QTEevent eventTable)
@@ -82,7 +81,6 @@ public class QickTimeSystem : QTEevent
         currentTime = eventData.time;
         smoothTimeUpdate = currentTime;
         setupGUI();
-        updateTime();
         StartCoroutine(countDown());
    }
 
@@ -182,10 +180,9 @@ public class QickTimeSystem : QTEevent
     private void setupGUI()
     {
         var ui  = getUI();
-        if(ui.eventTimerImage != null)
-        {
-            ui.eventTimerImage.fillAmount = 1f;
-        }
+        //ui.eventTimerImage.fillAmount = 1f;
+       
+
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
@@ -207,13 +204,13 @@ public class QickTimeSystem : QTEevent
         return ui;
    }
 
-    private void updateTime()
+    private void updateTimer()
     {
+        var ui  = getUI();
         smoothTimeUpdate = Time.unscaledTime;
-        var ui = getUI();
-        if(ui.eventTimerImage != null)
+        if(ui.eventTimerImage.fillAmount > 0)
         {
-            ui.eventTimerImage.fillAmount = smoothTimeUpdate / eventData.time;
+            ui.eventTimerImage.fillAmount -= Time.smoothDeltaTime  / eventData.time * 5f;
         }
     }
 }
