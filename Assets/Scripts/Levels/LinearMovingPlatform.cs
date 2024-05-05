@@ -7,7 +7,13 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class LinearMovingPlatform : SerializedMonoBehaviour
 {
-    [SerializeField,LabelText("경로")] Transform[] pathway;
+    //================================================
+    //
+    // 선형으로 경로를 찍으며 움직이는 플랫폼에 대한 스크립트입니다.
+    //
+    //================================================
+
+    [SerializeField,LabelText("경로")] private Transform[] pathway;
 
     [SerializeField, LabelText("속도")] private float moveSpeed = 1f;
     [SerializeField, LabelText("애니메이션 커브")] private AnimationCurve curve;
@@ -22,7 +28,28 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
     [ShowInInspector, ReadOnly] private bool moveStarterFlag = true;
     [ShowInInspector, ReadOnly] private bool obstructed = false;
     private Vector3 prevPosition = Vector3.zero;
-    [ShowInInspector,ReadOnly]private Vector3 delta = Vector3.zero;
+    [ShowInInspector,ReadOnly] private Vector3 delta = Vector3.zero;
+
+
+    /// <summary>
+    /// 플랫폼이 정지 상태일 때 다음 지점으로 움직이도록 합니다.
+    /// </summary>
+    public void StartMove()
+    {
+        if (isMoving) return;
+
+        if (!continuous && !moveStarterFlag)
+        {
+            moveStarterFlag = true;
+            return;
+        }
+
+        Debug.Log("move");
+
+        StopAllCoroutines();
+        StartCoroutine(Cor_PlatformMove());
+
+    }
 
     private void Awake()
     {
@@ -47,25 +74,6 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
     private void Update()
     {
     }
-
-
-    public void StartMove()
-    {
-        if (isMoving) return;
-
-        if (!continuous &&!moveStarterFlag)
-        {
-            moveStarterFlag = true;
-            return;
-        }
-
-        Debug.Log("move");
-
-        StopAllCoroutines();
-        StartCoroutine(Cor_PlatformMove());
-
-    }
-
 
     private IEnumerator Cor_PlatformMove()
     {
