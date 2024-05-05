@@ -158,6 +158,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    bool driftActive = false;
     bool leapupActive = false;
 
     //플레이어 상태 참고용 변수
@@ -422,7 +423,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         newAttr.attribute = ability; newAttr.value = value; newAttr.ID = ID;
         IDAttributes.Add(newAttr);
     }
-
 
     /// <summary>
     ///  ID가 붙어있는 플레이어 속성을 해제합니다.
@@ -866,10 +866,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         Vector3 directionCache;
         float GustAmount = 0.0f;
         bool enterFlag = false;
-        bool IsDriftEngaged = false;
         float driftAngle = 0f;
         float driftAngleMax = 90f;
-
 
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -908,18 +906,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 1.0f)
             {
-                //IsDriftEngaged = true;
+                player.driftActive = true;
                 Vector3 projected = Vector3.ProjectOnPlane(player.transform.forward, Vector3.up);
             }
 
-            if(IsDriftEngaged && player.input.Player.SailboatDrift.WasReleasedThisFrame())
+            if(player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
             {
-                IsDriftEngaged = false;
+                player.driftActive = false;
             }
 
             Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
 
-            if (IsDriftEngaged)
+            if (player.driftActive)
             {
                 driftAngle = Mathf.Lerp(driftAngle, driftAngleMax * moveInput.x, player.driftSteer);
                 
@@ -947,12 +945,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.drag = player.sailboatFullDrag;
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f) / 3f * player.sailboatByouancy, ForceMode.Acceleration);
 
-
                 Vector3 lookTransformedVector;
                 if (player.boosterActive)
-                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
-                else
                     lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                else if (player.driftActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
+                else
+                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
 
@@ -963,12 +962,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
-
                 Vector3 lookTransformedVector;
                 if (player.boosterActive)
-                    lookTransformedVector = player.GetLookMoveVector(moveInput, sailboat.SurfacePlane.normal);
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                else if (player.driftActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
                 else
-                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), sailboat.SurfacePlane.normal);
+                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
 
@@ -1001,12 +1001,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 {
                     player.rBody.drag = player.sailboatGlidingDrag;
 
-
                     Vector3 lookTransformedVector;
                     if (player.boosterActive)
-                        lookTransformedVector = player.GetLookMoveVector(moveInput, sailboat.SurfacePlane.normal);
+                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                    else if (player.driftActive)
+                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
                     else
-                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), sailboat.SurfacePlane.normal);
+                        lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
 
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
@@ -1022,7 +1023,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 if (player.input.Player.SailboatForward.IsPressed())
                 {
-                    if (!IsDriftEngaged)
+                    if (!player.driftActive)
                     {
                         player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl);
 
@@ -1031,7 +1032,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 }
                 else if (player.input.Player.SailboatBackward.IsPressed())
                 {
-                    if (!IsDriftEngaged)
+                    if (!player.driftActive)
                     {
                         player.rBody.AddForce(Vector3.down * player.sailboatVerticalControl);
 
@@ -1051,7 +1052,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
-                    if (IsDriftEngaged) lean = lean * 1.5f;
+                    if (player.driftActive) lean = lean * 1.5f;
 
                     pivotEuler = pivotEuler + new Vector3(0f, 0f, -lean * 30f); ;//Quaternion.Euler(0f, 0f, -lean * 30f);
 
@@ -1076,7 +1077,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
 
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
-
 
 
             if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
@@ -1132,6 +1132,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.sailboatFootRig.weight = 0.0f;
             player.buoyant.enabled = true;
             player.rBody.useGravity = true;
+            player.driftActive = false;
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
@@ -1193,6 +1194,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
         if (boosterRecharging) return;
         if (boosterCoroutine != null) return;
+        if (driftActive) return;
 
         boosterCoroutine = StartCoroutine(Cor_Booster());
 
@@ -1203,6 +1205,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
         if (leapupRecharging) return; 
         if (leapupCoroutine != null) return;
+        if (driftActive) return;
 
         leapupCoroutine = StartCoroutine(Cor_Leapup());
     }
@@ -1262,8 +1265,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     IEnumerator Cor_Leapup()
     {
         leapupGauge = 1f;
-
-        Debug.Log("Leapup"); 
         
         leapupActive = true;
 
