@@ -44,8 +44,6 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
             return;
         }
 
-        Debug.Log("move");
-
         StopAllCoroutines();
         StartCoroutine(Cor_PlatformMove());
 
