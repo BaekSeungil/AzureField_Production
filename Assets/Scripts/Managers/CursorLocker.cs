@@ -6,6 +6,12 @@ using UnityEngine.InputSystem;
 
 public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
 {
+    //================================================
+    //
+    // 커서를 숨기거나 표시하는 시스템 스크립트입니다.
+    //
+    //================================================
+
     public enum CursorMode
     {
         Freelook,
@@ -13,6 +19,9 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
     }
 
     [SerializeField,ReadOnly] private CursorMode cursorState = CursorMode.Freelook;
+    /// <summary>
+    /// 현재 커서 모드입니다.
+    /// </summary>
     public CursorMode CurrentCursorState { get { return cursorState; } }
 
     private MainPlayerInputActions input;
@@ -44,6 +53,9 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
         }
     }
 
+    /// <summary>
+    /// 커서를 숨깁니다. ( Freelook 모드로 전환합니다. )
+    /// </summary>
     public void EnableFreelook()
     {
         if(duplicateStack != 0)
@@ -56,6 +68,9 @@ public class CursorLocker : StaticSerializedMonoBehaviour<CursorLocker>
         Cursor.visible = false;
     }
 
+    /// <summary>
+    /// 커서를 표시합니다. ( Freelook 모드를 중지합니다. )
+    /// </summary>
     public void DisableFreelook()
     {
         if(cursorState == CursorMode.CursorVisible)

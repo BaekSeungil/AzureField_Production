@@ -1,5 +1,4 @@
 using FMODUnity;
-using NUnit.Framework.Constraints;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +10,12 @@ using UnityEngine.Splines;
 
 public class FairwindChallengeInstance : MonoBehaviour
 {
+    //================================================
+    //
+    // 순풍의 도전 단일 개체에 대한 스크립트입니다.
+    //
+    //================================================
+
     static private FairwindChallengeInstance activeChallenge;
     static public FairwindChallengeInstance ActiveChallenge { get { return activeChallenge; } }
     static public bool IsActiveChallengeExists { get { return activeChallenge != null; } }
@@ -51,9 +56,6 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// 경로의 스플라인 데이터를 가져옵니다.
     /// </summary>
     public Spline RouteSpline { get { return route.Spline; } }
-    //public Spline SegmentedRouteSpline(int startKnot, int endKnot) 
-    //{     
-    //}
 
     enum ChallengeState
     {
@@ -143,6 +145,14 @@ public class FairwindChallengeInstance : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 경로 Spline으로부터 거리가 얼마나 떨어져 있는지와 그와 관련된 정보를 가져옵니다.
+    /// </summary>
+    /// <param name="spline"></param>
+    /// <param name="point"> 계산 지점 </param>
+    /// <param name="pointOnSpline"> Spline으로부터 최단지점에 위치한 지점 </param>
+    /// <param name="t"> 0-1 값으로 보간된 지점 </param>
+    /// <returns></returns>
     public float GetDistanceFromSpline(Spline spline,Vector3 point,out Vector3 pointOnSpline,out float t)
     {
         float3 p;
@@ -154,6 +164,14 @@ public class FairwindChallengeInstance : MonoBehaviour
         return distance;
     }
 
+    /// <summary>
+    /// 경로 Spline으로부터 거리가 얼마나 떨어져 있는지와 그와 관련된 정보를 가져옵니다.
+    /// </summary>
+    /// <param name="spline"></param>
+    /// <param name="point"> 계산 지점 </param>
+    /// <param name="pointOnSpline"> Spline으로부터 최단지점에 위치한 지점 </param>
+    /// <param name="t"> 0-1 값으로 보간된 지점 </param>
+    /// <returns></returns>
     public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t)
     {
         float3 p;

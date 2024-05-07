@@ -18,6 +18,9 @@ public class GlobalGameParameters : StaticSerializedMonoBehaviour<GlobalGamePara
     [SerializeField] private GlobalParameterSettings settingsAsset;
     [SerializeField, ReadOnly] private Dictionary<string, int> data;
 
+    /// <summary>
+    /// 글로벌 패러미터의 데이터들입니다.
+    /// </summary>
     public Dictionary<string, int> Data { get { return data; } }
 
     protected override void Awake()
