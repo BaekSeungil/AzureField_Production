@@ -6,12 +6,13 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using Unity.Transforms;
 using System.Diagnostics.Tracing;
+using Sirenix.OdinInspector;
 
 public class QickTimeSystem : QTEevent
 {
 
    [Header("옵션 구성")]
-   [SerializeField]public float slowMotionTimeScale = 0.1f;
+   [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
 
    [HideInInspector]
    private bool IsEventStart;
@@ -29,8 +30,6 @@ public class QickTimeSystem : QTEevent
 
    protected void Update() 
    {      
-        
-
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
