@@ -69,6 +69,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private float leapupCooldown = 1.0f;
     [SerializeField] private float leapupDuration = 0.5f;
     [SerializeField] private AnimationCurve leapupForceCurve;
+    [SerializeField,Range(0.0f,0.1f)] private float driftSteer = 0.05f;
+    [SerializeField] private float driftKickPower = 10.0f;
 
     [Title("Audios")]
     [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
@@ -99,7 +101,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] new private CapsuleCollider collider;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private SphereCollider bottomColider;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private SailboatBehavior sailboat;
-    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform sailboasModelPivot;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform sailboatModelPivot;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject normalSplashEffectPrefab;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect_HighVel;
@@ -133,6 +135,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
 
+    /// <summary>
+    /// 부스터 스킬이 해금되었는지 확인합니다.
+    /// </summary>
+    [SerializeField] private bool availableForDrift = false;
+    public bool AvailableForDrift {  get { return availableForDrift; } }
+
     private bool sprinting = false;
     /// <summary>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
@@ -150,6 +158,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    bool driftActive = false;
     bool leapupActive = false;
 
     //플레이어 상태 참고용 변수
@@ -414,7 +423,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         newAttr.attribute = ability; newAttr.value = value; newAttr.ID = ID;
         IDAttributes.Add(newAttr);
     }
-
 
     /// <summary>
     ///  ID가 붙어있는 플레이어 속성을 해제합니다.
@@ -850,15 +858,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-/// <summary>
-/// 플레이어가 조각배를 타는 상황일 때
-/// </summary>
+    /// <summary>
+    /// 플레이어가 조각배를 타는 상황일 때
+    /// </summary>
     protected class Movement_Sailboat : MovementState
     {
-
         Vector3 directionCache;
         float GustAmount = 0.0f;
         bool enterFlag = false;
+        float driftAngle = 0f;
+        float driftAngleMax = 90f;
 
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -878,13 +887,45 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         private Vector3 GetSailboatHeadingVector(PlayerCore player, Vector3 input, Vector3 up)
         {
-            Vector3 lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+
+            Vector3 lookTransformedVector;
+            if (player.boosterActive)
+            {
+               lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+            }
+            else
+            {
+                lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, 1f);
+            }
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
 
+
         public override void OnUpdate(PlayerCore player)
         {
+            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 1.0f)
+            {
+                player.driftActive = true;
+                Vector3 projected = Vector3.ProjectOnPlane(player.transform.forward, Vector3.up);
+            }
+
+            if(player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
+            {
+                player.driftActive = false;
+            }
+
+            Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
+
+            if (player.driftActive)
+            {
+                driftAngle = Mathf.Lerp(driftAngle, driftAngleMax * moveInput.x, player.driftSteer);
+                
+            }
+            else
+            {
+                driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
+            }
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -896,16 +937,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             float ns_boost = sailboat.SubmergeRate < player.sailboatNearsurf && sailboat.SubmergeRate > -0.5f ? player.sailboatNearsurfBoost : 1.0f;
 
+            Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
+
+
             if (player.sailboat.SubmergeRate < -1.5f)
             {
                 player.rBody.drag = player.sailboatFullDrag;
-                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f)/3f * player.sailboatByouancy, ForceMode.Acceleration);
+                player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f) / 3f * player.sailboatByouancy, ForceMode.Acceleration);
 
-                if (player.input.Player.Move.IsPressed())
-                {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
-                }
+                Vector3 lookTransformedVector;
+                if (player.boosterActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                else if (player.driftActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
+                else
+                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+
+                player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
+
             }
             else if (player.sailboat.SubmergeRate < 0.5f)
             {
@@ -913,11 +962,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -1.0f, 0.0f) * player.sailboatByouancy, ForceMode.Acceleration);
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
-                if (player.input.Player.Move.IsPressed())
-                {
-                    Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), sailboat.SurfacePlane.normal);
-                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
-                }
+                Vector3 lookTransformedVector;
+                if (player.boosterActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                else if (player.driftActive)
+                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
+                else
+                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+
+                player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
 
                 if (!enterFlag)
                 {
@@ -947,41 +1000,49 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (!player.Grounding)
                 {
                     player.rBody.drag = player.sailboatGlidingDrag;
-                    if (player.input.Player.Move.IsPressed())
-                    {
-                        Vector3 lookTransformedVector = player.GetLookMoveVector( player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
-                        player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration, ForceMode.Acceleration);
-                    }
+
+                    Vector3 lookTransformedVector;
+                    if (player.boosterActive)
+                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                    else if (player.driftActive)
+                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
+                    else
+                        lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+
+                    player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
+
 
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, 0f, 1f) * player.sailboatGravity, ForceMode.Acceleration);
             }
 
+
             if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 5.0f)
             {
-                Vector3 euler = player.sailboasModelPivot.localRotation.eulerAngles;
+                Vector3 pivotEuler = Vector3.zero;
 
                 if (player.input.Player.SailboatForward.IsPressed())
                 {
-                    player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl);
+                    if (!player.driftActive)
+                    {
+                        player.rBody.AddForce(Vector3.up * player.sailboatVerticalControl);
 
-                    player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
-                    Quaternion.Euler(-35f, euler.y, euler.z), 0.05f);
+                        pivotEuler = new Vector3(-35f, 0f, 0f);
+                    }
                 }
                 else if (player.input.Player.SailboatBackward.IsPressed())
                 {
-                    player.rBody.AddForce(Vector3.down * player.sailboatVerticalControl);
+                    if (!player.driftActive)
+                    {
+                        player.rBody.AddForce(Vector3.down * player.sailboatVerticalControl);
 
-                    player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
-                    Quaternion.Euler(10f, euler.y, euler.z), 0.1f);
+                        pivotEuler = new Vector3(10f, 0f, 0f);
+                    }
                 }
                 else
                 {
-                    player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
-                    Quaternion.Euler(0f, euler.y, euler.z), 0.1f);
+                    pivotEuler = new Vector3(0f, 0f, 0f);
                 }
-
-                euler = player.sailboasModelPivot.localRotation.eulerAngles;
 
                 if (player.input.Player.Move.IsPressed())
                 {
@@ -991,8 +1052,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                     float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
-                    player.sailboasModelPivot.localRotation = Quaternion.Slerp(player.sailboasModelPivot.localRotation,
-                    Quaternion.Euler(euler.x, euler.y, -lean * 30f), 0.05f);
+                    if (player.driftActive) lean = lean * 1.5f;
+
+                    pivotEuler = pivotEuler + new Vector3(0f, 0f, -lean * 30f); ;//Quaternion.Euler(0f, 0f, -lean * 30f);
+
+                    //player.sailboatModelPivot.localRotation = Quaternion.Slerp(player.sailboatModelPivot.localRotation,
+                    //Quaternion.Euler(euler.x, driftDelta, -lean * 30f), 0.05f);
 
                     directionCache = Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up);
                 }
@@ -1000,25 +1065,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 {
                     sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
                 }
+
+                pivotEuler = pivotEuler + new Vector3(0f,driftAngle,0f);
+
+                player.sailboatModelPivot.localRotation = Quaternion.Slerp(player.sailboatModelPivot.localRotation, Quaternion.Euler(pivotEuler), 0.1f);
             }
             else
             {
-                //sailboat.transform.rotation = Quaternion.Slerp(sailboat.transform.rotation,
-                //    Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal),
-                //    0.4f);
-
                 sailboat.transform.rotation = Quaternion.LookRotation(directionCache, sailboat.SurfacePlane.normal);
             }
+
+
+            player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
+
 
             if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
-
                 Vector3 surfacePos = player.transform.position;
-
-                //if (GlobalOceanManager.IsInstanceValid)
-                //    surfacePos = new Vector3(pos.x, GlobalOceanManager.Instance.GetWaveHeight(pos), pos.z);
-
                 player.sailingSprayEffect.transform.position = surfacePos;
 
                 if (!player.sailingSprayEffect.isPlaying)
@@ -1032,8 +1096,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.sailingSprayEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
 
-            player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
-
             player.animator.SetFloat("BoardBlend", player.rBody.velocity.y);
 
             float value = player.sailboatEngineSound.Params[0].Value;
@@ -1043,7 +1105,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 if (player.boosterActive)
                     player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", 1f);
                 else
-                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", Mathf.Clamp(player.rBody.velocity.magnitude/40f,0f,0.8f));
+                    player.sailboatEngineSound.EventInstance.setParameterByName("SailboatEngine", Mathf.Clamp(player.rBody.velocity.magnitude / 40f, 0f, 0.8f));
+
                 player.animator.SetFloat("BoardPropellingBlend", 1f, 1f, Time.fixedDeltaTime);
             }
             else
@@ -1069,6 +1132,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.sailboatFootRig.weight = 0.0f;
             player.buoyant.enabled = true;
             player.rBody.useGravity = true;
+            player.driftActive = false;
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
@@ -1130,6 +1194,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
         if (boosterRecharging) return;
         if (boosterCoroutine != null) return;
+        if (driftActive) return;
 
         boosterCoroutine = StartCoroutine(Cor_Booster());
 
@@ -1140,6 +1205,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
         if (leapupRecharging) return; 
         if (leapupCoroutine != null) return;
+        if (driftActive) return;
 
         leapupCoroutine = StartCoroutine(Cor_Leapup());
     }
@@ -1199,18 +1265,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     IEnumerator Cor_Leapup()
     {
         leapupGauge = 1f;
-
-        Debug.Log("Leapup"); 
         
         leapupActive = true;
 
-        for(float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
+        animator.SetBool("Booster", true);
+
+        for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
             rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
             leapupGauge = t / leapupDuration;
             UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
             yield return new WaitForFixedUpdate();
         }
+
+        animator.SetBool("Booster", false);
 
         leapupActive = false;
         leapupRecharging = true;
@@ -1338,8 +1406,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
-
-
 /// <summary>
 ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
 /// </summary>
@@ -1399,7 +1465,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private Vector3 GetLookMoveVector(Vector2 input, Vector3 up)
     {
-        Vector3 lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
+        Vector3 lookTransformedVector;
+
+        lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
+
         lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up).normalized;
         return lookTransformedVector;
     }
