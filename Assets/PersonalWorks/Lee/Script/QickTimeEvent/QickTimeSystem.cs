@@ -29,6 +29,8 @@ public class QickTimeSystem : QTEevent
 
    protected void Update() 
    {      
+        
+
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
@@ -121,11 +123,13 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail==false)
+        if(eventData.onFail != null && !isFail)
         {
             eventData.onFail.Invoke();
+
+            
         }
-        if(eventData.onSuccess != null && isAllButtonPressed ==true)
+        if(eventData.onSuccess != null && isAllButtonPressed)
         {
             eventData.onSuccess.Invoke();
         }
