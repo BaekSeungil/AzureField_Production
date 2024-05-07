@@ -13,7 +13,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 //================================================
 //
 // [싱글턴 클래스]
-// 현재 월드상의 바다와 관련된 데이터를 관리하고 물리적인 연산을 하는 클래스입니다.
+// 현재 월드상의 바다와 관련된 데이터를 관리하고 물리적인 연산을 하는 시스템 클래스입니다.
 // 파도의 물리적 연산은 잡시스템을 통해 멀티스레드로 처리됩니다.
 // 4개의 파도 벡터와 강도가 중첩되어 바다를 형성합니다.
 // 특정 오브젝트가 파도의 영향을 받은 위치를 계산하고자 한다면 이 클래스의 GetWavePosition이나, GetWaveHeight을 사용해야합니다.
@@ -21,6 +21,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
 //
 //================================================
 {
+
+    #region =============== Properties =====================
     [SerializeField] private Material[] ReferencingMaterials;                           // OceanSurface.mat을 가지고 있는 오브젝트들, 아래 속성들과 머트리얼의 속성을 맟추기 위해 필요
 
     [Title("GlobalWaveProperties")]
@@ -63,6 +65,10 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     [SerializeField, ReadOnly] private Vector3 Wave4_Vector;
     [SerializeField, ReadOnly] private float Wave4_Amplitude;
     [SerializeField, ReadOnly] private float Wave4_Gravity;
+
+    #endregion
+
+    #region ================== Job structs ===================
 
     private struct WavePositionJob : IJob
     {
@@ -163,6 +169,8 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             output[0] = GetComlexWavePostion(iteration,true).y;
         }
     }
+
+    #endregion
 
     private void OnEnable() {
         UpdateReferencingMaterials();
