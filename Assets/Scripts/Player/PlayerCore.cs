@@ -1054,10 +1054,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
                     if (player.driftActive) lean = lean * 1.5f;
 
-                    pivotEuler = pivotEuler + new Vector3(0f, 0f, -lean * 30f); ;//Quaternion.Euler(0f, 0f, -lean * 30f);
-
-                    //player.sailboatModelPivot.localRotation = Quaternion.Slerp(player.sailboatModelPivot.localRotation,
-                    //Quaternion.Euler(euler.x, driftDelta, -lean * 30f), 0.05f);
+                    pivotEuler = pivotEuler + new Vector3(0f, 0f, -lean * 30f);
 
                     directionCache = Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up);
                 }
@@ -1085,6 +1082,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Vector3 surfacePos = player.transform.position;
                 player.sailingSprayEffect.transform.position = surfacePos;
 
+
                 if (!player.sailingSprayEffect.isPlaying)
                 {
                     player.sailingSprayEffect.Play(true);
@@ -1094,7 +1092,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             {
                 if (player.sailingSprayEffect.isPlaying)
                     player.sailingSprayEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
             }
+
+            //Vector3 wavePosition = player.sailingFrontwaveEffect.transform.position;
+            //if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1.0f)
+            //{
+            //    player.sailingFrontwaveEffect.Play(true);
+            //    player.sailingFrontwaveEffect.transform.position = new Vector3(wavePosition.x, GlobalOceanManager.Instance.GetWaveHeight(wavePosition), wavePosition.z);
+            //    player.sailingFrontwaveEffect.transform.up = player.sailboat.SurfacePlane.normal;
+            //    player.sailingFrontwaveEffect.transform.forward = player.transform.forward;
+            //}
+            //else
+            //{
+            //    player.sailingFrontwaveEffect.Play(false);
+            //    player.sailingFrontwaveEffect.transform.position = new Vector3(wavePosition.x, GlobalOceanManager.Instance.GetWaveHeight(wavePosition), wavePosition.z);
+            //    player.sailingFrontwaveEffect.transform.up = player.sailboat.SurfacePlane.normal;
+            //    player.sailingFrontwaveEffect.transform.forward = player.transform.forward;
+            //}
 
             player.animator.SetFloat("BoardBlend", player.rBody.velocity.y);
 
