@@ -121,7 +121,7 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail==true)
+        if(eventData.onFail != null && isFail==false)
         {
             eventData.onFail.Invoke();
         }
