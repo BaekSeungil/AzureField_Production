@@ -16,7 +16,7 @@ public class UI_DisplayImage : StaticSerializedMonoBehaviour<UI_DisplayImage>
         visualGroup.SetActive(false);
     }
 
-    public IEnumerator ImageProgress(Sprite[] sprite)
+    public IEnumerator ImageProgress(Sprite[] sprite, bool closeAfterFinish)
     {
         visualGroup.SetActive(true);
 
@@ -30,6 +30,12 @@ public class UI_DisplayImage : StaticSerializedMonoBehaviour<UI_DisplayImage>
             progressTriangle.SetActive(false);
         }
 
-        visualGroup.SetActive(false);
+        if (closeAfterFinish)
+            visualGroup.SetActive(false);
+    }
+
+    public void CloseImage()
+    {
+        visualGroup.SetActive(true);
     }
 }

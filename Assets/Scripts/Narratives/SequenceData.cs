@@ -260,11 +260,22 @@ public class Sequence_BranchByParameter : Sequence_Base
 public class Sequence_ShowImage : Sequence_Base
 {
     [InfoBox("이미지묶음을 보여줍니다.", InfoMessageType = InfoMessageType.None)]
+    [LabelText("이미지 모두 표시 후 닫기")] public bool closeImageAfterFinish = true;
     [PreviewField(Alignment = ObjectFieldAlignment.Center,Height = 100)] public Sprite[] Images;
+
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        yield return invoker.DisplayImage.ImageProgress(Images);
-       
+        yield return invoker.DisplayImage.ImageProgress(Images,closeImageAfterFinish);
+    }
+}
+
+public class Sequence_CloseImage : Sequence_Base
+{
+    [InfoBox("열려있는 이미지 창을 닫습니다.")]
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.DisplayImage.CloseImage();
+        yield return null;
     }
 }

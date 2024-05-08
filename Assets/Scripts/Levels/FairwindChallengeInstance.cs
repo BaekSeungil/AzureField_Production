@@ -146,6 +146,16 @@ public class FairwindChallengeInstance : MonoBehaviour
     }
 
     /// <summary>
+    /// 현재 활성화된 순풍에 도전의 경유지들 위치에 대한 정보를 받아옵니다.
+    /// </summary>
+    /// <returns></returns>
+    public static Vector3[] GetActiveRoutesKnots()
+    {
+        if (IsActiveChallengeExists) { Debug.LogWarning("FairwindChallengeInstance : 현재 진행중인 순풍의 도전이 없습니다!"); return null; }
+        return ActiveChallenge.routeKnotList;
+    }
+
+    /// <summary>
     /// 경로 Spline으로부터 거리가 얼마나 떨어져 있는지와 그와 관련된 정보를 가져옵니다.
     /// </summary>
     /// <param name="spline"></param>
