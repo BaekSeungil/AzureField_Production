@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using System.Collections;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Playables;
@@ -92,6 +93,8 @@ public class Sequence_DialogueBranch : Sequence_Base
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
+
+        Debug.Log(sequenceAssets[index]);
 
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
@@ -252,4 +255,16 @@ public class Sequence_BranchByParameter : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(defaultSequence.SequenceBundles));
     }
 
+}
+
+public class Sequence_ShowImage : Sequence_Base
+{
+    [InfoBox("이미지묶음을 보여줍니다.", InfoMessageType = InfoMessageType.None)]
+    [PreviewField(Alignment = ObjectFieldAlignment.Center,Height = 100)] public Sprite[] Images;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.DisplayImage.ImageProgress(Images);
+       
+    }
 }

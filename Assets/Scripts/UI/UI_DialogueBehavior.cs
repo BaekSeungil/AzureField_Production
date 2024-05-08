@@ -71,6 +71,16 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
         visualGroup.GetComponent<CanvasGroup>().alpha = 0f;
     }
 
+    private void OnEnable()
+    {
+        input.UI.Positive.performed += OnPressedPositive;
+    }
+
+    private void OnDisable()
+    {
+        input.UI.Positive.performed -= OnPressedPositive;
+    }
+
     private void OnPressedPositive(InputAction.CallbackContext context)
     {
         dialogueProceed = true;
