@@ -30,6 +30,7 @@ public class QickTimeSystem : QTEevent
 
    protected void Update() 
    {      
+
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
@@ -136,23 +137,10 @@ public class QickTimeSystem : QTEevent
         eventData = null;
    }
 
-    protected void OnGUI() 
+
+    protected void CheckKeyBorad()
     {
-        if(eventData == null || isEnd)
-        return;
-
-        if(Event.current.isKey 
-        && Event.current.type == EventType.KeyDown
-        && eventData.failOnWrongKey
-        && !Event.current.keyCode.ToString().Equals("None"))
-        {
-            wrongKeyPressed = true;
-            eventData.keys.ForEach(key =>
-            wrongKeyPressed = wrongKeyPressed 
-            && !key.keybordKey.ToString().Equals(Event.current.keyCode.ToString()));
-        }
-
-        isFail = wrongKeyPressed;
+       
     }
 
     public void pause()
@@ -167,6 +155,7 @@ public class QickTimeSystem : QTEevent
 
     public void checkKeyboardInput(QTEKey key)
     {
+
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
         {
             keys.Remove(key);
@@ -180,15 +169,12 @@ public class QickTimeSystem : QTEevent
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
         == QTEPressType.Simultaneously)
         {
-            keys.Add(key);
+           keys.Remove(key);
         }
         else
         {
              isFail = true;
         }
-
-        
-
     }
 
 
