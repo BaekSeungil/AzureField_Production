@@ -171,11 +171,24 @@ public class QickTimeSystem : QTEevent
         {
             keys.Remove(key);
         }
+        else
+        {
+             isFail = true;
+        }
+
+
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
         == QTEPressType.Simultaneously)
         {
             keys.Add(key);
         }
+        else
+        {
+             isFail = true;
+        }
+
+        
+
     }
 
 
