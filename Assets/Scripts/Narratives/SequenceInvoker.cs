@@ -18,6 +18,9 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     //===============================
     private UI_DialogueBehavior dialogue;
     public UI_DialogueBehavior Dialogue { get { return dialogue; } }
+    private UI_DisplayImage displayImage;
+    public UI_DisplayImage DisplayImage { get { return displayImage; } }
+    
     private PlayerInventoryContainer inventoryContainer;
     public PlayerInventoryContainer InventoryContainer { get { return inventoryContainer; } }
     private PlayableDirector playable;
@@ -31,6 +34,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
+        displayImage = UI_DisplayImage.Instance;
 
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();

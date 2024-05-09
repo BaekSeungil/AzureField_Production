@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +13,6 @@ public class LocalizationUtil : MonoBehaviour
 {
 #if UNITY_EDITOR
     [MenuItem("Localization/스트링 시트 업데이트")]
-
     public static void PullAllExtensions()
     {
         // Get every String Table Collection
@@ -31,6 +30,12 @@ public class LocalizationUtil : MonoBehaviour
                 }
             }
         }
+    }
+
+    [MenuItem("Localization/스트링 시트 열기")]
+    public static void OpenStringsheet()
+    {
+        Application.OpenURL("https://docs.google.com/spreadsheets/d/1uf_wCp78DPIQCohxQaXe5ALdWE079ACYRNRv2URG6lk/edit?usp=sharing");
     }
 
     static void PullExtension(GoogleSheetsExtension googleExtension)
