@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 [RequireComponent(typeof(PlayableDirector))]
 public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
@@ -25,12 +26,17 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     public PlayerInventoryContainer InventoryContainer { get { return inventoryContainer; } }
     private PlayableDirector playable;
     public PlayableDirector Playable { get { return playable; } }
+    private BindFromSequences bindFromSequences;
+    public BindFromSequences BindfromSequences { get { return bindFromSequences; } }
+
 
     private Queue<Sequence_Base> sequenceQueue;
 
     protected override void Awake()
     {
         base.Awake();
+
+
 
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;

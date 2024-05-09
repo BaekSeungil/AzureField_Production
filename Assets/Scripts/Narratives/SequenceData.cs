@@ -303,3 +303,16 @@ public class Sequence_DisableGameobject : Sequence_Base
         yield return null;
     }
 }
+
+public class Sequence_Event : Sequence_Base
+{
+    [InfoBox("BindFromSequences에서 Key값에 해당하는 이벤트를 실행합니다.")]
+    public string key;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.BindfromSequences.Invoke(key);
+        yield return null;
+    }
+}
+
