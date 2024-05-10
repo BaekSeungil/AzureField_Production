@@ -177,24 +177,39 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#pragma multi_compile_instancing
 			#pragma instancing_options renderinglayer
 			#define _SURFACE_TYPE_TRANSPARENT 1
-			#define ASE_SRP_VERSION 120108
+			#define ASE_SRP_VERSION 140009
 			#define REQUIRE_DEPTH_TEXTURE 1
 
 
 			#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+			#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
 			#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
+
+			
 
 			#pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DYNAMICLIGHTMAP_ON
 			#pragma multi_compile_fragment _ DEBUG_DISPLAY
 
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+			
 
 			#pragma vertex vert
 			#pragma fragment frag
 
 			#define SHADERPASS SHADERPASS_UNLIT
+
+			
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+		
+
+			
+			#if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+			#endif
+		
 
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
@@ -208,6 +223,10 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Debug/Debugging3D.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceData.hlsl"
+
+			#if defined(LOD_FADE_CROSSFADE)
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+            #endif
 
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
@@ -280,9 +299,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			float CZY_HeightFogBaseVariationScale;
 			float CZY_HeightFogBaseVariationAmount;
 			float CZY_HeightFogIntensity;
-			float _UnderwaterRenderingEnabled;
-			float _FullySubmerged;
-			sampler2D _UnderwaterMask;
 			float CZY_FogSmoothness;
 			float CZY_FogOffset;
 			float CZY_FogIntensity;
@@ -338,19 +354,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				result *= float3(1,1,-1);
 				#endif
 				return result;
-			}
-			
-			float HLSL20_g90( bool enabled, bool submerged, float textureSample )
-			{
-				if(enabled)
-				{
-					if(submerged) return 1.0;
-					else return textureSample;
-				}
-				else
-				{
-					return 0.0;
-				}
 			}
 			
 
@@ -484,7 +487,11 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			}
 			#endif
 
-			half4 frag ( VertexOutput IN  ) : SV_Target
+			half4 frag ( VertexOutput IN
+				#ifdef _WRITE_RENDERING_LAYERS
+				, out float4 outRenderingLayers : SV_Target1
+				#endif
+				 ) : SV_Target
 			{
 				UNITY_SETUP_INSTANCE_ID( IN );
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX( IN );
@@ -587,10 +594,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float temp_output_121_0_g79 = ( ( 1.0 - saturate( ( ( temp_output_18_0_g87.y - CZY_HeightFogBase ) / ( CZY_HeightFogTransition + ( ( 1.0 - tex2D( _FogVariationTexture, ((temp_output_18_0_g87).xz*( 1.0 / CZY_HeightFogBaseVariationScale ) + mulTime63_g87) ).r ) * CZY_HeightFogBaseVariationAmount ) ) ) ) ) * saturate( ( eyeDepth31_g87 * 0.01 * CZY_HeightFogIntensity ) ) * CZY_HeightFogColor.a );
 				float4 lerpResult108_g79 = lerp( ( ( temp_output_10_0_g83 * CZY_SunFilterColor ) + temp_output_10_0_g82 ) , CZY_HeightFogColor , temp_output_121_0_g79);
 				
-				bool enabled20_g90 =(bool)_UnderwaterRenderingEnabled;
-				bool submerged20_g90 =(bool)_FullySubmerged;
-				float textureSample20_g90 = tex2Dlod( _UnderwaterMask, float4( ase_screenPosNorm.xy, 0, 0.0) ).r;
-				float localHLSL20_g90 = HLSL20_g90( enabled20_g90 , submerged20_g90 , textureSample20_g90 );
 				float3 ase_objectScale = float3( length( GetObjectToWorldMatrix()[ 0 ].xyz ), length( GetObjectToWorldMatrix()[ 1 ].xyz ), length( GetObjectToWorldMatrix()[ 2 ].xyz ) );
 				float finalAlpha36_g79 = temp_output_26_0_g79;
 				float lerpResult104_g79 = lerp( finalAlpha36_g79 , ( saturate( ( 1.0 - ( temp_output_112_0_g79.y * 0.001 ) ) ) * finalAlpha36_g79 ) , ( 1.0 - saturate( ( preDepth115_g79 / ( _ProjectionParams.z * 1.0 ) ) ) ));
@@ -599,7 +602,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float3 BakedAlbedo = 0;
 				float3 BakedEmission = 0;
 				float3 Color = lerpResult108_g79.rgb;
-				float Alpha = ( ( 1.0 - localHLSL20_g90 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( WorldPosition.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
+				float Alpha = ( ( 1.0 - 0.0 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( WorldPosition.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
 				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
 
@@ -616,11 +619,16 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				#endif
 
 				#ifdef LOD_FADE_CROSSFADE
-					LODDitheringTransition( IN.positionCS.xyz, unity_LODFade.x );
+					LODFadeCrossFade( IN.positionCS );
 				#endif
 
 				#ifdef ASE_FOG
 					Color = MixFog( Color, IN.fogFactor );
+				#endif
+
+				#ifdef _WRITE_RENDERING_LAYERS
+					uint renderingLayers = GetMeshRenderingLayer();
+					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
 				#endif
 
 				return half4( Color, Alpha );
@@ -641,21 +649,33 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			HLSLPROGRAM
 
-            #pragma multi_compile_instancing
-            #define _SURFACE_TYPE_TRANSPARENT 1
-            #define ASE_SRP_VERSION 120108
-            #define REQUIRE_DEPTH_TEXTURE 1
+			
+
+			#pragma multi_compile_instancing
+			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_SRP_VERSION 140009
+			#define REQUIRE_DEPTH_TEXTURE 1
 
 
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+			
 
 			#pragma vertex vert
 			#pragma fragment frag
+
+			
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+		
 
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
+
+			#if defined(LOD_FADE_CROSSFADE)
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+            #endif
 
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
@@ -693,9 +713,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#endif
 			CBUFFER_END
 
-			float _UnderwaterRenderingEnabled;
-			float _FullySubmerged;
-			sampler2D _UnderwaterMask;
 			float CZY_HeightFogBase;
 			float CZY_HeightFogTransition;
 			sampler2D _FogVariationTexture;
@@ -722,19 +739,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			float CZY_FogColorStart4;
 
 
-			float HLSL20_g90( bool enabled, bool submerged, float textureSample )
-			{
-				if(enabled)
-				{
-					if(submerged) return 1.0;
-					else return textureSample;
-				}
-				else
-				{
-					return 0.0;
-				}
-			}
-			
 			float2 UnStereo( float2 UV )
 			{
 				#if UNITY_SINGLE_PASS_STEREO
@@ -915,13 +919,9 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 					#endif
 				#endif
 
-				bool enabled20_g90 =(bool)_UnderwaterRenderingEnabled;
-				bool submerged20_g90 =(bool)_FullySubmerged;
 				float4 screenPos = IN.ase_texcoord2;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float textureSample20_g90 = tex2Dlod( _UnderwaterMask, float4( ase_screenPosNorm.xy, 0, 0.0) ).r;
-				float localHLSL20_g90 = HLSL20_g90( enabled20_g90 , submerged20_g90 , textureSample20_g90 );
 				float2 UV22_g89 = ase_screenPosNorm.xy;
 				float2 localUnStereo22_g89 = UnStereo( UV22_g89 );
 				float2 break64_g88 = localUnStereo22_g89;
@@ -992,7 +992,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float ModifiedFogAlpha40_g79 = saturate( lerpResult104_g79 );
 				
 
-				float Alpha = ( ( 1.0 - localHLSL20_g90 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( WorldPosition.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
+				float Alpha = ( ( 1.0 - 0.0 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( WorldPosition.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
 				float AlphaClipThreshold = 0.5;
 
 				#ifdef _ALPHATEST_ON
@@ -1000,7 +1000,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				#endif
 
 				#ifdef LOD_FADE_CROSSFADE
-					LODDitheringTransition( IN.positionCS.xyz, unity_LODFade.x );
+					LODFadeCrossFade( IN.positionCS );
 				#endif
 				return 0;
 			}
@@ -1019,12 +1019,14 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			HLSLPROGRAM
 
-            #define _SURFACE_TYPE_TRANSPARENT 1
-            #define ASE_SRP_VERSION 120108
-            #define REQUIRE_DEPTH_TEXTURE 1
+			
+
+			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_SRP_VERSION 140009
+			#define REQUIRE_DEPTH_TEXTURE 1
 
 
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+			
 
 			#pragma vertex vert
 			#pragma fragment frag
@@ -1032,6 +1034,12 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#define ATTRIBUTES_NEED_NORMAL
 			#define ATTRIBUTES_NEED_TANGENT
 			#define SHADERPASS SHADERPASS_DEPTHONLY
+
+			
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+		
 
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
@@ -1071,9 +1079,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#endif
 			CBUFFER_END
 
-			float _UnderwaterRenderingEnabled;
-			float _FullySubmerged;
-			sampler2D _UnderwaterMask;
 			float CZY_HeightFogBase;
 			float CZY_HeightFogTransition;
 			sampler2D _FogVariationTexture;
@@ -1100,19 +1105,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			float CZY_FogColorStart4;
 
 
-			float HLSL20_g90( bool enabled, bool submerged, float textureSample )
-			{
-				if(enabled)
-				{
-					if(submerged) return 1.0;
-					else return textureSample;
-				}
-				else
-				{
-					return 0.0;
-				}
-			}
-			
 			float2 UnStereo( float2 UV )
 			{
 				#if UNITY_SINGLE_PASS_STEREO
@@ -1284,13 +1276,9 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				bool enabled20_g90 =(bool)_UnderwaterRenderingEnabled;
-				bool submerged20_g90 =(bool)_FullySubmerged;
 				float4 screenPos = IN.ase_texcoord;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float textureSample20_g90 = tex2Dlod( _UnderwaterMask, float4( ase_screenPosNorm.xy, 0, 0.0) ).r;
-				float localHLSL20_g90 = HLSL20_g90( enabled20_g90 , submerged20_g90 , textureSample20_g90 );
 				float2 UV22_g89 = ase_screenPosNorm.xy;
 				float2 localUnStereo22_g89 = UnStereo( UV22_g89 );
 				float2 break64_g88 = localUnStereo22_g89;
@@ -1362,7 +1350,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float ModifiedFogAlpha40_g79 = saturate( lerpResult104_g79 );
 				
 
-				surfaceDescription.Alpha = ( ( 1.0 - localHLSL20_g90 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
+				surfaceDescription.Alpha = ( ( 1.0 - 0.0 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
 				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
@@ -1390,12 +1378,14 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			HLSLPROGRAM
 
-            #define _SURFACE_TYPE_TRANSPARENT 1
-            #define ASE_SRP_VERSION 120108
-            #define REQUIRE_DEPTH_TEXTURE 1
+			
+
+			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_SRP_VERSION 140009
+			#define REQUIRE_DEPTH_TEXTURE 1
 
 
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+			
 
 			#pragma vertex vert
 			#pragma fragment frag
@@ -1405,6 +1395,12 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			#define SHADERPASS SHADERPASS_DEPTHONLY
 
+			
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+		
+
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -1412,6 +1408,10 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
+
+			#if defined(LOD_FADE_CROSSFADE)
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+            #endif
 
 			
 
@@ -1443,9 +1443,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#endif
 			CBUFFER_END
 
-			float _UnderwaterRenderingEnabled;
-			float _FullySubmerged;
-			sampler2D _UnderwaterMask;
 			float CZY_HeightFogBase;
 			float CZY_HeightFogTransition;
 			sampler2D _FogVariationTexture;
@@ -1472,19 +1469,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			float CZY_FogColorStart4;
 
 
-			float HLSL20_g90( bool enabled, bool submerged, float textureSample )
-			{
-				if(enabled)
-				{
-					if(submerged) return 1.0;
-					else return textureSample;
-				}
-				else
-				{
-					return 0.0;
-				}
-			}
-			
 			float2 UnStereo( float2 UV )
 			{
 				#if UNITY_SINGLE_PASS_STEREO
@@ -1653,13 +1637,9 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				bool enabled20_g90 =(bool)_UnderwaterRenderingEnabled;
-				bool submerged20_g90 =(bool)_FullySubmerged;
 				float4 screenPos = IN.ase_texcoord;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float textureSample20_g90 = tex2Dlod( _UnderwaterMask, float4( ase_screenPosNorm.xy, 0, 0.0) ).r;
-				float localHLSL20_g90 = HLSL20_g90( enabled20_g90 , submerged20_g90 , textureSample20_g90 );
 				float2 UV22_g89 = ase_screenPosNorm.xy;
 				float2 localUnStereo22_g89 = UnStereo( UV22_g89 );
 				float2 break64_g88 = localUnStereo22_g89;
@@ -1731,7 +1711,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float ModifiedFogAlpha40_g79 = saturate( lerpResult104_g79 );
 				
 
-				surfaceDescription.Alpha = ( ( 1.0 - localHLSL20_g90 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
+				surfaceDescription.Alpha = ( ( 1.0 - 0.0 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
 				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
@@ -1763,22 +1743,40 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 
 			HLSLPROGRAM
 
-            #pragma multi_compile_instancing
-            #define _SURFACE_TYPE_TRANSPARENT 1
-            #define ASE_SRP_VERSION 120108
-            #define REQUIRE_DEPTH_TEXTURE 1
+			
+
+			#pragma multi_compile_instancing
+			#define _SURFACE_TYPE_TRANSPARENT 1
+			#define ASE_SRP_VERSION 140009
+			#define REQUIRE_DEPTH_TEXTURE 1
 
 
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+			
 
 			#pragma vertex vert
 			#pragma fragment frag
+
+        	#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+
+			
 
 			#define ATTRIBUTES_NEED_NORMAL
 			#define ATTRIBUTES_NEED_TANGENT
 			#define VARYINGS_NEED_NORMAL_WS
 
 			#define SHADERPASS SHADERPASS_DEPTHNORMALSONLY
+
+			
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+		
+
+			
+			#if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+			#endif
+		
 
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
@@ -1787,6 +1785,10 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
+
+            #if defined(LOD_FADE_CROSSFADE)
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+            #endif
 
 			
 
@@ -1819,9 +1821,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			#endif
 			CBUFFER_END
 
-			float _UnderwaterRenderingEnabled;
-			float _FullySubmerged;
-			sampler2D _UnderwaterMask;
 			float CZY_HeightFogBase;
 			float CZY_HeightFogTransition;
 			sampler2D _FogVariationTexture;
@@ -1848,19 +1847,6 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			float CZY_FogColorStart4;
 
 
-			float HLSL20_g90( bool enabled, bool submerged, float textureSample )
-			{
-				if(enabled)
-				{
-					if(submerged) return 1.0;
-					else return textureSample;
-				}
-				else
-				{
-					return 0.0;
-				}
-			}
-			
 			float2 UnStereo( float2 UV )
 			{
 				#if UNITY_SINGLE_PASS_STEREO
@@ -2027,17 +2013,18 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 			}
 			#endif
 
-			half4 frag(VertexOutput IN ) : SV_TARGET
+			void frag( VertexOutput IN
+				, out half4 outNormalWS : SV_Target0
+			#ifdef _WRITE_RENDERING_LAYERS
+				, out float4 outRenderingLayers : SV_Target1
+			#endif
+				 )
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				bool enabled20_g90 =(bool)_UnderwaterRenderingEnabled;
-				bool submerged20_g90 =(bool)_FullySubmerged;
 				float4 screenPos = IN.ase_texcoord1;
 				float4 ase_screenPosNorm = screenPos / screenPos.w;
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
-				float textureSample20_g90 = tex2Dlod( _UnderwaterMask, float4( ase_screenPosNorm.xy, 0, 0.0) ).r;
-				float localHLSL20_g90 = HLSL20_g90( enabled20_g90 , submerged20_g90 , textureSample20_g90 );
 				float2 UV22_g89 = ase_screenPosNorm.xy;
 				float2 localUnStereo22_g89 = UnStereo( UV22_g89 );
 				float2 break64_g88 = localUnStereo22_g89;
@@ -2109,7 +2096,7 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				float ModifiedFogAlpha40_g79 = saturate( lerpResult104_g79 );
 				
 
-				surfaceDescription.Alpha = ( ( 1.0 - localHLSL20_g90 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
+				surfaceDescription.Alpha = ( ( 1.0 - 0.0 ) * max( temp_output_121_0_g79 , saturate( ( ( 1.0 - saturate( ( ( ase_worldPos.y * ( 0.1 / ( ( CZY_FogSmoothness * length( ase_objectScale ) ) * 10.0 ) ) ) + ( 1.0 - CZY_FogOffset ) ) ) ) * CZY_FogIntensity * ModifiedFogAlpha40_g79 ) ) ) );
 				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
@@ -2117,12 +2104,24 @@ Shader "Distant Lands/Cozy/URP/Stylized Fog (Physical Height)"
 				#endif
 
 				#ifdef LOD_FADE_CROSSFADE
-					LODDitheringTransition( IN.positionCS.xyz, unity_LODFade.x );
+					LODFadeCrossFade( IN.positionCS );
 				#endif
 
-				float3 normalWS = IN.normalWS;
+				#if defined(_GBUFFER_NORMALS_OCT)
+					float3 normalWS = normalize(IN.normalWS);
+					float2 octNormalWS = PackNormalOctQuadEncode(normalWS);           // values between [-1, +1], must use fp32 on some platforms
+					float2 remappedOctNormalWS = saturate(octNormalWS * 0.5 + 0.5);   // values between [ 0,  1]
+					half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);      // values between [ 0,  1]
+					outNormalWS = half4(packedNormalWS, 0.0);
+				#else
+					float3 normalWS = IN.normalWS;
+					outNormalWS = half4(NormalizeNormalPerPixel(normalWS), 0.0);
+				#endif
 
-				return half4(NormalizeNormalPerPixel(normalWS), 0.0);
+				#ifdef _WRITE_RENDERING_LAYERS
+					uint renderingLayers = GetMeshRenderingLayer();
+					outRenderingLayers = float4(EncodeMeshRenderingLayer(renderingLayers), 0, 0, 0);
+				#endif
 			}
 
 			ENDHLSL
@@ -2152,4 +2151,4 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;281;1456,-736;Float;False;T
 WireConnection;281;2;537;0
 WireConnection;281;3;537;123
 ASEEND*/
-//CHKSM=54C8B7AF3026973D9E7E9F569D284616327EA72E
+//CHKSM=C656C29A1BC6F83B9DF77021A29BC2D0C7652A12
