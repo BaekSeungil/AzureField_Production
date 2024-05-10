@@ -6,12 +6,13 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using Unity.Transforms;
 using System.Diagnostics.Tracing;
+using Sirenix.OdinInspector;
 
 public class QickTimeSystem : QTEevent
 {
 
    [Header("옵션 구성")]
-   [SerializeField]public float slowMotionTimeScale = 0.1f;
+   [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
 
    [HideInInspector]
    private bool IsEventStart;
@@ -29,29 +30,28 @@ public class QickTimeSystem : QTEevent
 
    protected void Update() 
    {      
+
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
         }
+
         if(keys.Count == 0 || isFail)
         {
             doFinally();
         }
-        else 
+
+        for(int i = 0; i < eventData.keys.Count; i++)
         {
-            for(int i =0; i < eventData.keys.Count; i++)
-            {
-                checkKeyboardInput(eventData.keys[i]);
-            }
+            checkKeyboardInput(eventData.keys[i]);
         }
+        
         StartEvent(eventData);
         updateTimer();
    }
 
    public void StartEvent(QTEevent eventTable)
    {
-        eventTable = QTEevent.Instacne;
-        
         if(Keyboard.current == null)
         {
             UnityEngine.Debug.Log("No keyborad connected");
@@ -59,6 +59,13 @@ public class QickTimeSystem : QTEevent
         }
 
         eventData = eventTable;
+
+        if (Keyboard.current == null)
+        {
+            UnityEngine.Debug.Log("No keyboard connected");
+            return;
+        }
+
         keys = new List<QTEKey>(eventData.keys);
         if(eventData.onStart != null)
         {
@@ -121,36 +128,17 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail==false)
+        if(eventData.onFail != null && isFail == true)
         {
             eventData.onFail.Invoke();
         }
-        if(eventData.onSuccess != null && isAllButtonPressed ==true)
+        if(eventData.onSuccess != null && !isFail)
         {
             eventData.onSuccess.Invoke();
         }
         Time.timeScale = 1f;
         eventData = null;
    }
-
-    protected void OnGUI() 
-    {
-        if(eventData == null || isEnd)
-        return;
-
-        if(Event.current.isKey 
-        && Event.current.type == EventType.KeyDown
-        && eventData.failOnWrongKey
-        && !Event.current.keyCode.ToString().Equals("None"))
-        {
-            wrongKeyPressed = true;
-            eventData.keys.ForEach(key =>
-            wrongKeyPressed = wrongKeyPressed 
-            && !key.keybordKey.ToString().Equals(Event.current.keyCode.ToString()));
-        }
-
-        isFail = wrongKeyPressed;
-    }
 
     public void pause()
     {
@@ -164,15 +152,30 @@ public class QickTimeSystem : QTEevent
 
     public void checkKeyboardInput(QTEKey key)
     {
+
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
         {
             keys.Remove(key);
+
+            if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
+            == QTEPressType.Simultaneously)
+            {
+                if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
+                {
+                    isFail = false;
+                }
+                else
+                {
+                    isFail = true;
+                }
+            }
+            doFinally();
         }
-        if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
-        == QTEPressType.Simultaneously)
+        else
         {
-            keys.Add(key);
+            isFail = true;
         }
+
     }
 
 
