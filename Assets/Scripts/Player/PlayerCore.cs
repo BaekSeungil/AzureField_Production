@@ -151,6 +151,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private float initialRigidbodyDrag = 0f;
 
+    float leapupAvailHeight = 3.0f;
+
     Vector3 headRigForward;
 
     int layerIndex_Swim;
@@ -910,7 +912,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Vector3 projected = Vector3.ProjectOnPlane(player.transform.forward, Vector3.up);
             }
 
-            if(player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
+            if (player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
             {
                 player.driftActive = false;
             }
@@ -920,12 +922,22 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (player.driftActive)
             {
                 driftAngle = Mathf.Lerp(driftAngle, driftAngleMax * moveInput.x, player.driftSteer);
-                
+
             }
             else
             {
                 driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
             }
+
+            if (player.sailboat.SubmergeRate < player.leapupAvailHeight)
+            {
+                UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
+            }
+            else
+            {
+                UI_SailboatSkillInfo.Instance.SetLeapupAvailable(false);
+            }
+
         }
 
         public override void OnFixedUpdate(PlayerCore player)
@@ -1152,7 +1164,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(false);
-
+            UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
 
             var em = player.sailingSwooshEffect.emission;
             em.rateOverTimeMultiplier = 0f;
@@ -1215,10 +1227,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     }
 
+
     private void OnLeapupStart(InputAction.CallbackContext context)
     {
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
-        if (leapupRecharging) return; 
+        if (leapupRecharging) return;
+        if (sailboat.SubmergeRate > leapupAvailHeight) return;
         if (leapupCoroutine != null) return;
         if (driftActive) return;
 
@@ -1421,9 +1435,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
-/// <summary>
-///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
-/// </summary>
+    /// <summary>
+    ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
+    /// </summary>
     public void DisableControlls()
     {
         input.Player.Disable();
@@ -1432,9 +1446,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if(CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
     }
 
-/// <summary>
-/// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
-/// </summary>
+    /// <summary>
+    /// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
+    /// </summary>
     public void EnableControlls()
     {
         input.Player.Enable();
@@ -1469,9 +1483,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         directionIndicator.DisableIndicator();
     }
 
-/// <summary>
-/// @ 애니메이션 용 이벤트 함수 : 플레이어가 발을 딛을 때 호출되는 함수.
-/// </summary>
+    /// <summary>
+    /// @ 애니메이션 용 이벤트 함수 : 플레이어가 발을 딛을 때 호출되는 함수.
+    /// </summary>
     public void FootstepEvent()
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground))
