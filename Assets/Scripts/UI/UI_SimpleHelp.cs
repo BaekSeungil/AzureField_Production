@@ -14,10 +14,20 @@ public class UI_SimpleHelp : MonoBehaviour
 
     private void Awake()
     {
-        input = new MainPlayerInputActions();
-        input.Enable();
+        input = UI_InputManager.Instance.UI_Input;
+
+    }
+
+    private void OnEnable()
+    {
         input.UI.SimpleHelp.started += KeyDown;
         input.UI.SimpleHelp.canceled += KeyUp;
+    }
+
+    private void OnDisable()
+    {
+        input.UI.SimpleHelp.started -= KeyDown;
+        input.UI.SimpleHelp.canceled -= KeyUp;
     }
 
     public void KeyDown(InputAction.CallbackContext context)

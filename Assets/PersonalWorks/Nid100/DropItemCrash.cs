@@ -36,9 +36,13 @@ public class DropItemCrash : MonoBehaviour
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
         FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
         DropItemRenderer.enabled = !DropItemRenderer.enabled;
+        
         yield return new WaitForSeconds(addSpeedTime);
+        itemActive = true;
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
+        DropItemRenderer.enabled = true;
         DropItem.SetActive(false);
+
 
     }
 

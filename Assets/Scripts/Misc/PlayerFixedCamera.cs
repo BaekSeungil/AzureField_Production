@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerFixedCamera : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera Vcam;
+
     private PlayerCore player;
 
     private void OnEnable()

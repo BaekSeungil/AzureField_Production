@@ -30,8 +30,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     protected override void Awake()
     {
         base.Awake();
-
-        input = new MainPlayerInputActions();
+        input = UI_InputManager.Instance.UI_Input;
         input.Player.Enable();
         input.Player.OpenPlaymenu.performed += OnOpenKeydown;
     }
@@ -68,7 +67,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         CursorLocker.Instance.DisableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
-        if (gameplayer != null) { gameplayer.DisableForSequence(); }
+        if (gameplayer != null) { gameplayer.DisableControlls(); }
 
         if (playmenu == PlaymenuElement.Inventory)
         {
@@ -93,7 +92,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         CursorLocker.Instance.EnableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
-        if (gameplayer != null) { gameplayer.EnableForSequence(); }
+        if (gameplayer != null) { gameplayer.EnableControlls(); }
 
         RuntimeManager.PlayOneShot(sound_Close);
 
