@@ -35,25 +35,23 @@ public class QickTimeSystem : QTEevent
         {
             return;
         }
+
         if(keys.Count == 0 || isFail)
         {
             doFinally();
         }
-        else 
+
+        for(int i = 0; i < eventData.keys.Count; i++)
         {
-            for(int i =0; i < eventData.keys.Count; i++)
-            {
-                checkKeyboardInput(eventData.keys[i]);
-            }
+            checkKeyboardInput(eventData.keys[i]);
         }
+        
         StartEvent(eventData);
         updateTimer();
    }
 
    public void StartEvent(QTEevent eventTable)
    {
-        eventTable = QTEevent.Instacne;
-        
         if(Keyboard.current == null)
         {
             UnityEngine.Debug.Log("No keyborad connected");
@@ -61,6 +59,13 @@ public class QickTimeSystem : QTEevent
         }
 
         eventData = eventTable;
+
+        if (Keyboard.current == null)
+        {
+            UnityEngine.Debug.Log("No keyboard connected");
+            return;
+        }
+
         keys = new List<QTEKey>(eventData.keys);
         if(eventData.onStart != null)
         {
@@ -123,25 +128,17 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && !isFail)
+        if(eventData.onFail != null && isFail == true)
         {
             eventData.onFail.Invoke();
-
-            
         }
-        if(eventData.onSuccess != null && isAllButtonPressed)
+        if(eventData.onSuccess != null && !isFail)
         {
             eventData.onSuccess.Invoke();
         }
         Time.timeScale = 1f;
         eventData = null;
    }
-
-
-    protected void CheckKeyBorad()
-    {
-       
-    }
 
     public void pause()
     {
@@ -159,22 +156,26 @@ public class QickTimeSystem : QTEevent
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
         {
             keys.Remove(key);
+
+            if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
+            == QTEPressType.Simultaneously)
+            {
+                if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
+                {
+                    isFail = false;
+                }
+                else
+                {
+                    isFail = true;
+                }
+            }
+            doFinally();
         }
         else
         {
-             isFail = true;
+            isFail = true;
         }
 
-
-        if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
-        == QTEPressType.Simultaneously)
-        {
-           keys.Remove(key);
-        }
-        else
-        {
-             isFail = true;
-        }
     }
 
 
