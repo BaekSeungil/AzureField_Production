@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 [RequireComponent(typeof(PlayableDirector))]
 public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
@@ -18,10 +19,16 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     //===============================
     private UI_DialogueBehavior dialogue;
     public UI_DialogueBehavior Dialogue { get { return dialogue; } }
+    private UI_DisplayImage displayImage;
+    public UI_DisplayImage DisplayImage { get { return displayImage; } }
+    
     private PlayerInventoryContainer inventoryContainer;
     public PlayerInventoryContainer InventoryContainer { get { return inventoryContainer; } }
     private PlayableDirector playable;
     public PlayableDirector Playable { get { return playable; } }
+    private BindFromSequences bindFromSequences;
+    public BindFromSequences BindfromSequences { get { return bindFromSequences; } }
+
 
     private Queue<Sequence_Base> sequenceQueue;
 
@@ -29,8 +36,11 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     {
         base.Awake();
 
+
+
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
+        displayImage = UI_DisplayImage.Instance;
 
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();
@@ -95,7 +105,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         if (dialogue.DialogueOpened) { dialogue.StopAllCoroutines(); dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         UI_PlaymenuBehavior.Instance.EnableInput();
-        PlayerCore.Instance.EnableForSequence();
+        PlayerCore.Instance.EnableControlls();
     }
 
     private IEnumerator Cor_StartSequenceQueue()
@@ -104,7 +114,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         UI_PlaymenuBehavior playmenu = UI_PlaymenuBehavior.Instance;
         playmenu.DisableInput();
         PlayerCore player = PlayerCore.Instance;
-        player.DisableForSequence();
+        player.DisableControlls();
 
         while (sequenceQueue.Count > 0)
         {
@@ -115,7 +125,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
 
         yield return null;
         playmenu.EnableInput();
-        player.EnableForSequence();
+        player.EnableControlls();
 
         sequenceRunning = false;
     }

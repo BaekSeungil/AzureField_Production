@@ -4,27 +4,31 @@ using UnityEngine;
 
 public class MiniMapCamera : MonoBehaviour
 {
-   [SerializeField] private MiniMapSetting setting;
-   [SerializeField] private float camerHeghit;
+    [SerializeField] private Vector2 offset;
+    [SerializeField] private float cameraHeight;
+    [SerializeField] private float cameraDepth;
 
-   private void Awake() 
-   {
-        setting = GetComponentInParent<MiniMapSetting>();
-        camerHeghit = transform.position.y;
-   }
+    Camera minimapView;
 
-   void Update()
-   {
-        Vector3 targetPos = setting.targetFollow.transform.position;
+    private void Awake()
+    {
+        minimapView = GetComponent<Camera>();
+    }
 
-        transform.position = new Vector3(targetPos.x,
-        targetPos.y + camerHeghit, targetPos.z);
+    private void OnEnable()
+    {
+        minimapView.farClipPlane = cameraDepth;
+    }
 
-     //    if(setting.rotateWidthTheTarget)
-     //    {
-     //        Quaternion targetRotation = setting.targetFollow.transform.rotation;
+    private void Update()
+    {
+        if(PlayerCore.IsInstanceValid)
+        {
+            PlayerCore player = PlayerCore.Instance;
+            transform.position = new Vector3(player.transform.position.x + offset.x, cameraHeight, player.transform.position.z + offset.y);
+        }
+            
+    }
 
-     //        transform.rotation = Quaternion.Euler(90, targetRotation.eulerAngles.y, 0);
-     //    }
-   }
+
 }

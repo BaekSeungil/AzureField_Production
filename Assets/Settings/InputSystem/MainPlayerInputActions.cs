@@ -125,6 +125,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SailboatDrift"",
+                    ""type"": ""Button"",
+                    ""id"": ""11d8e4de-cbdc-4a1e-878a-374d49027330"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -380,6 +389,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SailboatBooster"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4a8e49f-65d8-404f-93d1-69c056d79b9e"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatDrift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -490,6 +510,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""SimpleHelp"",
                     ""type"": ""Button"",
                     ""id"": ""f06b052f-b929-4e4a-9bce-ff6a6e0b6eb0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MapToggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""83687b2c-eeb1-4a86-9a61-8ce0924e01ee"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -914,6 +943,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SimpleHelp"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff2fe5b8-2d80-469c-8843-b50265137284"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MapToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -994,6 +1034,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         m_Player_SailboatBooster = m_Player.FindAction("SailboatBooster", throwIfNotFound: true);
         m_Player_SailboatLeapup = m_Player.FindAction("SailboatLeapup", throwIfNotFound: true);
+        m_Player_SailboatDrift = m_Player.FindAction("SailboatDrift", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1008,6 +1049,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
         m_UI_Pasue = m_UI.FindAction("Pasue", throwIfNotFound: true);
         m_UI_SimpleHelp = m_UI.FindAction("SimpleHelp", throwIfNotFound: true);
+        m_UI_MapToggle = m_UI.FindAction("MapToggle", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1080,6 +1122,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_OpenPlaymenu;
     private readonly InputAction m_Player_SailboatBooster;
     private readonly InputAction m_Player_SailboatLeapup;
+    private readonly InputAction m_Player_SailboatDrift;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1095,6 +1138,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputAction @SailboatBooster => m_Wrapper.m_Player_SailboatBooster;
         public InputAction @SailboatLeapup => m_Wrapper.m_Player_SailboatLeapup;
+        public InputAction @SailboatDrift => m_Wrapper.m_Player_SailboatDrift;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1137,6 +1181,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatLeapup.started += instance.OnSailboatLeapup;
             @SailboatLeapup.performed += instance.OnSailboatLeapup;
             @SailboatLeapup.canceled += instance.OnSailboatLeapup;
+            @SailboatDrift.started += instance.OnSailboatDrift;
+            @SailboatDrift.performed += instance.OnSailboatDrift;
+            @SailboatDrift.canceled += instance.OnSailboatDrift;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1174,6 +1221,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatLeapup.started -= instance.OnSailboatLeapup;
             @SailboatLeapup.performed -= instance.OnSailboatLeapup;
             @SailboatLeapup.canceled -= instance.OnSailboatLeapup;
+            @SailboatDrift.started -= instance.OnSailboatDrift;
+            @SailboatDrift.performed -= instance.OnSailboatDrift;
+            @SailboatDrift.canceled -= instance.OnSailboatDrift;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1207,6 +1257,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_Close;
     private readonly InputAction m_UI_Pasue;
     private readonly InputAction m_UI_SimpleHelp;
+    private readonly InputAction m_UI_MapToggle;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1223,6 +1274,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @Close => m_Wrapper.m_UI_Close;
         public InputAction @Pasue => m_Wrapper.m_UI_Pasue;
         public InputAction @SimpleHelp => m_Wrapper.m_UI_SimpleHelp;
+        public InputAction @MapToggle => m_Wrapper.m_UI_MapToggle;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1268,6 +1320,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SimpleHelp.started += instance.OnSimpleHelp;
             @SimpleHelp.performed += instance.OnSimpleHelp;
             @SimpleHelp.canceled += instance.OnSimpleHelp;
+            @MapToggle.started += instance.OnMapToggle;
+            @MapToggle.performed += instance.OnMapToggle;
+            @MapToggle.canceled += instance.OnMapToggle;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1308,6 +1363,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SimpleHelp.started -= instance.OnSimpleHelp;
             @SimpleHelp.performed -= instance.OnSimpleHelp;
             @SimpleHelp.canceled -= instance.OnSimpleHelp;
+            @MapToggle.started -= instance.OnMapToggle;
+            @MapToggle.performed -= instance.OnMapToggle;
+            @MapToggle.canceled -= instance.OnMapToggle;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1383,6 +1441,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnOpenPlaymenu(InputAction.CallbackContext context);
         void OnSailboatBooster(InputAction.CallbackContext context);
         void OnSailboatLeapup(InputAction.CallbackContext context);
+        void OnSailboatDrift(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1398,5 +1457,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnClose(InputAction.CallbackContext context);
         void OnPasue(InputAction.CallbackContext context);
         void OnSimpleHelp(InputAction.CallbackContext context);
+        void OnMapToggle(InputAction.CallbackContext context);
     }
 }

@@ -61,9 +61,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
     {
         base.Awake();
 
-        input = new MainPlayerInputActions();
-        input.UI.Enable();
-        input.UI.Positive.performed += OnPressedPositive;
+        input = UI_InputManager.Instance.UI_Input;
     }
 
     private void Start()
@@ -71,6 +69,16 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
         inputWaitObject.SetActive(false);
         visualGroup.SetActive(false);
         visualGroup.GetComponent<CanvasGroup>().alpha = 0f;
+    }
+
+    private void OnEnable()
+    {
+        input.UI.Positive.performed += OnPressedPositive;
+    }
+
+    private void OnDisable()
+    {
+        input.UI.Positive.performed -= OnPressedPositive;
     }
 
     private void OnPressedPositive(InputAction.CallbackContext context)
