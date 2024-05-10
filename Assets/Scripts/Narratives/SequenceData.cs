@@ -279,3 +279,40 @@ public class Sequence_CloseImage : Sequence_Base
         yield return null;
     }
 }
+
+public class Sequence_EnableGameobject : Sequence_Base
+{
+    [InfoBox("해당 이름을 가진 오브젝트를 활성화 합니다.")]
+    [LabelText("오브젝트 이름")] public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        GameObject.Find(name).SetActive(true);
+        yield return null;
+    }
+}
+
+public class Sequence_DisableGameobject : Sequence_Base
+{
+    [InfoBox("해당 이름을 가진 오브젝트를 비활성화 합니다.")]
+    [LabelText("오브젝트 이름")] public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        GameObject.Find(name).SetActive(false);
+        yield return null;
+    }
+}
+
+public class Sequence_Event : Sequence_Base
+{
+    [InfoBox("BindFromSequences에서 Key값에 해당하는 이벤트를 실행합니다.")]
+    public string key;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.BindfromSequences.Invoke(key);
+        yield return null;
+    }
+}
+

@@ -21,8 +21,8 @@ RenderSettings:
   m_LinearFogStart: 100
   m_LinearFogEnd: 600
   m_AmbientSkyColor: {r: 0.19497195, g: 0.59979737, b: 0.8104717, a: 1.21}
-  m_AmbientEquatorColor: {r: 0.5003979, g: 0.94698125, b: 0.973251, a: 1.0527}
-  m_AmbientGroundColor: {r: 0.25019896, g: 0.47349063, b: 0.4866255, a: 1.0527}
+  m_AmbientEquatorColor: {r: 0.5492874, g: 1.0395024, b: 1.0683386, a: 1.15555}
+  m_AmbientGroundColor: {r: 0.2746437, g: 0.5197512, b: 0.5341693, a: 1.15555}
   m_AmbientIntensity: 0.5
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.51886785, g: 0.65117925, b: 1, a: 1}
@@ -2259,6 +2259,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   sequenceAsset: {fileID: 11400000, guid: 8fa51b305e59bb74cac5cb3daa03d4bf, type: 2}
+  virtualCamera: {fileID: 0}
   references:
     version: 2
     RefIds: []
@@ -9698,7 +9699,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 37.038895, y: 37.038895, z: 37.038895}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 776137952}
@@ -10536,6 +10537,63 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 7806796020230019585, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: intensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: Wave1_Vector.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: Wave2_Vector.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: Wave2_Vector.z
+      value: -0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: Wave3_Vector.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: Wave3_Amplitude
+      value: 0.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: oceanEmmision.b
+      value: 0.6603774
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: oceanEmmision.g
+      value: 0.23026323
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: oceanTipEmmision.g
+      value: 0.7088351
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: defaultOceanProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: f746c12690da5284780d1d9562e9ba2e,
+        type: 2}
+    - target: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 7820804872748861419, guid: e4e2dc1ac921be3479ca298183145819,
         type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11709,18 +11767,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weatherSphere: {fileID: 990758477}
   system: {fileID: 990758477}
-  cumulus: 0.26
-  cirrus: 0.41
-  altocumulus: 0
+  cumulus: 0.09
+  cirrus: 0.16
+  altocumulus: 0.16
   cirrostratus: 0
   chemtrails: 0
   nimbus: 0
   nimbusHeight: 1
-  nimbusVariation: 0
-  borderHeight: 0.373
+  nimbusVariation: 0.07
+  borderHeight: 0.355
   borderEffect: 1
-  borderVariation: 0.95
-  fogDensity: 2
+  borderVariation: 0.904
+  fogDensity: 3.09
   weight: 1
   filterSaturation: 0
   filterValue: 0
@@ -12753,18 +12811,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weight: 1
   targetWeight: 1
-  cumulus: 0.26
-  cirrus: 0.41
-  altocumulus: 0
+  cumulus: 0.09
+  cirrus: 0.16
+  altocumulus: 0.16
   cirrostratus: 0
   chemtrails: 0
   nimbus: 0
   nimbusHeightEffect: 1
-  nimbusVariation: 0
-  borderHeight: 0.373
+  nimbusVariation: 0.07
+  borderHeight: 0.355
   borderEffect: 1
-  borderVariation: 0.95
-  fogDensity: 2
+  borderVariation: 0.904
+  fogDensity: 3.09
   usePhysicalSunHeight: 1
   sunDirection: 107
   sunPitch: -37.7
@@ -13018,7 +13076,7 @@ Transform:
   m_GameObject: {fileID: 990758476}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.16525841, y: 6.4095106, z: 8.048336}
+  m_LocalPosition: {x: 10.16539, y: 7.48114, z: -6.2986374}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -31770,12 +31828,12 @@ PrefabInstance:
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000014795912
+      value: -0.00000001479591
       objectReference: {fileID: 0}
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000039178114
+      value: 0.000000003917811
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
