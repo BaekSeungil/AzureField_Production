@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using Cinemachine.Utility;
+using JetBrains.Annotations;
 
 public enum PlayerMovementState
 {
@@ -89,6 +90,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
     [SerializeField, ReadOnly, LabelText("Horizontal velocity magnitude")] private float velocity_hor_debug;
     [SerializeField, ReadOnly, LabelText("Current holding item")] private string current_holding_item_debug;
+    [SerializeField, ReadOnly, LabelText("CurrentVelocityDelta")] private string current_velocity_delta_debug;
 
 #pragma warning restore CS0414
 #endif
