@@ -125,6 +125,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #endregion
 
     private Rigidbody rBody;
+    public Vector3 Velocity { get { return rBody.velocity; } }
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
@@ -162,8 +163,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    public bool BoosterActive { get { return boosterActive; } }
     bool driftActive = false;
+    public bool DriftActive { get { return driftActive; } }
     bool leapupActive = false;
+    public bool LeapupActive { get { return leapupActive; } }
 
     //플레이어 상태 참고용 변수
     public string movementStateRefernce;
