@@ -33,7 +33,11 @@ public class Interactable_TriggerZone : Interactable_Base
 
         if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
         if (sequenceAsset != null)
+        {
             SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+            if (virtualCamera != null)
+                SequenceInvoker.Instance.SetSequenceCamera(virtualCamera);
+        }
 
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
         if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
