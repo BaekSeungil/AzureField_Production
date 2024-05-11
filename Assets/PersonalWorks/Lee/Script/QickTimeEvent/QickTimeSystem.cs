@@ -7,29 +7,43 @@ using UnityEngine.Events;
 using Unity.Transforms;
 using System.Diagnostics.Tracing;
 using Sirenix.OdinInspector;
+using Unity.Entities.UniversalDelegates;
 
 public class QickTimeSystem : QTEevent
 {
 
-   [Header("옵션 구성")]
-   [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
+    [Header("옵션 구성")]
+    [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
+    [SerializeField,LabelText("성공 실패 UI가 남아있는시간")]public float LimitTime;
+    [HideInInspector]
+    private bool IsEventStart;
+    private QTEevent eventData;
+    private bool isAllButtonPressed;
+    private bool isFail;
+    private bool isEnd;
+    private bool isPause;
+    private bool wrongKeyPressed;
+    private float currentTime;
+    private bool DeletObj = false;
+    private float smoothTimeUpdate;
+    private float rememberTimeScalse;
 
-   [HideInInspector]
-   private bool IsEventStart;
-   private QTEevent eventData;
-   private bool isAllButtonPressed;
-   private bool isFail;
-   private bool isEnd;
-   private bool isPause;
-   private bool wrongKeyPressed;
-   private float currentTime;
-   private float smoothTimeUpdate;
-   private float rememberTimeScalse;
+    private float ElapedTime;
 
 
 
    protected void Update() 
    {      
+        if(isAllButtonPressed && isEnd)
+        {
+            LimitTime = Time.deltaTime;
+            ElapedTime = LimitTime - Time.deltaTime;
+            Debug.Log("시간 "+ LimitTime);
+            if(ElapedTime <= 0f)
+            {
+                DeletObj = true;
+            }
+        }
 
         if(!IsEventStart || eventData == null || isPause)
         {
@@ -128,13 +142,23 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail == true)
+        if(!isFail)
         {
-            eventData.onFail.Invoke();
+            eventData.SuccessUI.SetActive(true);
+            if(DeletObj)
+            {
+                eventData.SuccessUI.SetActive(false);
+            }
+
         }
-        if(eventData.onSuccess != null && !isFail)
+        if(isFail)
         {
-            eventData.onSuccess.Invoke();
+            eventData.FailUI.SetActive(true);
+             if(DeletObj)
+            {
+                eventData.FailUI.SetActive(false);
+                Debug.Log("활성화");
+            }
         }
         Time.timeScale = 1f;
         eventData = null;
@@ -184,8 +208,6 @@ public class QickTimeSystem : QTEevent
     {
         var ui  = getUI();
         //ui.eventTimerImage.fillAmount = 1f;
-       
-
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
