@@ -24,27 +24,14 @@ public class QickTimeSystem : QTEevent
     private bool isPause;
     private bool wrongKeyPressed;
     private float currentTime;
-    private bool DeletObj = false;
     private float smoothTimeUpdate;
     private float rememberTimeScalse;
 
-    private float ElapedTime;
-
-
+    private bool Setobj = false;
 
    protected void Update() 
    {      
-        if(isAllButtonPressed && isEnd)
-        {
-            LimitTime = Time.deltaTime;
-            ElapedTime = LimitTime - Time.deltaTime;
-            Debug.Log("시간 "+ LimitTime);
-            if(ElapedTime <= 0f)
-            {
-                DeletObj = true;
-            }
-        }
-
+        
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
@@ -62,6 +49,7 @@ public class QickTimeSystem : QTEevent
         
         StartEvent(eventData);
         updateTimer();
+
    }
 
    public void StartEvent(QTEevent eventTable)
@@ -145,24 +133,29 @@ public class QickTimeSystem : QTEevent
         if(!isFail)
         {
             eventData.SuccessUI.SetActive(true);
-            if(DeletObj)
-            {
-                eventData.SuccessUI.SetActive(false);
-            }
-
+            StartCoroutine(DeativateFaleUI(eventData.SuccessUI));
         }
         if(isFail)
         {
             eventData.FailUI.SetActive(true);
-             if(DeletObj)
-            {
-                eventData.FailUI.SetActive(false);
-                Debug.Log("활성화");
-            }
+            StartCoroutine(DeativateFaleUI( eventData.FailUI));
         }
         Time.timeScale = 1f;
         eventData = null;
    }
+
+    private IEnumerator DeativateFaleUI(GameObject uiObject)
+    {
+        yield return new WaitForSeconds(LimitTime);
+        
+       if(uiObject != null)
+       {
+            uiObject.SetActive(false);
+       }
+        
+    }
+
+
 
     public void pause()
     {
