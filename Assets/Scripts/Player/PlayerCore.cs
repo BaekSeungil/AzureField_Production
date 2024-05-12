@@ -108,6 +108,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSprayEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSplashEffect_HighVel;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem footstepEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem jumpEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
@@ -1204,6 +1206,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             if (Vector3.Angle(groundNormal, Vector3.up) < maxClimbSlope)
             {
                 rBody.velocity += Vector3.up * jumpPower;
+                jumpEffect.Emit((int)jumpEffect.emission.GetBurst(0).count.constant);
                 animator.SetFloat("AirboneBlend", 0f);
                 PlayFootstepSound();
             }
