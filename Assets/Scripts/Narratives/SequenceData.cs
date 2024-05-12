@@ -1,3 +1,4 @@
+using Cinemachine;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
@@ -92,6 +93,8 @@ public class Sequence_DialogueBranch : Sequence_Base
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
+
+        Debug.Log(sequenceAssets[index]);
 
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
@@ -253,3 +256,85 @@ public class Sequence_BranchByParameter : Sequence_Base
     }
 
 }
+
+public class Sequence_ShowImage : Sequence_Base
+{
+    [InfoBox("이미지묶음을 보여줍니다.", InfoMessageType = InfoMessageType.None)]
+    [LabelText("이미지 모두 표시 후 닫기")] public bool closeImageAfterFinish = true;
+    [PreviewField(Alignment = ObjectFieldAlignment.Center,Height = 100)] public Sprite[] Images;
+
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.DisplayImage.ImageProgress(Images,closeImageAfterFinish);
+    }
+}
+
+public class Sequence_CloseImage : Sequence_Base
+{
+    [InfoBox("열려있는 이미지 창을 닫습니다.")]
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.DisplayImage.CloseImage();
+        yield return null;
+    }
+}
+
+public class Sequence_Event : Sequence_Base
+{
+    [InfoBox("BindFromSequences에서 Key값에 해당하는 이벤트를 실행합니다.")]
+    public string key;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.BindfromSequences.Invoke(key);
+        yield return null;
+    }
+}
+
+public class Sequence_EnableVCam : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        CinemachineVirtualCameraBase[] vcams = GameObject.FindObjectsByType<CinemachineVirtualCameraBase>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (CinemachineVirtualCameraBase vcam in vcams)
+        {
+            if (vcam.name == name)
+            {
+                vcam.gameObject.SetActive(true);
+                yield break;
+            }    
+        }
+
+        Debug.Log(name + " 이름을 가진 Virtual Camera오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+
+public class Sequence_DisableVCam : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        CinemachineVirtualCameraBase[] vcams = GameObject.FindObjectsByType<CinemachineVirtualCameraBase>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (CinemachineVirtualCameraBase vcam in vcams)
+        {
+            if (vcam.name == name)
+            {
+                vcam.gameObject.SetActive(false);
+                yield break;
+            }
+        }
+
+        Debug.Log(name + " 이름을 가진 Virtual Camera오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+

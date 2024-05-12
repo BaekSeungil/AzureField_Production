@@ -29,7 +29,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
 
 
-    [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Warning)]
+    [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Info)]
     [SerializeField, LabelText("도전 시작시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeStart;
     [SerializeField, LabelText("도전 종료시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeEnd;
 
@@ -143,6 +143,16 @@ public class FairwindChallengeInstance : MonoBehaviour
         ActiveChallenge.timer_playCountdown += time;
         return true;
 
+    }
+
+    /// <summary>
+    /// 현재 활성화된 순풍에 도전의 경유지들 위치에 대한 정보를 받아옵니다.
+    /// </summary>
+    /// <returns></returns>
+    public static Vector3[] GetActiveRoutesKnots()
+    {
+        if (IsActiveChallengeExists) { Debug.LogWarning("FairwindChallengeInstance : 현재 진행중인 순풍의 도전이 없습니다!"); return null; }
+        return ActiveChallenge.routeKnotList;
     }
 
     /// <summary>

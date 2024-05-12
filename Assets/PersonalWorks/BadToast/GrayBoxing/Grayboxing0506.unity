@@ -19,7 +19,7 @@ RenderSettings:
   m_FogMode: 1
   m_FogDensity: 1
   m_LinearFogStart: 60
-  m_LinearFogEnd: 250
+  m_LinearFogEnd: 700
   m_AmbientSkyColor: {r: 1, g: 0.8849766, b: 0.5330188, a: 1}
   m_AmbientEquatorColor: {r: 0.6462264, g: 0.85280967, b: 1, a: 1}
   m_AmbientGroundColor: {r: 0.3254717, g: 0.35748532, b: 0.4339623, a: 1}
@@ -11857,6 +11857,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   sequenceAsset: {fileID: 0}
+  virtualCamera: {fileID: 0}
   references:
     version: 2
     RefIds: []
@@ -19285,6 +19286,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   sequenceAsset: {fileID: 0}
+  virtualCamera: {fileID: 0}
   references:
     version: 2
     RefIds: []
@@ -28698,12 +28700,12 @@ PrefabInstance:
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000002352283
+      value: -0.00000002352283
       objectReference: {fileID: 0}
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000062286145
+      value: 0.0000000062286145
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -28733,12 +28735,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000001675242
+      value: 0.000000016752473
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000003926086
+      value: -0.000000003926098
       objectReference: {fileID: 0}
     - target: {fileID: 5273504991474494972, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -28848,12 +28850,12 @@ PrefabInstance:
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1.6303519e-15
+      value: 3.2607037e-15
       objectReference: {fileID: 0}
     - target: {fileID: 6375979362328282990, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 7.683336e-16
+      value: -2.3968968e-16
       objectReference: {fileID: 0}
     - target: {fileID: 9221778620721048584, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -32015,30 +32017,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5148151799986346951, guid: 6787c8c09cc1aa64789a429e2ff0cb38,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1644770529}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6787c8c09cc1aa64789a429e2ff0cb38, type: 3}
---- !u!1 &1644770528 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5148151799986346951, guid: 6787c8c09cc1aa64789a429e2ff0cb38,
-    type: 3}
-  m_PrefabInstance: {fileID: 1644770527}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1644770529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644770528}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09306355c46151840bdc9089bca4214d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1649647858
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59543,6 +59523,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   sequenceAsset: {fileID: 0}
+  virtualCamera: {fileID: 0}
   references:
     version: 2
     RefIds: []
