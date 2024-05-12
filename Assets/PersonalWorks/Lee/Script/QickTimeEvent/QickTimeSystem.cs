@@ -7,30 +7,31 @@ using UnityEngine.Events;
 using Unity.Transforms;
 using System.Diagnostics.Tracing;
 using Sirenix.OdinInspector;
+using Unity.Entities.UniversalDelegates;
 
 public class QickTimeSystem : QTEevent
 {
 
-   [Header("옵션 구성")]
-   [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
+    [Header("옵션 구성")]
+    [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
+    [SerializeField,LabelText("성공 실패 UI가 남아있는시간")]public float LimitTime;
+    [HideInInspector]
+    private bool IsEventStart;
+    private QTEevent eventData;
+    private bool isAllButtonPressed;
+    private bool isFail;
+    private bool isEnd;
+    private bool isPause;
+    private bool wrongKeyPressed;
+    private float currentTime;
+    private float smoothTimeUpdate;
+    private float rememberTimeScalse;
 
-   [HideInInspector]
-   private bool IsEventStart;
-   private QTEevent eventData;
-   private bool isAllButtonPressed;
-   private bool isFail;
-   private bool isEnd;
-   private bool isPause;
-   private bool wrongKeyPressed;
-   private float currentTime;
-   private float smoothTimeUpdate;
-   private float rememberTimeScalse;
-
-
+    private bool Setobj = false;
 
    protected void Update() 
    {      
-
+        
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
@@ -48,6 +49,7 @@ public class QickTimeSystem : QTEevent
         
         StartEvent(eventData);
         updateTimer();
+
    }
 
    public void StartEvent(QTEevent eventTable)
@@ -128,17 +130,32 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail == true)
+        if(!isFail)
         {
-            eventData.onFail.Invoke();
+            eventData.SuccessUI.SetActive(true);
+            StartCoroutine(DeativateFaleUI(eventData.SuccessUI));
         }
-        if(eventData.onSuccess != null && !isFail)
+        if(isFail)
         {
-            eventData.onSuccess.Invoke();
+            eventData.FailUI.SetActive(true);
+            StartCoroutine(DeativateFaleUI( eventData.FailUI));
         }
         Time.timeScale = 1f;
         eventData = null;
    }
+
+    private IEnumerator DeativateFaleUI(GameObject uiObject)
+    {
+        yield return new WaitForSeconds(LimitTime);
+        
+       if(uiObject != null)
+       {
+            uiObject.SetActive(false);
+       }
+        
+    }
+
+
 
     public void pause()
     {
@@ -184,8 +201,6 @@ public class QickTimeSystem : QTEevent
     {
         var ui  = getUI();
         //ui.eventTimerImage.fillAmount = 1f;
-       
-
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
@@ -217,3 +232,5 @@ public class QickTimeSystem : QTEevent
         }
     }
 }
+
+
