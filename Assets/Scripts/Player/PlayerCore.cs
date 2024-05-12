@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using Cinemachine.Utility;
+using JetBrains.Annotations;
 
 public enum PlayerMovementState
 {
@@ -89,6 +90,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
     [SerializeField, ReadOnly, LabelText("Horizontal velocity magnitude")] private float velocity_hor_debug;
     [SerializeField, ReadOnly, LabelText("Current holding item")] private string current_holding_item_debug;
+    [SerializeField, ReadOnly, LabelText("CurrentVelocityDelta")] private string current_velocity_delta_debug;
 
 #pragma warning restore CS0414
 #endif
@@ -123,6 +125,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #endregion
 
     private Rigidbody rBody;
+    public Vector3 Velocity { get { return rBody.velocity; } }
     private StudioEventEmitter sound;
     private Transform interestPoint;
     private Interactable_Holding currentHoldingItem;
@@ -160,8 +163,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     int layerIndex_ItemHolding;
 
     bool boosterActive = false;
+    public bool BoosterActive { get { return boosterActive; } }
     bool driftActive = false;
+    public bool DriftActive { get { return driftActive; } }
     bool leapupActive = false;
+    public bool LeapupActive { get { return leapupActive; } }
 
     //플레이어 상태 참고용 변수
     public string movementStateRefernce;
