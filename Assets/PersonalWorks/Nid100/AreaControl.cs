@@ -53,7 +53,7 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
     {
         recentLand = landName;
         respawnTransgorm = spawnTransform;
-        Debug.Log(recentLand);
+        //Debug.Log(recentLand);
     }
 
     /// <summary>

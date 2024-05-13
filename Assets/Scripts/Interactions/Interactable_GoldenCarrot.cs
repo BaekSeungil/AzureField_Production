@@ -29,11 +29,11 @@ public class Interactable_GoldenCarrot : Interactable_Base
         }
     }
 
-
     public override void Interact()
     {
         GetComponent<DOTweenAnimation>().DOPause();
 
+        Debug.Log("Carrot");
 
         if (!floating)
         {
@@ -86,5 +86,6 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
         GetComponent<Collider>().enabled = false;
         SequenceInvoker.Instance.StartSequence(carrotAquiredSequences);
+        base.OnDisable();
     }
 }

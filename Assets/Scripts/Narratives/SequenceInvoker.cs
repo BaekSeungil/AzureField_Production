@@ -1,4 +1,5 @@
 using Cinemachine;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     private BindFromSequences bindFromSequences;
     public BindFromSequences BindfromSequences { get { return bindFromSequences; } }
 
-    private Queue<Sequence_Base> sequenceQueue;
+    [SerializeField,ReadOnly()] private Queue<Sequence_Base> sequenceQueue;
     private CinemachineVirtualCameraBase sequenceVirtualCamera;
 
     protected override void Awake()
