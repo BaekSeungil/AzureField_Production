@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class AlphaSceneloader : PersistentSerializedMonoBehaviour<AlphaSceneloader>
 {
     [SerializeField] private Slider loadingBar;
-    [SerializeField] private CanvasGroup panelCover;
+    [SerializeField] private GameObject panelCover;
     [SerializeField] private DOTweenAnimation coverTween;
 
     bool sceneLoading = false;
@@ -59,23 +59,27 @@ public class AlphaSceneloader : PersistentSerializedMonoBehaviour<AlphaSceneload
     {
         if (PlayerCore.IsInstanceValid) PlayerCore.Instance.DisableControls();
 
-        panelCover.gameObject.SetActive(true);
+        panelCover.SetActive(true);
 
         coverTween.DORestartById("OpenLoader");
-        Tween tw = coverTween.tween;
+        Tween tw = coverTween.GetTweens()[0];
 
         yield return tw.WaitForCompletion();
 
-        AsyncOperation loadAsync = SceneManager.LoadSceneAsync(index,LoadSceneMode.Single);
+        AsyncOperation loadAsync = SceneManager.LoadSceneAsync(index);
 
         for (float t = 0; !loadAsync.isDone;)
         {
+            t = loadAsync.progress;
             loadingBar.value = t;
             yield return null;
         }
 
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.5f);
+
         coverTween.DORestartById("CloseLoader");
-        tw = coverTween.tween;
+        tw = coverTween.GetTweens()[1];
 
         yield return tw.WaitForCompletion();
 
