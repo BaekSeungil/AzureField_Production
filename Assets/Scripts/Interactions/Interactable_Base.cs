@@ -65,7 +65,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -85,7 +85,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         }
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         if (input != null)
         {

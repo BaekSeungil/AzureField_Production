@@ -22,6 +22,9 @@ public class UI_SimpleHelp : MonoBehaviour
     {
         input.UI.SimpleHelp.started += KeyDown;
         input.UI.SimpleHelp.canceled += KeyUp;
+
+        helpFolded.SetActive(true);
+        helpWindow.SetActive(false);
     }
 
     private void OnDisable()
