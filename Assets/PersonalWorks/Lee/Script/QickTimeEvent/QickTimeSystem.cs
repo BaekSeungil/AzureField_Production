@@ -15,6 +15,8 @@ public class QickTimeSystem : QTEevent
     [Header("옵션 구성")]
     [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
     [SerializeField,LabelText("성공 실패 UI가 남아있는시간")]public float LimitTime;
+    [SerializeField, LabelText("성공시 생성되는 오브젝트")] public GameObject SuccessObj;
+    [SerializeField, LabelText("오브젝트 생성 위치")] public Transform ObjPoint;
     [HideInInspector]
     private bool IsEventStart;
     private QTEevent eventData;
@@ -133,6 +135,7 @@ public class QickTimeSystem : QTEevent
         if(!isFail)
         {
             eventData.SuccessUI.SetActive(true);
+            CreatJumpObj();
             StartCoroutine(DeativateFaleUI(eventData.SuccessUI));
         }
         if(isFail)
@@ -166,6 +169,11 @@ public class QickTimeSystem : QTEevent
     {
         isPause = false;
     }
+
+    /// <summary>
+    /// 키보드 입력 받은 값이 참인지 거짓이지 판단하는 기능
+    /// </summary>
+    /// <param name="key"></param>
 
     public void checkKeyboardInput(QTEKey key)
     {
@@ -230,6 +238,14 @@ public class QickTimeSystem : QTEevent
         {
             ui.eventTimerImage.fillAmount -= Time.smoothDeltaTime  / eventData.time * 5f;
         }
+    }
+
+    public void CreatJumpObj()
+    {
+        SuccessObj.SetActive(true);
+        GameObject newCreatObj = Instantiate(SuccessObj,ObjPoint.position, ObjPoint.rotation);
+        newCreatObj.SetActive(true);
+        Debug.Log("생성됨" + newCreatObj);
     }
 }
 
