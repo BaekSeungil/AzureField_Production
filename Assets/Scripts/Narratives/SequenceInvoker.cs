@@ -126,7 +126,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         UI_PlaymenuBehavior playmenu = UI_PlaymenuBehavior.Instance;
         playmenu.DisableInput();
         PlayerCore player = PlayerCore.Instance;
-        player.DisableControlls();
+        player.DisableControls();
 
         while (sequenceQueue.Count > 0)
         {

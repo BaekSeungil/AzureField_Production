@@ -47,7 +47,7 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
     /// </summary>
     IEnumerator ReefCrash()
     {
-        player.DisableControlls();
+        player.DisableControls();
         player.SailboatQuit();
         
         yield return new WaitForSeconds(reefCrashBindTime);
