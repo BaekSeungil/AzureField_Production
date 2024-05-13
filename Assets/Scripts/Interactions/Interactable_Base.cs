@@ -85,7 +85,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         }
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         if (input != null)
         {

@@ -86,5 +86,7 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
         GetComponent<Collider>().enabled = false;
         SequenceInvoker.Instance.StartSequence(carrotAquiredSequences);
+        base.OnDisable();
+
     }
 }
