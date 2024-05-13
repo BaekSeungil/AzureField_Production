@@ -1,4 +1,5 @@
 using Cinemachine;
+using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
@@ -338,3 +339,41 @@ public class Sequence_DisableVCam : Sequence_Base
 
 }
 
+public class Sequence_Animation : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터를 재생합니다.")]
+    public string objectName;
+    public string stateName;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Animator[] anims = GameObject.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Animator anim in anims)
+        {
+            if (anim.name == objectName)
+            {
+                anim.Play(stateName);
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+                yield break;
+            }
+        }
+
+        Debug.Log(objectName + " 이름을 가진 Animator 오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+
+
+public class Sequence_PlaySound : Sequence_Base
+{
+    [InfoBox("사운드를 재생합니다.")]
+    public EventReference sound;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        RuntimeManager.PlayOneShot(sound);
+        yield return null;
+    }
+
+}
