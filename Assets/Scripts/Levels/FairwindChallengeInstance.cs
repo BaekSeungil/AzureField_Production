@@ -29,7 +29,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
 
 
-    [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Warning)]
+    [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Info)]
     [SerializeField, LabelText("도전 시작시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeStart;
     [SerializeField, LabelText("도전 종료시 이벤트"), FoldoutGroup("이벤트")] private UnityEvent OnChallengeEnd;
 

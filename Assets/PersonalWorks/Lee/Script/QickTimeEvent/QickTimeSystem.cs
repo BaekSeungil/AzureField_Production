@@ -6,52 +6,56 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using Unity.Transforms;
 using System.Diagnostics.Tracing;
+using Sirenix.OdinInspector;
+using Unity.Entities.UniversalDelegates;
 
 public class QickTimeSystem : QTEevent
 {
 
-   [Header("옵션 구성")]
-   [SerializeField]public float slowMotionTimeScale = 0.1f;
+    [Header("옵션 구성")]
+    [SerializeField,LabelText("월드시간이 느려지는 시간")]public float slowMotionTimeScale = 0.1f;
+    [SerializeField,LabelText("성공 실패 UI가 남아있는시간")]public float LimitTime;
+    [SerializeField, LabelText("성공시 생성되는 오브젝트")] public GameObject SuccessObj;
+    [SerializeField, LabelText("오브젝트 생성 위치")] public Transform ObjPoint;
+    [HideInInspector]
+    private bool IsEventStart;
+    private QTEevent eventData;
+    private bool isAllButtonPressed;
+    private bool isFail;
+    private bool isEnd;
+    private bool isPause;
+    private bool wrongKeyPressed;
+    private float currentTime;
+    private float smoothTimeUpdate;
+    private float rememberTimeScalse;
 
-   [HideInInspector]
-   private bool IsEventStart;
-   private QTEevent eventData;
-   private bool isAllButtonPressed;
-   private bool isFail;
-   private bool isEnd;
-   private bool isPause;
-   private bool wrongKeyPressed;
-   private float currentTime;
-   private float smoothTimeUpdate;
-   private float rememberTimeScalse;
-
-
+    private bool Setobj = false;
 
    protected void Update() 
    {      
+        
         if(!IsEventStart || eventData == null || isPause)
         {
             return;
         }
+
         if(keys.Count == 0 || isFail)
         {
             doFinally();
         }
-        else 
+
+        for(int i = 0; i < eventData.keys.Count; i++)
         {
-            for(int i =0; i < eventData.keys.Count; i++)
-            {
-                checkKeyboardInput(eventData.keys[i]);
-            }
+            checkKeyboardInput(eventData.keys[i]);
         }
+        
         StartEvent(eventData);
         updateTimer();
+
    }
 
    public void StartEvent(QTEevent eventTable)
    {
-        eventTable = QTEevent.Instacne;
-        
         if(Keyboard.current == null)
         {
             UnityEngine.Debug.Log("No keyborad connected");
@@ -59,6 +63,13 @@ public class QickTimeSystem : QTEevent
         }
 
         eventData = eventTable;
+
+        if (Keyboard.current == null)
+        {
+            UnityEngine.Debug.Log("No keyboard connected");
+            return;
+        }
+
         keys = new List<QTEKey>(eventData.keys);
         if(eventData.onStart != null)
         {
@@ -121,36 +132,33 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(eventData.onFail != null && isFail==false)
+        if(!isFail)
         {
-            eventData.onFail.Invoke();
+            eventData.SuccessUI.SetActive(true);
+            CreatJumpObj();
+            StartCoroutine(DeativateFaleUI(eventData.SuccessUI));
         }
-        if(eventData.onSuccess != null && isAllButtonPressed ==true)
+        if(isFail)
         {
-            eventData.onSuccess.Invoke();
+            eventData.FailUI.SetActive(true);
+            StartCoroutine(DeativateFaleUI( eventData.FailUI));
         }
         Time.timeScale = 1f;
         eventData = null;
    }
 
-    protected void OnGUI() 
+    private IEnumerator DeativateFaleUI(GameObject uiObject)
     {
-        if(eventData == null || isEnd)
-        return;
-
-        if(Event.current.isKey 
-        && Event.current.type == EventType.KeyDown
-        && eventData.failOnWrongKey
-        && !Event.current.keyCode.ToString().Equals("None"))
-        {
-            wrongKeyPressed = true;
-            eventData.keys.ForEach(key =>
-            wrongKeyPressed = wrongKeyPressed 
-            && !key.keybordKey.ToString().Equals(Event.current.keyCode.ToString()));
-        }
-
-        isFail = wrongKeyPressed;
+        yield return new WaitForSeconds(LimitTime);
+        
+       if(uiObject != null)
+       {
+            uiObject.SetActive(false);
+       }
+        
     }
+
+
 
     public void pause()
     {
@@ -162,17 +170,37 @@ public class QickTimeSystem : QTEevent
         isPause = false;
     }
 
+    /// <summary>
+    /// 키보드 입력 받은 값이 참인지 거짓이지 판단하는 기능
+    /// </summary>
+    /// <param name="key"></param>
+
     public void checkKeyboardInput(QTEKey key)
     {
+
         if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
         {
             keys.Remove(key);
+
+            if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
+            == QTEPressType.Simultaneously)
+            {
+                if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
+                {
+                    isFail = false;
+                }
+                else
+                {
+                    isFail = true;
+                }
+            }
+            doFinally();
         }
-        if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
-        == QTEPressType.Simultaneously)
+        else
         {
-            keys.Add(key);
+            isFail = true;
         }
+
     }
 
 
@@ -181,8 +209,6 @@ public class QickTimeSystem : QTEevent
     {
         var ui  = getUI();
         //ui.eventTimerImage.fillAmount = 1f;
-       
-
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
@@ -213,4 +239,14 @@ public class QickTimeSystem : QTEevent
             ui.eventTimerImage.fillAmount -= Time.smoothDeltaTime  / eventData.time * 5f;
         }
     }
+
+    public void CreatJumpObj()
+    {
+        SuccessObj.SetActive(true);
+        GameObject newCreatObj = Instantiate(SuccessObj,ObjPoint.position, ObjPoint.rotation);
+        newCreatObj.SetActive(true);
+        Debug.Log("생성됨" + newCreatObj);
+    }
 }
+
+

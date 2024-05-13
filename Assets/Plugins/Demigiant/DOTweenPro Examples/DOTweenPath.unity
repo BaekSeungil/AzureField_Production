@@ -295,7 +295,7 @@ MonoBehaviour:
   path:
     wpLengths:
     - 0
-    - 9.359136
+    - 9.359137
     - 10.405018
     - 7.102792
     - 6.6672983
@@ -317,7 +317,7 @@ MonoBehaviour:
       b: {x: 0, y: 0, z: 0}
     - a: {x: 3.8321667, y: 6.9544535, z: 0}
       b: {x: 0, y: 0, z: 0}
-    length: 52.02238
+    length: 52.022385
     isFinalized: 1
     timesTable:
     - 0.014285714
@@ -417,50 +417,50 @@ MonoBehaviour:
     - 20.220243
     - 20.891918
     - 21.555
-    - 22.208927
-    - 22.852415
-    - 23.483595
-    - 24.100157
-    - 24.699495
-    - 25.278862
-    - 25.83552
-    - 26.366951
-    - 26.8711
-    - 27.376375
-    - 27.912098
-    - 28.475262
-    - 29.060778
-    - 29.66227
-    - 30.272577
-    - 30.884148
-    - 31.48931
-    - 32.080574
-    - 32.650936
-    - 33.194313
-    - 33.709743
-    - 34.240025
-    - 34.79521
-    - 35.371506
-    - 35.965523
-    - 36.574467
-    - 37.19625
-    - 37.829685
-    - 38.474625
-    - 39.132145
-    - 39.804657
-    - 40.496033
-    - 41.23852
-    - 42.10978
-    - 43.088493
-    - 44.145332
-    - 45.25077
-    - 46.375446
-    - 47.49042
-    - 48.567577
-    - 49.58027
-    - 50.50447
-    - 51.32128
-    - 52.02238
+    - 22.20893
+    - 22.852417
+    - 23.483597
+    - 24.100159
+    - 24.699497
+    - 25.278864
+    - 25.835522
+    - 26.366953
+    - 26.871101
+    - 27.376377
+    - 27.9121
+    - 28.475264
+    - 29.06078
+    - 29.662271
+    - 30.27258
+    - 30.88415
+    - 31.489311
+    - 32.080578
+    - 32.65094
+    - 33.194317
+    - 33.709747
+    - 34.24003
+    - 34.795216
+    - 35.37151
+    - 35.965527
+    - 36.57447
+    - 37.196255
+    - 37.82969
+    - 38.47463
+    - 39.13215
+    - 39.80466
+    - 40.496037
+    - 41.238525
+    - 42.109783
+    - 43.088497
+    - 44.145336
+    - 45.250774
+    - 46.37545
+    - 47.490425
+    - 48.56758
+    - 49.580273
+    - 50.504475
+    - 51.321285
+    - 52.022385
   inspectorMode: 0
   pathType: 1
   handlesType: 0
@@ -471,7 +471,7 @@ MonoBehaviour:
   showWpLength: 0
   pathColor: {r: 1, g: 1, b: 1, a: 0.5}
   lastSrcPosition: {x: 4.45, y: -1.83, z: 0}
-  lastSrcRotation: {x: 0, y: 0, z: 0, w: 0}
+  lastSrcRotation: {x: 0, y: 0, z: 0, w: 1}
   wpsDropdown: 0
   dropToFloorOffset: 0
 --- !u!33 &118309270
@@ -687,8 +687,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1053889442}
   - component: {fileID: 1053889441}
-  - component: {fileID: 1053889440}
-  - component: {fileID: 1053889439}
+  - component: {fileID: 1053889443}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -696,40 +695,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1053889439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053889438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d49b7c1bcd2e07499844da127be038d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_ForceModuleActive: 0
---- !u!114 &1053889440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053889438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1053889441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,6 +725,47 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1053889443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053889438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &1087750404
 GameObject:
   m_ObjectHideFlags: 0
@@ -1281,6 +1287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1242857380}
   - component: {fileID: 1242857379}
+  - component: {fileID: 1242857381}
   m_Layer: 0
   m_Name: Directional light
   m_TagString: Untagged
@@ -1365,6 +1372,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1242857381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242857378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &1260203940
 GameObject:
   m_ObjectHideFlags: 0
