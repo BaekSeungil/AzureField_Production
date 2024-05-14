@@ -1639,6 +1639,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    public void JumpingFromObj()
+    {
+        JumpObject jumpObject = GetComponent<JumpObject>();
+        float JumpingForce = jumpObject.jumpForce;
+        rBody.AddForce(Vector3.up,ForceMode.Impulse);
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
