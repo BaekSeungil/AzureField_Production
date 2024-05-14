@@ -1642,6 +1642,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    public void JumpingFromObj()
+    {
+        JumpObject jumpObject = FindObjectOfType<JumpObject>();
+        if (jumpObject != null)
+        {
+            float jumpingForce = jumpObject.jumpForce;
+            rBody.AddForce(Vector3.up * jumpingForce, ForceMode.Impulse);
+        }
+        else
+        {
+            Debug.LogError("JumpObject를 찾을 수 없습니다!");
+        }
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
