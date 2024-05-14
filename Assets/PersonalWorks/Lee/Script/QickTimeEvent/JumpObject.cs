@@ -3,13 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JumpObject : PlayerCore
+public class JumpObject : MonoBehaviour
 {
     [SerializeField, LabelText("점프 발판 높이")]public float jumpForce = 10f;
     PlayerCore player;
+
+
+
     private void Start() 
     {
-
+        player = FindObjectOfType<PlayerCore>();
     }
 
     private void OnTriggerEnter(Collider other) 
