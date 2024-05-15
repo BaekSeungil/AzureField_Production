@@ -499,11 +499,11 @@ namespace DistantLands.Cozy
             {
                 case FogStyle.stylized:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Default Fog Reference")).shader;
-                    //RenderSettings.fog = false;
+                    //RenderSettings.fog = true;
                     break;
                 case FogStyle.heightFog:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Height Fog Reference")).shader;
-                    //RenderSettings.fog = false;
+                    //RenderSettings.fog = true;
                     break;
                 // case FogStyle.volumetric:
                 //     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Volumetric Fog Reference")).shader;
@@ -511,15 +511,15 @@ namespace DistantLands.Cozy
                 //     break;
                 case FogStyle.steppedFog:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Stepped Fog Reference")).shader;
-                    //RenderSettings.fog = false;
+                   // RenderSettings.fog = true;
                     break;
                 case FogStyle.unity:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Disabled")).shader;
-                    //RenderSettings.fog = true;
+                   // RenderSettings.fog = true;
                     break;
                 case FogStyle.off:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Disabled")).shader;
-                    //RenderSettings.fog = false;
+                   // RenderSettings.fog = false;
                     break;
                 default:
                     break;
