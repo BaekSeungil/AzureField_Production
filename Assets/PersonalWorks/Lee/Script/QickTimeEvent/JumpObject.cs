@@ -6,6 +6,7 @@ using UnityEngine;
 public class JumpObject : MonoBehaviour
 {
     [SerializeField, LabelText("점프 발판 높이")]public float jumpForce = 10f;
+    [SerializeField, LabelText("발판 설치여부")] public bool SetObject;
     PlayerCore player;
 
 
@@ -20,6 +21,11 @@ public class JumpObject : MonoBehaviour
             if(other.gameObject.layer == 6)
             {
                 player.JumpingFromObj();
+                if(SetObject== false)
+                {
+                    Destroy(gameObject);
+                }
+               
                 Debug.Log("플레이어 체크");
             
             }
@@ -30,6 +36,10 @@ public class JumpObject : MonoBehaviour
         if(other.gameObject.layer == 6)
         {
             player.JumpingFromObj();
+            if(SetObject == false)
+            {
+                Destroy(gameObject);
+            }
             Debug.Log("플레이어 체크");
         
         }
