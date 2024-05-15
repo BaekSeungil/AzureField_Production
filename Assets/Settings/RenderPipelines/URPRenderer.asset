@@ -35,18 +35,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: SSAO
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   m_Settings:
     AOMethod: 1
     Downsample: 1
-    AfterOpaque: 0
-    Source: 1
+    AfterOpaque: 1
+    Source: 0
     NormalSamples: 2
-    Intensity: 0.25
+    Intensity: 0.2
     DirectLightingStrength: 0.25
     Radius: 0.35
-    Samples: 1
-    BlurQuality: 1
+    Samples: 0
+    BlurQuality: 2
     Falloff: 100
     SampleCount: -1
   m_BlueNoise256Textures:
@@ -117,7 +117,7 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 1
+  m_RenderingMode: 2
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 1
   m_AccurateGbufferNormals: 1
