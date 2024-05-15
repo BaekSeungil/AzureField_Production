@@ -37,10 +37,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     [Title("물리")]
     [SerializeField, Range(0f, 1f),LabelText("입력 없을 때 마찰력")] private float horizontalDrag = 0.5f;
-    [SerializeField, Range(20f, 70f), LabelText("최대 이동 경사면")] private float maxClimbSlope = 60f;
+    [SerializeField, MinMaxSlider(0f, 80f,true), LabelText("경사면 효과")] private Vector2 slopeEffect;
     [SerializeField, LabelText("바닥 인식 거리")] private float groundCastDistance = 0.1f;
     [SerializeField, LabelText("바닥 인식 제외 레이어")] private LayerMask groundIgnore;
-    [SerializeField, LabelText("미끄러짐 시작 시간")] private float slidingTime = 1.0f;
+    [SerializeField, LabelText("미끄러짐 시작 시간")] private float slidingStartTime = 1.0f;
     [SerializeField, Range(0f, 0.8f), LabelText("물 걷기 저항")] private float waterWalkDragging = 0.5f;
     [SerializeField, LabelText("수영시 받는 저항값")] private float swimRigidbodyDrag = 10.0f;
     [SerializeField, LabelText("수영시 추가 부력")] private float swimUpforce = 1.0f;
@@ -60,12 +60,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("최소 저항")] private float sailboatGlidingDrag = 0.0f;
     [SerializeField, LabelText("상하 컨트롤 힘")] private float sailboatVerticalControl = 10.0f;
     [SerializeField, LabelText("활공력")] private float sailboatGliding = 1.0f;
-    [SerializeField, LabelText("지면과 닿을 시 자동해제 시간")] private float sailboatAutoOffTime = 3.0f;
+    [SerializeField, LabelText("자동해제 시간")] private float sailboatAutoOffTime = 3.0f;
     [SerializeField, LabelText("바람소리 시작 속도")] private float gustStartVelocity = 10.0f;
     [SerializeField, LabelText("바람소리 시작 속도")] private float gustMaxVelocity = 50.0f;
 
     [Title("조각배 스킬")]
-    [SerializeField, LabelText("부스터-가속도 (곱연산)")] private float boosterMult = 2.0f;
+    [SerializeField, LabelText("부스터-가속도 곱")] private float boosterMult = 2.0f;
     [SerializeField, LabelText("부스터-지속시간")] private float boosterDuration = 1.0f;
     [SerializeField, LabelText("부스터-쿨타임")] private float boosterCooldown = 1.0f;
     [SerializeField, LabelText("도약-수직가속")] private float leapupPower = 10f;
@@ -73,7 +73,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("도약-지속시간")] private float leapupDuration = 0.5f;
     [SerializeField, LabelText("도약-가속력커브")] private AnimationCurve leapupForceCurve;
     [SerializeField,Range(0.0f,0.1f), LabelText("드리프트-회전 Lerp값")] private float driftSteer = 0.05f;
-    [SerializeField, LabelText("드리프트-순간추력 힘")] private float driftKickPower = 10.0f;
+    [SerializeField, LabelText("드리프트-순간 추진력")] private float driftKickPower = 10.0f;
 
     [Title("소리")]
     [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
@@ -153,8 +153,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
     /// </summary>
     public bool Grounding { get { return grounding; } }
-
-    private const float slopeBoostForce = 100f;
 
     private float initialRigidbodyDrag = 0f;
 
@@ -490,6 +488,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         var em = sailingSwooshEffect.emission;
         em.rateOverTimeMultiplier = 0f;
+
+        groundNormal = Vector3.up;
     }
 
     private void Start()
@@ -549,13 +549,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         if (groundHits_notFiltered.Count == 0)
         {
-            groundNormal = Vector3.zero;
+            groundNormal = Vector3.up;
+            grounding = false;
         }
         else
         {
             // get nearest groundhit from sweeptest
             groundHits_notFiltered.RemoveAll((RaycastHit h) => (1 << h.collider.gameObject.layer & groundIgnore) == 1);
-            groundNormal = groundHits_notFiltered.OrderBy(h => h.distance).ToList()[0].normal;
+            Vector3 groundNormal_nonDamped = groundHits_notFiltered.ToList()[0].normal;
+            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.5f);
+
+            if (!grounding) OnGroundingEnter();
+
+            grounding = true;
+
         }
 
         //  Legacy Raycast groundhit
@@ -563,18 +570,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         //  bool groundCasted = Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
         //    && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f;
 
-        if (groundNormal != Vector3.zero && Vector3.Dot(groundNormal, Vector3.up) > maxClimbSlope / 90f)
+        if (grounding)
         {
-            grounding = true;
-
             animator.SetBool("Grounding", true);
         }
         else
         {
-            if (grounding) OnGroundingEnter();
-
-            grounding = false;
-
             animator.SetBool("Grounding", false);
             if (rBody.velocity.y > 0) animator.SetFloat("AirboneBlend", 0f, 0.5f, Time.deltaTime);
             else animator.SetFloat("AirboneBlend", 1f, 0.5f, Time.deltaTime);
@@ -758,6 +759,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// </summary>
     protected class Movement_Ground : MovementState
     {
+        bool sliding = false;
+
+        private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
+        {
+            return Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f, Vector3.Dot(forward, Vector3.up));
+        }
+
         public override void OnMovementEnter(PlayerCore player)
         {
             player.movementStateRefernce = "Ground";
@@ -772,15 +780,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * player.swimUpforce, ForceMode.Acceleration);
             }
 
-            if (player.input.Player.Move.IsPressed())
+            if(sliding)
+            {
+
+            }
+            else if (player.input.Player.Move.IsPressed())
             {
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
 
-                float adjuestedScale = (player.sprinting && player.grounding) ? player.moveSpeed * player.sprintSpeedMult: player.moveSpeed;
-                Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal) * adjuestedScale;
+                float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
 
-                Vector3 finalVelocity = slopedMoveVelocity * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
+                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
                     finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging);
@@ -789,11 +801,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
                 //slope boost
-                float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
-                                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
-                                ? 1.0f : 0.0f;
+                //float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
+                //                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
+                //                ? 1.0f : 0.5f;
 
-                player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
+                //player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
 
                 //rotation
                 bool LargeTurn = Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(lookTransformedVector, Vector3.up)) > 60f;
@@ -1219,7 +1231,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
-            if (Vector3.Angle(groundNormal, Vector3.up) < maxClimbSlope)
+            if (Vector3.Angle(groundNormal, Vector3.up) < slopeEffect.x)
             {
                 rBody.velocity += Vector3.up * jumpPower;
                 jumpEffect.Emit((int)jumpEffect.emission.GetBurst(0).count.constant);
@@ -1395,13 +1407,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         for (float t = 0; t < itemAnimationTime / 2f; t += Time.deltaTime)
         {
+            animator.SetLayerWeight(layerIndex_ItemHolding, t*2f);
             holdingItem.transform.localPosition = Vector3.Lerp(holdingItem.transform.localPosition, Vector3.zero, 0.4f);
             holdingItem.transform.localRotation = Quaternion.Lerp(holdingItem.transform.localRotation, Quaternion.Euler(Vector3.zero), 0.4f);
             holdObjectRig.weight = Mathf.InverseLerp(0,itemAnimationTime*0.45f,t);
             yield return null;
         }
-
-        animator.SetLayerWeight(layerIndex_ItemHolding, 1f);
 
         if (inputWasEnabled)
             Input.Player.Enable();
