@@ -7,6 +7,7 @@ using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using Cinemachine.Utility;
 using JetBrains.Annotations;
+using System.Linq;
 
 public enum PlayerMovementState
 {
@@ -27,57 +28,58 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     //============================================
 
     #region ================ Properties ================
-    [Title("ControlProperties")]
-    [SerializeField] private float moveSpeed = 1.0f;                               // 이동 속도
-    [SerializeField] private float sprintSpeedMult = 2.0f;                         // 달리기 속도
-    [SerializeField] private float swimSpeed = 1.0f;                               // 수영시 속도
-    [SerializeField] private float jumpPower = 1.0f;                               // 점프시 수직 파워  
-    [SerializeField] private float holdingMoveSpeedMult = 0.5f;                    // 무언가를 들고있을 시 속도감소 (곱연산)
+    [Title("기본 조작 속성")]
+    [SerializeField,LabelText("이동 속도")] private float moveSpeed = 1.0f;
+    [SerializeField,LabelText("달리기 속도")] private float sprintSpeedMult = 2.0f;
+    [SerializeField,LabelText("수영시 속도")] private float swimSpeed = 1.0f;
+    [SerializeField,LabelText("점프 시 수직 힘")] private float jumpPower = 1.0f;
+    [SerializeField,Range(0f, 1f), LabelText("들기 속도 감소 곱")] private float holdingMoveSpeedMult = 0.5f;
 
-    [Title("Physics")]
-    [SerializeField, Range(0f, 1f)] private float horizontalDrag = 0.5f;            // 키 입력이 없을 때 수평 이동 마찰력
-    [SerializeField, Range(20f, 70f)] private float maxClimbSlope = 60f;            // 최고 이동가능 경사면
-    [SerializeField] private float groundCastDistance = 0.1f;                       // 바닥 인식 거리
-    [SerializeField] private LayerMask groundIgnore;                                // 바닥 인식 제외 레이어
-    [SerializeField, Range(0f, 0.8f)] private float waterWalkDragging = 0.5f;       // 물에서 걸을 때 받는 항력
-    [SerializeField] private float swimRigidbodyDrag = 10.0f;                       // 수영모드 시 변경되는 리지드바디 Drag 값
-    [SerializeField] private float swimUpforce = 1.0f;                              // 수영시 적용되는 추가 부력
+    [Title("물리")]
+    [SerializeField, Range(0f, 1f),LabelText("입력 없을 때 마찰력")] private float horizontalDrag = 0.5f;
+    [SerializeField, MinMaxSlider(0f, 80f,true), LabelText("경사면 효과")] private Vector2 slopeEffect;
+    [SerializeField, LabelText("바닥 인식 거리")] private float groundCastDistance = 0.1f;
+    [SerializeField, LabelText("바닥 인식 제외 레이어")] private LayerMask groundIgnore;
+    [SerializeField, LabelText("미끄러짐 시작 시간")] private float slidingStartTime = 1.0f;
+    [SerializeField, Range(0f, 0.8f), LabelText("물 걷기 저항")] private float waterWalkDragging = 0.5f;
+    [SerializeField, LabelText("수영시 받는 저항값")] private float swimRigidbodyDrag = 10.0f;
+    [SerializeField, LabelText("수영시 추가 부력")] private float swimUpforce = 1.0f;
     [SerializeField, ReadOnly] private bool grounding = false;                      // 디버그 : 바닥 체크
     [SerializeField, ReadOnly] private Vector3 groundNormal = Vector3.up;           // 디버그 : 바닥 법선
 
-    [Title("SailboatProperties")]
-    [SerializeField] private float sailboatSteering = 1.0f;                         // 조각배 기본 선회력
-    [SerializeField] private float sailboatByouancy = 1.0f;                         // 조각배 기본 부력
-    [SerializeField] private float sailboatGravity = 1.0f;                          // 조각배 중력
-    [SerializeField] private float sailboatAccelerationForce = 50f;                 // 조각배 가속력
-    [SerializeField] private float sailboatSlopeInfluenceForce = 20f;               // 조각배 수면 각도 영향력
-    [SerializeField] private float sailboatNearsurf = 0.5f;                         // 조각배 저공비행 취급 높이
-    [SerializeField] private float sailboatNearsurfBoost = 1.2f;                    // 조각배 저공비행 추가속도
-    [SerializeField] private float sailboatFullDrag = 10.0f;                        // 조각배 완전 침수시 마찰력
-    [SerializeField] private float sailboatScratchDrag = 1.0f;                      // 조각배 살짝 침수시 마찰력
-    [SerializeField] private float sailboatGlidingDrag = 0.0f;                      // 조각배 최소 마찰력
-    [SerializeField] private float sailboatVerticalControl = 10.0f;                 // 조각배 상하컨트롤 추가 힘
-    [SerializeField] private float sailboatGliding = 1.0f;                          // 조각배 활공력
-    [SerializeField] private float sailboatAutoOffTime = 3.0f;                      // 조각배 자동 해제 시간
-    [SerializeField] private float gustStartVelocity = 10.0f;                       // 바람소리 시작 속도
-    [SerializeField] private float gustMaxVelocity = 50.0f;                         // 바람소리 최고 속도
+    [Title("조각배 속성")]
+    [SerializeField, LabelText("기본 선회력")] private float sailboatSteering = 1.0f;
+    [SerializeField, LabelText("기본 부력")] private float sailboatByouancy = 1.0f;
+    [SerializeField, LabelText("중력")] private float sailboatGravity = 1.0f;
+    [SerializeField, LabelText("가속력")] private float sailboatAccelerationForce = 50f;
+    [SerializeField, LabelText("수면 각도 영향력")] private float sailboatSlopeInfluenceForce = 20f;
+    [SerializeField, LabelText("저공비행 판정 높이")] private float sailboatNearsurf = 0.5f;
+    [SerializeField, LabelText("저공비행 추가 속도")] private float sailboatNearsurfBoost = 1.2f;
+    [SerializeField, LabelText("완전 침수시 저항")] private float sailboatFullDrag = 10.0f;
+    [SerializeField, LabelText("일부 침수시 저항")] private float sailboatScratchDrag = 1.0f;
+    [SerializeField, LabelText("최소 저항")] private float sailboatGlidingDrag = 0.0f;
+    [SerializeField, LabelText("상하 컨트롤 힘")] private float sailboatVerticalControl = 10.0f;
+    [SerializeField, LabelText("활공력")] private float sailboatGliding = 1.0f;
+    [SerializeField, LabelText("자동해제 시간")] private float sailboatAutoOffTime = 3.0f;
+    [SerializeField, LabelText("바람소리 시작 속도")] private float gustStartVelocity = 10.0f;
+    [SerializeField, LabelText("바람소리 시작 속도")] private float gustMaxVelocity = 50.0f;
 
-    [Title("SailboatSkills")]
-    [SerializeField] private float boosterMult = 2.0f;
-    [SerializeField] private float boosterDuration = 1.0f;
-    [SerializeField] private float boosterCooldown = 1.0f;
-    [SerializeField] private float leapupPower = 10f;
-    [SerializeField] private float leapupCooldown = 1.0f;
-    [SerializeField] private float leapupDuration = 0.5f;
-    [SerializeField] private AnimationCurve leapupForceCurve;
-    [SerializeField,Range(0.0f,0.1f)] private float driftSteer = 0.05f;
-    [SerializeField] private float driftKickPower = 10.0f;
+    [Title("조각배 스킬")]
+    [SerializeField, LabelText("부스터-가속도 곱")] private float boosterMult = 2.0f;
+    [SerializeField, LabelText("부스터-지속시간")] private float boosterDuration = 1.0f;
+    [SerializeField, LabelText("부스터-쿨타임")] private float boosterCooldown = 1.0f;
+    [SerializeField, LabelText("도약-수직가속")] private float leapupPower = 10f;
+    [SerializeField, LabelText("도약-쿨타임")] private float leapupCooldown = 1.0f;
+    [SerializeField, LabelText("도약-지속시간")] private float leapupDuration = 0.5f;
+    [SerializeField, LabelText("도약-가속력커브")] private AnimationCurve leapupForceCurve;
+    [SerializeField,Range(0.0f,0.1f), LabelText("드리프트-회전 Lerp값")] private float driftSteer = 0.05f;
+    [SerializeField, LabelText("드리프트-순간 추진력")] private float driftKickPower = 10.0f;
 
-    [Title("Audios")]
-    [SerializeField] private EventReference sound_splash;                           // 첨벙이는 소리
+    [Title("소리")]
+    [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
 
-    [Title("Others")]
-    [SerializeField] private float interestDistance = 10.0f;                        // 캐릭터 시선 타겟 유지 거리
+    [Title("기타")]
+    [SerializeField, LabelText("캐릭터 시선 타겟 유지거리")] private float interestDistance = 10.0f;
 
 
 #if UNITY_EDITOR
@@ -151,8 +153,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
     /// </summary>
     public bool Grounding { get { return grounding; } }
-
-    private const float slopeBoostForce = 100f;
 
     private float initialRigidbodyDrag = 0f;
 
@@ -488,6 +488,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         var em = sailingSwooshEffect.emission;
         em.rateOverTimeMultiplier = 0f;
+
+        groundNormal = Vector3.up;
     }
 
     private void Start()
@@ -542,23 +544,38 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private void Update()
     {
-        // Raycast process
-        RaycastHit groundHit;
-        if (Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
-            && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f)
-        {
-            grounding = true;
-            groundNormal = groundHit.normal;
+        // Sweeptest process
+        List<RaycastHit> groundHits_notFiltered = rBody.SweepTestAll(Vector3.down,groundCastDistance,QueryTriggerInteraction.Ignore).ToList();
 
+        if (groundHits_notFiltered.Count == 0)
+        {
+            groundNormal = Vector3.up;
+            grounding = false;
+        }
+        else
+        {
+            // get nearest groundhit from sweeptest
+            groundHits_notFiltered.RemoveAll((RaycastHit h) => (1 << h.collider.gameObject.layer & groundIgnore) == 1);
+            Vector3 groundNormal_nonDamped = groundHits_notFiltered.ToList()[0].normal;
+            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.5f);
+
+            if (!grounding) OnGroundingEnter();
+
+            grounding = true;
+
+        }
+
+        //  Legacy Raycast groundhit
+        //  RaycastHit groundHit;
+        //  bool groundCasted = Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
+        //    && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f;
+
+        if (grounding)
+        {
             animator.SetBool("Grounding", true);
         }
         else
         {
-            if (grounding) OnGroundingEnter();
-
-            grounding = false;
-            groundNormal = Vector3.up;
-
             animator.SetBool("Grounding", false);
             if (rBody.velocity.y > 0) animator.SetFloat("AirboneBlend", 0f, 0.5f, Time.deltaTime);
             else animator.SetFloat("AirboneBlend", 1f, 0.5f, Time.deltaTime);
@@ -742,6 +759,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 /// </summary>
     protected class Movement_Ground : MovementState
     {
+        bool sliding = false;
+
+        private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
+        {
+            return Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f, Vector3.Dot(forward, Vector3.up));
+        }
+
         public override void OnMovementEnter(PlayerCore player)
         {
             player.movementStateRefernce = "Ground";
@@ -756,15 +780,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * player.swimUpforce, ForceMode.Acceleration);
             }
 
-            if (player.input.Player.Move.IsPressed())
+            if(sliding)
+            {
+
+            }
+            else if (player.input.Player.Move.IsPressed())
             {
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
 
-                float adjuestedScale = (player.sprinting && player.grounding) ? player.moveSpeed * player.sprintSpeedMult: player.moveSpeed;
-                Vector3 slopedMoveVelocity = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal) * adjuestedScale;
+                float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
 
-                Vector3 finalVelocity = slopedMoveVelocity * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
+                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
                     finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging);
@@ -773,11 +801,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
                 //slope boost
-                float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
-                                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
-                                ? 1.0f : 0.0f;
+                //float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
+                //                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
+                //                ? 1.0f : 0.5f;
 
-                player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
+                //player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
 
                 //rotation
                 bool LargeTurn = Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(lookTransformedVector, Vector3.up)) > 60f;
@@ -1203,7 +1231,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
-            if (Vector3.Angle(groundNormal, Vector3.up) < maxClimbSlope)
+            if (Vector3.Angle(groundNormal, Vector3.up) < slopeEffect.x)
             {
                 rBody.velocity += Vector3.up * jumpPower;
                 jumpEffect.Emit((int)jumpEffect.emission.GetBurst(0).count.constant);
@@ -1379,13 +1407,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         for (float t = 0; t < itemAnimationTime / 2f; t += Time.deltaTime)
         {
+            animator.SetLayerWeight(layerIndex_ItemHolding, t*2f);
             holdingItem.transform.localPosition = Vector3.Lerp(holdingItem.transform.localPosition, Vector3.zero, 0.4f);
             holdingItem.transform.localRotation = Quaternion.Lerp(holdingItem.transform.localRotation, Quaternion.Euler(Vector3.zero), 0.4f);
             holdObjectRig.weight = Mathf.InverseLerp(0,itemAnimationTime*0.45f,t);
             yield return null;
         }
-
-        animator.SetLayerWeight(layerIndex_ItemHolding, 1f);
 
         if (inputWasEnabled)
             Input.Player.Enable();
@@ -1663,7 +1690,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         Gizmos.color = Color.magenta;
         if (bottomColider != null)
         {
-            Gizmos.DrawLine(transform.position + Vector3.up * bottomColider.radius, (transform.position + Vector3.up * bottomColider.radius) - groundNormal * (bottomColider.radius + groundCastDistance));
+            if (groundNormal != Vector3.zero)
+            {
+                DrawArrow.ForGizmo(transform.position + bottomColider.center, -groundNormal * (groundCastDistance + bottomColider.radius));
+            }
+            else
+            {
+                Gizmos.DrawWireSphere(transform.position + bottomColider.center, 0.1f);
+            }
         }
     }
 #endif
