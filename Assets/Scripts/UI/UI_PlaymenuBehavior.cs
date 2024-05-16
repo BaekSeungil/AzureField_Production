@@ -67,7 +67,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         CursorLocker.Instance.DisableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
-        if (gameplayer != null) { gameplayer.DisableControlls(); }
+        if (gameplayer != null) { gameplayer.DisableControls(); }
 
         if (playmenu == PlaymenuElement.Inventory)
         {

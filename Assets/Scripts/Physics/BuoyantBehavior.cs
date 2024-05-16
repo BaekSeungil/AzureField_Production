@@ -34,13 +34,15 @@ public class BuoyantBehavior : MonoBehaviour
     {
         rbody = GetComponent<Rigidbody>();
 
-        PlayerCore player;
-        if (gameObject.TryGetComponent<PlayerCore>(out player))
-            playerMode = true;
+
     }
 
     private void Start()
     {
+        PlayerCore player;
+        if (gameObject.TryGetComponent<PlayerCore>(out player))
+            playerMode = true;
+
         if (GlobalOceanManager.Instance == null)
         {
             Debug.Log("BuoyancyBehavior를 사용하려면 Global Ocean Manager를 생성하세요!");

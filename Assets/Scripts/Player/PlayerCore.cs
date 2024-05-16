@@ -1447,7 +1447,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// <summary>
     ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     /// </summary>
-    public void DisableControlls()
+    public void DisableControls()
     {
         input.Player.Disable();
         Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
@@ -1585,7 +1585,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     IEnumerator ReefCrash()
     {
-        DisableControlls();
+        DisableControls();
         animator.SetTrigger("ReefCrash");
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
@@ -1639,6 +1639,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     CurrentMovement = new Movement_Ground();
                 }
             }
+        }
+    }
+
+    public void JumpingFromObj()
+    {
+        JumpObject jumpObject = FindObjectOfType<JumpObject>();
+        if (jumpObject != null)
+        {
+            float jumpingForce = jumpObject.jumpForce;
+            rBody.AddForce(Vector3.up * jumpingForce, ForceMode.Impulse);
+        }
+        else
+        {
+            Debug.LogError("JumpObject를 찾을 수 없습니다!");
         }
     }
 

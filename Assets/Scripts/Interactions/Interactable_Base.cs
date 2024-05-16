@@ -12,7 +12,7 @@ public class Interactable_Base : SerializedMonoBehaviour
 //
 //================================================
 
-    [SerializeField] protected LocalizedString interactionUIText;    // 가까이 접근 시 상호작용 UI에 띄울 텍스트
+    [SerializeField,LabelText("상호작용 텍스트")] protected LocalizedString interactionUIText;    // 가까이 접근 시 상호작용 UI에 띄울 텍스트
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 
@@ -65,7 +65,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -85,7 +85,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         }
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         if (input != null)
         {
