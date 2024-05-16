@@ -40,7 +40,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, MinMaxSlider(0f, 80f,true), LabelText("경사면 효과")] private Vector2 slopeEffect;
     [SerializeField, LabelText("바닥 인식 거리")] private float groundCastDistance = 0.1f;
     [SerializeField, LabelText("바닥 인식 제외 레이어")] private LayerMask groundIgnore;
-    [SerializeField, LabelText("미끄러짐 시작 시간")] private float slidingStartTime = 1.0f;
+    //[SerializeField, LabelText("미끄러짐 시작 시간")] private float slidingStartTime = 1.0f;
     [SerializeField, Range(0f, 0.8f), LabelText("물 걷기 저항")] private float waterWalkDragging = 0.5f;
     [SerializeField, LabelText("수영시 받는 저항값")] private float swimRigidbodyDrag = 10.0f;
     [SerializeField, LabelText("수영시 추가 부력")] private float swimUpforce = 1.0f;
@@ -72,11 +72,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("도약-쿨타임")] private float leapupCooldown = 1.0f;
     [SerializeField, LabelText("도약-지속시간")] private float leapupDuration = 0.5f;
     [SerializeField, LabelText("도약-가속력커브")] private AnimationCurve leapupForceCurve;
-    [SerializeField,Range(0.0f,0.1f), LabelText("드리프트-회전 Lerp값")] private float driftSteer = 0.05f;
+    [SerializeField,Range(1.0f,2.0f), LabelText("드리프트-회전값")] private float driftSteer = 1.5f;
     [SerializeField, LabelText("드리프트-순간 추진력")] private float driftKickPower = 10.0f;
+    [SerializeField, LabelText("드리프트 순간추진 필요시간")] private float driftKickRequireingTime = 1.0f;
 
     [Title("소리")]
     [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
+    [SerializeField, LabelText("드리프트 순간추진")] private EventReference sound_driftKick;
+    [SerializeField, LabelText("드리프트 충전됨")] private EventReference sound_driftCharged;
 
     [Title("기타")]
     [SerializeField, LabelText("캐릭터 시선 타겟 유지거리")] private float interestDistance = 10.0f;
@@ -123,6 +126,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter gustSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
     #endregion
 
 
@@ -618,7 +622,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (CurrentMovement.GetType() == typeof(Movement_Sailboat))
         {
             animator.SetLayerWeight(layerIndex_Boarding, Mathf.Lerp(animator.GetLayerWeight(layerIndex_Boarding), 1.0f, 0.2f));
-            
         }
         else
         {
@@ -906,6 +909,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         bool enterFlag = false;
         float driftAngle = 0f;
         float driftAngleMax = 90f;
+        float driftTime = 0f;
+        bool driftChargeFlag = false;
+        Vector3 driftDirection = Vector3.zero;
 
         public override void OnMovementEnter(PlayerCore player)
         {
@@ -929,7 +935,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             Vector3 lookTransformedVector;
             if (player.boosterActive)
             {
-               lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+                lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
+            }
+            if (player.DriftActive)
+            {
+                lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
             }
             else
             {
@@ -939,29 +949,63 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             return lookTransformedVector;
         }
 
-
+        
         public override void OnUpdate(PlayerCore player)
         {
-            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 1.0f)
+            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f)
             {
                 player.driftActive = true;
-                Vector3 projected = Vector3.ProjectOnPlane(player.transform.forward, Vector3.up);
             }
 
             if (player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
             {
                 player.driftActive = false;
+
+                if (driftTime > player.driftKickRequireingTime)
+                {
+                    player.rBody.AddForce(player.sailboatModelPivot.forward * player.driftKickPower, ForceMode.VelocityChange);
+                    RuntimeManager.PlayOneShot(player.sound_driftKick);
+                }
+                driftTime = 0f;
+                driftChargeFlag = false;
             }
 
             Vector2 moveInput = player.input.Player.Move.ReadValue<Vector2>();
 
             if (player.driftActive)
             {
-                driftAngle = Mathf.Lerp(driftAngle, driftAngleMax * moveInput.x, player.driftSteer);
+                driftDirection = moveInput.x != 0 ? moveInput : driftDirection;
 
+                float f;
+
+
+                driftAngle = Mathf.Lerp(driftAngle, driftAngleMax * moveInput.x, player.driftSteer);
+                driftTime += Time.deltaTime;
+
+                if(driftTime > player.driftKickRequireingTime)
+                {
+                    if (!driftChargeFlag)
+                    {
+                        driftChargeFlag = true;
+                        RuntimeManager.PlayOneShot(player.sound_driftCharged);
+                    }
+
+                    player.driftSound.EventInstance.getParameterByName("Drift", out f);
+                    player.driftSound.EventInstance.setParameterByName("Drift", Mathf.Lerp(f, 1.0f, 0.1f));
+                }
+                else
+                {
+                    player.driftSound.EventInstance.getParameterByName("Drift", out f);
+                    player.driftSound.EventInstance.setParameterByName("Drift", Mathf.Lerp(f, 0.5f, 0.1f));
+                }
             }
             else
             {
+                float f;
+                player.driftSound.EventInstance.getParameterByName("Drift", out f);
+
+                player.driftSound.EventInstance.setParameterByName("Drift", Mathf.Lerp(f, 0.0f, 0.1f));
+
                 driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
             }
 
@@ -994,12 +1038,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f) / 3f * player.sailboatByouancy, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                if (player.boosterActive)
-                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                else if (player.driftActive)
-                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
-                else
-                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+                //if (player.boosterActive)
+                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                //else if (player.driftActive)
+                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
+                //else
+                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+
+                lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration);
 
@@ -1011,12 +1057,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                if (player.boosterActive)
-                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                else if (player.driftActive)
-                    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
-                else
-                    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+                //if (player.boosterActive)
+                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                //else if (player.driftActive)
+                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
+                //else
+                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+                lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
 
@@ -1050,12 +1097,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.rBody.drag = player.sailboatGlidingDrag;
 
                     Vector3 lookTransformedVector;
-                    if (player.boosterActive)
-                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                    else if (player.driftActive)
-                        lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
-                    else
-                        lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+                    //if (player.boosterActive)
+                    //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
+                    //else if (player.driftActive)
+                    //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
+                    //else
+                    //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
+
+                    lookTransformedVector = GetSailboatHeadingVector(player, moveInput, Vector3.up);
 
                     player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
                 }
@@ -1099,6 +1148,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         0.1f);
 
                     Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
+                    if (player.driftActive) lookTransformedVector = GetSailboatHeadingVector(player,driftDirection, Vector3.up);
                     float lean = Vector3.Dot(lookTransformedVector, player.transform.right);
                     if (player.driftActive) lean = lean * 1.5f;
 
@@ -1199,6 +1249,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
+            player.driftSound.EventInstance.setParameterByName("Drift", 0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(false);
             UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
 
@@ -1614,6 +1665,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         DisableControls();
         animator.SetTrigger("ReefCrash");
+        AbortBooster();
+        driftActive = false;
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
         rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);
