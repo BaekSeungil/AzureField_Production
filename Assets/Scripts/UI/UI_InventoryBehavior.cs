@@ -140,12 +140,12 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         Gizmos.color = Color.green;
 
         int itemCount = 20;
-        float squareSize = 100;
+        float squareSize = 200;
         for (int y = 0; y < (int)(itemCount / rowCount); y++)
         {
             for (int x = 0; x < rowCount; x++)
             {
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, slotDistance.y * y, 0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
+                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
             }
         }
     }
