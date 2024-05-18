@@ -1,7 +1,8 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 public class SailboatBehavior : MonoBehaviour
@@ -26,22 +27,41 @@ public class SailboatBehavior : MonoBehaviour
         surfacePlane = new Plane(Vector3.up, 0f);
     }
 
+    const int oceanLayerMask = 1 << 3;
+    const int waterLayerMask = 1 << 4;
+
     private void FixedUpdate()
     {
-        float[] surface = new float[3];
 
-        surface[0] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint1.position);
-        surface[1] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint2.position);
-        surface[2] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint3.position);
+        RaycastHit hitWater;
+        if ( Physics.Raycast(transform.position + Vector3.up*5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
+        {
+            surfacePlane = new Plane(Vector3.up, 0f);
 
-        submergeRate = (floatingPoint1.position.y - surface[0] + floatingPoint2.position.y - surface[1] + floatingPoint3.position.y - surface[2]) / 3f;
+            float distance = 0;
+            distance = transform.position.y - hitWater.point.y;
+            submergeRate = distance;
+        }
+        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
+            Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
+        {
 
-        surfacePlane = new Plane(
-            new Vector3(floatingPoint1.position.x, surface[0], floatingPoint1.position.z),
-            new Vector3(floatingPoint2.position.x, surface[1], floatingPoint2.position.z),
-            new Vector3(floatingPoint3.position.x, surface[2], floatingPoint3.position.z));
+            float[] surface = new float[3];
 
-        if (Vector3.Dot(transform.up, Vector3.down) > 0.5f) transform.up = Vector3.up;
+            surface[0] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint1.position);
+            surface[1] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint2.position);
+            surface[2] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint3.position);
+
+            submergeRate = (floatingPoint1.position.y - surface[0] + floatingPoint2.position.y - surface[1] + floatingPoint3.position.y - surface[2]) / 3f;
+
+            surfacePlane = new Plane(
+                new Vector3(floatingPoint1.position.x, surface[0], floatingPoint1.position.z),
+                new Vector3(floatingPoint2.position.x, surface[1], floatingPoint2.position.z),
+                new Vector3(floatingPoint3.position.x, surface[2], floatingPoint3.position.z));
+
+            if (Vector3.Dot(transform.up, Vector3.down) > 0.5f) transform.up = Vector3.up;
+        }
+
     }
 
     private void OnDrawGizmosSelected()
