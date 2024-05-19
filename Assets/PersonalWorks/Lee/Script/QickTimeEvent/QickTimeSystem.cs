@@ -185,42 +185,15 @@ public class QickTimeSystem : QTEevent
             if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
             == QTEPressType.Simultaneously)
             {
-                foreach(var otherKey in eventData.keys)
+                if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
                 {
-                    if(otherKey != key && Keyboard.current[otherKey.keybordKey].wasPressedThisFrame)
-                    {
-                        if(key.keybordKey == otherKey.keybordKey)
-                        {
-                            isFail = false;
-                        }
-                        else
-                        {
-                            isFail = true;
-                        }
-                    }
+                    isFail = false;
                 }
-              
-            }
-
-            if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
-            == QTEPressType.Single)
-            {
-                foreach(var otherKey in eventData.keys)
+                else
                 {
-                    if(otherKey != key && Keyboard.current[otherKey.keybordKey].wasPressedThisFrame)
-                    {
-                        if(key.keybordKey == otherKey.keybordKey)
-                        {
-                            isFail = false;
-                        }
-                        else
-                        {
-                            isFail = true;
-                        }
-                    }
+                    isFail = true;
                 }
             }
-            
             doFinally();
         }
         else
@@ -234,26 +207,24 @@ public class QickTimeSystem : QTEevent
 
     private void setupGUI()
     {
-        
         var ui  = getUI();
+        //ui.eventTimerImage.fillAmount = 1f;
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
-            if(eventData.pressType == QTEPressType.Simultaneously)
+            if (eventData.keys.Count > 0) 
             {
-                if (eventData.keys.Count > 0) 
+                if(eventData.pressType == QTEPressType.Simultaneously)
                 {
                     eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey + "+");
                     eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
                 }
+                else
+                {
+                    eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey);
+                    eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
+                }
             }
-
-            if(eventData.pressType == QTEPressType.Single)
-            {
-                eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey);
-                 eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
-            }
-            
         }
         if(ui.eventUI != null)
         {
