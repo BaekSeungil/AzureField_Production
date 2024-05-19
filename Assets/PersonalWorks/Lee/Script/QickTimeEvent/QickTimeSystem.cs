@@ -201,6 +201,25 @@ public class QickTimeSystem : QTEevent
                 }
               
             }
+
+            if(Keyboard.current[key.keybordKey].wasPressedThisFrame && eventData.pressType 
+            == QTEPressType.Single)
+            {
+                foreach(var otherKey in eventData.keys)
+                {
+                    if(otherKey != key && Keyboard.current[otherKey.keybordKey].wasPressedThisFrame)
+                    {
+                        if(key.keybordKey == otherKey.keybordKey)
+                        {
+                            isFail = false;
+                        }
+                        else
+                        {
+                            isFail = true;
+                        }
+                    }
+                }
+            }
             
             doFinally();
         }
