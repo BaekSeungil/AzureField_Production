@@ -57,6 +57,13 @@ public class BuoyantBehavior : MonoBehaviour
     {
         waterDetected = false;
 
+        RaycastHit hitWater;
+        if (Physics.Raycast(transform.position + Vector3.up * 5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
+        {
+            float distance = 0;
+            distance = transform.position.y - hitWater.point.y;
+            submergeRate = distance;
+        }
         if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
@@ -79,6 +86,11 @@ public class BuoyantBehavior : MonoBehaviour
             average /= submerged.Length;
             submergeRate = average;
         }
+        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask) ||
+            Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask))
+        {
+            waterDetected = true;
+        }
         else
         {
             submergeRate = float.PositiveInfinity;
@@ -93,30 +105,12 @@ public class BuoyantBehavior : MonoBehaviour
     {
         if (other.gameObject.layer == 4)
         {
-            waterDetected = true;
             float distance = 0;
-            if (!playerMode)
-            {
-                distance = other.bounds.max.y - transform.position.y;
-            }
-            else
-            {
-                distance = other.bounds.max.y - transform.position.y - 0.5f;
-            }
+            distance = other.bounds.max.y - transform.position.y;       
+
             submergeRate = -Mathf.Clamp(distance,0f,5f);
-
-            if (playerMode)
-            {
-                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position + Vector3.down, ForceMode.Acceleration);
-            }
-            else
-            {
-                rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
-            }
-
-        }
-
-      
+            rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
+        }   
     }
 }
 
