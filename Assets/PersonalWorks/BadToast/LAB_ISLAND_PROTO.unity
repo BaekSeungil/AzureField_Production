@@ -568,8 +568,8 @@ Transform:
   m_GameObject: {fileID: 205305376}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.5, y: -0.7, z: -38.3}
-  m_LocalScale: {x: 87.327995, y: 10, z: 80}
+  m_LocalPosition: {x: -10.3, y: -0.59, z: -37.6}
+  m_LocalScale: {x: 107.596825, y: 10, z: 80}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 662317527}
@@ -850,8 +850,8 @@ Transform:
   m_GameObject: {fileID: 276152214}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.2935379, z: -0, w: 0.9559475}
-  m_LocalPosition: {x: 5.85, y: 19.14, z: -7.63}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 4.46, y: 19.61, z: 7.02}
+  m_LocalScale: {x: 1.221, y: 1.221, z: 1.221}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 662317527}
@@ -3821,7 +3821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &662317527
 Transform:
   m_ObjectHideFlags: 0
@@ -3831,7 +3831,7 @@ Transform:
   m_GameObject: {fileID: 662317526}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 103.8, y: 0, z: 83.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4564,36 +4564,17 @@ MonoBehaviour:
   terrains:
   - {fileID: 1277746368}
   visibleTerrainsOnly: 0
-  treeTypes:
-  - enabled: 1
-    name: TreeClonedLOD
-    seed: 3224
-    probability: 26.7
-    collisionCheck: 0
-    rejectUnderwater: 0
-    heightRange: {x: 2, y: 1000}
-    slopeRange: {x: 0, y: 27.889446}
-    curvatureRange: {x: 0, y: 0.7085427}
-    layerMasks: []
-    instanceCount: 109
-    prefabs:
-    - index: 0
-      probability: 100
-      prefab: {fileID: 950967443145042277, guid: 856be92cddae18346922e644d278de42,
-        type: 3}
-    distance: 6.2
-    scaleRange: {x: 0.6190955, y: 1.3005025}
-    sinkAmount: 0
+  treeTypes: []
   grassPrefabs:
   - enabled: 1
     name: GrassSingle_Terrain_Cloned_BT
     seed: 171951699
-    probability: 65.4
+    probability: 76.4
     collisionCheck: 0
     rejectUnderwater: 0
     heightRange: {x: 1, y: 1000}
-    slopeRange: {x: 0, y: 55.92964}
-    curvatureRange: {x: 0, y: 0.8291457}
+    slopeRange: {x: 0, y: 30.502514}
+    curvatureRange: {x: 0, y: 1}
     layerMasks:
     - name: greengrass_terrainlayer
       layerID: 2
@@ -4601,7 +4582,16 @@ MonoBehaviour:
     - name: terrain_reealgrass
       layerID: 1
       threshold: 0
-    instanceCount: 7068
+    - name: sand_terrainlayer
+      layerID: 0
+      threshold: 1
+    - name: Gravel
+      layerID: 4
+      threshold: 1
+    - name: CliffLayer_TypeG
+      layerID: 3
+      threshold: 1
+    instanceCount: 8273
     index: 0
     type: 0
     renderAsBillboard: 0
@@ -62977,7 +62967,7 @@ Transform:
   m_GameObject: {fileID: 6874487227031732805}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.391083, y: 80.201935, z: -28.490509}
+  m_LocalPosition: {x: 71.37358, y: 40.61613, z: 161.8987}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -66449,12 +66439,12 @@ PrefabInstance:
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000002352283
+      value: -0.00000002352283
       objectReference: {fileID: 0}
     - target: {fileID: 4503103301785739705, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000062286145
+      value: 0.0000000062286145
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
@@ -66484,12 +66474,12 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000016752468
+      value: -0.000000016752473
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000039260977
+      value: 0.000000003926098
       objectReference: {fileID: 0}
     - target: {fileID: 5737132642380319195, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
