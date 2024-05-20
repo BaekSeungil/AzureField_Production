@@ -132,13 +132,13 @@ public class QickTimeSystem : QTEevent
         {
             eventData.onEnd.Invoke();
         }
-        if(!isFail)
+        if(isFail == false)
         {
             eventData.SuccessUI.SetActive(true);
             CreatJumpObj();
             StartCoroutine(DeativateFaleUI(eventData.SuccessUI));
         }
-        if(isFail)
+        if(isFail == true)
         {
             eventData.FailUI.SetActive(true);
             StartCoroutine(DeativateFaleUI( eventData.FailUI));
@@ -178,7 +178,7 @@ public class QickTimeSystem : QTEevent
     public void checkKeyboardInput(QTEKey key)
     {
 
-        if(Keyboard.current[key.keybordKey].wasPressedThisFrame)
+        if(Keyboard.current.anyKey.wasPressedThisFrame)
         {
             keys.Remove(key);
 
@@ -187,7 +187,35 @@ public class QickTimeSystem : QTEevent
             {
                 if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
                 {
-                    isFail = false;
+                    foreach (var otherKey in eventData.keys)
+                    {
+                        // 현재 키와 다른 키가 동시에 눌렸을 때
+                        if (otherKey != key && Keyboard.current[otherKey.keybordKey].wasPressedThisFrame)
+                        {
+                            // 두 개의 키 값이 일치하면 성공 처리
+                            if (key.keybordKey == otherKey.keybordKey)
+                            {
+                                isFail = false;
+                            }
+                            else
+                            {
+                                isFail = true;
+                            }
+                            doFinally();
+                            return;
+                        }
+                        else 
+                        {
+                            isFail = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (Keyboard.current[key.keybordKey].wasPressedThisFrame)
+                {
+                   isFail = false;
                 }
                 else
                 {
@@ -196,11 +224,6 @@ public class QickTimeSystem : QTEevent
             }
             doFinally();
         }
-        else
-        {
-            isFail = true;
-        }
-
     }
 
 
@@ -212,10 +235,12 @@ public class QickTimeSystem : QTEevent
         if(ui.eventText != null)
         {
             ui.eventText.text ="";
-             if (eventData.keys.Count > 0) 
+            if (eventData.keys.Count > 0) 
             {
+                
                 eventData.keys.ForEach(key => ui.eventText.text += key.keybordKey + "+");
                 eventData.keyboardUI.eventText.text = ui.eventText.text.Remove(ui.eventText.text.Length -1);
+                
             }
         }
         if(ui.eventUI != null)
