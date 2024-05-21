@@ -973,6 +973,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         
         public override void OnUpdate(PlayerCore player)
         {
+
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
                 player.driftActive = true;
@@ -1037,6 +1038,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
             }
+
+            player.animator.SetFloat("Board_X", moveInput.x, 0.3f, Time.deltaTime);
+            player.animator.SetFloat("Board_Y", moveInput.y, 0.3f, Time.deltaTime);
 
             if (player.sailboat.SubmergeRate < player.leapupAvailHeight)
             {
@@ -1278,6 +1282,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
+            player.animator.SetFloat("Board_X", 0f);
+            player.animator.SetFloat("Board_Y", 0f);
             player.driftSound.EventInstance.setParameterByName("Drift", 0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(false);
             UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
@@ -1353,6 +1359,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (leapupCoroutine != null) return;
         if (driftActive) return;
 
+        animator.SetTrigger("Leapup");
         leapupCoroutine = StartCoroutine(Cor_Leapup());
     }
 
@@ -1413,8 +1420,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         leapupGauge = 1f;
         
         leapupActive = true;
+        animator.SetBool("Leapup", true);
 
-        animator.SetBool("Booster", true);
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
@@ -1424,7 +1431,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             yield return new WaitForFixedUpdate();
         }
 
-        animator.SetBool("Booster", false);
+        animator.SetBool("Leapup", false);
 
         leapupActive = false;
         leapupRecharging = true;
