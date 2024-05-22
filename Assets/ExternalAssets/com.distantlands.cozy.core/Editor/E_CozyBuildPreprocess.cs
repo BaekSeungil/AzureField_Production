@@ -9,7 +9,7 @@ using UnityEngine.Assertions;
 
 namespace UW.Editor {
     internal class E_CozyBuildPreprocess : IPreprocessBuildWithReport {
-        private const string ROOT = "Packages/com.distantlands.cozy.core/Content/Art/Textures/Editor";
+        private const string ROOT = "Assets/ExternalAssets/com.distantlands.cozy.core/Content/Art/Textures/Editor";
 
         public int callbackOrder => 0;
 

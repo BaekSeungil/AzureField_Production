@@ -3,10 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization;
 
 public enum PlaymenuElement // 플레이메뉴 타입
 {
-    Inventory
+    Inventory,
+    Quest,
+    Sailboat,
+    Worldmap,
+    Settings
 }
 
 public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBehavior>
