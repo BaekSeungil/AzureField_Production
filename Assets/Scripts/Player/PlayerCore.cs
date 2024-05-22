@@ -933,17 +933,38 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
 
             Vector3 lookTransformedVector;
-            if (player.boosterActive)
+            //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
+
+            if (input.x != 0)
             {
-                lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, Mathf.Clamp01(input.y));
-            }
-            if (player.DriftActive)
-            {
-                lookTransformedVector = Quaternion.LookRotation(player.transform.forward,up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
+                if (player.boosterActive)
+                {
+                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
+                }
+                if (player.DriftActive)
+                {
+                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
+                }
+                else
+                {
+                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
+                }
             }
             else
             {
-                lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, 1f);
+                if (player.boosterActive)
+                {
+                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
+                }
+                if (player.DriftActive)
+                {
+                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
+                }
+                else
+                {
+                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
+                }
+
             }
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
@@ -952,9 +973,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         
         public override void OnUpdate(PlayerCore player)
         {
-            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f)
+
+            if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
                 player.driftActive = true;
+                driftDirection = new Vector3(player.input.Player.Move.ReadValue<Vector2>().x > 0 ? 1f : -1,0f,0f);
             }
 
             if (player.driftActive && player.input.Player.SailboatDrift.WasReleasedThisFrame())
@@ -974,7 +997,14 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             if (player.driftActive)
             {
-                driftDirection = moveInput.x != 0 ? moveInput : driftDirection;
+                if(moveInput.x > 0)
+                {
+                    driftDirection = new Vector3(1f, 0f, 0f);
+                }
+                else if(moveInput.x < 0)
+                {
+                    driftDirection = new Vector3(-1f, 0f, 0f);
+                }
 
                 float f;
 
@@ -1008,6 +1038,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
             }
+
+            player.animator.SetFloat("Board_X", moveInput.x, 0.3f, Time.deltaTime);
+            player.animator.SetFloat("Board_Y", moveInput.y, 0.3f, Time.deltaTime);
 
             if (player.sailboat.SubmergeRate < player.leapupAvailHeight)
             {
@@ -1249,6 +1282,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
+            player.animator.SetFloat("Board_X", 0f);
+            player.animator.SetFloat("Board_Y", 0f);
             player.driftSound.EventInstance.setParameterByName("Drift", 0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(false);
             UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
@@ -1324,6 +1359,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (leapupCoroutine != null) return;
         if (driftActive) return;
 
+        animator.SetTrigger("Leapup");
         leapupCoroutine = StartCoroutine(Cor_Leapup());
     }
 
@@ -1384,8 +1420,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         leapupGauge = 1f;
         
         leapupActive = true;
+        animator.SetBool("Leapup", true);
 
-        animator.SetBool("Booster", true);
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
@@ -1395,7 +1431,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             yield return new WaitForFixedUpdate();
         }
 
-        animator.SetBool("Booster", false);
+        animator.SetBool("Leapup", false);
 
         leapupActive = false;
         leapupRecharging = true;
@@ -1548,18 +1584,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Vector3 target)
+    public void EnableAndSetIndicator(Vector3 target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Transform target)
+    public void EnableAndSetIndicator(Transform target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
