@@ -1584,18 +1584,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Vector3 target)
+    public void EnableAndSetIndicator(Vector3 target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Transform target)
+    public void EnableAndSetIndicator(Transform target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
