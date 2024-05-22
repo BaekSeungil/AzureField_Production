@@ -24,7 +24,7 @@ public class StaticSerializedMonoBehaviour<T> : SerializedMonoBehaviour
     // =====================================
 
 
-    [SerializeField, ReadOnly,LabelText("INSTANCE OBJECT"),InfoBox("THIS OBJECT IS SINGLETON")]
+    [ShowInInspector, ReadOnly,LabelText("INSTANCE OBJECT"),InfoBox("THIS OBJECT IS SINGLETON")]
     private string debug_static_objcect;
 
     static private T instance;

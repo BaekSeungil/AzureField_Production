@@ -19,9 +19,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
 
     MainPlayerInputActions settigUI_inputs;
 
-
-    private static bool GameIsPaused = false;
-
     protected override void Awake()
     {
         settigUI_inputs = new MainPlayerInputActions();
