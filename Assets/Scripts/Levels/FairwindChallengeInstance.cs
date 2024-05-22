@@ -332,7 +332,7 @@ public class FairwindChallengeInstance : MonoBehaviour
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
                 timer_routeCountdown -= Time.deltaTime;
-                PlayerCore.Instance.EnableIndicator(nearestFromPlayer);
+                PlayerCore.Instance.EnableAndSetIndicator(nearestFromPlayer);
 
                 if (timer_routeCountdown <= 0f)
                 {

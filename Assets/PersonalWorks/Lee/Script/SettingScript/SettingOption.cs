@@ -16,7 +16,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
     [SerializeField] public GameObject MoveSetting;
-    [SerializeField] private GameObject backPanel;
 
     MainPlayerInputActions settigUI_inputs;
 
@@ -29,43 +28,57 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         settigUI_inputs.UI.Enable();
     }
 
-    private void Update()
-    {
-        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
-        {
-            if (GameIsPaused)
-            {
-                UI_InputManager.Instance.UI_Input.Enable();
-                Resume();
-            }
-            else
-            {
-                UI_InputManager.Instance.UI_Input.Disable();
-                Pause();
-            }
-        }
+    //private void Update()
+    //{
+    //    if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+    //    {
+    //        if (GameIsPaused)
+    //        {
+    //            UI_InputManager.Instance.UI_Input.Enable();
+    //            Resume();
+    //        }
+    //        else
+    //        {
+    //            UI_InputManager.Instance.UI_Input.Disable();
+    //            Pause();
+    //        }
+    //    }
 
-    }
-    public void Resume()
+    //}
+    //public void Resume()
+    //{
+    //    CursorLocker.Instance.EnableFreelook();
+    //    Setting.SetActive(false);
+    //    GrapicSetting.SetActive(false);
+    //    SoundSetting.SetActive(false);
+    //    MoveSetting.SetActive(false);
+    //    Time.timeScale = 1f;
+    //    GameIsPaused = false;
+
+    //}
+
+    //public void Pause()
+    //{
+    //    CursorLocker.Instance.DisableFreelook();
+    //    Setting.SetActive(true);
+    //    Time.timeScale = 0f;
+    //    GameIsPaused = true;
+    //}
+
+    public void OnEnable()
     {
-        CursorLocker.Instance.EnableFreelook();
-        backPanel.SetActive(false);
+        Setting.SetActive(true);
+        GrapicSetting.SetActive(false);
+        SoundSetting.SetActive(false);
+        MoveSetting.SetActive(false);
+    }
+
+    public void OnDisable()
+    {
         Setting.SetActive(false);
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
-        Time.timeScale = 1f;
-        GameIsPaused = false;
-
-    }
-
-    public void Pause()
-    {
-        CursorLocker.Instance.DisableFreelook();
-        backPanel.SetActive(true);
-        Setting.SetActive(true);
-        Time.timeScale = 0f;
-        GameIsPaused = true;
     }
 
     public void SetSoundprefab()
@@ -98,7 +111,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
     }
-
 
     public void QuitGame()
     {
