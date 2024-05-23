@@ -28,7 +28,7 @@ public class LocalizeDropdown : MonoBehaviour
         _tmpDropdown.options = tmpDropdownOptions;
     }
 }
-#if UNITY_EDITOR
+
 public abstract class AddLocalizeDropdown
 {
     [MenuItem("CONTEXT/TMP_Dropdown/Localize", false, 1)]
@@ -42,5 +42,3 @@ public abstract class AddLocalizeDropdown
         }
     }
 }
-
-#endif

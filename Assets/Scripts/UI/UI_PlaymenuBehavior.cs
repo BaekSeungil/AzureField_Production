@@ -74,18 +74,18 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.DisableControls(); }
 
-        //if (playmenu == PlaymenuElement.Inventory)
-        //{
-        //    inventoryObject.SetActive(true);
-        //    PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
-        //    if (inventoryContainer == null) { Debug.Log("인벤토리 열기를 시도했지만 PlayterInventoryContainer를 찾을 수 없었습니다."); return; }
+        if (playmenu == PlaymenuElement.Inventory)
+        {
+            inventoryObject.SetActive(true);
+            PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
+            if (inventoryContainer == null) { Debug.Log("인벤토리 열기를 시도했지만 PlayterInventoryContainer를 찾을 수 없었습니다."); return; }
 
-        //    RuntimeManager.PlayOneShot(sound_Open);
-        //    visualGroup.SetActive(true);
-        //    UI_InventoryBehavior inventory = inventoryObject.GetComponent<UI_InventoryBehavior>();
-        //    inventory.SetInventory(inventoryContainer.InventoryData);
-        //    inventory.SetMoney(inventoryContainer.Money);
-        //}
+            RuntimeManager.PlayOneShot(sound_Open);
+            visualGroup.SetActive(true);
+            UI_InventoryBehavior inventory = inventoryObject.GetComponent<UI_InventoryBehavior>();
+            inventory.SetInventory(inventoryContainer.InventoryData);
+            inventory.SetMoney(inventoryContainer.Money);
+        }
     }
 
     /// <summary>
