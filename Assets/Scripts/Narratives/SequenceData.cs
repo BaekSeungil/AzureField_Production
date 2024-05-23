@@ -1,4 +1,5 @@
 using Cinemachine;
+using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -364,7 +365,6 @@ public class Sequence_Animation : Sequence_Base
 
 }
 
-
 public class Sequence_PlaySound : Sequence_Base
 {
     [InfoBox("사운드를 재생합니다.")]
@@ -376,4 +376,35 @@ public class Sequence_PlaySound : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_DotweenAnimation : Sequence_Base
+{
+    [InfoBox("DoTween 애니메이션을 DoPlayAllByID을 통해 재생합니다.")]
+    public string dotweenID;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Tween[] tweens = DOTween.TweensById(dotweenID).ToArray();
+        if (tweens.Length == 0 || tweens == null) yield break;
+
+        foreach(Tween t in tweens)
+        {
+            t.Restart();
+        }
+
+        yield return tweens[0].WaitForCompletion();
+
+    }
+}
+
+public class Sequence_IntroCanves : Sequence_Base
+{
+    public LocalizedString[] texts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        UI_IntroCanvas intro = UI_IntroCanvas.Instance;
+        yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
 }
