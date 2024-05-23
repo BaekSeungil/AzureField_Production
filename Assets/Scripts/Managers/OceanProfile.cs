@@ -9,30 +9,30 @@ public class OceanProfile : SerializedScriptableObject
     //================================================
     //
     // 현재 바다 표면의 정보를 담는 스크립터블 오브젝트입니다.
-    //
+    // 
     //================================================
 
-    [SerializeField,ColorUsage(false,true)] private Color oceanColor;           // 바다 머트리얼 Emmision 색상
-    [SerializeField, ColorUsage(false, true)] private Color oceanTipColor;      // 바다 머트리얼 고점 Emmision 색상
+    [SerializeField,ColorUsage(false,true), LabelText("바다 기본 색상")] private Color oceanColor;           // 바다 머트리얼 Emmision 색상
+    [SerializeField, ColorUsage(false, true), LabelText("바다 고점 색상")] private Color oceanTipColor;      // 바다 머트리얼 고점 Emmision 색상
     public Color OceanColor { get { return oceanColor; } }
     public Color OceanTipColor { get { return oceanTipColor; } }
-    [SerializeField, Range(0.1f, 1.5f)] private float oceanIntensity;
-    public float OceanIntensity { get { return oceanIntensity; } }              // 파도 강도 곱
+    [SerializeField, Range(0.1f, 1.5f), LabelText("파도 강도 곱")] private float oceanIntensity;
+    public float OceanIntensity { get { return oceanIntensity; } }                                          // 파도 강도 곱
     
     public struct Waveform
     {
-        public Vector3 vector;              // 파도 벡터
-        public float amplitude;             // 파도 강도
-        public float gravity;               // 파도 속도
+        [LabelText("벡터")] public Vector3 vector;              // 파도 벡터
+        [LabelText("강도")] public float amplitude;             // 파도 강도
+        [LabelText("속도")] public float gravity;               // 파도 속도
     }
 
-    [SerializeField] private Waveform waveform1;                                // 1번 파형
+    [SerializeField, LabelText("1번 파형")] private Waveform waveform1;
     public Waveform Waveform1 { get { return waveform1; } }
-    [SerializeField] private Waveform waveform2;                                // 2번 파형
+    [SerializeField, LabelText("2번 파형")] private Waveform waveform2;
     public Waveform Waveform2 { get { return waveform2; } }
-    [SerializeField] private Waveform waveform3;                                // 3번 파형
+    [SerializeField, LabelText("3번 파형")] private Waveform waveform3;
     public Waveform Waveform3 { get { return waveform3; } }
-    [SerializeField] private Waveform waveform4;                                // 4번 파형
+    [SerializeField, LabelText("4번 파형")] private Waveform waveform4;
     public Waveform Waveform4 { get { return waveform4; } }
 
     public void InitilzeOceanProfile(Color _color,Color _tipColor, 

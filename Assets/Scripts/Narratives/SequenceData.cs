@@ -1,3 +1,6 @@
+using Cinemachine;
+using DG.Tweening;
+using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
@@ -92,6 +95,8 @@ public class Sequence_DialogueBranch : Sequence_Base
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
+
+        Debug.Log(sequenceAssets[index]);
 
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
     }
@@ -252,4 +257,154 @@ public class Sequence_BranchByParameter : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(defaultSequence.SequenceBundles));
     }
 
+}
+
+public class Sequence_ShowImage : Sequence_Base
+{
+    [InfoBox("이미지묶음을 보여줍니다.", InfoMessageType = InfoMessageType.None)]
+    [LabelText("이미지 모두 표시 후 닫기")] public bool closeImageAfterFinish = true;
+    [PreviewField(Alignment = ObjectFieldAlignment.Center,Height = 100)] public Sprite[] Images;
+
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.DisplayImage.ImageProgress(Images,closeImageAfterFinish);
+    }
+}
+
+public class Sequence_CloseImage : Sequence_Base
+{
+    [InfoBox("열려있는 이미지 창을 닫습니다.")]
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.DisplayImage.CloseImage();
+        yield return null;
+    }
+}
+
+public class Sequence_Event : Sequence_Base
+{
+    [InfoBox("BindFromSequences에서 Key값에 해당하는 이벤트를 실행합니다.")]
+    public string key;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.BindfromSequences.Invoke(key);
+        yield return null;
+    }
+}
+
+public class Sequence_EnableVCam : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        CinemachineVirtualCameraBase[] vcams = GameObject.FindObjectsByType<CinemachineVirtualCameraBase>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (CinemachineVirtualCameraBase vcam in vcams)
+        {
+            if (vcam.name == name)
+            {
+                vcam.gameObject.SetActive(true);
+                yield break;
+            }    
+        }
+
+        Debug.Log(name + " 이름을 가진 Virtual Camera오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+
+public class Sequence_DisableVCam : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    public string name;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        CinemachineVirtualCameraBase[] vcams = GameObject.FindObjectsByType<CinemachineVirtualCameraBase>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (CinemachineVirtualCameraBase vcam in vcams)
+        {
+            if (vcam.name == name)
+            {
+                vcam.gameObject.SetActive(false);
+                yield break;
+            }
+        }
+
+        Debug.Log(name + " 이름을 가진 Virtual Camera오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+
+public class Sequence_Animation : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터를 재생합니다.")]
+    public string objectName;
+    public string stateName;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Animator[] anims = GameObject.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Animator anim in anims)
+        {
+            if (anim.name == objectName)
+            {
+                anim.Play(stateName);
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+                yield break;
+            }
+        }
+
+        Debug.Log(objectName + " 이름을 가진 Animator 오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
+
+}
+
+public class Sequence_PlaySound : Sequence_Base
+{
+    [InfoBox("사운드를 재생합니다.")]
+    public EventReference sound;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        RuntimeManager.PlayOneShot(sound);
+        yield return null;
+    }
+
+}
+
+public class Sequence_DotweenAnimation : Sequence_Base
+{
+    [InfoBox("DoTween 애니메이션을 DoPlayAllByID을 통해 재생합니다.")]
+    public string dotweenID;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Tween[] tweens = DOTween.TweensById(dotweenID).ToArray();
+        if (tweens.Length == 0 || tweens == null) yield break;
+
+        foreach(Tween t in tweens)
+        {
+            t.Restart();
+        }
+
+        yield return tweens[0].WaitForCompletion();
+
+    }
+}
+
+public class Sequence_IntroCanves : Sequence_Base
+{
+    public LocalizedString[] texts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        UI_IntroCanvas intro = UI_IntroCanvas.Instance;
+        yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
 }

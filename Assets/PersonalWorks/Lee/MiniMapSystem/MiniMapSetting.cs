@@ -1,9 +1,7 @@
-using Mono.Cecil.Cil;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 public class MiniMapSetting : StaticSerializedMonoBehaviour<MiniMapSetting>
 {

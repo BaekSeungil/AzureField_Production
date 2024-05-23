@@ -1,54 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FMOD.Studio;
+using FMODUnity;
 
 public class SoundOpton : MonoBehaviour
 {
-    FMOD.Studio.EventInstance VolumeEvent;
-    FMOD.Studio.Bus Music;
-    FMOD.Studio.Bus SFX;
-    FMOD.Studio.Bus Master;
+    Bus Music;
+    Bus SFX;
+    Bus Ambient;
+    Bus UI;
+    Bus Master;
 
-    [SerializeField] float MusicVolme;
-    [SerializeField] float SFXVolme;
-    [SerializeField] float MasterVolme;
-
-    private void Awake() 
+    private void Awake()
     {
-      Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
-      Music = FMODUnity.RuntimeManager.GetBus("bus:/Master/Music");
-      SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/Ambient");  
-      SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/UI");
-      SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/SFX");
-      Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
-      VolumeEvent = FMODUnity.RuntimeManager.CreateInstance("event:/SFX/VolumeEvent");
+        Master = FMODUnity.RuntimeManager.GetBus("bus:/Master");
+        Music = FMODUnity.RuntimeManager.GetBus("bus:/Master/Music");
+        Ambient = FMODUnity.RuntimeManager.GetBus("bus:/Master/Ambient");
+        UI = FMODUnity.RuntimeManager.GetBus("bus:/Master/UI");
+        SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/SFX");
     }
 
-    void Update()
+    public void SetMaster(float value)
     {
-        Music.setVolume(MusicVolme);
-        SFX.setVolume(SFXVolme);
-        Master.setVolume(MasterVolme);
+        Master.setVolume(value);
     }
 
-    public void MasterVolumeLevel(float newMasterVolume)
-   {
-      MasterVolme = newMasterVolume;
-   }
-   public void MusicVolumeLevel(float newMusicVolume)
-   {
-      MasterVolme =  newMusicVolume;
-   }
+    public void SetSFX(float value)
+    {
+        SFX.setVolume(value);
+    }
 
-   public void SFXVolumeLevel(float newSFXVolume)
-   {
-      MasterVolme =  newSFXVolume;
-      FMOD.Studio.PLAYBACK_STATE PbState;
-      VolumeEvent.getPlaybackState(out PbState);
-      if(PbState != FMOD.Studio.PLAYBACK_STATE.PLAYING)
-      {
-         VolumeEvent.start();
-      }
+    public void SetAmbient(float value)
+    {
+        Ambient.setVolume(value);
+    }
 
-   }
+    public void SetUI(float value)
+    {
+        UI.setVolume(value);
+    }
+
+    public void SetMusic(float value)
+    {
+        Music.setVolume(value);
+    }
 }

@@ -36,7 +36,7 @@ public class DropItemCrash : MonoBehaviour
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
         FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
         DropItemRenderer.enabled = !DropItemRenderer.enabled;
-        
+
         yield return new WaitForSeconds(addSpeedTime);
         itemActive = true;
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
@@ -50,16 +50,17 @@ public class DropItemCrash : MonoBehaviour
     {
         //Debug.Log("아이템 충돌");
         if (other.tag == "Player")
-        {      
+        {
             //Debug.Log("아이템 충돌2");
             if (itemActive == true)
             {
-                
+
                 StartCoroutine(CrashEvent());
                 itemActive = false;
             }
-            
+
         }
     }
 
 }
+
