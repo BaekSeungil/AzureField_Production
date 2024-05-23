@@ -28,8 +28,6 @@ public class BuoyantBehavior : MonoBehaviour
 
     Rigidbody rbody;
 
-    bool playerMode = false;
-
     private void Awake()
     {
         rbody = GetComponent<Rigidbody>();
@@ -39,10 +37,6 @@ public class BuoyantBehavior : MonoBehaviour
 
     private void Start()
     {
-        PlayerCore player;
-        if (gameObject.TryGetComponent<PlayerCore>(out player))
-            playerMode = true;
-
         if (GlobalOceanManager.Instance == null)
         {
             Debug.Log("BuoyancyBehavior를 사용하려면 Global Ocean Manager를 생성하세요!");
