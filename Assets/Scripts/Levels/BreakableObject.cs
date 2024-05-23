@@ -47,7 +47,7 @@ public class BreakableObject : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        DrawArrow.ForGizmo(trigger.bounds.center, -transform.forward, 0.25f, 30f);
+        DrawArrow.ForGizmo(trigger.bounds.center, -transform.forward*3f, 0.25f, 30f);
         GUIStyle textStyle = new GUIStyle();
         textStyle.fontSize = 16;
         textStyle.alignment = TextAnchor.LowerCenter;
