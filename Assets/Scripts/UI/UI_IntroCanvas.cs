@@ -31,6 +31,7 @@ public class UI_IntroCanvas : StaticSerializedMonoBehaviour<UI_IntroCanvas>
 
         for(int i = 0; i < texts.Length; i++)
         {
+            anim.DORewind();
             RuntimeManager.PlayOneShot(sound_progress);
             textmesh.text = texts[i].GetLocalizedString();
             yield return new WaitForSeconds(interval);

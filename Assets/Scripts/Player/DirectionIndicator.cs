@@ -40,7 +40,7 @@ public class DirectionIndicator : SerializedMonoBehaviour
     /// target의 트랜스폼 위치를 향해 방향 지시가 설정되도록 합니다.
     /// </summary>
     /// <param name="target"></param>
-    public void EnableAndSetIndicator(Transform target)
+    public void EnableIndicator(Transform target)
     {
         visualGroup.SetActive(true);
         isTransformMode = true;
@@ -51,7 +51,7 @@ public class DirectionIndicator : SerializedMonoBehaviour
     /// target의 월드 좌표를 향해 방향 지시가 설정되도록 합니다.
     /// </summary>
     /// <param name="target"></param>
-    public void EnableAndSetIndicator(Vector3 target)
+    public void EnableIndicator(Vector3 target)
     {
         visualGroup.SetActive(true);
         isTransformMode = false;
