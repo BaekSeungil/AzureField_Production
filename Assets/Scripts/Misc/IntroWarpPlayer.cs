@@ -18,7 +18,6 @@ public class IntroWarpPlayer : MonoBehaviour
     public void EnablePlayer()
     {
         PlayerCore.Instance.EnableControlls();
+        if (MiniMapSetting.IsInstanceValid) MiniMapSetting.Instance.Setmap();
     }
-
-
 }
