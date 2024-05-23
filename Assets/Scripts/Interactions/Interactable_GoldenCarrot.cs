@@ -29,11 +29,11 @@ public class Interactable_GoldenCarrot : Interactable_Base
         }
     }
 
-
     public override void Interact()
     {
         GetComponent<DOTweenAnimation>().DOPause();
 
+        Debug.Log("Carrot");
 
         if (!floating)
         {
@@ -48,7 +48,7 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
             Sequence_ObtainItem obtain = new Sequence_ObtainItem();
             obtain.item = carrotItem;
-            obtain.quantity = 1;
+            obtain.quantity = carrotQuantity;
 
             Sequence_PlaySound sound2 = new Sequence_PlaySound();
             sound2.sound = sound_CarrotGone;
@@ -86,5 +86,6 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
         GetComponent<Collider>().enabled = false;
         SequenceInvoker.Instance.StartSequence(carrotAquiredSequences);
+        base.OnDisable();
     }
 }

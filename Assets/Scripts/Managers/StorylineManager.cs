@@ -148,7 +148,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
             {
                 if (sequence.IsSequenceRunning) SequenceInvoker.Instance.ForceAbortAllSequences();
 
-                PlayerCore.Instance.DisableControlls(); UI_PlaymenuBehavior.Instance.DisableInput();
+                PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return SequenceInvoker.Instance.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnStart.SequenceBundles);
                 PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
@@ -180,7 +180,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
             {
                 if (sequence.IsSequenceRunning) SequenceInvoker.Instance.ForceAbortAllSequences();
 
-                PlayerCore.Instance.DisableControlls(); UI_PlaymenuBehavior.Instance.DisableInput();
+                PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return sequence.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnFinished.SequenceBundles);
                 PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }

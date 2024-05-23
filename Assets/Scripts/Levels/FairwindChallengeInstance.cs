@@ -24,6 +24,8 @@ public class FairwindChallengeInstance : MonoBehaviour
     [SerializeField] private string iD;
     public string ID { get { return iD; } }
     [SerializeField, LabelText("제한 시간 (초)")] private float timelimit = 0;
+    [SerializeField, LabelText("경유지 추가 시간 활성화")] private bool checkpointBonus = false;
+    [SerializeField, ShowIf("checkpointBonus"), LabelText("경유지 추가 시간")] private float checkpointBonusTime = 10f;
     public float Timelimit { get { return timelimit; } }
     [SerializeField, LabelText("보상 아이템 (선택사항)")] private ItemData[] rewardItems;
     [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
@@ -224,6 +226,9 @@ public class FairwindChallengeInstance : MonoBehaviour
 
             yield return StartCoroutine(Cor_ChangeDestination(prevF, nextF));
             yield return new WaitUntil(() => (GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
+
+            if (checkpointBonus) AddTimerToActiveChallenge(checkpointBonusTime);
+
             FMODUnity.RuntimeManager.PlayOneShot(sound_Checkpoint);
         }
         FMODUnity.RuntimeManager.PlayOneShot(sound_Finish);
@@ -327,7 +332,7 @@ public class FairwindChallengeInstance : MonoBehaviour
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
                 timer_routeCountdown -= Time.deltaTime;
-                PlayerCore.Instance.EnableIndicator(nearestFromPlayer);
+                PlayerCore.Instance.EnableAndSetIndicator(nearestFromPlayer);
 
                 if (timer_routeCountdown <= 0f)
                 {

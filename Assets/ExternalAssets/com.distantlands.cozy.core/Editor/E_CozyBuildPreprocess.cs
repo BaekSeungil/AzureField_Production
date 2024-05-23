@@ -13,6 +13,8 @@ namespace UW.Editor {
 
         public int callbackOrder => 0;
 
+
+
         public void OnPreprocessBuild(BuildReport _) {
             string[] assets = AssetDatabase.FindAssets("t:Texture2D", new[] { ROOT });
             Assert.IsTrue(assets.Length > 0);

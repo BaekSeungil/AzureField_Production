@@ -5,14 +5,15 @@ using UnityEngine.Localization;
 
 public class Interactable_Base : SerializedMonoBehaviour
 {
-//================================================
-//
-// Interactable 계열 스크립트들의 베이스 클래스입니다.
-// 플레이어가 가까이 오면서 Trigger를 건드리면 상호작용 UI를 띄우고, 상호작용 키를 누르면 오버라이드된 Interact를 호출합니다.
-//
-//================================================
+    //================================================
+    //
+    // Interactable 계열 스크립트들의 베이스 클래스입니다.
+    // 플레이어가 가까이 오면서 Trigger를 건드리면 상호작용 UI를 띄우고, 상호작용 키를 누르면 오버라이드된 Interact를 호출합니다.
+    //
+    //================================================
 
-    [SerializeField,LabelText("상호작용 텍스트")] protected LocalizedString interactionUIText;    // 가까이 접근 시 상호작용 UI에 띄울 텍스트
+    [SerializeField, LabelText("텍스트 활성화")] protected bool enableInteractionUI = true;
+    [SerializeField,LabelText("상호작용 텍스트"),ShowIf("enableInteractionUI")] protected LocalizedString interactionUIText;    // 가까이 접근 시 상호작용 UI에 띄울 텍스트
     protected MainPlayerInputActions input;
     protected bool isEnabled = true;
 
@@ -52,20 +53,23 @@ public class Interactable_Base : SerializedMonoBehaviour
 
             if (interactionUIText.GetLocalizedString() != string.Empty)
             {
-                if (UI_InteractionInfo.IsInstanceValid)
+                if (enableInteractionUI)
                 {
-                    var infoUI = UI_InteractionInfo.Instance;
-
-                    if (!infoUI.CompareCurrentTarget(transform))
+                    if (UI_InteractionInfo.IsInstanceValid)
                     {
-                        infoUI.SetNewInteractionInfo(transform, interactionUIText.GetLocalizedString());
+                        var infoUI = UI_InteractionInfo.Instance;
+
+                        if (!infoUI.CompareCurrentTarget(transform))
+                        {
+                            infoUI.SetNewInteractionInfo(transform, interactionUIText.GetLocalizedString());
+                        }
                     }
                 }
             }
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -73,19 +77,22 @@ public class Interactable_Base : SerializedMonoBehaviour
                 input.Player.Interact.performed -= OnInteractInput;
             input = null;
 
-            if (UI_InteractionInfo.IsInstanceValid)
+            if (enableInteractionUI)
             {
-                var infoUI = UI_InteractionInfo.Instance;
-
-                if (infoUI.CompareCurrentTarget(transform))
+                if (UI_InteractionInfo.IsInstanceValid)
                 {
-                    infoUI.HideCurrentInfo();
+                    var infoUI = UI_InteractionInfo.Instance;
+
+                    if (infoUI.CompareCurrentTarget(transform))
+                    {
+                        infoUI.HideCurrentInfo();
+                    }
                 }
             }
         }
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         if (input != null)
         {
