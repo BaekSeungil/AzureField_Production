@@ -9,6 +9,8 @@ public class Foundation : MonoBehaviour
     [SerializeField] private Transform targetPoint;
     [SerializeField] private float speed;
 
+    public bool orderSystem = false;
+
     public bool[] switchOnOff;
     private int switchCheck=0;
     private bool moveCheck=false;
@@ -38,19 +40,45 @@ public class Foundation : MonoBehaviour
         
     }
 
-
+    private bool orderCheck=true;
     public void SwitchOn(int num)
     {
         switchOnOff[num]= true;
 
-        for (int i = 0; i < switchOnOff.Length; i++)
+        if (orderSystem == false)
         {
-            if (switchOnOff[i] == true)
+            for (int i = 0; i < switchOnOff.Length; i++)
             {
-                switchCheck++;
-                if (switchCheck == switchOnOff.Length) 
+                if (switchOnOff[i] == true)
                 {
-                    moveCheck = true;
+                    switchCheck++;
+                    if (switchCheck == switchOnOff.Length)
+                    {
+                        moveCheck = true;
+                    }
+                }
+            }
+        }
+        else if (orderSystem == true)
+        {
+            for (int i = 0; i < switchOnOff.Length; i++)
+            {
+                if (switchOnOff[i] == true)
+                {
+                    if (switchOnOff[i - 1] == false)
+                    {
+                        SwitchOff();
+                        break;
+                    }
+                    else
+                    {
+                        switchCheck++;
+                        if (switchCheck == switchOnOff.Length)
+                        {
+                            moveCheck = true;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -60,7 +88,10 @@ public class Foundation : MonoBehaviour
 
     public void SwitchOff()
     {
-        
+        for (int i = 0; i < switchOnOff.Length; i++)
+        {
+            switchOnOff[i] = false;
+        }
     }
 
     private void MoveTargetMove()
