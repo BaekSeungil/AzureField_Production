@@ -43,19 +43,22 @@ public class PuzzleDoor : Interactable_Base
 
     public override void Interact()
     {
-        if (eventsOnStartInteract != null)
+        if(Opendoor)
+        {
+            if (eventsOnStartInteract != null)
             eventsOnStartInteract.Invoke();
 
-        if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-        if (sequenceAsset != null)
-        {
-            SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
-            if (virtualCamera != null)
-                SequenceInvoker.Instance.SetSequenceCamera(virtualCamera);
-        }
+            if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
+            if (sequenceAsset != null)
+            {
+                SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+                if (virtualCamera != null)
+                    SequenceInvoker.Instance.SetSequenceCamera(virtualCamera);
+            }
 
-        if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
-        if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
+            if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
+            if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
+        }
     }
 }
 
