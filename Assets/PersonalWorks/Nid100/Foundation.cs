@@ -67,6 +67,7 @@ public class Foundation : MonoBehaviour
                 {
                     if (switchOnOff[i - 1] == false)
                     {
+                        SwitchOff();
                         break;
                     }
                     else
