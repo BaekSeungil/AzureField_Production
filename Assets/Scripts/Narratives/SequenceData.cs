@@ -319,7 +319,7 @@ public class Sequence_EnableVCam : Sequence_Base
 
 public class Sequence_DisableVCam : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    [InfoBox("name 이름을 가진 카메라를 끕니다.")]
     public string name;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -406,5 +406,20 @@ public class Sequence_IntroCanves : Sequence_Base
     {
         UI_IntroCanvas intro = UI_IntroCanvas.Instance;
         yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
+}
+
+public class Sequence_ToggleIsmael : Sequence_Base
+{
+    public bool value;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (value)
+            PlayerCore.Instance.EnableIsamel();
+        else
+            PlayerCore.Instance.DisableIsmael();
+
+        yield return new WaitForSeconds(0.5f);
     }
 }
