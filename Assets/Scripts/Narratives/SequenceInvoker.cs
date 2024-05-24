@@ -69,6 +69,10 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         StartCoroutine(Cor_StartSequenceQueue());
     }
 
+    public void StartSequence(SequenceBundleAsset sequenceBundleAsset)
+    {
+        StartSequence(sequenceBundleAsset.SequenceBundles);
+    }
     public void StartSequence(Sequence_Base[] sequenceChain)
     {
         if (sequenceRunning) {

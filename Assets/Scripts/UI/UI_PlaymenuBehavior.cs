@@ -1,12 +1,16 @@
+using DG.Tweening;
 using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
-public enum PlaymenuElement // 플레이메뉴 타입
+public enum PlaymenuType // 플레이메뉴 타입
 {
+    Null,
     Inventory,
     Quest,
     Sailboat,
@@ -24,13 +28,26 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     //
     //===============================  
 
-    [SerializeField] GameObject visualGroup;
-    [SerializeField] GameObject inventoryObject;
+    private struct PlaymenuElement
+    {
+        public PlaymenuType assignedType;
+        public GameObject windowObject;
+        public LocalizedString titleString;
+    }
+
+    [SerializeField] private PlaymenuElement[] playmenues;
 
     [SerializeField] EventReference sound_Open;         // 소리 : 메뉴 오픈시 소리
     [SerializeField] EventReference sound_Close;        // 소리 : 메뉴 닫을시 소리
 
+    [SerializeField] private GameObject visualGroup;
+    [SerializeField] TextMeshProUGUI titleLineTextmesh;
+    [SerializeField] TextMeshProUGUI nextTextmesh;
+    [SerializeField] TextMeshProUGUI prevTextemesh;
+
     MainPlayerInputActions input;
+
+    private int activePlayemenuIndex = 0;
 
     protected override void Awake()
     {
@@ -38,6 +55,12 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         input = UI_InputManager.Instance.UI_Input;
         input.Player.Enable();
         input.Player.OpenPlaymenu.performed += OnOpenKeydown;
+        input.UI.Navigate.performed += OnNavigate;
+    }
+
+    private void Start()
+    {
+        visualGroup.SetActive(false);
     }
 
     public void EnableInput()
@@ -54,7 +77,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     {
         if (visualGroup.activeInHierarchy == false)
         {
-            OpenPlaymenu();
+            OpenPlaymenu(playmenues[activePlayemenuIndex].assignedType);
         }
         else
         {
@@ -62,30 +85,51 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         }
     }
 
+    public void OnNavigate(InputAction.CallbackContext context)
+    {
+        if (visualGroup.activeInHierarchy == false) return;
+
+            if (context.ReadValue<Vector2>().x > 0)
+            BrowseNext();
+        else if (context.ReadValue<Vector2>().x < 0)
+            BrowsePrev();
+    }
+
+    public void BrowseNext()
+    {
+        if (activePlayemenuIndex < playmenues.Length-1) activePlayemenuIndex++;
+        else activePlayemenuIndex = 0;
+
+        titleLineTextmesh.GetComponent<DOTweenAnimation>().DORestartById("FromRight");
+        ChangePlaymenu(playmenues[activePlayemenuIndex].assignedType);
+    }
+
+    public void BrowsePrev()
+    {
+        if (activePlayemenuIndex > 0) activePlayemenuIndex--;
+        else activePlayemenuIndex = playmenues.Length-1;
+
+        titleLineTextmesh.GetComponent<DOTweenAnimation>().DORestartById("FromLeft");
+        ChangePlaymenu(playmenues[activePlayemenuIndex].assignedType);
+
+    }
+
+
     /// <summary>
     /// 플레이 메뉴를 엽니다.
     /// </summary>
     /// <param name="playmenu">메뉴 종류</param>
-    public void OpenPlaymenu(PlaymenuElement playmenu = PlaymenuElement.Inventory)
+    public void OpenPlaymenu(PlaymenuType playmenu = PlaymenuType.Settings)
     {
         visualGroup.SetActive(true);
         CursorLocker.Instance.DisableFreelook();
-
         PlayerCore gameplayer = PlayerCore.Instance;
         if (gameplayer != null) { gameplayer.DisableControls(); }
 
-        //if (playmenu == PlaymenuElement.Inventory)
-        //{
-        //    inventoryObject.SetActive(true);
-        //    PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
-        //    if (inventoryContainer == null) { Debug.Log("인벤토리 열기를 시도했지만 PlayterInventoryContainer를 찾을 수 없었습니다."); return; }
 
-        //    RuntimeManager.PlayOneShot(sound_Open);
-        //    visualGroup.SetActive(true);
-        //    UI_InventoryBehavior inventory = inventoryObject.GetComponent<UI_InventoryBehavior>();
-        //    inventory.SetInventory(inventoryContainer.InventoryData);
-        //    inventory.SetMoney(inventoryContainer.Money);
-        //}
+        RuntimeManager.PlayOneShot(sound_Open);
+        ChangePlaymenu(playmenu);
+
     }
 
     /// <summary>
@@ -93,6 +137,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     /// </summary>
     public void ClosePlaymenu()
     {
+        CloseAllWindowObject();
         visualGroup.SetActive(false);
         CursorLocker.Instance.EnableFreelook();
 
@@ -100,6 +145,74 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         if (gameplayer != null) { gameplayer.EnableControlls(); }
 
         RuntimeManager.PlayOneShot(sound_Close);
+
+    }
+
+    private void ChangePlaymenu(PlaymenuType playmenuType = PlaymenuType.Settings)
+    {
+        CloseAllWindowObject();
+
+        PlaymenuElement menu = FindElement(playmenuType);
+        if (menu.assignedType != PlaymenuType.Null)
+        {
+            menu.windowObject.SetActive(true);
+        }
+        else
+        {
+            return;
+        }
+
+        // 인벤토리
+        if (playmenuType == PlaymenuType.Inventory)
+        {
+            PlayerInventoryContainer inventoryContainer = PlayerInventoryContainer.Instance;
+            if (inventoryContainer == null) { Debug.Log("인벤토리 열기를 시도했지만 PlayterInventoryContainer를 찾을 수 없었습니다."); return; }
+
+            UI_InventoryBehavior inventory = UI_InventoryBehavior.Instance;
+            inventory.SetInventory(inventoryContainer.InventoryData);
+            inventory.SetMoney(inventoryContainer.Money);
+        }
+
+        UpdatePlayemenuTitle();
+
+    }
+
+    private void CloseAllWindowObject()
+    {
+        foreach (var m in playmenues)
+        {
+            m.windowObject.SetActive(false);
+        }
+    }
+
+
+    private PlaymenuElement FindElement(PlaymenuType playmenu)
+    {
+        foreach(var m in playmenues)
+        {
+            if (m.assignedType == playmenu) 
+                return m;
+        }
+
+        Debug.LogWarning("Failed to file PlaymenuElement : " + playmenu.ToString() + " | FindElement will return NullElement");
+        PlaymenuElement nullElement = new PlaymenuElement();
+        nullElement.assignedType = PlaymenuType.Null;
+        return nullElement;
+    }
+
+    private void UpdatePlayemenuTitle()
+    {
+        titleLineTextmesh.text = playmenues[activePlayemenuIndex].titleString.GetLocalizedString();
+
+        if (activePlayemenuIndex + 1 >= playmenues.Length)
+            nextTextmesh.text = playmenues[0].titleString.GetLocalizedString();
+        else
+            nextTextmesh.text = playmenues[activePlayemenuIndex+1].titleString.GetLocalizedString();
+
+        if (activePlayemenuIndex - 1 < 0)
+            prevTextemesh.text = playmenues[playmenues.Length-1].titleString.GetLocalizedString();
+        else
+            prevTextemesh.text = playmenues[activePlayemenuIndex - 1].titleString.GetLocalizedString();
 
     }
 }
