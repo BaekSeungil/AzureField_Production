@@ -7,27 +7,60 @@ public class PuzzleTrigger : MonoBehaviour
 {
     [SerializeField,LabelText("내려가는 위치값")] public float UnderLocal; 
     [SerializeField,LabelText("내려가는 속도")] public float speed;
-    private Rigidbody rigid;
+    [SerializeField,LabelText("오브젝트 지정")] public  PuzzleDoor puzzleDoor;
+    private float initialYPosition;
 
-    PuzzleDoor puzzleDoor;
-    // Start is called before the first frame update
+    private bool IsMoveDown;
    private void Awake() 
    {
-        rigid = GetComponent<Rigidbody>();
+        initialYPosition = transform.position.y;
    }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) 
     {
-        puzzleDoor = FindObjectOfType<PuzzleDoor>();
-        puzzleDoor.OpenDoorCount += 1;
-        
-        rigid.AddForce(Vector3.up * UnderLocal,ForceMode.Impulse);
+        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        {
+            puzzleDoor = FindObjectOfType<PuzzleDoor>();
+            puzzleDoor.KeyCount ++;
+            Debug.Log("추가됨 " + puzzleDoor.KeyCount);
+            IsMoveDown = true;
+            MoveDown();
+        }
+    }
+    private void OnTriggerStay(Collider other) 
+    {
+        if(other.gameObject.layer == 6 ||  other.gameObject.layer == 8)
+        {
+            IsMoveDown = true;
+            MoveDown();
+        }
     }
 
-    private void OnTriggerExit(Collider other) 
+    private void OnTriggerExit(Collider other)
     {
-        puzzleDoor = FindObjectOfType<PuzzleDoor>();
-        puzzleDoor.OpenDoorCount -= 1;
-        rigid.AddForce(Vector3.up * UnderLocal,ForceMode.Impulse);
+        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        {
+            puzzleDoor = FindObjectOfType<PuzzleDoor>();
+            puzzleDoor.KeyCount --;  
+            Debug.Log("빠짐 " + puzzleDoor.KeyCount);
+            IsMoveDown = false;
+            MoveDown();
+        }
+    }
+
+    private void MoveDown()
+    {
+        Vector3 newPosition = transform.position - Vector3.up * speed * Time.deltaTime;
+        if(IsMoveDown)
+        {
+            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition + UnderLocal,newPosition.y), 
+            transform.position.z);
+        }
+        else
+        {
+            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition - UnderLocal, newPosition.y), 
+            transform.position.z);
+        }
+
     }
 }
