@@ -16,17 +16,17 @@ public class PuzzleTrigger : MonoBehaviour
         initialYPosition = transform.position.y;
    }
 
-    private void OnCollisionEnter(Collision other) 
+    private void OnTriggerEnter(Collider other) 
     {
         if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
-            //puzzleDoor.OpenDoorCount += 1;
+            puzzleDoor.KeyCount ++;
+            Debug.Log("추가됨 " + puzzleDoor.KeyCount);
             IsMoveDown = true;
             MoveDown();
         }
     }
-
     private void OnTriggerStay(Collider other) 
     {
         if(other.gameObject.layer == 6 ||  other.gameObject.layer == 8)
@@ -41,7 +41,8 @@ public class PuzzleTrigger : MonoBehaviour
         if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
-            //puzzleDoor.OpenDoorCount -= 1;  
+            puzzleDoor.KeyCount --;  
+            Debug.Log("빠짐 " + puzzleDoor.KeyCount);
             IsMoveDown = false;
             MoveDown();
         }
@@ -52,12 +53,12 @@ public class PuzzleTrigger : MonoBehaviour
         Vector3 newPosition = transform.position - Vector3.up * speed * Time.deltaTime;
         if(IsMoveDown)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition - UnderLocal,newPosition.y), 
+            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition + UnderLocal,newPosition.y), 
             transform.position.z);
         }
         else
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition + UnderLocal, newPosition.y), 
+            transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition - UnderLocal, newPosition.y), 
             transform.position.z);
         }
 
