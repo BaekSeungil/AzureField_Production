@@ -41,12 +41,12 @@ MonoBehaviour:
     Downsample: 1
     AfterOpaque: 1
     Source: 1
-    NormalSamples: 1
-    Intensity: 0.25
+    NormalSamples: 2
+    Intensity: 0.2
     DirectLightingStrength: 0.25
-    Radius: 0.35
-    Samples: 1
-    BlurQuality: 1
+    Radius: 0.2
+    Samples: 0
+    BlurQuality: 2
     Falloff: 100
     SampleCount: -1
   m_BlueNoise256Textures:
@@ -118,8 +118,8 @@ MonoBehaviour:
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 1
-  m_DepthPrimingMode: 1
-  m_CopyDepthMode: 0
+  m_DepthPrimingMode: 2
+  m_CopyDepthMode: 1
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
 --- !u!114 &1398414563853004887
@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d613f08f173d4dd895bb07b3230baa9, type: 3}
-  m_Name: FullScreenPassRendererFeature
+  m_Name: CustomFog
   m_EditorClassIdentifier: 
   m_Active: 1
   injectionPoint: 600

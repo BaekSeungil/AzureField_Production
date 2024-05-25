@@ -1,5 +1,78 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &949733038585303941
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8473948440742550994}
+  - component: {fileID: 4842526718607669244}
+  m_Layer: 0
+  m_Name: BindFromSequence
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8473948440742550994
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949733038585303941}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5357016282118697668}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4842526718607669244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949733038585303941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28a7b78e74834b41bb683bf1deae05d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: eventBindings
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[UnityEngine.Events.UnityEvent,
+        UnityEngine.CoreModule]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
 --- !u!1 &1015013893963587667
 GameObject:
   m_ObjectHideFlags: 0
@@ -56,7 +129,6 @@ MonoBehaviour:
     - Name: inventoryData
       Entry: 6
       Data: 
-  debug_static_objcect: 
   money: 0
 --- !u!1 &1854832126883220474
 GameObject:
@@ -111,7 +183,6 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  debug_static_objcect: 
   speedLineMaterial: {fileID: 2100000, guid: 5f20e4983dc62a64cbf4f879cd49d23f, type: 2}
 --- !u!1 &3065520654943711449
 GameObject:
@@ -166,27 +237,26 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  debug_static_objcect: GlobalOceanManager
   ReferencingMaterials:
-  - {fileID: 2100000, guid: fe7eed72c9481bb4cb2301770721d4b4, type: 2}
-  defaultOceanProfile: {fileID: 11400000, guid: f746c12690da5284780d1d9562e9ba2e,
+  - {fileID: 2100000, guid: e6d27f1efe00f4d418b9832a0ce39542, type: 2}
+  defaultOceanProfile: {fileID: 11400000, guid: 763df182391147541a1e380b4dbd8dac,
     type: 2}
   islandregionIntensityFactor: 1
   rotation: 0
   depth: 50
   phase: 0
   gravity: 1
-  oceanEmmision: {r: 0, g: 0.23026323, b: 0.6603774, a: 1}
-  oceanTipEmmision: {r: 0, g: 0.7088351, b: 1, a: 0}
-  intensity: 1
-  Wave1_Vector: {x: 0.2, y: 0, z: 0.1}
+  oceanEmmision: {r: 0, g: 0.40392157, b: 1, a: 1}
+  oceanTipEmmision: {r: 0, g: 0.6999998, b: 1, a: 0}
+  intensity: 0.1
+  Wave1_Vector: {x: 0.5, y: 0, z: 0.1}
   Wave1_Amplitude: 1
   Wave1_Gravity: 1
-  Wave2_Vector: {x: 0.3, y: 0, z: -0.01}
+  Wave2_Vector: {x: 0, y: 0, z: 0.3}
   Wave2_Amplitude: 0.2
   Wave2_Gravity: 1
-  Wave3_Vector: {x: 0.4, y: 0, z: 0}
-  Wave3_Amplitude: 0.21
+  Wave3_Vector: {x: 0.3, y: 0, z: 0}
+  Wave3_Amplitude: 0.2
   Wave3_Gravity: 1
   Wave4_Vector: {x: 0.01, y: 0, z: 0.01}
   Wave4_Amplitude: 0
@@ -228,6 +298,7 @@ Transform:
   - {fileID: 2133899150875136363}
   - {fileID: 5153891880802920984}
   - {fileID: 1527392707313168767}
+  - {fileID: 8473948440742550994}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5112255907539919439
@@ -286,7 +357,6 @@ MonoBehaviour:
     - Name: data
       Entry: 6
       Data: 
-  debug_static_objcect: 
   settingsAsset: {fileID: 11400000, guid: 07275d97154586a4aa945e4b684dc1b2, type: 2}
 --- !u!1 &5976398368757992072
 GameObject:
@@ -391,7 +461,6 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  debug_static_objcect: 
   storylineStashAsset: {fileID: 11400000, guid: 51f103a256492974884f2d75342ab78c,
     type: 2}
   sound_questUpdate:
@@ -401,8 +470,8 @@ MonoBehaviour:
       Data3: 1882520198
       Data4: 1152095469
     Path: event:/UI/Positive
-  InvokeDefaultOnStart: 1
-  defaultStorylineID: LAB_GB_01
+  InvokeDefaultOnStart: 0
+  defaultStorylineID: 
   debug_active_storyline: 
   debug_objective_index: 0
 --- !u!1 &8299926666524005979
@@ -458,8 +527,10 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
-  debug_static_objcect: 
+    SerializationNodes:
+    - Name: sequenceQueue
+      Entry: 6
+      Data: 
 --- !u!320 &7031646230722347758
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -546,5 +617,4 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  debug_static_objcect: 
   cursorState: 0

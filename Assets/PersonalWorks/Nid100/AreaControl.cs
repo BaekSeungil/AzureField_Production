@@ -53,7 +53,7 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
     {
         recentLand = landName;
         respawnTransgorm = spawnTransform;
-        Debug.Log(recentLand);
+        //Debug.Log(recentLand);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
         else if (countDownTimer >= -countDownOverTimer)
         {
             countDownTimer -= Time.deltaTime;
-            player.DisableControlls();
+            player.DisableControls();
             player.SailboatQuit();
 
             Debug.Log("캐릭터 이동정지 및 조각배 강제 하차");
