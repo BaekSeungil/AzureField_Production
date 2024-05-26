@@ -21,6 +21,7 @@ public class UI_RegionEnter : StaticSerializedMonoBehaviour<UI_RegionEnter>
 
     public void OnRegionEnter(LocalizedString regionName)
     {
+        Debug.Log("regionEnter");
         visualGroup.SetActive(true);
         regionText.text = regionName.GetLocalizedString();
         animation.Play();

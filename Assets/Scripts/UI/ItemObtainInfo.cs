@@ -15,10 +15,16 @@ public class ItemObtainInfo : StaticSerializedMonoBehaviour<ItemObtainInfo>
     [SerializeField] private TextMeshProUGUI itemDescriptionText;
     [SerializeField] private TextMeshProUGUI quantityText;
 
+    MainPlayerInputActions input;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        input = UI_InputManager.Instance.UI_Input;
+    }
+
     public IEnumerator Cor_OpenWindow(ItemData item, int quantity = 1)
     {
-        MainPlayerInputActions input = UI_InputManager.Instance.UI_Input;
-        input.Enable();
         RuntimeManager.PlayOneShot(sound_obtainSound);
 
         visualGroup.SetActive(true);
@@ -33,9 +39,6 @@ public class ItemObtainInfo : StaticSerializedMonoBehaviour<ItemObtainInfo>
         yield return new WaitForSecondsRealtime(2.0f);
 
         yield return new WaitUntil(() => input.UI.Positive.IsPressed());
-
-        input.Disable();
-        input.Dispose();
 
         visualGroup.SetActive(false);
     }
