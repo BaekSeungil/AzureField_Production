@@ -10,6 +10,7 @@ public class PuzzleTrigger : MonoBehaviour
     [SerializeField,LabelText("오브젝트 지정")] public  PuzzleDoor puzzleDoor;
     private float initialYPosition;
 
+    private bool Callaction = false;
     private bool IsMoveDown;
    private void Awake() 
    {
@@ -18,34 +19,41 @@ public class PuzzleTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        if(!Callaction && (other.gameObject.layer == 6 ||  other.gameObject.layer == 8))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             puzzleDoor.KeyCount ++;
-            Debug.Log("추가됨 " + puzzleDoor.KeyCount);
-            IsMoveDown = true;
-            MoveDown();
+            Callaction = true;
+
         }
+        IsMoveDown = true;
+        MoveDown();
     }
     private void OnTriggerStay(Collider other) 
     {
-        if(other.gameObject.layer == 6 ||  other.gameObject.layer == 8)
+        if(!Callaction && (other.gameObject.layer == 6 ||  other.gameObject.layer == 8))
         {
-            IsMoveDown = true;
-            MoveDown();
+            puzzleDoor = FindObjectOfType<PuzzleDoor>();
+            puzzleDoor.KeyCount++;
+            Callaction = true;
         }
+        IsMoveDown = true;
+        MoveDown();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        if(Callaction && (other.gameObject.layer == 6 || other.gameObject.layer == 8))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
-            puzzleDoor.KeyCount --;  
             Debug.Log("빠짐 " + puzzleDoor.KeyCount);
             IsMoveDown = false;
+            puzzleDoor.KeyCount --;
             MoveDown();
+            Callaction = false;
         }
+        IsMoveDown = false;
+        MoveDown();
     }
 
     private void MoveDown()
