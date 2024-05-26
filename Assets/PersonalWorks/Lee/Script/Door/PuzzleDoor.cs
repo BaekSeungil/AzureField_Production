@@ -36,7 +36,7 @@ public class PuzzleDoor : Interactable_Base
         if(Opendoor)
         {
             Debug.Log("작동시작");
-            
+            if (eventsOnStartInteract != null)
             eventsOnStartInteract.Invoke();
 
             if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }

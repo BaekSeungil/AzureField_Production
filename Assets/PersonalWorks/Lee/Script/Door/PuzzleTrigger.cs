@@ -10,6 +10,7 @@ public class PuzzleTrigger : MonoBehaviour
     [SerializeField,LabelText("오브젝트 지정")] public  PuzzleDoor puzzleDoor;
     private float initialYPosition;
 
+    private bool Callaction = false;
     private bool IsMoveDown;
    private void Awake() 
    {
@@ -18,34 +19,40 @@ public class PuzzleTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        if(!Callaction && (other.gameObject.layer == 6 ||  other.gameObject.layer == 8))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             puzzleDoor.KeyCount ++;
-            Debug.Log("추가됨 " + puzzleDoor.KeyCount);
+            Callaction = true;
             IsMoveDown = true;
-            MoveDown();
         }
+        MoveDown();
     }
+
     private void OnTriggerStay(Collider other) 
     {
-        if(other.gameObject.layer == 6 ||  other.gameObject.layer == 8)
+        if(!Callaction && (other.gameObject.layer == 6 ||  other.gameObject.layer == 8))
         {
+            puzzleDoor = FindObjectOfType<PuzzleDoor>();
+            puzzleDoor.KeyCount++;
+            Callaction = true;
             IsMoveDown = true;
-            MoveDown();
         }
+        MoveDown();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.layer == 6 || other.gameObject.layer == 8)
+        if(Callaction && (other.gameObject.layer == 6||  other.gameObject.layer == 8))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
-            puzzleDoor.KeyCount --;  
             Debug.Log("빠짐 " + puzzleDoor.KeyCount);
+            puzzleDoor.KeyCount --;
+            Callaction = false;
             IsMoveDown = false;
             MoveDown();
         }
+
     }
 
     private void MoveDown()
@@ -56,7 +63,7 @@ public class PuzzleTrigger : MonoBehaviour
             transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition + UnderLocal,newPosition.y), 
             transform.position.z);
         }
-        else
+        else if(!IsMoveDown)
         {
             transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition - UnderLocal, newPosition.y), 
             transform.position.z);
