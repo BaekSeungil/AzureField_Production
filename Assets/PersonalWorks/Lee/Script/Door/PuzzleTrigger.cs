@@ -43,7 +43,7 @@ public class PuzzleTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if(Callaction && (other.gameObject.layer == 6))
+        if(Callaction && (other.gameObject.layer == 6||  other.gameObject.layer == 8))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             Debug.Log("빠짐 " + puzzleDoor.KeyCount);
