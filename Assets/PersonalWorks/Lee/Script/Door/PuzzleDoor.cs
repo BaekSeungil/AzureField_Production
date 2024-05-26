@@ -17,27 +17,17 @@ public class PuzzleDoor : Interactable_Base
     [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
 
     [Header("퍼즐문 이벤트 설정")]
-    [SerializeField,LabelText("문을여는 열쇠 갯수")] public int OpenDoorCount;
+    [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int OpenDoorCount;
     [SerializeField,LabelText("열쇠의 갯수")] public int KeyCount;
-    [SerializeField,LabelText("문이 열리는가의 여부")]public bool Opendoor = false;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+    private bool Opendoor = false;
+ 
     // Update is called once per frame
     void Update()
-    {
-        
-    }
-
-    //문을 여는 코드
-    private void OpenMoveToTrans()
     {
         if(KeyCount == OpenDoorCount)
         {
             Opendoor = true;
+            Interact();
         }
     }
 
@@ -45,7 +35,8 @@ public class PuzzleDoor : Interactable_Base
     {
         if(Opendoor)
         {
-            if (eventsOnStartInteract != null)
+            Debug.Log("작동시작");
+            
             eventsOnStartInteract.Invoke();
 
             if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
