@@ -11,7 +11,7 @@ public class BindFromSequences : StaticSerializedMonoBehaviour<BindFromSequences
     {
         if(eventBindings != null)
         {
-            if (eventBindings.ContainsKey(Key)) { Debug.LogWarning("BindFromSequences" + Key + " 를 찾을 수 없었습니다."); return; } 
+            if (!eventBindings.ContainsKey(Key)) { Debug.LogWarning("BindFromSequences : " + Key + " 를 찾을 수 없었습니다."); return; } 
             eventBindings[Key].Invoke();
         }
     }

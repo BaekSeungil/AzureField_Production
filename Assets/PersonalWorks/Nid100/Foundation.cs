@@ -13,7 +13,7 @@ public class Foundation : MonoBehaviour
 
     public bool[] switchOnOff;
     private int switchCheck=0;
-    private bool moveCheck=false;
+    public bool moveCheck=false;
     
 
     private void Start()
@@ -32,7 +32,10 @@ public class Foundation : MonoBehaviour
             moveCheck = false;
 
         }
-
+        if (switchCheck == switchOnOff.Length)
+        {
+            moveCheck = true;
+        }
         if (moveCheck == true)
         {
             MoveTargetMove();
@@ -40,37 +43,18 @@ public class Foundation : MonoBehaviour
         
     }
 
-    private bool orderCheck=true;
+    
     public void SwitchOn(int num)
     {
         switchOnOff[num]= true;
 
-        if (orderSystem == false)
+        if (orderSystem == true)
         {
-            for (int i = 0; i < switchOnOff.Length; i++)
+            if (switchOnOff[num - 1] == true)
             {
-                if (switchOnOff[i] == true)
+                for (int i = 0; i < switchOnOff.Length; i++)
                 {
-                    switchCheck++;
-                    if (switchCheck == switchOnOff.Length)
-                    {
-                        moveCheck = true;
-                    }
-                }
-            }
-        }
-        else if (orderSystem == true)
-        {
-            for (int i = 0; i < switchOnOff.Length; i++)
-            {
-                if (switchOnOff[i] == true)
-                {
-                    if (switchOnOff[i - 1] == false)
-                    {
-                        SwitchOff();
-                        break;
-                    }
-                    else
+                    if (switchOnOff[i] == true)
                     {
                         switchCheck++;
                         if (switchCheck == switchOnOff.Length)
@@ -78,10 +62,35 @@ public class Foundation : MonoBehaviour
                             moveCheck = true;
                         }
                     }
-                    
+                }
+            }
+            else 
+            {
+                SwitchOff();
+            }
+        }
+
+        if (orderSystem == false)
+        {
+            for (int i = 0; i < switchOnOff.Length; i++)
+            {
+                
+                if (switchOnOff[i] == true)
+                {
+                    switchCheck++;
+                    if (switchCheck == switchOnOff.Length)
+                    {
+                        moveCheck = true;
+                    }
+
                 }
             }
         }
+
+
+
+        
+
         switchCheck = 0;
 
     }
@@ -96,8 +105,9 @@ public class Foundation : MonoBehaviour
 
     private void MoveTargetMove()
     {
-        moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed);
-
-     
+        moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed * Time.deltaTime);
     }
+
+
 }
+
