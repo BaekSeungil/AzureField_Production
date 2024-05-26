@@ -91,14 +91,16 @@ public class Sequence_DialogueBranch : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
+        if (branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
 
         Debug.Log(sequenceAssets[index]);
 
-        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+        if (sequenceAssets[index] != null)
+            yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+
     }
 }
 
