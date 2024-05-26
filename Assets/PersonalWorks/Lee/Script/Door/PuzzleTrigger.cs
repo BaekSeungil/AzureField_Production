@@ -24,11 +24,11 @@ public class PuzzleTrigger : MonoBehaviour
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             puzzleDoor.KeyCount ++;
             Callaction = true;
-
+            IsMoveDown = true;
         }
-        IsMoveDown = true;
         MoveDown();
     }
+
     private void OnTriggerStay(Collider other) 
     {
         if(!Callaction && (other.gameObject.layer == 6 ||  other.gameObject.layer == 8))
@@ -36,24 +36,23 @@ public class PuzzleTrigger : MonoBehaviour
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             puzzleDoor.KeyCount++;
             Callaction = true;
+            IsMoveDown = true;
         }
-        IsMoveDown = true;
         MoveDown();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(Callaction && (other.gameObject.layer == 6 || other.gameObject.layer == 8))
+        if(Callaction && (other.gameObject.layer == 6))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             Debug.Log("빠짐 " + puzzleDoor.KeyCount);
-            IsMoveDown = false;
             puzzleDoor.KeyCount --;
-            MoveDown();
             Callaction = false;
+            IsMoveDown = false;
+            MoveDown();
         }
-        IsMoveDown = false;
-        MoveDown();
+
     }
 
     private void MoveDown()
@@ -64,7 +63,7 @@ public class PuzzleTrigger : MonoBehaviour
             transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition + UnderLocal,newPosition.y), 
             transform.position.z);
         }
-        else
+        else if(!IsMoveDown)
         {
             transform.position = new Vector3(transform.position.x, Mathf.Max(initialYPosition - UnderLocal, newPosition.y), 
             transform.position.z);
