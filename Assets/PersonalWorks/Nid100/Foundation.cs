@@ -9,9 +9,11 @@ public class Foundation : MonoBehaviour
     [SerializeField] private Transform targetPoint;
     [SerializeField] private float speed;
 
+    public bool orderSystem = false;
+
     public bool[] switchOnOff;
     private int switchCheck=0;
-    private bool moveCheck=false;
+    public bool moveCheck=false;
     
 
     private void Start()
@@ -30,7 +32,10 @@ public class Foundation : MonoBehaviour
             moveCheck = false;
 
         }
-
+        if (switchCheck == switchOnOff.Length)
+        {
+            moveCheck = true;
+        }
         if (moveCheck == true)
         {
             MoveTargetMove();
@@ -38,35 +43,71 @@ public class Foundation : MonoBehaviour
         
     }
 
-
+    
     public void SwitchOn(int num)
     {
         switchOnOff[num]= true;
 
-        for (int i = 0; i < switchOnOff.Length; i++)
+        if (orderSystem == true)
         {
-            if (switchOnOff[i] == true)
+            if (switchOnOff[num - 1] == true)
             {
-                switchCheck++;
-                if (switchCheck == switchOnOff.Length) 
+                for (int i = 0; i < switchOnOff.Length; i++)
                 {
-                    moveCheck = true;
+                    if (switchOnOff[i] == true)
+                    {
+                        switchCheck++;
+                        if (switchCheck == switchOnOff.Length)
+                        {
+                            moveCheck = true;
+                        }
+                    }
+                }
+            }
+            else 
+            {
+                SwitchOff();
+            }
+        }
+
+        if (orderSystem == false)
+        {
+            for (int i = 0; i < switchOnOff.Length; i++)
+            {
+                
+                if (switchOnOff[i] == true)
+                {
+                    switchCheck++;
+                    if (switchCheck == switchOnOff.Length)
+                    {
+                        moveCheck = true;
+                    }
+
                 }
             }
         }
+
+
+
+        
+
         switchCheck = 0;
 
     }
 
     public void SwitchOff()
     {
-        
+        for (int i = 0; i < switchOnOff.Length; i++)
+        {
+            switchOnOff[i] = false;
+        }
     }
 
     private void MoveTargetMove()
     {
-        moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed);
-
-     
+        moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed * Time.deltaTime);
     }
+
+
 }
+
