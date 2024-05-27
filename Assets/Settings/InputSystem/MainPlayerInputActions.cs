@@ -370,6 +370,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""71064dca-4d0e-408c-bfe3-c35e9593190b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""3e35a4b3-6605-4032-b301-08f1be4b3b60"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
