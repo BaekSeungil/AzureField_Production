@@ -6,6 +6,7 @@ public class DropItemCrash : MonoBehaviour
 {
     [SerializeField] private GameObject DropItem;
     [SerializeField] private MeshRenderer DropItemRenderer;
+    [SerializeField] private ParticleSystem eff;
     [SerializeField] private PlayerCore player;
     [SerializeField] private float addChallengeTime = 0f;                                  // 순풍의 도전 추가시간
     [SerializeField] private float addMoveSpeed = 0f;                               // 추가이동 속도
@@ -20,6 +21,7 @@ public class DropItemCrash : MonoBehaviour
 
     void Start()
     {
+        eff.Play();
         player = PlayerCore.Instance;
     }
 
@@ -54,7 +56,7 @@ public class DropItemCrash : MonoBehaviour
             //Debug.Log("아이템 충돌2");
             if (itemActive == true)
             {
-
+                eff.Stop();
                 StartCoroutine(CrashEvent());
                 itemActive = false;
             }
