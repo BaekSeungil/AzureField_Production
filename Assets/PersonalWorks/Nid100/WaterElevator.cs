@@ -10,6 +10,12 @@ public class WaterElevator : MonoBehaviour
 
     private bool goingUp = true; // 현재 엘리베이터가 위로 이동 중인지 여부
     private Vector3 initialScale; // 초기 스케일 값
+
+    [SerializeField] private PlayerCore player;
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private float moveSpeed = 9.8f;
+    [SerializeField] private Transform targetPosition;
+
     [SerializeField] private GameObject WaterCollider;
     [SerializeField] private ParticleSystem waterStart;
     [SerializeField] private ParticleSystem waterIdle;
@@ -17,12 +23,16 @@ public class WaterElevator : MonoBehaviour
 
     private void Start()
     {
+        player = PlayerCore.Instance;
+        playerTransform = PlayerCore.Instance.transform;
         initialScale = transform.localScale;
         waterStart.Stop();
         waterIdle.Stop();
         waterEnd.Stop();
     }
 
+
+    private bool targetMoveOnOff = false;
     private void Update()
     {
         // 스케일 값 변경
@@ -34,11 +44,33 @@ public class WaterElevator : MonoBehaviour
             if (newScale >= maxScale || newScale <= minScale)
             {
                 goingUp = !goingUp;
+                if (newScale >= maxScale)
+                {
+                    targetMoveOnOff = true;
+                }
                 OnOff = false;
             }
         }
+        if (targetMoveOnOff == true)
+        {
+                if (Vector3.Distance(playerTransform.position, targetPosition.position) <= 1.0f)
+                {
+                    targetMoveOnOff = false;
+                }
+                TargetMove();
+        }
 
-        
+
+    }
+
+
+    //private Vector3 velocity;
+    private void TargetMove() 
+    {
+            float step = moveSpeed * Time.deltaTime;
+            Vector3 newPosition = Vector3.MoveTowards(playerTransform.position, targetPosition.position, step);
+            //newPosition.y = playerTransform.position.y; // y축 이동 방지
+            playerTransform.position = newPosition;
     }
 
 
