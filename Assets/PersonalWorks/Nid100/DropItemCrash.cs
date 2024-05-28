@@ -70,6 +70,11 @@ public class DropItemCrash : MonoBehaviour
         itemActive = true;
         eff.Play();
     }
+    public void ReEnd()
+    {
+        itemActive = false;
+        eff.Stop();
+    }
 
 }
 
