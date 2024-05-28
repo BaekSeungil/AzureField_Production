@@ -41,6 +41,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
         displayImage = UI_DisplayImage.Instance;
+        bindFromSequences = BindFromSequences.Instance;
 
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();
@@ -69,6 +70,10 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         StartCoroutine(Cor_StartSequenceQueue());
     }
 
+    public void StartSequence(SequenceBundleAsset sequenceBundleAsset)
+    {
+        StartSequence(sequenceBundleAsset.SequenceBundles);
+    }
     public void StartSequence(Sequence_Base[] sequenceChain)
     {
         if (sequenceRunning) {

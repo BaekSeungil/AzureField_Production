@@ -61,7 +61,7 @@ public class IslandArea : MonoBehaviour
     }
 
     private float enterInterval = 10f;
-    private float enterTimer = 0f;
+    private float enterTimer = 1000f;
 
     private void Update()
     {
@@ -145,8 +145,8 @@ public class IslandArea : MonoBehaviour
     private bool EnterUIFilter()
     {
         if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
-        if (enterTimer < enterInterval) { enterTimer = 0f; return false; }
-        return true;
+        if (enterTimer > enterInterval) { enterTimer = 0f; return true; }
+        else return false;
     }
 
     private void OnDrawGizmosSelected()

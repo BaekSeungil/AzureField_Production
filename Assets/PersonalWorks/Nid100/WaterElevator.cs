@@ -19,14 +19,25 @@ public class WaterElevator : MonoBehaviour
     private void Update()
     {
         // 스케일 값 변경
-        float scaleFactor = goingUp ? 1f : -1f;
-        float newScale = Mathf.Clamp(transform.localScale.y + Time.deltaTime * speed * scaleFactor, minScale, maxScale);
-        transform.localScale = new Vector3(initialScale.x, newScale, initialScale.z);
-
-        // 최대 또는 최소 스케일에 도달하면 방향을 변경
-        if (newScale >= maxScale || newScale <= minScale)
+        if (OnOff == true)
         {
-            goingUp = !goingUp;
+            float scaleFactor = goingUp ? 1f : -1f;
+            float newScale = Mathf.Clamp(transform.localScale.y + Time.deltaTime * speed * scaleFactor, minScale, maxScale);
+            transform.localScale = new Vector3(initialScale.x, newScale, initialScale.z);
+            if (newScale >= maxScale || newScale <= minScale)
+            {
+                goingUp = !goingUp;
+                OnOff = false;
+            }
         }
+
+        
+    }
+
+
+    private bool OnOff = false;
+    public void BtnOn()
+    {
+        OnOff = true;
     }
 }

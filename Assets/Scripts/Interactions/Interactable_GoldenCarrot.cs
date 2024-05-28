@@ -33,8 +33,6 @@ public class Interactable_GoldenCarrot : Interactable_Base
     {
         GetComponent<DOTweenAnimation>().DOPause();
 
-        Debug.Log("Carrot");
-
         if (!floating)
         {
             carrotAquiredSequences = new Sequence_Base[5];
