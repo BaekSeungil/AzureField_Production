@@ -127,6 +127,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
     #endregion
 
 
@@ -455,7 +458,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" + ID);
     }
-
 
     #endregion
 
@@ -1450,6 +1452,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     bool holdItemCoroutineFlag = false;
+
+    public void EnableIsamel()
+    {
+        IsmaelSpiritObject.SetActive(true);
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", true);
+        SetInterestPoint(IsmaelSpiritLookTarget);
+    }
+    public void DisableIsmael()
+    {
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", false);
+        SetInterestPoint(null);
+        Invoke("DisableIsmaelDelayed", 1.0f);
+    }
+
+    private void DisableIsmaelDelayed()
+    {
+        IsmaelSpiritObject.SetActive(false);
+    }
 
 /// <summary>
 ///     //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
