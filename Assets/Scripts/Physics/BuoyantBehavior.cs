@@ -18,6 +18,7 @@ public class BuoyantBehavior : MonoBehaviour
 {
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
+    [SerializeField] float submergeOffset = 0f;
 
     [SerializeField, ReadOnly] private float submergeRate = 0.0f;
     public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
@@ -54,11 +55,12 @@ public class BuoyantBehavior : MonoBehaviour
         RaycastHit hitWater;
         if (Physics.Raycast(transform.position + Vector3.up * 5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
         {
+            waterDetected = true;
             float distance = 0;
-            distance = transform.position.y - hitWater.point.y;
+            distance = transform.position.y - hitWater.point.y + submergeOffset;
             submergeRate = distance;
         }
-        if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
+        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
             waterDetected = true;
@@ -80,11 +82,6 @@ public class BuoyantBehavior : MonoBehaviour
             average /= submerged.Length;
             submergeRate = average;
         }
-        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask) ||
-            Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask))
-        {
-            waterDetected = true;
-        }
         else
         {
             submergeRate = float.PositiveInfinity;
@@ -97,14 +94,14 @@ public class BuoyantBehavior : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer == 4)
-        {
-            float distance = 0;
-            distance = other.bounds.max.y - transform.position.y;       
+        //if (other.gameObject.layer == 4)
+        //{
+        //    float distance = 0;
+        //    distance = other.bounds.max.y - transform.position.y;       
 
-            submergeRate = -Mathf.Clamp(distance,0f,5f);
-            rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
-        }   
+        //    submergeRate = -Mathf.Clamp(distance,0f,5f);
+        //    rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
+        //}   
     }
 }
 

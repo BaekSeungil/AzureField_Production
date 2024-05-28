@@ -1687,15 +1687,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
                         break;
                 }
-           
-                if(buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
-                }
-                else if(buoyant.SubmergeRate <= 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
-                }
+            }
+            else
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+            }
+
+            if (buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+            }
+            else if (buoyant.SubmergeRate <= 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
             }
 
             sound.Play();
