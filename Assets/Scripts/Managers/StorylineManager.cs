@@ -62,6 +62,16 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     /// <param name="stroylineID"></param>
     /// <param name="index"></param>
     /// <returns></returns>
+    /// 
+
+    public void StartNewStoryline(string stroylineID)
+    {
+        if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return; }
+
+        StartCoroutine(StartNewStroyline(stroylineID, 0));
+        return;
+    }
+
     public bool StartNewStoryline(string stroylineID, int index = 0)
     {
         if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return false; }
