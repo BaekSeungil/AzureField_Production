@@ -4,72 +4,98 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using System;
 
 public class GrapicOption : MonoBehaviour
-{   
-   [SerializeField] List<RenderPipelineAsset> RenderPipeLine;
-   [SerializeField] TMP_Dropdown Dropdown;       // 그래픽 설정 DropDown;
-   [SerializeField] TMP_Dropdown resolutionDropDown; //해상도 DropDow
-   [SerializeField] Toggle fullButton;
-   List<Resolution> resolutions = new List<Resolution>();
+{
+    [SerializeField] List<RenderPipelineAsset> RenderPipeLine;
+    [SerializeField] TMP_Dropdown screenmodeDropdown;
+    [SerializeField] TMP_Dropdown RpDropdown;       // 그래픽 설정 DropDown;
+    [SerializeField] TMP_Dropdown resolutionDropDown; //해상도 DropDow
+    List<Resolution> resolutions = new List<Resolution>();
 
-   FullScreenMode screenMode;
+    FullScreenMode screenMode;
 
-   int resolutionNum;
-   private void Start() 
-   {
-      ViewUI();
-   }
-   public void SetPipeLine(int value)
-   {
-      QualitySettings.SetQualityLevel(value);
-      QualitySettings.renderPipeline = RenderPipeLine[value];
-   }
+    int resolutionNum;
 
-   void ViewUI()
-   {
-      //주시율 60HZ제한
-      // for(int i = 0; i<Screen.resolutions.Length; i++)
-      // {
-      //    if(Screen.resolutions[i].refreshRate == 60)
-      //    {
-      //       resolutions.Add(Screen.resolutions[i]);
-      //    }
-      // }
-      resolutions.AddRange(Screen.resolutions);
-      resolutionDropDown.options.Clear();
-      int optionNum = 0;
-      foreach(Resolution item in resolutions)
-      {
-         TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData();
-         option.text = item.width + " X " + item.height;
-         resolutionDropDown.options.Add(option);
+    private void OnEnable()
+    {
+        ViewUI();
 
-         if(item.width == Screen.width && item.height == Screen.height)
-         {
-            resolutionDropDown.value = optionNum;
-         }
-         optionNum++;
-      }
+        if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen)
+            screenmodeDropdown.value = 0;
+        else if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
+            screenmodeDropdown.value = 1;
+        else if (Screen.fullScreenMode == FullScreenMode.Windowed)
+            screenmodeDropdown.value = 2;
 
-      resolutionDropDown.RefreshShownValue();
-      fullButton.isOn = Screen.fullScreenMode.Equals
-      (FullScreenMode.FullScreenWindow) ? true:false;
-   }
+        resolutionDropDown.value = Array.FindIndex<Resolution>(Screen.resolutions, res => (res.width == Screen.currentResolution.width) && (res.height == Screen.currentResolution.height));
 
-   public void DropDownChange(int X)
-   {
-      resolutionNum = X;
-   }
+        RpDropdown.value = QualitySettings.GetQualityLevel();
+    }
 
-   public void FullScreenBool(bool isFull)
-   {
-      screenMode = isFull ? FullScreenMode.FullScreenWindow :
-      FullScreenMode.Windowed;
-   }
-   public void okBoolClick()
-   {
-      Screen.SetResolution(resolutions[resolutionNum].width,
-      resolutions[resolutionNum].height,screenMode);
-   }
+    public void SetPipeLine(int value)
+    {
+        QualitySettings.SetQualityLevel(value);
+        QualitySettings.renderPipeline = RenderPipeLine[value];
+    }
+
+    void ViewUI()
+    {
+        //주시율 60HZ제한
+        // for(int i = 0; i<Screen.resolutions.Length; i++)
+        // {
+        //    if(Screen.resolutions[i].refreshRate == 60)
+        //    {
+        //       resolutions.Add(Screen.resolutions[i]);
+        //    }
+        // }
+        resolutions.Clear();
+        resolutions.AddRange(Screen.resolutions);
+        resolutionDropDown.options.Clear();
+        int optionNum = 0;
+        foreach (Resolution item in resolutions)
+        {
+            TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData();
+            option.text = item.width + " X " + item.height;
+            resolutionDropDown.options.Add(option);
+
+            if (item.width == Screen.width && item.height == Screen.height)
+            {
+                resolutionDropDown.value = optionNum;
+            }
+            optionNum++;
+        }
+
+        resolutionDropDown.RefreshShownValue();
+    }
+
+    public void CangeResolution(int index)
+    {
+        Screen.SetResolution(Screen.resolutions[index].width, Screen.resolutions[index].height,Screen.fullScreenMode);
+    }
+
+    public void ChangeScreenmode(int index)
+    {
+        if(index == 0)
+        {
+#if PLATFORM_STANDALONE_WIN
+            Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+#endif
+        }
+        else if(index == 1)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        }
+        else if(index == 2)
+        {
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+        }
+    }
+
+    public void okBoolClick()
+    {
+        Screen.SetResolution(resolutions[resolutionNum].width,
+        resolutions[resolutionNum].height, screenMode);
+    }
 }
