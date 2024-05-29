@@ -435,3 +435,14 @@ public class Sequence_PlayOtherSequence : Sequence_Base
         yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceBundle.SequenceBundles));
     }
 }
+
+public class Sequence_StorylineProgress : Sequence_Base
+{
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.MakeProgressStoryline(storyline);
+        yield return null;
+    }
+}
