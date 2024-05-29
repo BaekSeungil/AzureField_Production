@@ -161,8 +161,8 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
     {
         if (pathway == null || pathway.Length < 2) return;
 
-            pathway[0].position = transform.position;
-            transform.position = pathway[0].position;
+            //pathway[0].position = transform.position;
+            //transform.position = pathway[0].position;
 
             Gizmos.color = Color.yellow;
 
