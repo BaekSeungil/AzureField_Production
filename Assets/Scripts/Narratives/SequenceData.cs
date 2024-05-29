@@ -425,3 +425,24 @@ public class Sequence_ToggleIsmael : Sequence_Base
         yield return new WaitForSeconds(0.5f);
     }
 }
+
+public class Sequence_PlayOtherSequence : Sequence_Base
+{
+    public SequenceBundleAsset sequenceBundle;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceBundle.SequenceBundles));
+    }
+}
+
+public class Sequence_StorylineProgress : Sequence_Base
+{
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.MakeProgressStoryline(storyline);
+        yield return null;
+    }
+}

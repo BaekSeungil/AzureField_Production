@@ -33,7 +33,7 @@ public class UI_Tutorials : StaticSerializedMonoBehaviour<UI_Tutorials>
 
     public void OpenTutorial(string tutorialKey)
     {
-        if (tutorialKeyQueue.Count != 0)
+        if (tutorialKeyQueue.Count == 0)
             StartCoroutine(Cor_OpenTutorial(tutorialKey));
         else
         {
