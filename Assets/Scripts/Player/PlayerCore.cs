@@ -937,37 +937,37 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             Vector3 lookTransformedVector;
             //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
 
-            if (input.x != 0)
+            //if (input.x != 0)
+            //{
+            //    if (player.boosterActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
+            //    }
+            //    if (player.DriftActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
+            //    }
+            //    else
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
+            //    }
+            //}
+            //else
+            //{
+            if (player.boosterActive)
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
-                }
-                else
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-                }
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
+            }
+            if (player.DriftActive)
+            {
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
             }
             else
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
-                }
-                else
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
-                }
-
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
             }
+
+            //}
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
@@ -978,7 +978,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
-                player.driftActive = true;
+                //player.driftActive = true;
                 driftDirection = new Vector3(player.input.Player.Move.ReadValue<Vector2>().x > 0 ? 1f : -1,0f,0f);
             }
 
@@ -1687,15 +1687,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
                         break;
                 }
-           
-                if(buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
-                }
-                else if(buoyant.SubmergeRate <= 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
-                }
+            }
+            else
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+            }
+
+            if (buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+            }
+            else if (buoyant.SubmergeRate <= 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
             }
 
             sound.Play();

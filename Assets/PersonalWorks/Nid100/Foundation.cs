@@ -27,7 +27,6 @@ public class Foundation : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(switchOnOff.Length);
         if (activationFlag) return;
 
 
