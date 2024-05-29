@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Foundation : MonoBehaviour
 {
@@ -8,65 +9,96 @@ public class Foundation : MonoBehaviour
     [SerializeField] private Transform moveTargetObj;
     [SerializeField] private Transform targetPoint;
     [SerializeField] private float speed;
+    [SerializeField] private UnityEvent onActivated;
+
+    public bool orderSystem = false;
 
     public bool[] switchOnOff;
-    private int switchCheck=0;
-    private bool moveCheck=false;
-    
+    public bool moveCheck=false;
+
+    bool activationFlag = false;
+
+    int currentOrder = 0;
 
     private void Start()
     {
         player = PlayerCore.Instance;
-
-
     }
 
     private void Update()
     {
-        Debug.Log(switchOnOff.Length);
+        if (activationFlag) return;
+
 
         if (moveTargetObj.position == targetPoint.position)
         {
             moveCheck = false;
 
         }
-
+        if (IsAllSwitchOn())
+        {
+            moveCheck = true;
+        }
         if (moveCheck == true)
         {
-            MoveTargetMove();
+            Debug.Log("Activated");
+            activationFlag = true;
+            onActivated.Invoke();
+            //MoveTargetMove();
         }
         
     }
 
-
+    
     public void SwitchOn(int num)
     {
+        if (activationFlag) return;
+
         switchOnOff[num]= true;
 
-        for (int i = 0; i < switchOnOff.Length; i++)
+        if (orderSystem == true)
         {
-            if (switchOnOff[i] == true)
+            if(currentOrder != num)
             {
-                switchCheck++;
-                if (switchCheck == switchOnOff.Length) 
+                for(int i = 0; i < switchOnOff.Length; i++)
                 {
-                    moveCheck = true;
+                    switchOnOff[i] = false;
                 }
+                currentOrder = 0;
+            }
+            else
+            {
+                currentOrder++;
             }
         }
-        switchCheck = 0;
 
+        if (IsAllSwitchOn())
+        {
+            moveCheck = true;
+
+        }
     }
 
-    public void SwitchOff()
+    public void SwitchOff(int index)
     {
-        
+         switchOnOff[index] = false;
     }
 
-    private void MoveTargetMove()
+    private bool IsAllSwitchOn()
     {
-        moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed);
+        for(int i = 0; i < switchOnOff.Length; i++)
+        {
+            if (!switchOnOff[i]) return false;
+        }
 
-     
+        return true;
     }
+
+    //private void MoveTargetMove()
+    //{
+    //    moveTargetObj.position = Vector3.MoveTowards(moveTargetObj.position, targetPoint.position, speed * Time.deltaTime);
+    //}
+
+
 }
+

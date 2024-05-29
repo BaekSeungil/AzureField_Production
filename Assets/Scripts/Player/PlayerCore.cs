@@ -127,6 +127,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
     #endregion
 
 
@@ -455,7 +458,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" + ID);
     }
-
 
     #endregion
 
@@ -935,37 +937,37 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             Vector3 lookTransformedVector;
             //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
 
-            if (input.x != 0)
+            //if (input.x != 0)
+            //{
+            //    if (player.boosterActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
+            //    }
+            //    if (player.DriftActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
+            //    }
+            //    else
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
+            //    }
+            //}
+            //else
+            //{
+            if (player.boosterActive)
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
-                }
-                else
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-                }
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
+            }
+            if (player.DriftActive)
+            {
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
             }
             else
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
-                }
-                else
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
-                }
-
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
             }
+
+            //}
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
@@ -973,9 +975,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         
         public override void OnUpdate(PlayerCore player)
         {
+
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
-                player.driftActive = true;
+                //player.driftActive = true;
                 driftDirection = new Vector3(player.input.Player.Move.ReadValue<Vector2>().x > 0 ? 1f : -1,0f,0f);
             }
 
@@ -1037,6 +1040,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 driftAngle = Mathf.Lerp(driftAngle, 0f, player.driftSteer);
             }
+
+            player.animator.SetFloat("Board_X", moveInput.x, 0.3f, Time.deltaTime);
+            player.animator.SetFloat("Board_Y", moveInput.y, 0.3f, Time.deltaTime);
 
             if (player.sailboat.SubmergeRate < player.leapupAvailHeight)
             {
@@ -1278,6 +1284,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.rBody.drag = player.initialRigidbodyDrag;
             player.animator.SetBool("Boarding", false);
             player.animator.SetFloat("BoardPropellingBlend", 0f);
+            player.animator.SetFloat("Board_X", 0f);
+            player.animator.SetFloat("Board_Y", 0f);
             player.driftSound.EventInstance.setParameterByName("Drift", 0f);
             UI_SailboatSkillInfo.Instance.ToggleInfo(false);
             UI_SailboatSkillInfo.Instance.SetLeapupAvailable(true);
@@ -1353,6 +1361,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         if (leapupCoroutine != null) return;
         if (driftActive) return;
 
+        animator.SetTrigger("Leapup");
         leapupCoroutine = StartCoroutine(Cor_Leapup());
     }
 
@@ -1413,8 +1422,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         leapupGauge = 1f;
         
         leapupActive = true;
+        animator.SetBool("Leapup", true);
 
-        animator.SetBool("Booster", true);
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
@@ -1424,7 +1433,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             yield return new WaitForFixedUpdate();
         }
 
-        animator.SetBool("Booster", false);
+        animator.SetBool("Leapup", false);
 
         leapupActive = false;
         leapupRecharging = true;
@@ -1443,6 +1452,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     bool holdItemCoroutineFlag = false;
+
+    public void EnableIsamel()
+    {
+        IsmaelSpiritObject.SetActive(true);
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", true);
+        SetInterestPoint(IsmaelSpiritLookTarget);
+    }
+    public void DisableIsmael()
+    {
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", false);
+        SetInterestPoint(null);
+        Invoke("DisableIsmaelDelayed", 1.0f);
+    }
+
+    private void DisableIsmaelDelayed()
+    {
+        IsmaelSpiritObject.SetActive(false);
+    }
 
 /// <summary>
 ///     //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
@@ -1577,18 +1604,18 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Vector3 target)
+    public void EnableAndSetIndicator(Vector3 target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
     /// 플레이어 방향 지시를 활성화합니다.
     /// </summary>
     /// <param name="target">목표 지점</param>
-    public void EnableIndicator(Transform target)
+    public void EnableAndSetIndicator(Transform target)
     {
-        directionIndicator.EnableIndicator(target);
+        directionIndicator.EnableAndSetIndicator(target);
     }
 
     /// <summary>
@@ -1660,15 +1687,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
                         break;
                 }
-           
-                if(buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
-                }
-                else if(buoyant.SubmergeRate <= 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
-                }
+            }
+            else
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+            }
+
+            if (buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+            }
+            else if (buoyant.SubmergeRate <= 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
             }
 
             sound.Play();

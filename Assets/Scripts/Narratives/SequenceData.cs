@@ -1,4 +1,5 @@
 using Cinemachine;
+using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -90,14 +91,16 @@ public class Sequence_DialogueBranch : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
+        if (branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
 
         Debug.Log(sequenceAssets[index]);
 
-        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+        if (sequenceAssets[index] != null)
+            yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+
     }
 }
 
@@ -318,7 +321,7 @@ public class Sequence_EnableVCam : Sequence_Base
 
 public class Sequence_DisableVCam : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    [InfoBox("name 이름을 가진 카메라를 끕니다.")]
     public string name;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -364,7 +367,6 @@ public class Sequence_Animation : Sequence_Base
 
 }
 
-
 public class Sequence_PlaySound : Sequence_Base
 {
     [InfoBox("사운드를 재생합니다.")]
@@ -376,4 +378,71 @@ public class Sequence_PlaySound : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_DotweenAnimation : Sequence_Base
+{
+    [InfoBox("DoTween 애니메이션을 DoPlayAllByID을 통해 재생합니다.")]
+    public string dotweenID;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Tween[] tweens = DOTween.TweensById(dotweenID).ToArray();
+        if (tweens.Length == 0 || tweens == null) yield break;
+
+        foreach(Tween t in tweens)
+        {
+            t.Restart();
+        }
+
+        yield return tweens[0].WaitForCompletion();
+
+    }
+}
+
+public class Sequence_IntroCanves : Sequence_Base
+{
+    public LocalizedString[] texts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        UI_IntroCanvas intro = UI_IntroCanvas.Instance;
+        yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
+}
+
+public class Sequence_ToggleIsmael : Sequence_Base
+{
+    public bool value;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (value)
+            PlayerCore.Instance.EnableIsamel();
+        else
+            PlayerCore.Instance.DisableIsmael();
+
+        yield return new WaitForSeconds(0.5f);
+    }
+}
+
+public class Sequence_PlayOtherSequence : Sequence_Base
+{
+    public SequenceBundleAsset sequenceBundle;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceBundle.SequenceBundles));
+    }
+}
+
+public class Sequence_StorylineProgress : Sequence_Base
+{
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.MakeProgressStoryline(storyline);
+        yield return null;
+    }
 }
