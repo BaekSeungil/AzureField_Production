@@ -3,17 +3,20 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BreakableObject : MonoBehaviour
 {
     [InfoBox("플레이어가 부스터인 상태에서 표시된 \"파괴 방향\"화살표와 같은 방향으로 돌진하면 오브젝트가 파괴됩니다.")]
     [SerializeField,LabelText("파괴에 필요한 속도")] private float requireingVelocity = 10f;
+    [SerializeField, LabelText("파괴시 이벤트")] private UnityEvent eventOnDestructed;
     [SerializeField] EventReference sound_break;
 
     [Title("")]
     [SerializeField] private Collider trigger;
     [SerializeField] private GameObject modelObject;
     [SerializeField] private ParticleSystem debriesParticle;
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -28,6 +31,7 @@ public class BreakableObject : MonoBehaviour
                 debriesParticle.Play();
                 FMODUnity.RuntimeManager.PlayOneShot(sound_break);
                 trigger.enabled = false;
+                if (eventOnDestructed != null) eventOnDestructed.Invoke();
                 StartCoroutine(Cor_TimeStiff(0.1f, 0.1f));
             }
         }
