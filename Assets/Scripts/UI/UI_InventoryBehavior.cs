@@ -65,7 +65,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         {
             for (int x = 0; x < Mathf.Clamp(itemArray.Length - y*rowCount,0,rowCount); x++)
             {
-                GameObject newSlot = Instantiate(slotPrefab, slotViewport);
+                GameObject newSlot = Instantiate(slotPrefab, slotViewport,false);
                 newSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(slotDistance.x * x + offset.x, slotDistance.y * y + offset.y);
                 InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
                 slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
@@ -140,12 +140,12 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         Gizmos.color = Color.green;
 
         int itemCount = 20;
-        float squareSize = 200;
+        float squareSize = 175;
         for (int y = 0; y < (int)(itemCount / rowCount); y++)
         {
             for (int x = 0; x < rowCount; x++)
             {
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
+                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x , -slotDistance.y * y , 0f) + new Vector3(offset.x,offset.y,0f) + squareSize * new Vector3(0.5f,-0.5f,0f) , squareSize * new Vector3(1,1,0));
             }
         }
     }
