@@ -26,14 +26,9 @@ public class UI_Tutorials : StaticSerializedMonoBehaviour<UI_Tutorials>
         tutorialKeyQueue = new Queue();
     }
 
-    private void Start()
-    {
-        Debug.Log(PlayerInput.all[0].currentControlScheme);
-    }
-
     public void OpenTutorial(string tutorialKey)
     {
-        if (tutorialKeyQueue.Count != 0)
+        if (tutorialKeyQueue.Count == 0)
             StartCoroutine(Cor_OpenTutorial(tutorialKey));
         else
         {

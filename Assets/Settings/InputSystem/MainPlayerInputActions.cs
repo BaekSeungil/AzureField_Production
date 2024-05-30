@@ -363,7 +363,18 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""71064dca-4d0e-408c-bfe3-c35e9593190b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""OpenPlaymenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
