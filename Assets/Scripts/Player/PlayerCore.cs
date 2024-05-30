@@ -1209,11 +1209,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
 
-            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
-                Vector3 surfacePos = player.transform.position;
-                player.sailingSprayEffect.transform.position = surfacePos;
+                float surfaceHeight = GlobalOceanManager.Instance.GetWaveHeight(pos);
+                player.sailingSprayEffect.transform.position = new Vector3(pos.x,surfaceHeight,pos.z);
 
 
                 if (!player.sailingSprayEffect.isPlaying)

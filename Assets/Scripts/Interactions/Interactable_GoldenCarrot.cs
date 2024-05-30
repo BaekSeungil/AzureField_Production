@@ -35,11 +35,14 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
         if (!floating)
         {
-            carrotAquiredSequences = new Sequence_Base[5];
+            carrotAquiredSequences = new Sequence_Base[7];
 
             Sequence_Animation animation1 = new Sequence_Animation();
             animation1.objectName = gameObject.name;
             animation1.stateName = "Picked";
+
+            Sequence_WaitForSeconds wait1 = new Sequence_WaitForSeconds();
+            wait1.time = 2.5f;
 
             Sequence_PlaySound sound1 = new Sequence_PlaySound();
             sound1.sound = sound_CarrotPicked;
@@ -55,15 +58,20 @@ public class Interactable_GoldenCarrot : Interactable_Base
             animation2.objectName = gameObject.name;
             animation2.stateName = "Gone";
 
+            Sequence_WaitForSeconds wait2 = new Sequence_WaitForSeconds();
+            wait1.time = 1.5f;
+
             carrotAquiredSequences[0] = sound1;
             carrotAquiredSequences[1] = animation1;
-            carrotAquiredSequences[2] = obtain;
-            carrotAquiredSequences[3] = sound2;
-            carrotAquiredSequences[4] = animation2;
+            carrotAquiredSequences[2] = wait1;
+            carrotAquiredSequences[3] = obtain;
+            carrotAquiredSequences[4] = sound2;
+            carrotAquiredSequences[5] = animation2;
+            carrotAquiredSequences[6] = wait2;
         }
         else
         {
-            carrotAquiredSequences = new Sequence_Base[3];
+            carrotAquiredSequences = new Sequence_Base[5];
 
             Sequence_PlaySound sound2 = new Sequence_PlaySound();
             sound2.sound = sound_CarrotGone;
@@ -72,13 +80,22 @@ public class Interactable_GoldenCarrot : Interactable_Base
             animation2.objectName = gameObject.name;
             animation2.stateName = "Gone";
 
+            Sequence_WaitForSeconds wait1 = new Sequence_WaitForSeconds();
+            wait1.time = 1.5f;
+
             Sequence_ObtainItem obtain = new Sequence_ObtainItem();
             obtain.item = carrotItem;
             obtain.quantity = 1;
 
+            Sequence_WaitForSeconds wait2 = new Sequence_WaitForSeconds();
+            wait2.time = 0.5f;
+
             carrotAquiredSequences[0] = sound2;
-            carrotAquiredSequences[1] = animation2;
-            carrotAquiredSequences[2] = obtain;
+            carrotAquiredSequences[1] = wait1;
+            carrotAquiredSequences[2] = animation2;
+            carrotAquiredSequences[3] = obtain;
+            carrotAquiredSequences[4] = wait2;
+
         }
 
 
