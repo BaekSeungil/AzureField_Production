@@ -30,7 +30,7 @@ public class JumpingFish : MonoBehaviour
         transform.Translate(Vector3.forward * Speed * Time.deltaTime);
 
         // 설정된 이동 거리를 넘어가면 원래 위치로 돌아옵니다.
-        if (Vector3.Distance(initialPosition, transform.position) >= MoveLine)
+        if (Vector3.Distance(initialPosition, transform.position) == MoveLine)
         {
             transform.position = initialPosition; // 이동 방향을 반대로 바꿉니다.
         }
