@@ -25,6 +25,9 @@ public class UI_IntroCanvas : StaticSerializedMonoBehaviour<UI_IntroCanvas>
 
     public IEnumerator Cor_PrintText(LocalizedString[] texts, float interval)
     {
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(1.0f);
+
         visualGroupObject.SetActive(true);
         DOTweenAnimation anim = textTween;
         Tween tw = anim.tween;
