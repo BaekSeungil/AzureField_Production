@@ -55741,7 +55741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   iD: Route_T2
-  timelimit: 60
+  timelimit: 30
   checkpointBonus: 1
   checkpointBonusTime: 10
   rewardItems:
@@ -55749,10 +55749,58 @@ MonoBehaviour:
   sequenceOnFinish: {fileID: 0}
   OnChallengeStart:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5414854733387508548}
+        m_TargetAssemblyTypeName: DropItemCrash, Assembly-CSharp
+        m_MethodName: ReStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6215200715903527725}
+        m_TargetAssemblyTypeName: DropItemCrash, Assembly-CSharp
+        m_MethodName: ReStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnChallengeEnd:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5414854733387508548}
+        m_TargetAssemblyTypeName: DropItemCrash, Assembly-CSharp
+        m_MethodName: ReEnd
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6215200715903527725}
+        m_TargetAssemblyTypeName: DropItemCrash, Assembly-CSharp
+        m_MethodName: ReEnd
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   sound_Checkpoint:
     Guid:
       Data1: -1669583038
@@ -55935,7 +55983,7 @@ MonoBehaviour:
   DropItem: {fileID: 8828342141751643934}
   eff: {fileID: 5516605512796809914}
   player: {fileID: 0}
-  addChallengeTime: 15
+  addChallengeTime: 10
   addMoveSpeed: 0
   addSprintSpeed: 0
   addSwimSpeed: 0
@@ -56199,7 +56247,7 @@ MonoBehaviour:
   DropItem: {fileID: 9201616604199187269}
   eff: {fileID: 120959119969451139}
   player: {fileID: 0}
-  addChallengeTime: 15
+  addChallengeTime: 10
   addMoveSpeed: 0
   addSprintSpeed: 0
   addSwimSpeed: 0
