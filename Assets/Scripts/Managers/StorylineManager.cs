@@ -62,6 +62,16 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     /// <param name="stroylineID"></param>
     /// <param name="index"></param>
     /// <returns></returns>
+    /// 
+
+    public void StartNewStoryline(string stroylineID)
+    {
+        if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return; }
+
+        StartCoroutine(StartNewStroyline(stroylineID, 0));
+        return;
+    }
+
     public bool StartNewStoryline(string stroylineID, int index = 0)
     {
         if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return false; }
@@ -74,7 +84,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     /// 키, 번호 정보를 입력하여 진행시킬 스토리와 일치하면 스토리라인을 진행시킵니다.
     /// </summary>
     /// <param name="KeyIndexPair"> [키],[번호] 형식의 문자열 </param>
-    public void MakeProgressStroyline(string KeyIndexPair)
+    public void MakeProgressStoryline(string KeyIndexPair)
     {
         string[] parsed = KeyIndexPair.Split(",");
         Debug.Log(" 스토리라인 진행됨 : "+ parsed[0] + " / " + parsed[1]);
