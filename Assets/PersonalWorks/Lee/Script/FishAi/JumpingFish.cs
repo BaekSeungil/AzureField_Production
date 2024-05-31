@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 public class JumpingFish : MonoBehaviour
 {
-    
-    [SerializeField,LabelText("이펙트 설정")]public GameObject Effect;
-
     [SerializeField,LabelText("이동속도")] public float Speed;
     [SerializeField,LabelText("이동거리")] public float MoveLine;
   
