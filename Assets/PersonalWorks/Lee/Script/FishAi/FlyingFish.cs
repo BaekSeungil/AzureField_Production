@@ -51,5 +51,40 @@ public class FlyingFish : MonoBehaviour
         
     }
 
+    void OnDrawGizmos()
+    {
+        if (!Application.isPlaying)
+    {
+        // 게임이 실행되지 않을 때 현재 오브젝트의 위치를 초기 위치로 사용
+        initialPosition = transform.position;
+    }
+
+    Gizmos.color = Color.cyan;
+    // 오브젝트의 앞 방향을 통해 최종 도착 지점을 계산
+    Vector3 finalPosition = initialPosition + transform.forward * FinalLine;
+
+    // 초기 위치에서 최종 도착 지점까지 선을 그림
+    Gizmos.DrawLine(initialPosition, finalPosition);
+
+    // 점프 경로 그리기
+    Vector3 prevPos = initialPosition;
+    for (float i = 0; i <= FinalLine; i += 0.1f)
+    {
+        float fractionOfJourney = i / FinalLine;
+        float newY = Mathf.Sin(fractionOfJourney * Mathf.PI * JumpFrequency) * JumpHeight;
+        Vector3 offset = transform.forward * i;
+        Vector3 nextPos = initialPosition + offset + new Vector3(0, newY, 0);
+        Gizmos.DrawLine(prevPos, nextPos);
+        prevPos = nextPos;
+    }
+
+    // 초기 위치에 빨간색 구 그리기
+    Gizmos.color = Color.red;
+    Gizmos.DrawSphere(initialPosition, 0.5f);
+
+    // 최종 도착 지점에 초록색 구 그리기
+    Gizmos.color = Color.green;
+    Gizmos.DrawSphere(finalPosition, 0.5f);
+    }
 
 }
