@@ -39,6 +39,9 @@ public class PlayerInventoryContainer : StaticSerializedMonoBehaviour<PlayerInve
     /// 아이템을 하나 추가합니다
     /// </summary>
     /// <param name="item">아이템</param>
+#if UNITY_EDITOR
+    [Button(ButtonSizes.Small), DisableInEditorMode]
+#endif
     public void AddItem(ItemData item)
     {
         if (inventoryData.ContainsKey(item))

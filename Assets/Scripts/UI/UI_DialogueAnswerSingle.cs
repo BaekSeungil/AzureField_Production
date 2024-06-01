@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class UI_DialogueAnswerSingle : MonoBehaviour
 {
-    [SerializeField] private Sprite sprSelected;
-    [SerializeField] private Sprite sprNotSelected;
     [SerializeField] private Image answerBox;
     [SerializeField] private GameObject SelectedIndicator;
     [SerializeField] private TextMeshProUGUI contextText;
@@ -38,13 +36,13 @@ public class UI_DialogueAnswerSingle : MonoBehaviour
 
     public void OnSelected()
     {
-        answerBox.sprite = sprSelected;
+        answerBox.gameObject.SetActive(false);
         SelectedIndicator.SetActive(true);
     }
 
     public void OnDeselected()
     {
-        answerBox.sprite = sprNotSelected;
+        answerBox.gameObject.SetActive(true);
         SelectedIndicator.SetActive(false);
     }
 }

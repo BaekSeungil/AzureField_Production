@@ -356,7 +356,6 @@ public class Sequence_Animation : Sequence_Base
             if (anim.name == objectName)
             {
                 anim.Play(stateName);
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
                 yield break;
             }
         }
