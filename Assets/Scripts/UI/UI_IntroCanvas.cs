@@ -20,7 +20,7 @@ public class UI_IntroCanvas : StaticSerializedMonoBehaviour<UI_IntroCanvas>
 
     private void Start()
     {
-        visualGroupObject.SetActive(false);
+
     }
 
     public IEnumerator Cor_PrintText(LocalizedString[] texts, float interval)
