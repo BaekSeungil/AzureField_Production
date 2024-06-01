@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class DropItemCrash : MonoBehaviour
     //[SerializeField] private MeshRenderer DropItemRenderer;
     [SerializeField] private ParticleSystem eff;
     [SerializeField] private PlayerCore player;
+    [SerializeField] private EventReference obtainSound;
     [SerializeField] private float addChallengeTime = 0f;                                  // 순풍의 도전 추가시간
     [SerializeField] private float addMoveSpeed = 0f;                               // 추가이동 속도
     [SerializeField] private float addSprintSpeed = 0f;                             // 추가달리기 속도
@@ -36,6 +38,7 @@ public class DropItemCrash : MonoBehaviour
     /// <returns></returns>
     IEnumerator CrashEvent()
     {
+        RuntimeManager.PlayOneShot(obtainSound);
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
         FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
         //DropItemRenderer.enabled = !DropItemRenderer.enabled;
