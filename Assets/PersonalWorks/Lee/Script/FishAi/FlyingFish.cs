@@ -43,6 +43,15 @@ public class FlyingFish : MonoBehaviour
         float newY = Mathf.Sin(fractionOfJourney * Mathf.PI * JumpFrequency) * JumpHeight;
         transform.position = new Vector3(transform.position.x, initialPosition.y + newY, transform.position.z);
 
+        if(newY >0)
+        {
+            FishAni.SetBool("Jump",true);
+        }
+        else
+        {
+            FishAni.SetBool("Jump",false);
+        }
+
         Vector3 horizontalPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         // 설정된 이동 거리를 넘어가면 원래 위치로 돌아옵니다.
         if (Vector3.Distance(initialPosition, horizontalPosition) > FinalLine)
