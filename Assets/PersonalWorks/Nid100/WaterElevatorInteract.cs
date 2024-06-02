@@ -10,17 +10,31 @@ public class WaterElevatorInteract : Interactable_Base
 
     [SerializeField] private WaterElevator waterElevator;
 
+
+    [SerializeField] private PlayerCore player;
     // Start is called before the first frame update
     void Start()
     {
-
+        player = PlayerCore.Instance;
     }
 
     public override void Interact()
     {
+
         if (waterElevator != null)
         {
-            eventsOnStartInteract.Invoke();
+            if (player.movementStateRefernce == "Sailboat")
+            {
+                eventsOnStartInteract.Invoke();
+            }
+            else 
+            {
+                if (waterElevator.goingUp == false)
+                {
+                    eventsOnStartInteract.Invoke();
+                }
+            }
         }
+        
     }
 }

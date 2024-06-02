@@ -8,12 +8,14 @@ public class WaterElevator : MonoBehaviour
     public float maxScale = 2f; // 최대 스케일
     public float speed = 1f;    // 엘리베이터 이동 속도
 
-    private bool goingUp = true; // 현재 엘리베이터가 위로 이동 중인지 여부
+    public bool goingUp = true; // 현재 엘리베이터가 위로 이동 중인지 여부
     private Vector3 initialScale; // 초기 스케일 값
 
     [SerializeField] private PlayerCore player;
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private Rigidbody playerRigidbody;
     [SerializeField] private float moveSpeed = 9.8f;
+    [SerializeField] private float force = 9.8f;
     [SerializeField] private Transform targetPosition;
 
     [SerializeField] private GameObject WaterCollider;
@@ -21,14 +23,28 @@ public class WaterElevator : MonoBehaviour
     [SerializeField] private ParticleSystem waterIdle;
     [SerializeField] private ParticleSystem waterEnd;
 
+
+
+    private float dist = 0;
+
     private void Start()
     {
         player = PlayerCore.Instance;
         playerTransform = PlayerCore.Instance.transform;
-        initialScale = transform.localScale;
+        playerRigidbody = PlayerCore.Instance.GetComponent<Rigidbody>();
+        initialScale = WaterCollider.transform.localScale;
         waterStart.Stop();
         waterIdle.Stop();
         waterEnd.Stop();
+
+
+        Vector3 waterPosition = WaterCollider.transform.position;
+        Vector3 targetPos = targetPosition.position;
+        Vector3 waterPosWithoutY = new Vector3(waterPosition.x, 0, waterPosition.z);
+        Vector3 targetPosWithoutY = new Vector3(targetPos.x, 0, targetPos.z);
+
+        dist = Vector3.Distance(waterPosWithoutY, targetPosWithoutY);
+
     }
 
 
@@ -63,14 +79,55 @@ public class WaterElevator : MonoBehaviour
 
     }
 
-
+    private float dist2;
     //private Vector3 velocity;
     private void TargetMove() 
     {
-            float step = moveSpeed * Time.deltaTime;
-            Vector3 newPosition = Vector3.MoveTowards(playerTransform.position, targetPosition.position, step);
-            //newPosition.y = playerTransform.position.y; // y축 이동 방지
-            playerTransform.position = newPosition;
+        float step = moveSpeed * Time.deltaTime;
+        Vector3 newPosition = Vector3.MoveTowards(playerTransform.position, targetPosition.position, step);
+        playerTransform.position = newPosition;
+
+
+
+        Vector3 playerPosition = playerTransform.position;
+        Vector3 targetPos = targetPosition.position;
+
+        // Y 값을 무시하고 거리를 계산하기 위해, Y 값을 동일하게 설정합니다.
+        Vector3 playerPosWithoutY = new Vector3(playerPosition.x, 0, playerPosition.z);
+        Vector3 targetPosWithoutY = new Vector3(targetPos.x, 0, targetPos.z);
+        dist2 = Vector3.Distance(playerPosWithoutY, targetPosWithoutY);
+        if (dist2 >= dist / 2)
+        {
+            playerRigidbody.AddForce(new Vector3(0, force, 0));
+        }
+
+
+        /*
+        float step = moveSpeed * Time.deltaTime;
+
+        // Calculate the distance to the target
+        Vector3 direction = targetPosition.position - playerTransform.position;
+        float distance = direction.magnitude;
+
+        // Calculate horizontal distance
+        float horizontalDistance = Vector3.Distance(new Vector3(playerTransform.position.x, 0, playerTransform.position.z), new Vector3(targetPosition.position.x, 0, targetPosition.position.z));
+
+        // Normalize the direction vector
+        Vector3 horizontalDirection = new Vector3(direction.x, 0, direction.z).normalized;
+
+        // Calculate the parabola height based on the horizontal distance
+        float parabolaHeight = Mathf.Max(10.0f, 5.0f); // Minimum height of 10
+        float t = Vector3.Distance(playerTransform.position, targetPosition.position) / horizontalDistance; // Normalized distance
+        float height = Mathf.Sin(Mathf.PI * t) * parabolaHeight;
+
+        // Create a new position based on the parabola
+        Vector3 newPosition = Vector3.MoveTowards(playerTransform.position, targetPosition.position, step);
+        newPosition.y = Mathf.Lerp(playerTransform.position.y, targetPosition.position.y, t) + height;
+
+        // Update the player's position
+        playerTransform.position = newPosition;
+         */
+
     }
 
 
