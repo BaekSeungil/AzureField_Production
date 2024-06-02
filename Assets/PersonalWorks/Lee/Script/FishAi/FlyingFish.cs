@@ -41,9 +41,9 @@ public class FlyingFish : MonoBehaviour
         float newY = Mathf.Sin(fractionOfJourney * Mathf.PI * JumpFrequency) * JumpHeight;
         transform.position = new Vector3(transform.position.x, initialPosition.y + newY, transform.position.z);
 
-        Vector3 horizontalPosition = new Vector3(initialPosition.x, initialPosition.y, transform.position.z);
+        Vector3 horizontalPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         // 설정된 이동 거리를 넘어가면 원래 위치로 돌아옵니다.
-        if (Vector3.Distance(initialPosition, horizontalPosition) >= FinalLine)
+        if (Vector3.Distance(initialPosition, horizontalPosition) > FinalLine)
         {
             transform.position = initialPosition; // 다시 스폰에서 생성
             startTime = Time.time; // 시작 시간 재설정
