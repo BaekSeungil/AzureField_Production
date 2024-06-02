@@ -140,6 +140,8 @@ public class FairwindChallengeInstance : MonoBehaviour
     {
         if (!IsActiveChallengeExists) return false;
 
+        UI_FairwindInfo.Instance.OnAdditionalTime(time);
+
         Debug.Log(ActiveChallenge.name);
 
         ActiveChallenge.timer_playCountdown += time;
