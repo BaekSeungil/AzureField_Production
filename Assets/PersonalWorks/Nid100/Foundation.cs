@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,9 @@ public class Foundation : MonoBehaviour
     [SerializeField] private Transform targetPoint;
     [SerializeField] private float speed;
     [SerializeField] private UnityEvent onActivated;
+    [SerializeField] private EventReference interactedWrong;
+    [SerializeField] private EventReference interactedRight;
+    [SerializeField] private EventReference interactedComplete;
 
     public bool orderSystem = false;
 
