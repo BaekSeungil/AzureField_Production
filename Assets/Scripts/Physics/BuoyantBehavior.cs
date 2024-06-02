@@ -32,8 +32,6 @@ public class BuoyantBehavior : MonoBehaviour
     private void Awake()
     {
         rbody = GetComponent<Rigidbody>();
-
-
     }
 
     private void Start()
@@ -47,6 +45,7 @@ public class BuoyantBehavior : MonoBehaviour
 
     const int oceanLayerMask = 1 << 3;
     const int waterLayerMask = 1 << 4;
+    const float bouyancymagnitude = 50f;
 
     private void FixedUpdate()
     {
@@ -58,6 +57,12 @@ public class BuoyantBehavior : MonoBehaviour
             waterDetected = true;
             float distance = 0;
             distance = transform.position.y - hitWater.point.y + submergeOffset;
+
+            if (distance < 0)
+            {
+                rbody.AddForce(Vector3.up * -Mathf.Clamp( distance, -1f, 0f) * bouyancymagnitude, ForceMode.Acceleration);
+            }
+
             submergeRate = distance;
         }
         else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
@@ -90,7 +95,7 @@ public class BuoyantBehavior : MonoBehaviour
 
     }
 
-    const float bouyancymagnitude = 20f;
+
 
     private void OnTriggerStay(Collider other)
     {
