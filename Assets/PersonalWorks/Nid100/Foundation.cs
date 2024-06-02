@@ -69,16 +69,19 @@ public class Foundation : MonoBehaviour
                     switchOnOff[i] = false;
                 }
                 currentOrder = 0;
+                RuntimeManager.PlayOneShot(interactedWrong);
             }
             else
             {
                 currentOrder++;
+                RuntimeManager.PlayOneShot(interactedRight);
             }
         }
 
         if (IsAllSwitchOn())
         {
             moveCheck = true;
+            RuntimeManager.PlayOneShot(interactedComplete);
 
         }
     }

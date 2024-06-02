@@ -50,6 +50,7 @@ public class UI_AZFLangDialogue : StaticSerializedMonoBehaviour<UI_AZFLangDialog
         for (int i = 0; i < contexts.Length; i++)
         {
             string s = contexts[i];
+            s = s.Replace("\r", "");
             keySkip = false;
 
             for (int j = 0; j < s.Length; j++)
