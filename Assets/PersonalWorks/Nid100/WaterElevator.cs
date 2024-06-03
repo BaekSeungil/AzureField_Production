@@ -54,9 +54,15 @@ public class WaterElevator : MonoBehaviour
         // 스케일 값 변경
         if (OnOff == true)
         {
+            
             float scaleFactor = goingUp ? 1f : -1f;
             float newScale = Mathf.Clamp(WaterCollider.transform.localScale.y + Time.deltaTime * speed * scaleFactor, minScale, maxScale);
             WaterCollider.transform.localScale = new Vector3(initialScale.x, newScale, initialScale.z);
+            if (goingUp == true) {
+                player.DisableControls();
+            }
+
+
             if (newScale >= maxScale || newScale <= minScale)
             {
                 goingUp = !goingUp;
@@ -69,10 +75,12 @@ public class WaterElevator : MonoBehaviour
         }
         if (targetMoveOnOff == true)
         {
-                if (Vector3.Distance(playerTransform.position, targetPosition.position) <= 1.0f)
-                {
-                    targetMoveOnOff = false;
-                }
+            player.DisableControls();
+            if (Vector3.Distance(playerTransform.position, targetPosition.position) <= 1.0f)
+            {
+                player.EnableControlls();
+                targetMoveOnOff = false;
+            }
                 TargetMove();
         }
 
@@ -100,6 +108,10 @@ public class WaterElevator : MonoBehaviour
         {
             playerRigidbody.AddForce(new Vector3(0, force, 0));
         }
+
+        Vector3 lookDirection = (targetPosition.position - playerTransform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, targetRotation, step);
 
 
         /*
