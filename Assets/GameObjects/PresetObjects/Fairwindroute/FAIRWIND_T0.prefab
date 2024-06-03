@@ -10509,8 +10509,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6162884296706793807}
   - component: {fileID: 3167771085054037605}
-  - component: {fileID: 5527736617205409578}
   - component: {fileID: 1361836612571321968}
+  - component: {fileID: 7384752848005417076}
   m_Layer: 0
   m_Name: FlyingFishTest_14
   m_TagString: Reef
@@ -10556,20 +10556,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5527736617205409578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 294944203884597758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &1361836612571321968
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10591,6 +10577,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7384752848005417076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294944203884597758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 4
+  JumpFrequency: 5
 --- !u!1 &308983219203135578
 GameObject:
   m_ObjectHideFlags: 0
@@ -11207,8 +11209,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9006022017128898892}
   - component: {fileID: 6641284212866374450}
-  - component: {fileID: 6493237237336054803}
   - component: {fileID: 6144431181351956683}
+  - component: {fileID: 4055567763036685419}
   m_Layer: 0
   m_Name: FlyingFishTest_6
   m_TagString: Reef
@@ -11254,20 +11256,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6493237237336054803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 588495847451983231}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &6144431181351956683
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11289,6 +11277,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4055567763036685419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588495847451983231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 7
+  JumpFrequency: 5
 --- !u!1 &597050797682729835
 GameObject:
   m_ObjectHideFlags: 0
@@ -11469,8 +11473,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7876335681319280863}
   - component: {fileID: 7624531769104801774}
-  - component: {fileID: 4868808136408655937}
   - component: {fileID: 3263603418536939308}
+  - component: {fileID: 2254591731611109474}
   m_Layer: 0
   m_Name: FlyingFishTest_2
   m_TagString: Reef
@@ -11516,20 +11520,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4868808136408655937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 776429648753806203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &3263603418536939308
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11551,6 +11541,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2254591731611109474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776429648753806203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &816580710233379596
 GameObject:
   m_ObjectHideFlags: 0
@@ -22050,8 +22056,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3484478008371898692}
   - component: {fileID: 3789199464381329725}
-  - component: {fileID: 6012073881272323767}
   - component: {fileID: 7182205894408864292}
+  - component: {fileID: 9101771897605695341}
   m_Layer: 0
   m_Name: FlyingFishTest_1
   m_TagString: Reef
@@ -22097,20 +22103,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6012073881272323767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042814102814659514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &7182205894408864292
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -22132,6 +22124,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9101771897605695341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042814102814659514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &1068835585131302879
 GameObject:
   m_ObjectHideFlags: 0
@@ -23685,8 +23693,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8253508263073980190}
   - component: {fileID: 8182765551258573712}
-  - component: {fileID: 858031291837814501}
   - component: {fileID: 9043366449681610596}
+  - component: {fileID: 3507242941893613384}
   m_Layer: 0
   m_Name: FlyingFishTest_11
   m_TagString: Reef
@@ -23732,20 +23740,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &858031291837814501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2230549537481242524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &9043366449681610596
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -23767,6 +23761,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3507242941893613384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2230549537481242524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 4
+  JumpFrequency: 5
 --- !u!1 &2320678129246290964
 GameObject:
   m_ObjectHideFlags: 0
@@ -23883,8 +23893,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8325397601203156195}
   - component: {fileID: 7862751678263203418}
-  - component: {fileID: 2215844642673852577}
   - component: {fileID: 8742383207323711619}
+  - component: {fileID: 3008983601559692803}
   m_Layer: 0
   m_Name: FlyingFishTest_13
   m_TagString: Reef
@@ -23930,20 +23940,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2215844642673852577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2367912112438771114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &8742383207323711619
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -23965,6 +23961,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3008983601559692803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367912112438771114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &2374177591811217836
 GameObject:
   m_ObjectHideFlags: 0
@@ -38887,8 +38899,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5562624829544011197}
   - component: {fileID: 4045690722644551215}
-  - component: {fileID: 2661650176313130341}
   - component: {fileID: 3042642599123077924}
+  - component: {fileID: 6318726425555849645}
   m_Layer: 0
   m_Name: FlyingFishTest_10
   m_TagString: Reef
@@ -38934,20 +38946,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2661650176313130341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5422495505619960471}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &3042642599123077924
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -38969,6 +38967,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6318726425555849645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5422495505619960471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 6
+  JumpFrequency: 5
 --- !u!1 &5430952605331316913
 GameObject:
   m_ObjectHideFlags: 0
@@ -39085,8 +39099,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6335903668381696745}
   - component: {fileID: 6553798575161040730}
-  - component: {fileID: 1949705249903823898}
   - component: {fileID: 82466448805097533}
+  - component: {fileID: 7502610395399033971}
   m_Layer: 0
   m_Name: FlyingFishTest_5
   m_TagString: Reef
@@ -39132,20 +39146,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1949705249903823898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5468972534576989798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &82466448805097533
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -39167,6 +39167,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7502610395399033971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5468972534576989798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &5488697968644910033
 GameObject:
   m_ObjectHideFlags: 0
@@ -39410,8 +39426,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8874061592788375780}
   - component: {fileID: 9064345885923883536}
-  - component: {fileID: 2927340206174272544}
   - component: {fileID: 4640670723515899849}
+  - component: {fileID: 5688950054793619876}
   m_Layer: 0
   m_Name: FlyingFishTest_12
   m_TagString: Reef
@@ -39457,20 +39473,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2927340206174272544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5663637175402349197}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &4640670723515899849
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -39492,6 +39494,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5688950054793619876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5663637175402349197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 5
+  JumpFrequency: 5
 --- !u!1 &5732286233324224851
 GameObject:
   m_ObjectHideFlags: 0
@@ -39840,8 +39858,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5944369135409524477}
   - component: {fileID: 1576909959408035309}
-  - component: {fileID: 8264839805306044974}
   - component: {fileID: 1682454246336560626}
+  - component: {fileID: 5697298846281706245}
   m_Layer: 0
   m_Name: FlyingFishTest_4
   m_TagString: Reef
@@ -39887,20 +39905,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8264839805306044974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5937383966866409617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &1682454246336560626
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -39922,6 +39926,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5697298846281706245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5937383966866409617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &5994476028203342040
 GameObject:
   m_ObjectHideFlags: 0
@@ -40058,8 +40078,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3019237510102110245}
   - component: {fileID: 3792507732280840347}
-  - component: {fileID: 4908296405266436045}
   - component: {fileID: 8191655520870714541}
+  - component: {fileID: 8988360833553002990}
   m_Layer: 0
   m_Name: FlyingFishTest_8
   m_TagString: Reef
@@ -40105,20 +40125,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4908296405266436045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6023194274563410246}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &8191655520870714541
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40140,6 +40146,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8988360833553002990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6023194274563410246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 7
+  JumpFrequency: 5
 --- !u!1 &6033533564096954189
 GameObject:
   m_ObjectHideFlags: 0
@@ -45314,8 +45336,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1347081145531725382}
   - component: {fileID: 2966882579145588668}
-  - component: {fileID: 1166464762183803011}
   - component: {fileID: 3044579563911161744}
+  - component: {fileID: 7290524653985854393}
   m_Layer: 0
   m_Name: FlyingFishTest_9
   m_TagString: Reef
@@ -45361,20 +45383,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1166464762183803011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6253984716234982569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &3044579563911161744
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -45396,6 +45404,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7290524653985854393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6253984716234982569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &6255215592242055158
 GameObject:
   m_ObjectHideFlags: 0
@@ -52407,8 +52431,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8565794808450555472}
   - component: {fileID: 3311226221826763753}
-  - component: {fileID: 765897163397622387}
   - component: {fileID: 3872614543278067989}
+  - component: {fileID: 941913955915323328}
   m_Layer: 0
   m_Name: FlyingFishTest_3
   m_TagString: Reef
@@ -52454,20 +52478,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &765897163397622387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7411930792362161510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &3872614543278067989
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -52489,6 +52499,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &941913955915323328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7411930792362161510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 6
+  JumpFrequency: 5
 --- !u!1 &7427449680678645080
 GameObject:
   m_ObjectHideFlags: 0
@@ -58338,8 +58364,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7230979364669594655}
   - component: {fileID: 5378116107249474465}
-  - component: {fileID: 5571819869470054007}
   - component: {fileID: 6126616585304928256}
+  - component: {fileID: 4310883130650399835}
   m_Layer: 0
   m_Name: FlyingFishTest_7
   m_TagString: Reef
@@ -58385,20 +58411,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5571819869470054007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8084090874420610721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &6126616585304928256
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -58420,6 +58432,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4310883130650399835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084090874420610721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &8097564806343284310
 GameObject:
   m_ObjectHideFlags: 0
@@ -64400,7 +64428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8684519300146520109}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.5864759, z: -0, w: 0.8099667}
+  m_LocalRotation: {x: 0, y: -0.5864785, z: 0, w: 0.8099649}
   m_LocalPosition: {x: 663, y: 297.20068, z: -1381}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -64503,6 +64531,30 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8828342141751643934}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 9201616604199187269}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
   OnChallengeEnd:
     m_PersistentCalls:
@@ -64774,7 +64826,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8552210999799151210
 Transform:
   m_ObjectHideFlags: 0
@@ -65289,8 +65341,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8367226972692310733}
   - component: {fileID: 2521576317977735351}
-  - component: {fileID: 1448757475397466088}
   - component: {fileID: 5158405135943690398}
+  - component: {fileID: 2526079085366072507}
   m_Layer: 0
   m_Name: FlyingFishTest
   m_TagString: Reef
@@ -65336,20 +65388,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1448757475397466088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9175393976118947959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7229ce1c0a95c149bcbded2056af740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 9
-  MoveLine: 0
 --- !u!65 &5158405135943690398
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -65371,6 +65409,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2526079085366072507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9175393976118947959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32fea8c3cec23446b933636024b9acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 9
+  FinalLine: 45
+  JumpHeight: 3
+  JumpFrequency: 5
 --- !u!1 &9194885069868328000
 GameObject:
   m_ObjectHideFlags: 0
@@ -65423,7 +65477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2385535409046876077
 Transform:
   m_ObjectHideFlags: 0

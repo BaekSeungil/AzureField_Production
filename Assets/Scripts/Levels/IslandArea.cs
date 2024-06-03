@@ -145,7 +145,7 @@ public class IslandArea : MonoBehaviour
     private bool EnterUIFilter()
     {
         if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
-        if (enterTimer > enterInterval) { enterTimer = 0f; return true; }
+        if (enterTimer > enterInterval) { Debug.Log("Island Enter : " + IslandName.GetLocalizedString()); enterTimer = 0f; return true; }
         else return false;
     }
 
