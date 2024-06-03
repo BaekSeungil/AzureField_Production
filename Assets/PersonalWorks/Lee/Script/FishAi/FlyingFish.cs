@@ -62,13 +62,15 @@ public class FlyingFish : MonoBehaviour
         
     }
 
+
+#if UNITY_EDITOR
     void OnDrawGizmos()
     {
-        if (!Application.isPlaying)
-        {
-            // 게임이 실행되지 않을 때 현재 오브젝트의 위치를 초기 위치로 사용
-            initialPosition = transform.position;
-        }
+        //if (!Application.isPlaying)
+        //{
+        //    // 게임이 실행되지 않을 때 현재 오브젝트의 위치를 초기 위치로 사용
+        //    initialPosition = transform.position;
+        //}
 
         Gizmos.color = Color.cyan;
         // 오브젝트의 앞 방향을 통해 최종 도착 지점을 계산
@@ -97,5 +99,6 @@ public class FlyingFish : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(finalPosition, 0.5f);
     }
+#endif
 
 }
