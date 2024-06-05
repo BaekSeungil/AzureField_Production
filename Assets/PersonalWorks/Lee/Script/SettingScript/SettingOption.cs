@@ -133,7 +133,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     public void SetLanguage(int index)
     {
         LocalizationSettings.SelectedLocale = locales[index];
-        LocalizationSettings.InitializationOperation;
     }
     
     public void QuitGame()
