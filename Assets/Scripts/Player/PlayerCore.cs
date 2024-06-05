@@ -115,6 +115,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem footstepEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem jumpEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stoneAttackEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
@@ -1727,6 +1728,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         animator.SetTrigger("ReefCrash");
         AbortBooster();
         driftActive = false;
+        stoneAttackEffect.Play(true);
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
         rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);

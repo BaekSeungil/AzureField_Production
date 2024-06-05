@@ -399,7 +399,7 @@ public class Sequence_DotweenAnimation : Sequence_Base
     }
 }
 
-public class Sequence_IntroCanves : Sequence_Base
+public class Sequence_IntroCanvas : Sequence_Base
 {
     public LocalizedString[] texts;
 
@@ -412,6 +412,7 @@ public class Sequence_IntroCanves : Sequence_Base
 
 public class Sequence_ToggleIsmael : Sequence_Base
 {
+    [InfoBox("플레이어로부터 이스마엘 파티클을 소환합니다.")]
     public bool value;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -427,6 +428,7 @@ public class Sequence_ToggleIsmael : Sequence_Base
 
 public class Sequence_PlayOtherSequence : Sequence_Base
 {
+    [InfoBox("다른 시퀀스 에셋 번들을 이어서 재생합니다.")]
     public SequenceBundleAsset sequenceBundle;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -437,11 +439,23 @@ public class Sequence_PlayOtherSequence : Sequence_Base
 
 public class Sequence_StorylineProgress : Sequence_Base
 {
+    [InfoBox("스토리라인을 진행시킵니다 [스토리라인이름,번호]")]
     public string storyline;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
         StorylineManager.Instance.MakeProgressStoryline(storyline);
         yield return null;
+    }
+}
+
+public class Sequence_AZFLangDialogue : Sequence_Base
+{
+    [InfoBox("AZFLang폰트, 고대어를 출력하는 대사창을 띄웁니다. 영문을 입력하세요"),TextArea()]
+    public string[] contexts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return UI_AZFLangDialogue.Instance.StartCoroutine(UI_AZFLangDialogue.Instance.Cor_Dialogue(contexts));
     }
 }

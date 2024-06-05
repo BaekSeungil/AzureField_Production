@@ -81,7 +81,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 578676b46d0129e43a5c5965fc49837e,
         type: 3}
       propertyPath: m_Name
-      value: vine4 1
+      value: vine4 noleaf
       objectReference: {fileID: 0}
     - target: {fileID: 4278200481962586376, guid: 578676b46d0129e43a5c5965fc49837e,
         type: 3}
@@ -102,6 +102,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 213187710293335054}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 578676b46d0129e43a5c5965fc49837e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 214812240761181573}
   m_SourcePrefab: {fileID: 100100000, guid: 578676b46d0129e43a5c5965fc49837e, type: 3}
 --- !u!1 &740490006807761018 stripped
 GameObject:
@@ -130,6 +134,28 @@ LODGroup:
     - renderer: {fileID: 4456574369325718563}
     - renderer: {fileID: 0}
   m_Enabled: 1
+--- !u!64 &214812240761181573
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740490006807761018}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!23 &4253547186693580869 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4431670454091400558, guid: 578676b46d0129e43a5c5965fc49837e,

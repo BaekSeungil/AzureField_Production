@@ -296,6 +296,8 @@ Shader "Foliage"
 
 			#define ASE_NEEDS_FRAG_WORLD_NORMAL
 			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_FRAG_SCREEN_POSITION
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -437,6 +439,17 @@ Shader "Foliage"
 				m = m* m;
 				float4 px = float4( dot( x0, g0 ), dot( x1, g1 ), dot( x2, g2 ), dot( x3, g3 ) );
 				return 42.0 * dot( m, px);
+			}
+			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
 			}
 			
 
@@ -669,6 +682,12 @@ Shader "Foliage"
 				
 				float2 uv_Normalmap = IN.ase_texcoord8.xy * _Normalmap_ST.xy + _Normalmap_ST.zw;
 				
+				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
 				float3 Normal = UnpackNormalScale( tex2D( _Normalmap, uv_Normalmap ), 1.0f );
@@ -677,7 +696,7 @@ Shader "Foliage"
 				float Metallic = _Metallic;
 				float Smoothness = _Smoothness;
 				float Occlusion = _Occlusion;
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -972,7 +991,9 @@ Shader "Foliage"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
             #endif
 
-			
+			#define ASE_NEEDS_FRAG_SCREEN_POSITION
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
+
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
 				#define ASE_SV_DEPTH SV_DepthLessEqual
@@ -1102,6 +1123,17 @@ Shader "Foliage"
 				m = m* m;
 				float4 px = float4( dot( x0, g0 ), dot( x1, g1 ), dot( x2, g2 ), dot( x3, g3 ) );
 				return 42.0 * dot( m, px);
+			}
+			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
 			}
 			
 
@@ -1279,11 +1311,16 @@ Shader "Foliage"
 					#endif
 				#endif
 
+				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
 				float2 uv_Basemap = IN.ase_texcoord3.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
 
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 				float AlphaClipThresholdShadow = 0.5;
 
@@ -1374,7 +1411,9 @@ Shader "Foliage"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
             #endif
 
-			
+			#define ASE_NEEDS_FRAG_SCREEN_POSITION
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
+
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
 				#define ASE_SV_DEPTH SV_DepthLessEqual
@@ -1504,6 +1543,17 @@ Shader "Foliage"
 				m = m* m;
 				float4 px = float4( dot( x0, g0 ), dot( x1, g1 ), dot( x2, g2 ), dot( x3, g3 ) );
 				return 42.0 * dot( m, px);
+			}
+			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
 			}
 			
 
@@ -1660,11 +1710,16 @@ Shader "Foliage"
 					#endif
 				#endif
 
+				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
 				float2 uv_Basemap = IN.ase_texcoord3.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
 
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 
 				#ifdef ASE_DEPTH_WRITE_ON
@@ -1766,6 +1821,7 @@ Shader "Foliage"
 				float4 ase_texcoord4 : TEXCOORD4;
 				float4 ase_texcoord5 : TEXCOORD5;
 				float3 ase_normal : NORMAL;
+				float4 ase_texcoord6 : TEXCOORD6;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
@@ -1869,6 +1925,17 @@ Shader "Foliage"
 				return 42.0 * dot( m, px);
 			}
 			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
+			}
+			
 
 			VertexOutput VertexFunction( VertexInput v  )
 			{
@@ -1884,6 +1951,10 @@ Shader "Foliage"
 				
 				float3 ase_worldNormal = TransformObjectToWorldNormal(v.normalOS);
 				o.ase_texcoord5.xyz = ase_worldNormal;
+				
+				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
+				float4 screenPos = ComputeScreenPos(ase_clipPos);
+				o.ase_texcoord6 = screenPos;
 				
 				o.ase_texcoord4.xy = v.texcoord0.xy;
 				o.ase_normal = v.normalOS;
@@ -2059,10 +2130,17 @@ Shader "Foliage"
 				float saferPower96 = abs( dotResult49 );
 				float dotResult98 = dot( pow( saferPower96 , _SSS_Power ) , _SSS_Scale );
 				
+				float4 screenPos = IN.ase_texcoord6;
+				float4 ase_screenPosNorm = screenPos / screenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
 				float3 Emission = _Emmision.rgb;
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 
 				#ifdef _ALPHATEST_ON
@@ -2154,6 +2232,7 @@ Shader "Foliage"
 				float4 ase_texcoord2 : TEXCOORD2;
 				float4 ase_texcoord3 : TEXCOORD3;
 				float3 ase_normal : NORMAL;
+				float4 ase_texcoord4 : TEXCOORD4;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
@@ -2257,6 +2336,17 @@ Shader "Foliage"
 				return 42.0 * dot( m, px);
 			}
 			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
+			}
+			
 
 			VertexOutput VertexFunction( VertexInput v  )
 			{
@@ -2272,6 +2362,10 @@ Shader "Foliage"
 				
 				float3 ase_worldNormal = TransformObjectToWorldNormal(v.normalOS);
 				o.ase_texcoord3.xyz = ase_worldNormal;
+				
+				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
+				float4 screenPos = ComputeScreenPos(ase_clipPos);
+				o.ase_texcoord4 = screenPos;
 				
 				o.ase_texcoord2.xy = v.ase_texcoord.xy;
 				o.ase_normal = v.normalOS;
@@ -2428,9 +2522,16 @@ Shader "Foliage"
 				float saferPower96 = abs( dotResult49 );
 				float dotResult98 = dot( pow( saferPower96 , _SSS_Power ) , _SSS_Scale );
 				
+				float4 screenPos = IN.ase_texcoord4;
+				float4 ase_screenPosNorm = screenPos / screenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 
 				half4 color = half4(BaseColor, Alpha );
@@ -2514,7 +2615,9 @@ Shader "Foliage"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
             #endif
 
-			
+			#define ASE_NEEDS_FRAG_SCREEN_POSITION
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
+
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
 				#define ASE_SV_DEPTH SV_DepthLessEqual
@@ -2648,6 +2751,17 @@ Shader "Foliage"
 				m = m* m;
 				float4 px = float4( dot( x0, g0 ), dot( x1, g1 ), dot( x2, g2 ), dot( x3, g3 ) );
 				return 42.0 * dot( m, px);
+			}
+			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
 			}
 			
 
@@ -2822,12 +2936,17 @@ Shader "Foliage"
 
 				float2 uv_Normalmap = IN.ase_texcoord5.xy * _Normalmap_ST.xy + _Normalmap_ST.zw;
 				
+				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
 				float2 uv_Basemap = IN.ase_texcoord5.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
 
 				float3 Normal = UnpackNormalScale( tex2D( _Normalmap, uv_Normalmap ), 1.0f );
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 
 				#ifdef ASE_DEPTH_WRITE_ON
@@ -2983,6 +3102,8 @@ Shader "Foliage"
 
 			#define ASE_NEEDS_FRAG_WORLD_NORMAL
 			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_FRAG_SCREEN_POSITION
+			#define ASE_NEEDS_FRAG_WORLD_POSITION
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -3126,6 +3247,17 @@ Shader "Foliage"
 				m = m* m;
 				float4 px = float4( dot( x0, g0 ), dot( x1, g1 ), dot( x2, g2 ), dot( x3, g3 ) );
 				return 42.0 * dot( m, px);
+			}
+			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
 			}
 			
 
@@ -3351,6 +3483,12 @@ Shader "Foliage"
 				
 				float2 uv_Normalmap = IN.ase_texcoord8.xy * _Normalmap_ST.xy + _Normalmap_ST.zw;
 				
+				float4 ase_screenPosNorm = ScreenPos / ScreenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
 				float3 Normal = UnpackNormalScale( tex2D( _Normalmap, uv_Normalmap ), 1.0f );
@@ -3359,7 +3497,7 @@ Shader "Foliage"
 				float Metallic = _Metallic;
 				float Smoothness = _Smoothness;
 				float Occlusion = _Occlusion;
-				float Alpha = tex2DNode57.a;
+				float Alpha = ( dither158 * tex2DNode57.a );
 				float AlphaClipThreshold = _AlphaClipThershold;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -3536,6 +3674,8 @@ Shader "Foliage"
 			{
 				float4 positionCS : SV_POSITION;
 				float4 ase_texcoord : TEXCOORD0;
+				float4 ase_texcoord1 : TEXCOORD1;
+				float4 ase_texcoord2 : TEXCOORD2;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
@@ -3639,6 +3779,17 @@ Shader "Foliage"
 				return 42.0 * dot( m, px);
 			}
 			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
+			}
+			
 
 			struct SurfaceDescription
 			{
@@ -3660,10 +3811,16 @@ Shader "Foliage"
 				simplePerlin3D91 = simplePerlin3D91*0.5 + 0.5;
 				float3 temp_cast_0 = (( (-1.0 + (simplePerlin3D91 - 0.0) * (1.0 - -1.0) / (1.0 - 0.0)) * _VertexOffsetScale )).xxx;
 				
-				o.ase_texcoord.xy = v.ase_texcoord.xy;
+				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
+				float4 screenPos = ComputeScreenPos(ase_clipPos);
+				o.ase_texcoord = screenPos;
+				o.ase_texcoord1.xyz = ase_worldPos;
+				
+				o.ase_texcoord2.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord.zw = 0;
+				o.ase_texcoord1.w = 0;
+				o.ase_texcoord2.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -3772,11 +3929,18 @@ Shader "Foliage"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				float2 uv_Basemap = IN.ase_texcoord.xy * _Basemap_ST.xy + _Basemap_ST.zw;
+				float4 screenPos = IN.ase_texcoord;
+				float4 ase_screenPosNorm = screenPos / screenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				float3 ase_worldPos = IN.ase_texcoord1.xyz;
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / 3.0 ) );
+				float2 uv_Basemap = IN.ase_texcoord2.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
 
-				surfaceDescription.Alpha = tex2DNode57.a;
+				surfaceDescription.Alpha = ( dither158 * tex2DNode57.a );
 				surfaceDescription.AlphaClipThreshold = _AlphaClipThershold;
 
 				#if _ALPHATEST_ON
@@ -3874,6 +4038,8 @@ Shader "Foliage"
 			{
 				float4 positionCS : SV_POSITION;
 				float4 ase_texcoord : TEXCOORD0;
+				float4 ase_texcoord1 : TEXCOORD1;
+				float4 ase_texcoord2 : TEXCOORD2;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
@@ -3977,6 +4143,17 @@ Shader "Foliage"
 				return 42.0 * dot( m, px);
 			}
 			
+			inline float Dither4x4Bayer( int x, int y )
+			{
+				const float dither[ 16 ] = {
+			 1,  9,  3, 11,
+			13,  5, 15,  7,
+			 4, 12,  2, 10,
+			16,  8, 14,  6 };
+				int r = y * 4 + x;
+				return dither[r] / 16; // same # of instructions as pre-dividing due to compiler magic
+			}
+			
 
 			struct SurfaceDescription
 			{
@@ -3998,10 +4175,16 @@ Shader "Foliage"
 				simplePerlin3D91 = simplePerlin3D91*0.5 + 0.5;
 				float3 temp_cast_0 = (( (-1.0 + (simplePerlin3D91 - 0.0) * (1.0 - -1.0) / (1.0 - 0.0)) * _VertexOffsetScale )).xxx;
 				
-				o.ase_texcoord.xy = v.ase_texcoord.xy;
+				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
+				float4 screenPos = ComputeScreenPos(ase_clipPos);
+				o.ase_texcoord = screenPos;
+				o.ase_texcoord1.xyz = ase_worldPos;
+				
+				o.ase_texcoord2.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord.zw = 0;
+				o.ase_texcoord1.w = 0;
+				o.ase_texcoord2.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -4109,11 +4292,18 @@ Shader "Foliage"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				float2 uv_Basemap = IN.ase_texcoord.xy * _Basemap_ST.xy + _Basemap_ST.zw;
+				float4 screenPos = IN.ase_texcoord;
+				float4 ase_screenPosNorm = screenPos / screenPos.w;
+				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
+				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
+				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
+				float3 ase_worldPos = IN.ase_texcoord1.xyz;
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / 3.0 ) );
+				float2 uv_Basemap = IN.ase_texcoord2.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
 
-				surfaceDescription.Alpha = tex2DNode57.a;
+				surfaceDescription.Alpha = ( dither158 * tex2DNode57.a );
 				surfaceDescription.AlphaClipThreshold = _AlphaClipThershold;
 
 				#if _ALPHATEST_ON
@@ -4152,13 +4342,18 @@ Node;AmplifyShaderEditor.SimpleTimeNode;79;-1024,1152;Inherit;False;1;0;FLOAT;1;
 Node;AmplifyShaderEditor.RangedFloatNode;87;-1088,1232;Inherit;False;Property;_VertexAnimateSpeed;VertexAnimateSpeed;15;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;88;-832,1152;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WorldPosInputsNode;82;-1056,1328;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.WorldPosInputsNode;174;-1184,-768;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.WorldSpaceCameraPos;173;-1232,-928;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
 Node;AmplifyShaderEditor.SimpleAddOpNode;89;-656,1152;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.RangedFloatNode;78;-768,1296;Inherit;False;Property;_VertexNoiseScale;VertexNoiseScale;16;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.DistanceOpNode;171;-928,-784;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.NoiseGeneratorNode;91;-480,1152;Inherit;True;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleDivideOpNode;176;-752,-752;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;3;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SamplerNode;57;-1232,-416;Inherit;True;Property;_Basemap;Basemap;0;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TFHCRemapNode;125;-240,1152;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;114;-304,1392;Inherit;False;Property;_VertexOffsetScale;VertexOffsetScale;17;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.CommentaryNode;108;-3200,160;Inherit;False;2292;859;;17;49;96;98;97;99;100;102;101;46;92;95;47;94;121;122;123;124;SubsurfaceScattering;1,1,1,1;0;0
+Node;AmplifyShaderEditor.DitheringNode;158;-624,-640;Inherit;False;0;False;4;0;FLOAT;0;False;1;SAMPLER2D;;False;2;FLOAT4;0,0,0,0;False;3;SAMPLERSTATE;;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;113;-16,1152;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;60;-960,64;Inherit;False;Property;_ShadeRemapMax;ShadeRemapMax;10;0;Create;True;0;0;0;False;0;False;0.7;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;59;-960,-16;Inherit;False;Property;_ShadeRemapMin;ShadeRemapMin;9;0;Create;True;0;0;0;False;0;False;0.2;0;0;0;0;1;FLOAT;0
@@ -4187,11 +4382,11 @@ Node;AmplifyShaderEditor.RangedFloatNode;95;-2832,752;Inherit;False;Property;_Su
 Node;AmplifyShaderEditor.NormalVertexDataNode;122;-3056,592;Inherit;False;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TransformDirectionNode;123;-2880,592;Inherit;False;Object;World;False;Fast;False;1;0;FLOAT3;0,0,0;False;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
 Node;AmplifyShaderEditor.NormalizeNode;124;-2672,592;Inherit;False;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.WireNode;157;-224,-192;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.NegateNode;121;-2144,560;Inherit;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.ViewDirInputsCoordNode;46;-2224,400;Inherit;False;World;True;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;94;-2480,592;Inherit;False;2;2;0;FLOAT3;0,0,0;False;1;FLOAT;0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.DotProductOpNode;49;-1936,400;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;159;-224,-336;Inherit;False;2;2;0;FLOAT;1;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;35;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;37;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;38;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;True;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
@@ -4206,9 +4401,13 @@ WireConnection;88;0;79;0
 WireConnection;88;1;87;0
 WireConnection;89;0;88;0
 WireConnection;89;1;82;0
+WireConnection;171;0;173;0
+WireConnection;171;1;174;0
 WireConnection;91;0;89;0
 WireConnection;91;1;78;0
+WireConnection;176;0;171;0
 WireConnection;125;0;91;0
+WireConnection;158;0;176;0
 WireConnection;113;0;125;0
 WireConnection;113;1;114;0
 WireConnection;98;0;96;0
@@ -4231,20 +4430,21 @@ WireConnection;92;0;47;0
 WireConnection;92;1;94;0
 WireConnection;123;0;122;0
 WireConnection;124;0;123;0
-WireConnection;157;0;57;4
 WireConnection;121;0;92;0
 WireConnection;94;0;124;0
 WireConnection;94;1;95;0
 WireConnection;49;0;46;0
 WireConnection;49;1;121;0
+WireConnection;159;0;158;0
+WireConnection;159;1;57;4
 WireConnection;36;0;56;0
 WireConnection;36;1;61;0
 WireConnection;36;2;103;0
 WireConnection;36;3;69;0
 WireConnection;36;4;70;0
 WireConnection;36;5;71;0
-WireConnection;36;6;157;0
+WireConnection;36;6;159;0
 WireConnection;36;7;72;0
 WireConnection;36;8;113;0
 ASEEND*/
-//CHKSM=B752C6103475CD9B0BF13EEAEFEC6D0B5129CFFA
+//CHKSM=84C43B098646BAF5A3213FB4BE833214923D0147

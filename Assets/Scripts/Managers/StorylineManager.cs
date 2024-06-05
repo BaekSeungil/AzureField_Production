@@ -104,6 +104,11 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
         {
             if (currentIndex == index)
                 progress = true;
+            else if(currentIndex < index)
+            {
+                progress = true;
+                currentIndex = index;
+            }
             else
                 Debug.Log("MakeProgressStoryline : 현재 Storyline의 키,번호 값과 입력한 키,번호 값이 다릅니다. 입력 :" + KeyIndexPair +" / 현재 :" +activeStorylineKey+"," + currentIndex);
         }

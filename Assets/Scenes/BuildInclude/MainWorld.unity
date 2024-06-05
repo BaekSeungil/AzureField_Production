@@ -20,9 +20,9 @@ RenderSettings:
   m_FogDensity: 0.006
   m_LinearFogStart: 100
   m_LinearFogEnd: 600
-  m_AmbientSkyColor: {r: 0.19497195, g: 0.59979737, b: 0.8104717, a: 1.21}
-  m_AmbientEquatorColor: {r: 0.5492874, g: 1.0395024, b: 1.0683386, a: 1.15555}
-  m_AmbientGroundColor: {r: 0.2746437, g: 0.5197512, b: 0.5341693, a: 1.15555}
+  m_AmbientSkyColor: {r: 1.2084906, g: 1.2905661, b: 1.4, a: 1.4}
+  m_AmbientEquatorColor: {r: 0.42851555, g: 0.98757684, b: 1.3559, a: 1.3559}
+  m_AmbientGroundColor: {r: 0.21425778, g: 0.49378842, b: 0.67795, a: 1.3559}
   m_AmbientIntensity: 0.5
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.51886785, g: 0.65117925, b: 1, a: 1}
@@ -1928,25 +1928,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc4d76f733087744991913c9d19d5274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LensFlareData: {fileID: 11400000, guid: d41f37f4e12b1874985185335ab73e6f, type: 2}
-  intensity: 0.9463711
+  m_LensFlareData: {fileID: 0}
+  intensity: 0
   maxAttenuationDistance: 100
   maxAttenuationScale: 100
   distanceAttenuationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.5125
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.81036377
-      value: 1
+      time: 0.0063285828
+      value: 1.0023499
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1954,8 +1945,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.0729218
-      value: 0.5186798
+      time: 1
+      value: -0.011791229
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1994,17 +1985,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.5125
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.81036377
-      value: 1
+      time: 0.0063285828
+      value: 1.0023499
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2012,8 +1994,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.0729218
-      value: 0.5186798
+      time: 1
+      value: -0.011791229
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2109,7 +2091,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.9914915, g: 1, b: 0.5518868, a: 0}
+  m_Color: {r: 1, g: 1, b: 0.8349056, a: 0}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
@@ -2243,6 +2225,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  enableInteractionUI: 1
   interactionUIText:
     m_TableReference:
       m_TableCollectionName: GUID:3a715556fda27954a99eef4a69db4cc8
@@ -2384,7 +2367,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 5000
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 10
@@ -9217,6 +9200,36 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 113755335737454932, guid: 12b7ad1e81e74834fa6178115f1c1284,
         type: 3}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 553006087097295554, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1173735504536127932, guid: 12b7ad1e81e74834fa6178115f1c1284,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -9302,6 +9315,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5424271205622830410, guid: 12b7ad1e81e74834fa6178115f1c1284,
         type: 3}
+    - target: {fileID: 5607687169504100635, guid: 12b7ad1e81e74834fa6178115f1c1284,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5810433410251189437, guid: 12b7ad1e81e74834fa6178115f1c1284,
         type: 3}
       propertyPath: target
@@ -9699,7 +9717,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 776137952}
@@ -11767,18 +11785,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weatherSphere: {fileID: 990758477}
   system: {fileID: 990758477}
-  cumulus: 0.09
-  cirrus: 0.16
-  altocumulus: 0.16
-  cirrostratus: 0
+  cumulus: 0.063
+  cirrus: 0.199
+  altocumulus: 0
+  cirrostratus: 0.849
   chemtrails: 0
   nimbus: 0
   nimbusHeight: 1
-  nimbusVariation: 0.07
-  borderHeight: 0.355
-  borderEffect: 1
-  borderVariation: 0.904
-  fogDensity: 3.09
+  nimbusVariation: 0
+  borderHeight: 0.436
+  borderEffect: 0.279
+  borderVariation: 0.727
+  fogDensity: 2
   weight: 1
   filterSaturation: 0
   filterValue: 0
@@ -11951,7 +11969,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794983037}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.25971946, y: 0.76074415, z: -0.19218229, w: 0.56292105}
+  m_LocalRotation: {x: 0.085405044, y: 0.2708702, z: -0.28832266, w: -0.91444266}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -12811,67 +12829,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weight: 1
   targetWeight: 1
-  cumulus: 0.09
-  cirrus: 0.16
-  altocumulus: 0.16
-  cirrostratus: 0
+  cumulus: 0.063
+  cirrus: 0.199
+  altocumulus: 0
+  cirrostratus: 0.849
   chemtrails: 0
   nimbus: 0
   nimbusHeightEffect: 1
-  nimbusVariation: 0.07
-  borderHeight: 0.355
-  borderEffect: 1
-  borderVariation: 0.904
-  fogDensity: 3.09
+  nimbusVariation: 0
+  borderHeight: 0.436
+  borderEffect: 0.279
+  borderVariation: 0.727
+  fogDensity: 2
   usePhysicalSunHeight: 1
-  sunDirection: 107
-  sunPitch: -37.7
+  sunDirection: 327
+  sunPitch: 35
   moonDirection: {x: -0.8736698, y: 0.4242983, z: 0.23805858}
-  skyZenithColor: {r: 0, g: 0.17310645, b: 0.6132076, a: 1}
-  skyHorizonColor: {r: 0, g: 0.8282523, b: 1, a: 1}
-  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  skyZenithColor: {r: 0, g: 0.19187875, b: 0.8867924, a: 1}
+  skyHorizonColor: {r: 0, g: 0.4534421, b: 1, a: 1}
+  cloudColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
   cloudHighlightColor: {r: 0, g: 34.823433, b: 97.00585, a: 1}
-  highAltitudeCloudColor: {r: 1, g: 0.96600735, b: 0.8160377, a: 1}
-  sunlightColor: {r: 0.9914915, g: 1, b: 0.5518868, a: 1}
-  starColor: {r: 0, g: 0, b: 0, a: 1}
-  ambientLightHorizonColor: {r: 0.4753471, g: 0.8995737, b: 0.9245283, a: 1}
-  ambientLightZenithColor: {r: 0.16113384, g: 0.49570027, b: 0.6698113, a: 1}
-  ambientLightMultiplier: 1.21
-  galaxyIntensity: 0
-  fogColor1: {r: 0, g: 0, b: 0, a: 0.007843138}
-  fogColor2: {r: 1, g: 1, b: 1, a: 0.05490196}
-  fogColor3: {r: 0, g: 0.45767736, b: 1, a: 0.13725491}
-  fogColor4: {r: 0, g: 0.39658165, b: 1, a: 0.69411767}
-  fogColor5: {r: 0, g: 0.4019959, b: 1.1353015, a: 0.8156863}
+  highAltitudeCloudColor: {r: 2, g: 1.9320147, b: 1.6320754, a: 1}
+  sunlightColor: {r: 1, g: 1, b: 0.8349056, a: 1}
+  starColor: {r: 2.297397, g: 2.297397, b: 2.297397, a: 1}
+  ambientLightHorizonColor: {r: 0.3160377, g: 0.7283552, b: 1, a: 1}
+  ambientLightZenithColor: {r: 0.8632076, g: 0.9218329, b: 1, a: 1}
+  ambientLightMultiplier: 1.4
+  galaxyIntensity: 0.655
+  fogColor1: {r: 0.8132075, g: 0.8981797, b: 1, a: 0}
+  fogColor2: {r: 0.49622637, g: 0.72539383, b: 1, a: 0.039215688}
+  fogColor3: {r: 0.18396229, g: 0.5554423, b: 1, a: 0.13725491}
+  fogColor4: {r: 0, g: 0.4666667, b: 1, a: 0.5529412}
+  fogColor5: {r: 0, g: 0.36649227, b: 1, a: 0.7490196}
   fogFlareColor: {r: 1.0833969, g: 1.3920008, b: 1.382235, a: 1}
   fogMoonFlareColor: {r: 0, g: 0, b: 0, a: 1}
   fogShadowColor: {r: 0, g: 0, b: 0, a: 0}
   fogLitColor: {r: 0, g: 0, b: 0, a: 0}
-  gradientExponent: 0.851
-  sunSize: 1.05
+  gradientExponent: 0.797
+  sunSize: 1.07
   sunColor: {r: 10.432951, g: 10.432951, b: 10.432951, a: 1}
-  moonColor: {r: 2, g: 2, b: 2, a: 0.24968031}
+  moonColor: {r: 1, g: 1, b: 1, a: 0}
   sunFalloff: 0.48
   sunFlareColor: {r: 2.7294118, g: 2.7137256, b: 2.0705884, a: 1}
   moonFalloff: 0.752
   moonlightColor: {r: 0, g: 0, b: 0, a: 1}
   moonFlareColor: {r: 0.023529412, g: 0.08627451, b: 0.14901961, a: 1}
-  galaxy1Color: {r: 0.21960784, g: 0.4627451, b: 1.3411765, a: 1}
+  galaxy1Color: {r: 0.52365875, g: 1.5785631, b: 1.790576, a: 1}
   galaxy2Color: {r: 0.93333334, g: 0.89411765, b: 2, a: 1}
   galaxy3Color: {r: 0.3537736, g: 0.6836287, b: 1, a: 1}
-  lightScatteringColor: {r: 0, g: 0, b: 0, a: 0}
-  rainbowPosition: 20
-  rainbowWidth: 2.7
-  fogStart1: 8.8
-  fogStart2: 15.6
-  fogStart3: 24.2
-  fogStart4: 38.9
-  fogHeight: 0.396
-  fogDensityMultiplier: 1.2
+  lightScatteringColor: {r: 0.052331794, g: 0.14103463, b: 0.2264151, a: 0.7294118}
+  rainbowPosition: 29.7
+  rainbowWidth: 50
+  fogStart1: 11.4
+  fogStart2: 23.6
+  fogStart3: 35
+  fogStart4: 50
+  fogHeight: 0.478
+  fogDensityMultiplier: 1
   fogLightFlareIntensity: 1
   fogLightFlareFalloff: 25.17635
   fogLightFlareSquish: 1
-  fogSmoothness: 0.558
+  fogSmoothness: 0.2955495
   fogVariationAmount: 0.78
   fogVariationDirection: {x: 6, y: 0, z: 0}
   fogVariationDistance: 51.6
@@ -12884,13 +12902,13 @@ MonoBehaviour:
   heightFogDistance: 5000
   heightFogColor: {r: 1, g: 1, b: 1, a: 0.39215687}
   cloudMoonColor: {r: 0, g: 0, b: 0, a: 1}
-  cloudSunHighlightFalloff: 25.1
+  cloudSunHighlightFalloff: 21.2
   cloudMoonHighlightFalloff: 11.9
-  cloudWindSpeed: 5.39
-  clippingThreshold: 0.489
+  cloudWindSpeed: 3.04
+  clippingThreshold: 0.575
   cloudMainScale: 42
-  cloudDetailScale: 3.28
-  cloudDetailAmount: 28.5
+  cloudDetailScale: 2.98
+  cloudDetailAmount: 25.9
   acScale: 0.371
   cirroMoveSpeed: 0.281
   cirrusMoveSpeed: 0.297
@@ -12908,11 +12926,11 @@ MonoBehaviour:
     type: 3}
   cirrostratusCloudTexture: {fileID: 2800000, guid: bf43c8d7b74e204469465f36dfff7d6a,
     type: 3}
-  starMap: {fileID: 2800000, guid: 610adfdc91abe6e49a06f9b16aaeed7e, type: 3}
-  galaxyMap: {fileID: 2800000, guid: 9e328e1f846025e47ad7a9f00ca77f9b, type: 3}
+  starMap: {fileID: 2800000, guid: 93557f6a2b0824644b6ddaa6442e6c8e, type: 3}
+  galaxyMap: {fileID: 2800000, guid: 638cc442ec8c58c4fa3027cb13d4c95c, type: 3}
   galaxyStarMap: {fileID: 2800000, guid: 831ed62fbc9349041bf2404184ed2461, type: 3}
-  galaxyVariationMap: {fileID: 2800000, guid: 638cc442ec8c58c4fa3027cb13d4c95c, type: 3}
-  lightScatteringMap: {fileID: 2800000, guid: 5577fd51123d5de4d93e8555a7bb084e, type: 3}
+  galaxyVariationMap: {fileID: 2800000, guid: 58e268609009d964b90ccc3241ea7df1, type: 3}
+  lightScatteringMap: {fileID: 2800000, guid: cd724bd74f795ff4ba24bfa98a6c9cd8, type: 3}
   texturePanDirection: {x: 0, y: 0, z: 0}
   partlyCloudyLuxuryClouds: {fileID: 2800000, guid: 4aedeee388f3b8549b4483841794e33d,
     type: 3}
@@ -12936,24 +12954,15 @@ MonoBehaviour:
   separateSunLightAndTransform: 0
   sunAngle: 0.5
   sunFlare:
-    flare: {fileID: 11400000, guid: d41f37f4e12b1874985185335ab73e6f, type: 2}
-    intensity: 1
+    flare: {fileID: 0}
+    intensity: 0
     scale: 1
     screenAttenuation:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.5125
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.81036377
-        value: 1
+        time: 0.0063285828
+        value: 1.0023499
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -12961,8 +12970,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1.0729218
-        value: 0.5186798
+        time: 1
+        value: -0.011791229
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -13076,7 +13085,7 @@ Transform:
   m_GameObject: {fileID: 990758476}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.16539, y: 7.48114, z: -6.2986374}
+  m_LocalPosition: {x: -19941.879, y: -294.7566, z: -7213.6245}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23040,7 +23049,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -26845,7 +26854,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -31853,17 +31862,17 @@ PrefabInstance:
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.22817682
+      value: 0.2281768
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000000038485375
+      value: -0.000000025421702
       objectReference: {fileID: 0}
     - target: {fileID: 4593974527258063353, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -9.0194047e-10
+      value: 0.0000000059578116
       objectReference: {fileID: 0}
     - target: {fileID: 5107199997288895435, guid: 233293587716d554a8f2357c5d1ccc48,
         type: 3}
