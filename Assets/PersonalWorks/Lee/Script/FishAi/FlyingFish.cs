@@ -3,23 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Animations;
+
 public class FlyingFish : MonoBehaviour
 {
-    [SerializeField,LabelText("이동속도")] public float Speed;
-    [SerializeField,LabelText("최종도착거리")] public float FinalLine;
+    [SerializeField, LabelText("이동속도")] public float Speed;
+    [SerializeField, LabelText("최종도착거리")] public float FinalLine;
     [SerializeField, LabelText("점프 높이")] public float JumpHeight;
     [SerializeField, LabelText("점프 주기")] public float JumpFrequency;
-  
+
     private Vector3 initialPosition;
-    private Animator FishAni;
     private float journeyLength;
     private float startTime;
 
     void Start()
     {
         initialPosition = transform.position;
-        FishAni = GetComponent<Animator>();
         startTime = Time.time;
         journeyLength = Vector3.Distance(initialPosition, new Vector3(initialPosition.x, initialPosition.y, initialPosition.z + FinalLine));
     }
@@ -27,30 +25,21 @@ public class FlyingFish : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       MoveFish();
+        MoveFish();
     }
 
     public void MoveFish()
     {
-       
-       // 물고기를 앞으로 이동시킵니다.
+
+        // 물고기를 앞으로 이동시킵니다.
         float distCovered = (Time.time - startTime) * Speed;
         float fractionOfJourney = distCovered / journeyLength;
-        
+
         transform.Translate(Vector3.forward * Speed * Time.deltaTime);
 
         // 물고기가 곡선으로 이동하도록 합니다.
         float newY = Mathf.Sin(fractionOfJourney * Mathf.PI * JumpFrequency) * JumpHeight;
         transform.position = new Vector3(transform.position.x, initialPosition.y + newY, transform.position.z);
-
-        if(newY >0)
-        {
-            FishAni.SetBool("Jump",true);
-        }
-        else
-        {
-            FishAni.SetBool("Jump",false);
-        }
 
         Vector3 horizontalPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         // 설정된 이동 거리를 넘어가면 원래 위치로 돌아옵니다.
@@ -59,16 +48,16 @@ public class FlyingFish : MonoBehaviour
             transform.position = initialPosition; // 다시 스폰에서 생성
             startTime = Time.time; // 시작 시간 재설정
         }
-        
-    }
 
+    }
+#if UNITY_EDITOR
     void OnDrawGizmos()
     {
-        if (!Application.isPlaying)
-        {
-            // 게임이 실행되지 않을 때 현재 오브젝트의 위치를 초기 위치로 사용
-            initialPosition = transform.position;
-        }
+        //if (!Application.isPlaying)
+        //{
+        //    // 게임이 실행되지 않을 때 현재 오브젝트의 위치를 초기 위치로 사용
+        //    initialPosition = transform.position;
+        //}
 
         Gizmos.color = Color.cyan;
         // 오브젝트의 앞 방향을 통해 최종 도착 지점을 계산
@@ -97,5 +86,5 @@ public class FlyingFish : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(finalPosition, 0.5f);
     }
-
+#endif
 }
