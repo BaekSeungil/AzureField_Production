@@ -800,7 +800,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
-                Debug.Log("SlopeResistance : " + player.slopeResistence);
 
                 Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.slopeResistence * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
@@ -810,14 +809,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
-                //slope boost
-                //float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
-                //                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
-                //                ? 1.0f : 0.5f;
-
-                //player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
-
-                //rotation
                 bool LargeTurn = Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(lookTransformedVector, Vector3.up)) > 60f;
 
                 player.transform.rotation = Quaternion.RotateTowards(
