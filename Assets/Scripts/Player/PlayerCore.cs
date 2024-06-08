@@ -760,6 +760,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         public virtual void OnMovementExit(PlayerCore @player) { }
     }
 
+    float slopeResistence = 1f;
+
 /// <summary>
 /// 플레이어가 땅 위를 뛰어다니는 상태일 때
 /// </summary>
@@ -795,10 +797,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                 Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
+                player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
+                Debug.Log("SlopeResistance : " + player.slopeResistence);
 
-                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
+                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.slopeResistence * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
                     finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging);
@@ -850,6 +854,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    readonly float waterjumpInterval = 1f;
+    float waterjumpTimer = 0f;
+
     /// <summary>
     /// 플레이어가 수영중인 상황일 때
     /// </summary>
@@ -867,6 +874,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
+            player.waterjumpTimer += Time.fixedDeltaTime;
 
             if (player.buoyant.SubmergeRateZeroClamped < 0)
             {
@@ -1320,12 +1328,22 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
-            if (Vector3.Angle(groundNormal, Vector3.up) < slopeEffect.x)
+            float groundNormAngle = Vector3.Angle(groundNormal, Vector3.up);
+            if (groundNormAngle < slopeEffect.y)
             {
-                rBody.velocity += Vector3.up * jumpPower;
+                rBody.velocity += Vector3.up * jumpPower * Mathf.InverseLerp(slopeEffect.y, slopeEffect.x, groundNormAngle);
                 jumpEffect.Emit((int)jumpEffect.emission.GetBurst(0).count.constant);
                 animator.SetFloat("AirboneBlend", 0f);
                 PlayFootstepSound();
+            }
+        }
+        else if (CurrentMovement.GetType() == typeof(Movement_Swimming))
+        {
+            if(buoyant.SubmergeRate < 0f && buoyant.SubmergeRate > -1f && waterjumpTimer > waterjumpInterval)
+            {
+                waterjumpTimer = 0f;
+                rBody.velocity += Vector3.up * jumpPower;
+                Instantiate(normalSplashEffectPrefab, new Vector3(transform.position.x, GlobalOceanManager.Instance.GetWaveHeight(transform.position), transform.position.z), Quaternion.identity);
             }
         }
     }
@@ -1352,7 +1370,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterCoroutine = StartCoroutine(Cor_Booster());
 
     }
-
 
     private void OnLeapupStart(InputAction.CallbackContext context)
     {
