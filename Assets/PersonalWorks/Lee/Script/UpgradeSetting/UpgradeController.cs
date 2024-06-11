@@ -18,7 +18,6 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("보트 부스터 가속도 증가")] public float PlusBoatSpeed;
     [SerializeField,LabelText("보트 업그레이드 창")] public GameObject BoatWindow;
     [SerializeField,LabelText("플레이어 업그레이드 창")] public GameObject PlayerWindow;
-
     [SerializeField,LabelText("되묻는 창")] public GameObject AskUpgradeWindow;
 
     private BoatUpgradeType boatUpgradeType;
@@ -49,21 +48,25 @@ public class UpgradeController : MonoBehaviour
     public void GetChangeTypeButtonJump()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
+        BoatUpGrade();
     }
 
     public void GetChangeTypeButtonKeep()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatKeepType;
+        BoatUpGrade();
     }
 
     public void GetChangeTypeButtonSpeed()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatSpeedType;
+        BoatUpGrade();
     }
 
     public void GetAskUpgrade()
     {
         AskUpgradeWindow.SetActive(true);
+        BoatUpGrade();
     }
 
     public void OutAskUpgrade()
