@@ -23,16 +23,10 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
     private void Start()
     {
-        if(floating)
-        {
-            GetComponent<DOTweenAnimation>().DOPlayById("CarrotFloating");
-        }
     }
 
     public override void Interact()
     {
-        GetComponent<DOTweenAnimation>().DOPause();
-
         if (!floating)
         {
             carrotAquiredSequences = new Sequence_Base[7];

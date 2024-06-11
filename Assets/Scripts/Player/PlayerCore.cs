@@ -762,13 +762,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     float slopeResistence = 1f;
 
+
 /// <summary>
 /// 플레이어가 땅 위를 뛰어다니는 상태일 때
 /// </summary>
     protected class Movement_Ground : MovementState
     {
         bool sliding = false;
-
+        float idleAnimationtime = 5f;
+        float IdleTimer = 0f;
         private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
         {
             return Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f, Vector3.Dot(forward, Vector3.up));
@@ -823,11 +825,22 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
+                IdleTimer = 0f;
             }
             else
             {
                 player.rBody.velocity = Vector3.Lerp(player.rBody.velocity, new Vector3(0f, player.rBody.velocity.y, 0f), player.horizontalDrag / 0.2f);
                 player.animator.SetBool("MovementInput", false);
+
+                IdleTimer += Time.fixedDeltaTime;
+
+                if (IdleTimer > idleAnimationtime)
+                {
+                    player.animator.SetTrigger("IdleAnimation");
+                    IdleTimer = 0f;
+                    idleAnimationtime = Random.Range(25f, 40f);
+                }
+
             }
         }
 
