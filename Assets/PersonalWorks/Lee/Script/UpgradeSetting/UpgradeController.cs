@@ -21,6 +21,7 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("되묻는 창")] public GameObject AskUpgradeWindow;
 
     private BoatUpgradeType boatUpgradeType;
+    private PlayerCore Player;
     void Start()
     {
         
@@ -31,11 +32,6 @@ public class UpgradeController : MonoBehaviour
     {
         
     }
-
-
-
-
-
 
 
     public void BoatUpGrade()
