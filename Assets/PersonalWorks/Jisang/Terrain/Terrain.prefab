@@ -119,8 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4145640448677643548}
   - component: {fileID: 3594246466121284628}
-  - component: {fileID: 6025666145980144869}
-  - component: {fileID: 956099683690028600}
+  - component: {fileID: 4097784394926402521}
   m_Layer: 0
   m_Name: Terrain_Grass
   m_TagString: Untagged
@@ -182,27 +181,7 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
---- !u!154 &6025666145980144869
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5386253303962643068}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: b781a6dfc3ba00546916c9cf9de39121, type: 2}
-  m_EnableTreeColliders: 1
---- !u!114 &956099683690028600
+--- !u!114 &4097784394926402521
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -211,11 +190,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5386253303962643068}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79e16b3a98120d245b51d327c9912984, type: 3}
+  m_Script: {fileID: 11500000, guid: 119995e2f895d6d489bc0bcefad8ba9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundmat: 0
-  soundPerLayer: 01000000030000000000000003000000
+  preRegistedPlayer: []
+  heightOverrideValue: 0.2
+  defaultGrassTexture: {fileID: 2800000, guid: 75797fb6184387a4092fbb5b87b25bf7, type: 3}
+  radius: 0.5
+  GrassCollider: {fileID: 3643701597585491723}
+  grassGroundMeshFilter: {fileID: 0}
+  renderTexture: {fileID: 8400000, guid: ca9f84bb484c8574a8a4177f770aa037, type: 2}
 --- !u!1 &8995221251793913474
 GameObject:
   m_ObjectHideFlags: 0

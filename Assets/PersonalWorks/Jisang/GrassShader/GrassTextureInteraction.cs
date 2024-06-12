@@ -9,6 +9,10 @@ public class GrassTextureInteraction : MonoBehaviour
     public static readonly List<GameObject> players = new List<GameObject>();
 
     [SerializeField]
+    private List<GameObject> preRegistedPlayer;
+
+
+    [SerializeField]
     private float heightOverrideValue;
 
     [SerializeField]
@@ -41,12 +45,15 @@ public class GrassTextureInteraction : MonoBehaviour
     {
         Initialize();
         StartCoroutine(UpdateTexture());
+        players.AddRange(preRegistedPlayer);
     }
 
     private void Initialize()
     {
         texture.SetPixels32(defaultGrassTexture.GetPixels32(), 0);
         Graphics.Blit(defaultGrassTexture, renderTexture);
+        if (grassGroundMeshFilter == null)      //unity null
+            grassGroundMeshFilter = null;       //c# null
     }
 
 
@@ -65,9 +72,9 @@ public class GrassTextureInteraction : MonoBehaviour
                     continue;
                 }
 
-                var ray = new Ray(target.transform.position + Vector3.up * 1000, Vector3.down);
+                var ray = new Ray(target.transform.position + Vector3.up, Vector3.down * 1.1f);
 
-                if (GrassCollider.Raycast(ray, out var hit, 2000f))
+                if (GrassCollider.Raycast(ray, out var hit, 1.1f))
                 {
                     HitPoints.Add(hit.textureCoord);
                 }
@@ -84,11 +91,11 @@ public class GrassTextureInteraction : MonoBehaviour
     {
         if (HitPoints.Count == 0)
             return;
-        
-        var bound = grassGroundMeshFilter.mesh.bounds.size;
+
+        var bound = grassGroundMeshFilter?.mesh.bounds.size ?? GrassCollider.bounds.size;
         Vector2Int factor = new Vector2Int(
-            Mathf.RoundToInt(radius * texture.width / (bound.x * grassGroundMeshFilter.transform.lossyScale.x)),
-            Mathf.RoundToInt(radius * texture.height / (bound.z * grassGroundMeshFilter.transform.lossyScale.z)));
+            Mathf.RoundToInt(radius * texture.width / (bound.x * (grassGroundMeshFilter?.transform.lossyScale.x ?? 1))),
+            Mathf.RoundToInt(radius * texture.height / (bound.z * (grassGroundMeshFilter?.transform.lossyScale.z ?? 1))));
 
         if (PaintColor(factor, HitPoints, Color.green + Color.blue, heightOverrideValue))
         {
