@@ -43,8 +43,6 @@ public class UI_InteractionInfo : StaticSerializedMonoBehaviour<UI_InteractionIn
             if (worldObjectTarget != null)
                 panelRect.position = Camera.main.WorldToScreenPoint(worldObjectTarget.position) + Vector3.up * yOffset;
 
-            textMesh.rectTransform.anchoredPosition = panelRect.anchoredPosition;
-
         }
     }
 
@@ -55,7 +53,6 @@ public class UI_InteractionInfo : StaticSerializedMonoBehaviour<UI_InteractionIn
         worldObjectTarget = target;
         textMesh.text = infoName;
         Canvas.ForceUpdateCanvases();
-        panelRect.sizeDelta = textMesh.rectTransform.sizeDelta;
     }
 
     public bool CompareCurrentTarget(Transform target)
