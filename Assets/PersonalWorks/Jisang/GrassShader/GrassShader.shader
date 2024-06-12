@@ -50,7 +50,7 @@ Shader "Custom/GrassShader"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "RenderPipeline"="UniversalPipeline" }
+        Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "RenderPipeline"="UniversalPipeline" "TerrainCompatible" = "True" }
         LOD 100
         Cull Off
 
