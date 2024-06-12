@@ -8,8 +8,6 @@ using UnityEngine;
 
 public class Interactable_GoldenCarrot : Interactable_Base
 {
-    [InfoBox("같은 오브젝트 이름을 가진 황금당근이 생기지 않도록 해주세요! 애니메이션이 제데로 작동하지 않을 수 있습니다")]
-
     [SerializeField] private string _ID;
     public string ID { get { return _ID; } }
     [SerializeField, LabelText("공중에 떠있음")] private bool floating = false;
