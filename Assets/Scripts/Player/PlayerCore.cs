@@ -120,6 +120,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform flowerHodlingTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig headRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig handRig;
@@ -131,6 +132,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
+
+    public Transform HoldingItemTarget { get { return holdingItemTarget; } }
+    public Transform FlowerHoldingTarget { get { return flowerHodlingTarget; } }
     #endregion
 
 
@@ -1397,7 +1401,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     bool leapupRecharging = false;
     bool leapupRechargeTriggered = false;
 
-
     public void AbortBooster()
     {
         if (boosterCoroutine == null) return;
@@ -1629,6 +1632,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void EnableAndSetIndicator(Vector3 target)
     {
         directionIndicator.EnableAndSetIndicator(target);
+    }
+
+    public void OnFlowerPicked(bool value)
+    {
+        animator.SetBool("PickupBlossom",value);
     }
 
     /// <summary>
