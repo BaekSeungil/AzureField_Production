@@ -1728,6 +1728,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     /// <summary>
+    /// 플레이어의 업그레이드 함수관리를 하는 변수
+    /// </summary>
+    
+    public void PlayerUpgradeState(float UpgradeState)
+    {
+        leapupPower += UpgradeState;
+        boosterDuration += UpgradeState;
+        boosterMult += UpgradeState;
+    }
+
+    /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
     /// </summary>
     IEnumerator ReefCrash()
