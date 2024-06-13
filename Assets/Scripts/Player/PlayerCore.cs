@@ -90,6 +90,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     [Title("Info")]
     [SerializeField, ReadOnly, LabelText("PlayerControl enabled")] private bool control_disabled_debug;
+    [SerializeField, ReadOnly, LabelText("Control Disable Stack")] private int control_disableStack_debug;
     [SerializeField, ReadOnly, LabelText("Currentmove")] private string current_move_debug = "";
     [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
@@ -796,6 +797,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = currentHoldingItem.gameObject.name;
         else
             current_holding_item_debug = "NULL";
+
+        control_disableStack_debug = disableStack;
 #endif
     }
 
@@ -851,7 +854,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     protected class Movement_Ground : MovementState
     {
         bool sliding = false;
-        float idleAnimationtime = 5f;
+        float idleAnimationtime = 30f;
         float IdleTimer = 0f;
         private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
         {
@@ -907,6 +910,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
+
                 IdleTimer = 0f;
             }
             else
@@ -1681,15 +1685,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
+    int disableStack = 0;
+    public int DisableStack { get { return disableStack; } }
+
     /// <summary>
     ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     /// </summary>
     public void DisableControls()
     {
-        input.Player.Disable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
-        if(CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        if(disableStack <= 0)
+        {
+            input.Player.Disable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = false; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        }
+
+        disableStack++;
     }
 
     /// <summary>
@@ -1697,10 +1709,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     public void EnableControlls()
     {
-        input.Player.Enable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
-        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+        disableStack--;
+
+        if (disableStack <= 0)
+        {
+            input.Player.Enable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+            disableStack = 0;
+        }
     }
 
     /// <summary>

@@ -186,11 +186,11 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <param name="pointOnSpline"> Spline으로부터 최단지점에 위치한 지점 </param>
     /// <param name="t"> 0-1 값으로 보간된 지점 </param>
     /// <returns></returns>
-    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t)
+    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t,int resolutions = 2, int iterations = 1)
     {
         float3 p;
         point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
-        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t);
+        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t,2,1);
         pointOnSpline = new Vector3(p.x, p.y, p.z);
         pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
 
