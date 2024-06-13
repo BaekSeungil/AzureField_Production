@@ -226,7 +226,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         JumpPower,
         Steering,
         SailboatAcceleration,
-        SailboatGliding
+        SailboatGliding,
+        LeapupPower,
+        BoosterDuration,
+        BoosterMult
     }
 
     public class AbilityAttributeUnit
@@ -386,6 +389,81 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < IDAttributes.Count; i++)
             {
                 if (IDAttributes[i].attribute == AbilityAttribute.Steering)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalLeapupPower
+    {
+        get
+        {
+            float result = leapupPower;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterDuration
+    {
+        get
+        {
+            float result = boosterDuration;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterMult
+    {
+        get
+        {
+            float result = boosterMult;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterMult)
                     result *= IDAttributes[i].value;
             }
             return result;
@@ -1452,7 +1530,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
-            rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
+            rBody.AddForce(Vector3.up * FinalLeapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
             leapupGauge = t / leapupDuration;
             UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
             yield return new WaitForFixedUpdate();
