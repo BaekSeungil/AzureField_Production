@@ -1499,13 +1499,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterGauge = 1f;
         animator.SetBool("Booster", true);
 
-        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, boosterMult, "SailboatBooster");
+        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, FinalBoosterMult, "SailboatBooster");
 
         boosterActive = true;
 
-        for(float t = boosterDuration; t > 0; t -= Time.deltaTime)
+        for(float t = FinalBoosterDuration; t > 0; t -= Time.deltaTime)
         {
-            boosterGauge = t / boosterDuration;
+            boosterGauge = t / FinalBoosterDuration;
             UI_SailboatSkillInfo.Instance.SetBoosterRing(boosterGauge);
             SpeedLineControl.Instance.SetSpeedLine(Mathf.Clamp01(rBody.velocity.magnitude / 40f)*2.0f);
             yield return null;
