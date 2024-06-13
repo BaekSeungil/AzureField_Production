@@ -1733,7 +1733,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     
     public void PlayerUpgradeState(float UpgradeState)
     {
-         leapupPower += UpgradeState;
+        leapupPower += UpgradeState;
+        boosterDuration += UpgradeState;
+        boosterMult += UpgradeState;
     }
 
     /// <summary>
