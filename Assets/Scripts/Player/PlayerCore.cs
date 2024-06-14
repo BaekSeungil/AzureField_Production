@@ -132,6 +132,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator bellflowerLockPointAnimator;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
 
     public Transform HoldingItemTarget { get { return holdingItemTarget; } }
@@ -1733,6 +1734,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void OnFlowerPicked(bool value)
     {
         animator.SetBool("PickupBlossom",value);
+        bellflowerLockPointAnimator.GetComponent<Animator>().SetBool("Pickup",true);
     }
 
     /// <summary>
