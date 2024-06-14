@@ -372,6 +372,7 @@ Shader "SimpleURPToonLitExample(With Outline)"
             Name "Outline"
             Tags 
             {
+                "LightMode" = "PlayerOutline"
                 // IMPORTANT: don't write this line for any custom pass(e.g. outline pass)! 
                 // else this outline pass(custom pass) will not be rendered by URP!
                 //"LightMode" = "UniversalForwardOnly" 
