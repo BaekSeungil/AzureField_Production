@@ -80,6 +80,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
     [SerializeField, LabelText("드리프트 순간추진")] private EventReference sound_driftKick;
     [SerializeField, LabelText("드리프트 충전됨")] private EventReference sound_driftCharged;
+    [SerializeField, LabelText("조각배 충돌")] private EventReference sound_SailboatBump;
 
     [Title("기타")]
     [SerializeField, LabelText("캐릭터 시선 타겟 유지거리")] private float interestDistance = 10.0f;
@@ -117,6 +118,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem footstepEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem jumpEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stoneAttackEffect;
+    [SerializeField, Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stunEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
@@ -1864,12 +1866,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         DisableControls();
         animator.SetTrigger("ReefCrash");
+        RuntimeManager.PlayOneShot(sound_SailboatBump);
         AbortBooster();
         driftActive = false;
+        stunEffect.Play(true);
         stoneAttackEffect.Play(true);
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
         rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);
+        
         yield return new WaitForSeconds(reefCrashStifftime);
 
 

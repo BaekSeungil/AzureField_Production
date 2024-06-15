@@ -3,7 +3,6 @@ using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class Interactable_GoldenCarrot : Interactable_Base

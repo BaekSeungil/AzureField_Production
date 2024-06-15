@@ -309,6 +309,8 @@ public class FairwindChallengeInstance : MonoBehaviour
         lightPilarObject.transform.position = new Vector3(knot.x, lightPilarObject.transform.position.y, knot.z);
     }
 
+    float abortTimer = 0f;
+
     private void Update()
     {
         if (currentState == ChallengeState.Closed) return;
@@ -329,7 +331,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
             float t = 0;
-            if (GetDistanceFromSpline(activeSplineSegment,PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
+            if (GetDistanceFromSpline(activeSplineSegment, PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
             {
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
@@ -353,7 +355,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Standby)
         {
-
             if (GetProjectedDistanceFromPlayer(startKnotPosition) < triggerDistance)
             {
                 currentState = ChallengeState.Active;
@@ -363,13 +364,15 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Aborted)
         {
-            if (GetProjectedDistanceFromPlayer(startKnotPosition) > triggerDistance)
+            abortTimer += Time.deltaTime;
+
+            if (abortTimer > 4.0f)
             {
+                abortTimer = 0f;
                 currentState = ChallengeState.Standby;
             }
+
         }
-
-
     }
 
     private float GetProjectedDistanceFromPlayer(Vector3 target)
