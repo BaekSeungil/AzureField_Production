@@ -120,6 +120,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform flowerHodlingTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig headRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig handRig;
@@ -131,6 +132,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
+
+    public Transform HoldingItemTarget { get { return holdingItemTarget; } }
+    public Transform FlowerHoldingTarget { get { return flowerHodlingTarget; } }
     #endregion
 
 
@@ -222,7 +226,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         JumpPower,
         Steering,
         SailboatAcceleration,
-        SailboatGliding
+        SailboatGliding,
+        LeapupPower,
+        BoosterDuration,
+        BoosterMult
     }
 
     public class AbilityAttributeUnit
@@ -382,6 +389,81 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < IDAttributes.Count; i++)
             {
                 if (IDAttributes[i].attribute == AbilityAttribute.Steering)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalLeapupPower
+    {
+        get
+        {
+            float result = leapupPower;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterDuration
+    {
+        get
+        {
+            float result = boosterDuration;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterMult
+    {
+        get
+        {
+            float result = boosterMult;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterMult)
                     result *= IDAttributes[i].value;
             }
             return result;
@@ -762,13 +844,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     float slopeResistence = 1f;
 
+
 /// <summary>
 /// 플레이어가 땅 위를 뛰어다니는 상태일 때
 /// </summary>
     protected class Movement_Ground : MovementState
     {
         bool sliding = false;
-
+        float idleAnimationtime = 5f;
+        float IdleTimer = 0f;
         private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
         {
             return Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f, Vector3.Dot(forward, Vector3.up));
@@ -823,11 +907,22 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
+                IdleTimer = 0f;
             }
             else
             {
                 player.rBody.velocity = Vector3.Lerp(player.rBody.velocity, new Vector3(0f, player.rBody.velocity.y, 0f), player.horizontalDrag / 0.2f);
                 player.animator.SetBool("MovementInput", false);
+
+                IdleTimer += Time.fixedDeltaTime;
+
+                if (IdleTimer > idleAnimationtime)
+                {
+                    player.animator.SetTrigger("IdleAnimation");
+                    IdleTimer = 0f;
+                    idleAnimationtime = Random.Range(25f, 40f);
+                }
+
             }
         }
 
@@ -1384,7 +1479,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     bool leapupRecharging = false;
     bool leapupRechargeTriggered = false;
 
-
     public void AbortBooster()
     {
         if (boosterCoroutine == null) return;
@@ -1405,13 +1499,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterGauge = 1f;
         animator.SetBool("Booster", true);
 
-        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, boosterMult, "SailboatBooster");
+        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, FinalBoosterMult, "SailboatBooster");
 
         boosterActive = true;
 
-        for(float t = boosterDuration; t > 0; t -= Time.deltaTime)
+        for(float t = FinalBoosterDuration; t > 0; t -= Time.deltaTime)
         {
-            boosterGauge = t / boosterDuration;
+            boosterGauge = t / FinalBoosterDuration;
             UI_SailboatSkillInfo.Instance.SetBoosterRing(boosterGauge);
             SpeedLineControl.Instance.SetSpeedLine(Mathf.Clamp01(rBody.velocity.magnitude / 40f)*2.0f);
             yield return null;
@@ -1436,7 +1530,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
-            rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
+            rBody.AddForce(Vector3.up * FinalLeapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
             leapupGauge = t / leapupDuration;
             UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
             yield return new WaitForFixedUpdate();
@@ -1616,6 +1710,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void EnableAndSetIndicator(Vector3 target)
     {
         directionIndicator.EnableAndSetIndicator(target);
+    }
+
+    public void OnFlowerPicked(bool value)
+    {
+        animator.SetBool("PickupBlossom",value);
     }
 
     /// <summary>
