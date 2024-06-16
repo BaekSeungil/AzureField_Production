@@ -9,6 +9,9 @@ using Unity.Entities;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using FMOD;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
+using System.Linq;
 
 public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
 {
@@ -16,8 +19,10 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
     [SerializeField] public GameObject MoveSetting;
+    [SerializeField] public TMP_Dropdown languageDropdown;
 
     MainPlayerInputActions settigUI_inputs;
+    List<Locale> locales;
 
     protected override void Awake()
     {
@@ -70,6 +75,22 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         MoveSetting.SetActive(false);
     }
 
+    public void Start()
+    {
+        locales = LocalizationSettings.AvailableLocales.Locales;
+        string[] localeNames = locales.Select(l => l.LocaleName).ToArray();
+
+        List<TMP_Dropdown.OptionData> opt = new List<TMP_Dropdown.OptionData>();
+        foreach(var loc in localeNames)
+        {
+            opt.Add(new TMP_Dropdown.OptionData(loc));
+        }
+
+        languageDropdown.ClearOptions();
+        languageDropdown.AddOptions(opt);
+        languageDropdown.value = opt.FindIndex(o => o.text == LocalizationSettings.SelectedLocale.LocaleName);
+    }
+
     public void OnDisable()
     {
         Setting.SetActive(false);
@@ -109,6 +130,11 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         MoveSetting.SetActive(false);
     }
 
+    public void SetLanguage(int index)
+    {
+        LocalizationSettings.SelectedLocale = locales[index];
+    }
+    
     public void QuitGame()
     {
         Application.Quit();
