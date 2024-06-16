@@ -55,17 +55,17 @@ public class UpgradeController : MonoBehaviour
 
 
     #if UNITY_EDITOR
-    public void GetChangeTypeButtonJump()
+    public void ButtonTypeJump()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
     }
 
-    public void GetChangeTypeButtonKeep()
+    public void ButtonTypeboosterDuration()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
     }
 
-    public void GetChangeTypeButtonSpeed()
+    public void ButtonTypeboosterMult()
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
     }
