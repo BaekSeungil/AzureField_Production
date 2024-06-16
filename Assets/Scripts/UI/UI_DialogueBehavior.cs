@@ -129,7 +129,6 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
             dialogueProceed = false;
 
             inputWaitObject.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
 
             yield return new WaitUntil(() => dialogueProceed);
             inputWaitObject.SetActive(false);
