@@ -3,7 +3,6 @@ using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class Interactable_GoldenCarrot : Interactable_Base
@@ -39,8 +38,12 @@ public class Interactable_GoldenCarrot : Interactable_Base
         stemObject.SetActive(true);
         flowerFullObject.SetActive(false);
         budObject.SetActive(true);
-        budObject.transform.SetParent(PlayerCore.Instance.FlowerHoldingTarget,false);
-        budObject.transform.localPosition = Vector3.zero;
+        budObject.transform.SetParent(PlayerCore.Instance.FlowerHoldingTarget,false);       
+    }
+
+    public void DestroyBud()
+    {
+        Destroy(budObject);
     }
 
     public override void Interact()
@@ -78,6 +81,11 @@ public class Interactable_GoldenCarrot : Interactable_Base
 
         yield return StartCoroutine(PlayerInventoryContainer.Instance.Cor_ItemWindow(carrotItem, carrotQuantity));
 
+        RuntimeManager.PlayOneShot(sound_CarrotGone);
+        budObject.GetComponent<DOTweenAnimation>().DORestart();
+        PlayerCore.Instance.OnFlowerPicked(false);
+        yield return new WaitForSeconds(1.0f);
+
         PlayerCore.Instance.OnFlowerPicked(false);
         PlayerCore.Instance.EnableControlls();
         flowerPickFlag = false;
@@ -86,6 +94,7 @@ public class Interactable_GoldenCarrot : Interactable_Base
         base.OnDisable();
     }
 
+    #region LegacyCodes
     //public override void Interact()
     //{
     //    flowerAnimator.SetTrigger("Picked");
@@ -148,4 +157,6 @@ public class Interactable_GoldenCarrot : Interactable_Base
     //    SequenceInvoker.Instance.StartSequence(carrotAquiredSequences);
     //    base.OnDisable();
     //}
+    #endregion
+
 }
