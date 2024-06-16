@@ -25,9 +25,9 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("보트 업그레이드 창")] public GameObject BoatWindow;
 
     [SerializeField,LabelText("가지고 있는재료 텍스쳐")] public TMPro.TMP_Text Have_IntText;
-    [SerializeField,LabelText("가지고 있는재료 설정")] private int Have_Int;
+    [SerializeField,LabelText("가지고 있는재료 수")] private int Have_Int;
     [SerializeField,LabelText("필요한 재료 텍스쳐")] public TMPro.TMP_Text Need_IntText;
-    [SerializeField,LabelText("필요한 재료 텍스쳐")]  private int Need_Int;
+    [SerializeField,LabelText("필요한 재료 수")]  private int Need_Int;
     [SerializeField,LabelText("업글 전 수치")] public TMPro.TMP_Text BeforeText;
     private float BeforeUpgrade;
     [SerializeField,LabelText("업글 후 수치")] public TMPro.TMP_Text AfterText;
@@ -72,7 +72,7 @@ public class UpgradeController : MonoBehaviour
     #if UNITY_EDITOR
     public void ButtonTypeJump()
     {
-
+        BoatWindow.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
         BeforeUpgrade = Player.ViewleapupPower;
         BeforeText.text = $"{BeforeUpgrade}";
@@ -86,6 +86,10 @@ public class UpgradeController : MonoBehaviour
     {
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
         BoatWindow.SetActive(true);
+        BeforeUpgrade = Player.ViewleapupPower;
+        BeforeText.text = $"{BeforeUpgrade}";
+        AtfterUpgrade =  Player.ViewleapupPower + PlusBoatJump;
+        AfterText.text = $"{AtfterUpgrade}";
     }
 
     public void ButtonTypeboosterMult()
@@ -96,9 +100,6 @@ public class UpgradeController : MonoBehaviour
 
     public void GetAskUpgrade()
     {
-        
-
-
         Need_Int += 1;
         Need_IntText.text = Need_Int.ToString();
         AskUpgradeWindow.SetActive(true);
