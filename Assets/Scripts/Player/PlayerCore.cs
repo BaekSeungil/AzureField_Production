@@ -80,6 +80,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
     [SerializeField, LabelText("드리프트 순간추진")] private EventReference sound_driftKick;
     [SerializeField, LabelText("드리프트 충전됨")] private EventReference sound_driftCharged;
+    [SerializeField, LabelText("조각배 충돌")] private EventReference sound_SailboatBump;
 
     [Title("기타")]
     [SerializeField, LabelText("캐릭터 시선 타겟 유지거리")] private float interestDistance = 10.0f;
@@ -90,6 +91,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     [Title("Info")]
     [SerializeField, ReadOnly, LabelText("PlayerControl enabled")] private bool control_disabled_debug;
+    [SerializeField, ReadOnly, LabelText("Control Disable Stack")] private int control_disableStack_debug;
     [SerializeField, ReadOnly, LabelText("Currentmove")] private string current_move_debug = "";
     [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
@@ -116,6 +118,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem footstepEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem jumpEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stoneAttackEffect;
+    [SerializeField, Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stunEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
@@ -131,6 +134,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator bellflowerLockPointAnimator;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
 
     public Transform HoldingItemTarget { get { return holdingItemTarget; } }
@@ -796,6 +800,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = currentHoldingItem.gameObject.name;
         else
             current_holding_item_debug = "NULL";
+
+        control_disableStack_debug = disableStack;
 #endif
     }
 
@@ -851,7 +857,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     protected class Movement_Ground : MovementState
     {
         bool sliding = false;
-        float idleAnimationtime = 5f;
+        float idleAnimationtime = 30f;
         float IdleTimer = 0f;
         private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
         {
@@ -907,6 +913,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
+
                 IdleTimer = 0f;
             }
             else
@@ -1681,15 +1688,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
+    int disableStack = 0;
+    public int DisableStack { get { return disableStack; } }
+
     /// <summary>
     ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     /// </summary>
     public void DisableControls()
     {
-        input.Player.Disable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
-        if(CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        if(disableStack <= 0)
+        {
+            input.Player.Disable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = false; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        }
+
+        disableStack++;
     }
 
     /// <summary>
@@ -1697,10 +1712,16 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     public void EnableControlls()
     {
-        input.Player.Enable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
-        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+        disableStack--;
+
+        if (disableStack <= 0)
+        {
+            input.Player.Enable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+            disableStack = 0;
+        }
     }
 
     /// <summary>
@@ -1715,6 +1736,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void OnFlowerPicked(bool value)
     {
         animator.SetBool("PickupBlossom",value);
+        bellflowerLockPointAnimator.GetComponent<Animator>().SetBool("Pickup",true);
     }
 
     /// <summary>
@@ -1837,6 +1859,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterMult += UpgradeState;
     }
 
+    public float ViewleapupPower {get {return leapupPower;}}
+    public float ViewBoosterDuration { get { return boosterDuration; } }
+    public float ViewBoosterMult { get { return boosterMult; } }
+
     /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
     /// </summary>
@@ -1844,12 +1870,15 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         DisableControls();
         animator.SetTrigger("ReefCrash");
+        RuntimeManager.PlayOneShot(sound_SailboatBump);
         AbortBooster();
         driftActive = false;
+        stunEffect.Play(true);
         stoneAttackEffect.Play(true);
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
         rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);
+        
         yield return new WaitForSeconds(reefCrashStifftime);
 
 

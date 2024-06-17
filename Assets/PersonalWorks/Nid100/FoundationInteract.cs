@@ -7,11 +7,16 @@ public class FoundationInteract : Interactable_Base
 {
     [SerializeField] protected UnityEvent eventsOnStartInteract;
     [SerializeField] private Foundation foundation;
+    [SerializeField] private Animator orbAnimatior;
 
-    // Start is called before the first frame update
-    void Start()
+    public void DisableOrb()
     {
+        orbAnimatior.Play("Disable",0);
+    }
 
+    public void EnableOrb()
+    {
+        orbAnimatior.Play("Enabled",0);
     }
 
     public override void Interact()
