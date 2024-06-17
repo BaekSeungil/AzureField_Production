@@ -145,6 +145,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     #endregion
 
     private Rigidbody rBody;
+    public Rigidbody Rigidbody { get { return rBody; } }
     public Vector3 Velocity { get { return rBody.velocity; } }
     private StudioEventEmitter sound;
     private Transform interestPoint;
@@ -1710,7 +1711,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// <summary>
     /// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
     /// </summary>
-    public void EnableControlls()
+    public void EnableControls()
     {
         disableStack--;
 
@@ -1888,7 +1889,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         yield return new WaitForSeconds(reefCrashbindTime);
 
 
-        EnableControlls();
+        EnableControls();
     }
 
     float reefCrashStifftime = 0.5f;

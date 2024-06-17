@@ -44,7 +44,7 @@ public class Interactable_Base : SerializedMonoBehaviour
         Interact();
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
