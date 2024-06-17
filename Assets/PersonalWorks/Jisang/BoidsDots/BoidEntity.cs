@@ -7,7 +7,7 @@ using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Jobs;
-using Utils;
+using JJS.Utils;
 
 namespace Boids
 {
