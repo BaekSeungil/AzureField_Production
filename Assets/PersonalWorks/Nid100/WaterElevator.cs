@@ -9,13 +9,14 @@ public class WaterElevator : MonoBehaviour
     public float speed = 1f;    // 엘리베이터 이동 속도
 
     public bool goingUp = true; // 현재 엘리베이터가 위로 이동 중인지 여부
+    private bool isJumping = false;
     private Vector3 initialScale; // 초기 스케일 값
 
     [SerializeField] private PlayerCore player;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Rigidbody playerRigidbody;
-    [SerializeField] private float moveSpeed = 9.8f;
-    [SerializeField] private float force = 9.8f;
+    //[SerializeField] private float moveSpeed = 9.8f;
+    //[SerializeField] private float force = 9.8f;
     [SerializeField] private Transform targetPosition;
 
     [SerializeField] private GameObject WaterCollider;
@@ -23,7 +24,10 @@ public class WaterElevator : MonoBehaviour
     [SerializeField] private ParticleSystem waterIdle;
     [SerializeField] private ParticleSystem waterEnd;
 
+    [SerializeField] private float height = 5f; // 점프 높이
+    [SerializeField] private float duration = 2f; // 점프 시간
 
+    private Vector3 startPosition;
 
     private float dist = 0;
 
@@ -49,14 +53,14 @@ public class WaterElevator : MonoBehaviour
 
 
     private bool targetMoveOnOff = false;
-    private void Update()
+    private void FixedUpdate()
     {
         // 스케일 값 변경
         if (OnOff == true)
         {
             
             float scaleFactor = goingUp ? 1f : -1f;
-            float newScale = Mathf.Clamp(WaterCollider.transform.localScale.y + Time.deltaTime * speed * scaleFactor, minScale, maxScale);
+            float newScale = Mathf.Clamp(WaterCollider.transform.localScale.y + Time.fixedDeltaTime * speed * scaleFactor, minScale, maxScale);
             WaterCollider.transform.localScale = new Vector3(initialScale.x, newScale, initialScale.z);
             if (goingUp == true) {
                 player.DisableControls();
@@ -65,6 +69,7 @@ public class WaterElevator : MonoBehaviour
 
             if (newScale >= maxScale || newScale <= minScale)
             {
+                startPosition = playerTransform.position;
                 goingUp = !goingUp;
                 if (newScale >= maxScale)
                 {
@@ -81,7 +86,8 @@ public class WaterElevator : MonoBehaviour
                 player.EnableControlls();
                 targetMoveOnOff = false;
             }
-                TargetMove();
+            //TargetMove();
+            StartCoroutine(JumpToTarget());
         }
 
 
@@ -91,11 +97,10 @@ public class WaterElevator : MonoBehaviour
     //private Vector3 velocity;
     private void TargetMove() 
     {
+        /*
         float step = moveSpeed * Time.deltaTime;
         Vector3 newPosition = Vector3.MoveTowards(playerTransform.position, targetPosition.position, step);
         playerTransform.position = newPosition;
-
-
 
         Vector3 playerPosition = playerTransform.position;
         Vector3 targetPos = targetPosition.position;
@@ -110,9 +115,9 @@ public class WaterElevator : MonoBehaviour
         }
 
         Vector3 lookDirection = (targetPosition.position - playerTransform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-        playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, targetRotation, step);
-
+        //Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        //playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, targetRotation, step);
+        */
 
         /*
         float step = moveSpeed * Time.deltaTime;
@@ -140,6 +145,40 @@ public class WaterElevator : MonoBehaviour
         playerTransform.position = newPosition;
          */
 
+
+
+    }
+
+    private IEnumerator JumpToTarget()
+    {
+        isJumping = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+
+            // 시간의 비율 계산
+            float t = elapsedTime / duration;
+
+            // 선형 보간을 통한 수평 이동
+            Vector3 currentPosition = Vector3.Lerp(startPosition, targetPosition.position, t);
+
+            // 포물선 이동을 위한 수직 위치 계산
+            float parabolicT = t * 2 - 1;
+            currentPosition.y += height * (1 - parabolicT * parabolicT);
+
+            // 새로운 위치 설정
+            playerTransform.position = currentPosition;
+
+            yield return null;
+        }
+
+        // 점프가 끝났을 때 위치를 정확히 목표 위치로 설정
+        //playerTransform.position = targetPosition.position;
+        //startPosition = transform.position;
+        isJumping = false;
+    
     }
 
 
