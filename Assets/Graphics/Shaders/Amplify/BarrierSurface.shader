@@ -636,12 +636,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord8.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord8.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -1250,12 +1253,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord3.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord3.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -1632,12 +1638,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord3.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord3.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -2005,12 +2014,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord4.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord4.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord5.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord5.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -2351,12 +2363,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord2.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord2.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord3.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord3.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -2746,12 +2761,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord5.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord5.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord6.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord6.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float3 Normal = float3(0, 0, 1);
@@ -3254,12 +3272,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord8.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord8.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -3679,12 +3700,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				surfaceDescription.Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -4017,12 +4041,15 @@ Shader "BarrierSurface"
 				float2 appendResult40 = (float2((-1.0 + (temp_output_14_0 - 0.0) * (0.0 - -1.0) / (1.0 - 0.0)) , 1.0));
 				float2 texCoord39 = IN.ase_texcoord.xy * _PhasingTiling + appendResult40;
 				float smoothstepResult56 = smoothstep( 0.04 , 0.88 , (0.73 + (( ( texCoord39.x % 1.0 ) * 2.0 ) - 0.0) * (0.0 - 0.73) / (2.4 - 0.0)));
+				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
+				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
+				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
 				float2 break19_g6 = ( IN.ase_texcoord.xy * _HexagonTiling );
 				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
 				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
 				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
 				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * smoothstepResult56 ) + smoothstepResult56 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
 				
 
 				surfaceDescription.Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -4063,29 +4090,34 @@ Node;AmplifyShaderEditor.RangedFloatNode;13;-1456,384;Inherit;False;Property;_Sc
 Node;AmplifyShaderEditor.SimpleTimeNode;11;-1456,304;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;14;-1280,304;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TFHCRemapNode;43;-1056,448;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.DynamicAppendNode;15;-1072,272;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.DynamicAppendNode;40;-848,480;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;1;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.Vector2Node;78;-864,592;Inherit;False;Property;_PhasingTiling;PhasingTiling;2;0;Create;True;0;0;0;False;0;False;1,1;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.TextureCoordinatesNode;39;-624,432;Inherit;True;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;-1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleRemainderNode;41;-336,464;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;54;-112,464;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;2;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;60;32,608;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;2.4;False;3;FLOAT;0.73;False;4;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DynamicAppendNode;15;-1072,272;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SmoothstepOpNode;56;224,608;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0.04;False;2;FLOAT;0.88;False;1;FLOAT;0
 Node;AmplifyShaderEditor.NegateNode;51;-832,96;Inherit;False;1;0;FLOAT2;0,0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.Vector2Node;49;-1104,-32;Inherit;False;Property;_NoiseTiling;NoiseTiling;1;0;Create;True;0;0;0;False;0;False;1,1;1,1;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
 Node;AmplifyShaderEditor.SimpleTimeNode;88;-832,272;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;89;-848,352;Inherit;False;Property;_NoiseScrollSpeed;NoiseScrollSpeed;3;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;39;-624,432;Inherit;True;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;-1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.OneMinusNode;126;272,400;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;32;-688,-48;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1.5,0;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;90;-576,272;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleRemainderNode;41;-336,464;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;129;448,560;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.DynamicAppendNode;82;-368,160;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;54;-112,464;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;60;112,480;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;2.4;False;3;FLOAT;0.73;False;4;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;133;640,560;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.VoronoiNode;52;-160,160;Inherit;True;0;1;1;0;2;False;1;False;False;False;4;0;FLOAT2;0,0;False;1;FLOAT;1;False;2;FLOAT;3.24;False;3;FLOAT;0;False;3;FLOAT;0;FLOAT2;1;FLOAT2;2
-Node;AmplifyShaderEditor.SmoothstepOpNode;56;336,480;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0.04;False;2;FLOAT;0.88;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ClampOpNode;135;608,448;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SmoothstepOpNode;84;320,192;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0.09;False;2;FLOAT;0.39;False;1;FLOAT;0
-Node;AmplifyShaderEditor.PosVertexDataNode;61;96,672;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;97;688,352;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;132;864,560;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0.15;False;3;FLOAT;0;False;4;FLOAT;2;False;1;FLOAT;0
 Node;AmplifyShaderEditor.Vector2Node;102;752,864;Inherit;False;Property;_HexagonTiling;HexagonTiling;4;0;Create;True;0;0;0;False;0;False;10,0.3;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
-Node;AmplifyShaderEditor.TFHCRemapNode;64;352,720;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;98;960,464;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.PosVertexDataNode;61;112,832;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;97;688,352;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.FunctionNode;99;944,864;Inherit;False;Hex Lattice;-1;;6;56d977fb137832a498dced8436cf6708;0;3;3;FLOAT2;10,0.3;False;2;FLOAT;1;False;4;FLOAT;0.3;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;64;368,896;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;134;1040,416;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;91;1184,672;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SaturateNode;59;1376,672;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ColorNode;107;1312,480;Inherit;False;Property;_Color;Color;5;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
@@ -4111,30 +4143,37 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;2304,480;Float;False;True
 WireConnection;14;0;11;0
 WireConnection;14;1;13;0
 WireConnection;43;0;14;0
-WireConnection;15;1;14;0
 WireConnection;40;0;43;0
-WireConnection;51;0;15;0
 WireConnection;39;0;78;0
 WireConnection;39;1;40;0
+WireConnection;41;0;39;1
+WireConnection;54;0;41;0
+WireConnection;60;0;54;0
+WireConnection;15;1;14;0
+WireConnection;56;0;60;0
+WireConnection;51;0;15;0
+WireConnection;126;0;56;0
 WireConnection;32;0;49;0
 WireConnection;32;1;51;0
 WireConnection;90;0;88;0
 WireConnection;90;1;89;0
-WireConnection;41;0;39;1
+WireConnection;129;0;126;0
+WireConnection;129;1;56;0
 WireConnection;82;0;90;0
 WireConnection;82;1;32;2
-WireConnection;54;0;41;0
-WireConnection;60;0;54;0
+WireConnection;133;0;129;0
+WireConnection;133;1;129;0
 WireConnection;52;0;82;0
-WireConnection;56;0;60;0
+WireConnection;135;0;133;0
 WireConnection;84;0;52;0
+WireConnection;132;0;135;0
 WireConnection;97;0;84;0
-WireConnection;97;1;56;0
-WireConnection;64;0;61;2
-WireConnection;98;0;97;0
-WireConnection;98;1;56;0
+WireConnection;97;1;132;0
 WireConnection;99;3;102;0
-WireConnection;91;0;98;0
+WireConnection;64;0;61;2
+WireConnection;134;0;97;0
+WireConnection;134;1;132;0
+WireConnection;91;0;134;0
 WireConnection;91;1;64;0
 WireConnection;91;2;99;0
 WireConnection;59;0;91;0
@@ -4153,4 +4192,4 @@ WireConnection;1;4;113;0
 WireConnection;1;5;114;0
 WireConnection;1;6;116;0
 ASEEND*/
-//CHKSM=4AD9A8352B21395FD94B210D3CCF0D669CAC2B4B
+//CHKSM=611F6BA1C0C7810B7E20DF699A682858B274860D

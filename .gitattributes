@@ -1,3 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 *.bundle text eol=lf
+**/Texture/Cloud3dTexture.asset filter=lfs diff=lfs merge=lfs -text
+**/VolumetricFog/**/*.tga filter=lfs diff=lfs merge=lfs -text

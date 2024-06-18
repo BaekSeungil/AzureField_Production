@@ -87,7 +87,7 @@ public class Interactable_GoldenCarrot : Interactable_Base
         yield return new WaitForSeconds(1.0f);
 
         PlayerCore.Instance.OnFlowerPicked(false);
-        PlayerCore.Instance.EnableControlls();
+        PlayerCore.Instance.EnableControls();
         flowerPickFlag = false;
         sparkleEffect.SetActive(false);
 
