@@ -17,6 +17,6 @@ public class IntroWarpPlayer : MonoBehaviour
 
     public void EnablePlayer()
     {
-        PlayerCore.Instance.EnableControlls();
+        PlayerCore.Instance.EnableControls();
     }
 }

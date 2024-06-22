@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
-namespace Utils
+namespace JJS.Utils
 {
     public static class PlayerLoopManager 
     {

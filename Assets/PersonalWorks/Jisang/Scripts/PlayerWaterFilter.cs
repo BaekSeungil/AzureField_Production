@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace JS
+namespace JJS
 {
     public class PlayerWaterFilter : MonoBehaviour
     {
