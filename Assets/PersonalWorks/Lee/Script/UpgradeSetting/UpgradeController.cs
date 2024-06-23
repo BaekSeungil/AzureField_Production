@@ -32,7 +32,6 @@ public class UpgradeController : MonoBehaviour
     private float BeforeUpgrade;
     [SerializeField,LabelText("업글 후 수치")] public TMPro.TMP_Text AfterText;
     private float AtfterUpgrade;
-    [SerializeField,LabelText("되묻는 창")] public GameObject AskUpgradeWindow;
     [SerializeField,LabelText("보트 업그레이드 소비아이템")]ItemData Boatitem;
     private BoatUpgradeType boatUpgradeType;
     private PlayerCore Player;
@@ -78,43 +77,41 @@ public class UpgradeController : MonoBehaviour
         BeforeText.text = $"{BeforeUpgrade}";
         AtfterUpgrade =  Player.ViewleapupPower + PlusBoatJump;
         AfterText.text = $"{AtfterUpgrade}";
-        BoatWindow.SetActive(true);
-
+        AtfterUpgrade =  Player.ViewleapupPower - PlusBoatJump;
     }
 
     public void ButtonTypeboosterDuration()
-    {
-        boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
+    {   
         BoatWindow.SetActive(true);
-        BeforeUpgrade = Player.ViewleapupPower;
+        boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
+        BeforeUpgrade = Player.ViewBoosterDuration;
         BeforeText.text = $"{BeforeUpgrade}";
-        AtfterUpgrade =  Player.ViewleapupPower + PlusBoatJump;
+        AtfterUpgrade =  Player.ViewBoosterDuration + PlusboosterDuration;
         AfterText.text = $"{AtfterUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterDuration - PlusboosterDuration;
     }
 
     public void ButtonTypeboosterMult()
     {
-        boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
         BoatWindow.SetActive(true);
+        boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
+        BeforeUpgrade = Player.ViewBoosterMult;
+        BeforeText.text = $"{BeforeUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterMult + PlustboosterMult;
+        AfterText.text = $"{AtfterUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterMult - PlustboosterMult;
     }
 
     public void GetAskUpgrade()
     {
         Need_Int += 1;
         Need_IntText.text = Need_Int.ToString();
-        AskUpgradeWindow.SetActive(true);
         BoatUpGrade();
-    }
-
-    public void OutAskUpgrade()
-    {
-        AskUpgradeWindow.SetActive(false);
     }
 
     public void Outupgrade()
     {
         BoatWindow.SetActive(false);
-
     }
 
 
