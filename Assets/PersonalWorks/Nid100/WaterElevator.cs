@@ -83,7 +83,7 @@ public class WaterElevator : MonoBehaviour
             player.DisableControls();
             if (Vector3.Distance(playerTransform.position, targetPosition.position) <= 1.0f)
             {
-                player.EnableControlls();
+                player.EnableControls();
                 targetMoveOnOff = false;
             }
             //TargetMove();

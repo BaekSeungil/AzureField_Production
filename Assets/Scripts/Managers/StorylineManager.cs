@@ -165,7 +165,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
                 PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return SequenceInvoker.Instance.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnStart.SequenceBundles);
-                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
             UI_Objective.Instance.OpenObjective(activeStoryline.QuestNameText.GetLocalizedString(), activeStoryline.Objectives[currentIndex].objectiveText.GetLocalizedString());
@@ -197,7 +197,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
                 PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return sequence.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnFinished.SequenceBundles);
-                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
         }

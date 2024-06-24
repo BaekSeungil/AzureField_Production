@@ -100,7 +100,7 @@ public class AreaControl : StaticSerializedMonoBehaviour<AreaControl>
         {
             playerPoint.position = respawnTransgorm;
             fade.FadeOutExecution();
-            player.EnableControlls();
+            player.EnableControls();
 
         }
         

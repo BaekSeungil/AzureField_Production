@@ -142,7 +142,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         CursorLocker.Instance.EnableFreelook();
 
         PlayerCore gameplayer = PlayerCore.Instance;
-        if (gameplayer != null) { gameplayer.EnableControlls(); }
+        if (gameplayer != null) { gameplayer.EnableControls(); }
 
         RuntimeManager.PlayOneShot(sound_Close);
 

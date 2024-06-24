@@ -52,7 +52,7 @@ public class PlayerReefCrash : StaticSerializedMonoBehaviour<PlayerReefCrash>
         
         yield return new WaitForSeconds(reefCrashBindTime);
 
-        player.EnableControlls();
+        player.EnableControls();
     }
 
     /// <summary>
