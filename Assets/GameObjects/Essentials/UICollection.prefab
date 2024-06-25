@@ -377,6 +377,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4358166072929028907}
+  - component: {fileID: 7818913739877066652}
   m_Layer: 5
   m_Name: UpgradeWindow
   m_TagString: Untagged
@@ -404,6 +405,33 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7818913739877066652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134701195547597803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2f18bfd87dc21141b00510577acfd4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlusBoatJump: 0.2
+  PlusboosterDuration: 0.2
+  PlustboosterMult: 0.3
+  BoatWindow: {fileID: 2036478811256043216}
+  TitleText: {fileID: 6607913089867996796}
+  Have_IntText: {fileID: 8602686008740357984}
+  Need_IntText: {fileID: 4255814157075077492}
+  BeforeText: {fileID: 1394096801226754644}
+  AfterText: {fileID: 2295159204843352086}
+  Duration_ICON: {fileID: 7042478997666368438}
+  Jump_ICON: {fileID: 8083475490014387696}
+  Booster_ICON: {fileID: 3075561509606540078}
+  Boatitem: {fileID: 11400000, guid: 647c375a9b748a0489570ec7bd805c2f, type: 2}
+  NeedUseItem: 1
+  UseItemCount: 1
 --- !u!1 &194252083272199030
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,7 +1928,7 @@ GameObject:
   - component: {fileID: 8114935641016371782}
   - component: {fileID: 5186861765217618557}
   - component: {fileID: 6202305047480537386}
-  - component: {fileID: 6118925079549117399}
+  - component: {fileID: 7130661458384080223}
   m_Layer: 5
   m_Name: Ring
   m_TagString: Untagged
@@ -1965,7 +1993,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6118925079549117399
+--- !u!114 &7130661458384080223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2009,9 +2037,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6896312249102298420}
+      - m_Target: {fileID: 7818913739877066652}
         m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
-        m_MethodName: ButtonTypeboosterMult
+        m_MethodName: ButtonTypeJump
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2175,7 +2203,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6418053988149586906
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6112,6 +6140,81 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &3075561509606540078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7208008908680064289}
+  - component: {fileID: 8466308859609451967}
+  - component: {fileID: 8966900070939422289}
+  m_Layer: 5
+  m_Name: Booster_ICON
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &7208008908680064289
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3075561509606540078}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 0.17559369, y: 0.17559369, z: 0.17559369}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3377932324724663999}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.1, y: 5.1}
+  m_SizeDelta: {x: 93.71425, y: 147.6709}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8466308859609451967
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3075561509606540078}
+  m_CullTransparentMesh: 1
+--- !u!114 &8966900070939422289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3075561509606540078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 84b8fc50bcddaba49bb77083b809d644, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3093339652571649055
 GameObject:
   m_ObjectHideFlags: 0
@@ -6797,6 +6900,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7221121070140170621}
+  - {fileID: 906736203716455948}
+  - {fileID: 7208008908680064289}
   - {fileID: 8820395986831039445}
   - {fileID: 7755933092888045100}
   - {fileID: 7728945924670685128}
@@ -8588,7 +8693,7 @@ GameObject:
   - component: {fileID: 2923690308326403534}
   - component: {fileID: 4528226289797342533}
   m_Layer: 5
-  m_Name: CheckButton_1
+  m_Name: TextBackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9302,7 +9407,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6896312249102298420}
+      - m_Target: {fileID: 7818913739877066652}
         m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
         m_MethodName: Outupgrade
         m_Mode: 1
@@ -10267,7 +10372,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2339598705377129904}
-  - component: {fileID: 6896312249102298420}
   m_Layer: 5
   m_Name: SailboatUpgradeWindow
   m_TagString: Untagged
@@ -10297,29 +10401,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6896312249102298420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4198692348915802858}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2f18bfd87dc21141b00510577acfd4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlusBoatJump: 0.2
-  PlusboosterDuration: 0.2
-  PlustboosterMult: 0.3
-  BoatWindow: {fileID: 2036478811256043216}
-  Have_IntText: {fileID: 8602686008740357984}
-  Have_Int: 0
-  Need_IntText: {fileID: 4255814157075077492}
-  Need_Int: 0
-  BeforeText: {fileID: 1394096801226754644}
-  AfterText: {fileID: 2295159204843352086}
-  Boatitem: {fileID: 11400000, guid: 647c375a9b748a0489570ec7bd805c2f, type: 2}
 --- !u!1 &4207650595667562223
 GameObject:
   m_ObjectHideFlags: 0
@@ -11075,7 +11156,7 @@ GameObject:
   - component: {fileID: 8065017373344379941}
   - component: {fileID: 2603033758842531222}
   - component: {fileID: 926307636808274113}
-  - component: {fileID: 6398890872127558189}
+  - component: {fileID: 2033624146566292239}
   m_Layer: 5
   m_Name: Ring
   m_TagString: Untagged
@@ -11140,7 +11221,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6398890872127558189
+--- !u!114 &2033624146566292239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11184,7 +11265,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6896312249102298420}
+      - m_Target: {fileID: 7818913739877066652}
         m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
         m_MethodName: ButtonTypeJump
         m_Mode: 1
@@ -14699,7 +14780,7 @@ GameObject:
   - component: {fileID: 4825406115576138599}
   - component: {fileID: 8342439912224496561}
   - component: {fileID: 1183104121416214903}
-  - component: {fileID: 5113094224508259004}
+  - component: {fileID: 2198202520974664171}
   m_Layer: 5
   m_Name: Ring
   m_TagString: Untagged
@@ -14764,7 +14845,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5113094224508259004
+--- !u!114 &2198202520974664171
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14808,7 +14889,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6896312249102298420}
+      - m_Target: {fileID: 7818913739877066652}
         m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
         m_MethodName: ButtonTypeboosterDuration
         m_Mode: 1
@@ -15612,7 +15693,7 @@ GameObject:
   - component: {fileID: 5463967201297786568}
   - component: {fileID: 2295632851374758246}
   m_Layer: 5
-  m_Name: Image
+  m_Name: AfterImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16079,7 +16160,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6896312249102298420}
+      - m_Target: {fileID: 7818913739877066652}
         m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
         m_MethodName: GetAskUpgrade
         m_Mode: 1
@@ -16643,6 +16724,81 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!1 &7042478997666368438
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 906736203716455948}
+  - component: {fileID: 5858835567789257292}
+  - component: {fileID: 7587904625984423205}
+  m_Layer: 5
+  m_Name: Duration_ICON
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &906736203716455948
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042478997666368438}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 0.17559369, y: 0.17559369, z: 0.17559369}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3377932324724663999}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.1, y: 7.2}
+  m_SizeDelta: {x: 93.71425, y: 147.6709}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5858835567789257292
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042478997666368438}
+  m_CullTransparentMesh: 1
+--- !u!114 &7587904625984423205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042478997666368438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 0268e4d4306c55841bbad7ab5dc8b514, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7087189214695500127
 GameObject:
   m_ObjectHideFlags: 0
@@ -19980,12 +20136,12 @@ GameObject:
   - component: {fileID: 3158823428124156028}
   - component: {fileID: 2700279428286074062}
   m_Layer: 5
-  m_Name: ICON_2
+  m_Name: Jump_ICON
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7221121070140170621
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20033,7 +20189,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0268e4d4306c55841bbad7ab5dc8b514, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 308537623d8aac84fbb6b51e0ea72cdb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
