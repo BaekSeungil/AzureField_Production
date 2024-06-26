@@ -23,16 +23,21 @@ public class UpgradeController : MonoBehaviour
 
     [Header("업그레이드 창 설정")]
     [SerializeField,LabelText("보트 업그레이드 창")] public GameObject BoatWindow;
-
+    [SerializeField,LabelText("타이틀 텍스쳐")] public TMPro.TMP_Text TitleText;
     [SerializeField,LabelText("가지고 있는재료 텍스쳐")] public TMPro.TMP_Text Have_IntText;
-    [SerializeField,LabelText("가지고 있는재료 수")] private int Have_Int;
     [SerializeField,LabelText("필요한 재료 텍스쳐")] public TMPro.TMP_Text Need_IntText;
-    [SerializeField,LabelText("필요한 재료 수")]  private int Need_Int;
     [SerializeField,LabelText("업글 전 수치")] public TMPro.TMP_Text BeforeText;
     private float BeforeUpgrade;
     [SerializeField,LabelText("업글 후 수치")] public TMPro.TMP_Text AfterText;
     private float AtfterUpgrade;
+    [SerializeField,LabelText("가속도 아이콘")] private GameObject Duration_ICON;
+    [SerializeField,LabelText("점프 아이콘")] private GameObject Jump_ICON;
+
+    [SerializeField,LabelText("부스터 아이콘")] private GameObject Booster_ICON;
     [SerializeField,LabelText("보트 업그레이드 소비아이템")]ItemData Boatitem;
+    [SerializeField,LabelText("아이템 소비 초기 값")] private int NeedUseItem;
+    [SerializeField,LabelText("아이템 소비 증가 값")] private int UseItemCount;
+    private int HaveItem;
     private BoatUpgradeType boatUpgradeType;
     private PlayerCore Player;
  
@@ -46,7 +51,7 @@ public class UpgradeController : MonoBehaviour
     {
         FindObjectOfType<PlayerInventoryContainer>();
         Player = FindObjectOfType<PlayerCore>();
-        if(PlayerInventoryContainer.Instance.RemoveItem(Boatitem))
+        if(PlayerInventoryContainer.Instance.RemoveItem(Boatitem, NeedUseItem))
         {
             switch(boatUpgradeType)
             {
@@ -62,6 +67,12 @@ public class UpgradeController : MonoBehaviour
                 Player.PlayerUpgradeState(PlustboosterMult);
                 break;
             }
+            
+        }
+        else
+        {
+
+            Debug.Log("아이템 부족");
         }
 
 
@@ -72,6 +83,7 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeJump()
     {
         BoatWindow.SetActive(true);
+        Jump_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
         BeforeUpgrade = Player.ViewleapupPower;
         BeforeText.text = $"{BeforeUpgrade}";
@@ -83,6 +95,7 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeboosterDuration()
     {   
         BoatWindow.SetActive(true);
+        Duration_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
         BeforeUpgrade = Player.ViewBoosterDuration;
         BeforeText.text = $"{BeforeUpgrade}";
@@ -94,6 +107,7 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeboosterMult()
     {
         BoatWindow.SetActive(true);
+        Booster_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
         BeforeUpgrade = Player.ViewBoosterMult;
         BeforeText.text = $"{BeforeUpgrade}";
@@ -104,14 +118,17 @@ public class UpgradeController : MonoBehaviour
 
     public void GetAskUpgrade()
     {
-        Need_Int += 1;
-        Need_IntText.text = Need_Int.ToString();
+        NeedUseItem += UseItemCount;
+        Need_IntText.text = NeedUseItem.ToString();
         BoatUpGrade();
     }
 
     public void Outupgrade()
     {
         BoatWindow.SetActive(false);
+        Jump_ICON.SetActive(false);
+        Duration_ICON.SetActive(false);
+        Booster_ICON.SetActive(false);
     }
 
 
