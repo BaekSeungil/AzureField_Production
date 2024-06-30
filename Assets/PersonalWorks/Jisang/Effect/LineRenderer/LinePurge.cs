@@ -65,6 +65,7 @@ namespace JJS
             [ReadOnly] public NativeArray<Vector3> defaultLineLocalPosition;
             [ReadOnly] public Vector3 massCenterLocalPosition;
             [ReadOnly] public float time;
+            [ReadOnly] public float normalizedRuntime;
 
             public NativeArray<Vector3> vertices;
 
@@ -73,8 +74,9 @@ namespace JJS
                 var pos = defaultLineLocalPosition[vi];
                 var diff = pos - massCenterLocalPosition;
 
-                var noise = Mathf.PerlinNoise(time, vi);
-                var nextPos = pos + diff.normalized * Mathf.Pow(diff.magnitude, 0.12f) * noise * 0.1f;
+                var diffVector = diff.normalized * Mathf.Pow(diff.magnitude, 0.12f) * normalizedRuntime * 0.5f;
+                var noiseVector = new Vector3(Mathf.PerlinNoise(pos.x, vi) - 0.5f, Mathf.PerlinNoise(pos.y, vi) - 0.5f, Mathf.PerlinNoise(pos.z, vi) - 0.5f) * normalizedRuntime;
+                var nextPos = pos + diffVector + noiseVector;
 
 
                 vertices[vi] = nextPos;
@@ -92,8 +94,9 @@ namespace JJS
             updateJob = new UpdateLinePositionJob
             {
                 defaultLineLocalPosition = positionList,
-                massCenterLocalPosition = Vector3.zero,
+                massCenterLocalPosition = transform.InverseTransformPoint(Root.transform.position),
                 time = Time.time,
+                normalizedRuntime = curve.Evaluate(t / runtime),
                 vertices = new NativeArray<Vector3>(positionList.ToArray(), Allocator.Persistent)
             };
 
@@ -116,11 +119,34 @@ namespace JJS
     public partial class LinePurge : MonoBehaviour
     {
         [SerializeField]
+        private Transform Root;
+        [SerializeField]
         private LineRenderer lineRenderer;
         [SerializeField]
         private float runtime = 2f;
         [SerializeField]
         private Gradient gradient;
+
+        [SerializeField]
+        private AnimationCurve curve;
+
+
+#if UNITY_EDITOR
+
+        [Sirenix.OdinInspector.Button]
+        private void RunTest() 
+        {
+            foreach (var actor in LinkedActor)
+            {
+                actor.gameObject.SetActive(true);
+                actor.Purge();
+            }
+        }
+#endif
+
+        [Header("Linked")]
+        [SerializeField]
+        private List<LinePurge> LinkedActor = new List<LinePurge>();
 
         private Vector3[] defaultPositionList;
         private NativeArray<Vector3> positionList;
@@ -179,31 +205,27 @@ namespace JJS
 
         private void CompletePurge()
         {
+            t = 0;
             isScheduled = false;
-            OnEarlyUpdate -= JobSchedule;
+            OnEarlyUpdate -= UpdatePurge;
             gameObject.SetActive(false);
-        }
 
-#if UNITY_EDITOR
+            lineRenderer.startColor = gradient.Evaluate(0);
+            lineRenderer.endColor = gradient.Evaluate(0);
+            lineRenderer.widthMultiplier = Mathf.Lerp(0.1f, 0f, 0);
 
-        [Sirenix.OdinInspector.Button]
-        private void RunTest()
-        {
-            Purge();
-        }
-#endif
-
-        private void OnDisable()
-        {
-            OnEarlyUpdate -= JobSchedule;
-            //reuse
             positionList.CopyFrom(defaultPositionList);
             lineRenderer.SetPositions(defaultPositionList);
         }
 
+        private void OnDisable()
+        {
+            CompletePurge();
+        }
+
         private void OnDestroy()
         {
-            OnEarlyUpdate -= JobSchedule;
+            OnEarlyUpdate -= UpdatePurge;
             positionList.Dispose();
         }
     }
