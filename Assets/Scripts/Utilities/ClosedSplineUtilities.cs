@@ -13,12 +13,12 @@ public class ClosedSplineUtilities
     /// <param name="splineContainer">스플라인 영역</param>
     /// <param name="nearestPointInSpline">(out)플레이어에서 가장 가까운 Spline경계면 위치</param>
     /// <returns></returns>
-    public static bool IsInsideSpline(Vector3 point, SplineContainer splineContainer, out Vector3 nearestPointInSpline)
+    public static bool IsInsideSpline(Vector3 point, SplineContainer splineContainer, out Vector3 nearestPointInSpline,int resolution = 2, int iterations = 1)
     {
         Vector3 pointPositionLocalToSpline = splineContainer.transform.InverseTransformPoint(point);
         Bounds splineBounds = splineContainer.Spline.GetBounds();
 
-        SplineUtility.GetNearestPoint(splineContainer.Spline, pointPositionLocalToSpline, out var splinePoint, out var t);
+        SplineUtility.GetNearestPoint(splineContainer.Spline, pointPositionLocalToSpline, out var splinePoint, out var t,resolution,iterations);
         splinePoint.y = pointPositionLocalToSpline.y;
 
 
