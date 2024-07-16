@@ -57,14 +57,17 @@ public class UpgradeController : MonoBehaviour
             {
                 case BoatUpgradeType.PlusBoatJumpType:
                 Player.PlayerUpgradeState(PlusBoatJump);
+                NeedUseItem += UseItemCount;
                 break;
 
                 case BoatUpgradeType.PlusBoatboosterDuration:
                 Player.PlayerUpgradeState(PlusboosterDuration);
+                NeedUseItem += UseItemCount;
                 break;
 
                 case BoatUpgradeType.PlusBoatboosterMult:
                 Player.PlayerUpgradeState(PlustboosterMult);
+                NeedUseItem += UseItemCount;
                 break;
             }
             
@@ -99,7 +102,6 @@ public class UpgradeController : MonoBehaviour
         BoatWindow.SetActive(true);
         Jump_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
-        NeedUseItem += UseItemCount;
         BeforeUpgrade = Player.ViewleapupPower;
         BeforeText.text = $"{BeforeUpgrade}";
         AtfterUpgrade =  Player.ViewleapupPower + PlusBoatJump;
@@ -112,7 +114,6 @@ public class UpgradeController : MonoBehaviour
         BoatWindow.SetActive(true);
         Duration_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
-        NeedUseItem += UseItemCount;
         BeforeUpgrade = Player.ViewBoosterDuration;
         BeforeText.text = $"{BeforeUpgrade}";
         AtfterUpgrade =  Player.ViewBoosterDuration + PlusboosterDuration;
@@ -125,7 +126,6 @@ public class UpgradeController : MonoBehaviour
         BoatWindow.SetActive(true);
         Booster_ICON.SetActive(true);
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
-        NeedUseItem += UseItemCount;
         BeforeUpgrade = Player.ViewBoosterMult;
         BeforeText.text = $"{BeforeUpgrade}";
         AtfterUpgrade =  Player.ViewBoosterMult + PlustboosterMult;
