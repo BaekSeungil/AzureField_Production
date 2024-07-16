@@ -71,13 +71,27 @@ public class UpgradeController : MonoBehaviour
         }
         else
         {
-
             Debug.Log("아이템 부족");
+            BlinkText(Have_IntText);
         }
 
 
     }
 
+
+    private IEnumerator BlinkText(TMP_Text text)
+    {
+        Color originalColor = text.color;
+        Color blinkColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0);
+
+        for (int i = 0; i < 6; i++) // 3번 깜빡임
+        {
+            text.color = blinkColor;
+            yield return new WaitForSeconds(0.25f);
+            text.color = originalColor;
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
 
     #if UNITY_EDITOR
     public void ButtonTypeJump()
