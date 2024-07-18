@@ -47,6 +47,12 @@ public class UpgradeController : MonoBehaviour
         
     }
 
+    private void Update()
+    {
+        SetItemCountText();
+        TextUpdate();
+    }
+
     private void SetItemCountText()
     {
         HaveItem = PlayerInventoryContainer.Instance.InventoryData.ContainsKey(Boatitem) ?
@@ -117,6 +123,8 @@ public class UpgradeController : MonoBehaviour
         AtfterUpgrade =  Player.ViewleapupPower - PlusBoatJump;
     }
 
+
+
     public void ButtonTypeboosterDuration()
     {   
         BoatWindow.SetActive(true);
@@ -146,6 +154,27 @@ public class UpgradeController : MonoBehaviour
     {
         Need_IntText.text = NeedUseItem.ToString();
         BoatUpGrade();
+    }
+
+    private void TextUpdate() 
+    {       
+        BeforeUpgrade = Player.ViewleapupPower;
+        BeforeText.text = $"{BeforeUpgrade}";
+        AtfterUpgrade =  Player.ViewleapupPower + PlusBoatJump;
+        AfterText.text = $"{AtfterUpgrade}";
+        AtfterUpgrade =  Player.ViewleapupPower - PlusBoatJump;
+
+        BeforeUpgrade = Player.ViewBoosterDuration;
+        BeforeText.text = $"{BeforeUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterDuration + PlusboosterDuration;
+        AfterText.text = $"{AtfterUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterDuration - PlusboosterDuration;
+
+        BeforeUpgrade = Player.ViewBoosterMult;
+        BeforeText.text = $"{BeforeUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterMult + PlustboosterMult;
+        AfterText.text = $"{AtfterUpgrade}";
+        AtfterUpgrade =  Player.ViewBoosterMult - PlustboosterMult;
     }
 
     public void Outupgrade()
