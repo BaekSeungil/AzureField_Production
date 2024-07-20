@@ -80,6 +80,7 @@ public class Interactable_GoldenCarrot : Interactable_Base
         yield return new WaitForSeconds(3.0f); 
 
         yield return StartCoroutine(PlayerInventoryContainer.Instance.Cor_ItemWindow(carrotItem, carrotQuantity));
+        PlayerInventoryContainer.Instance.AddItem(carrotItem, carrotQuantity);
 
         RuntimeManager.PlayOneShot(sound_CarrotGone);
         budObject.GetComponent<DOTweenAnimation>().DORestart();
