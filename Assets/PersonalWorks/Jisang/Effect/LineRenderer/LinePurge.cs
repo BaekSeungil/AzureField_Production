@@ -86,7 +86,9 @@ namespace JJS
 
                     var rotation = Quaternion.Euler(noiseVector * 270 * runtimeSpeedFactor);
 
-                    var nextPos = pos + rotation * targetDirection.normalized * 0.5f * RunSpeed * runtimeSpeedFactor * 1.2f;
+                    var forward = Vector3.Lerp(rotation * targetDirection.normalized, (pos - massCenterLocalPosition).normalized, 0.2f);
+
+                    var nextPos = pos + forward * 0.5f * RunSpeed * runtimeSpeedFactor * 1.2f;
 
                     vertices[vi] = nextPos;
                 }
@@ -214,7 +216,7 @@ namespace JJS
             lineRenderer.startColor = gradient.Evaluate(normalizedTime);
 
             var endColor = gradient.Evaluate(normalizedTime);
-            endColor.a *= 0.9f;
+            endColor.a *= 0.7f;
             lineRenderer.endColor = endColor;
 
             //width
