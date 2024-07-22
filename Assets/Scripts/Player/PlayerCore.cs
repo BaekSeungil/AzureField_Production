@@ -1860,9 +1860,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterMult += UpgradeState;
     }
 
-    public float ViewleapupPower {get {return leapupPower;}}
-    public float ViewBoosterDuration { get { return boosterDuration; } }
-    public float ViewBoosterMult { get { return boosterMult; } }
+    public float ViewleapupPower {get {return FinalLeapupPower;}}
+    public float ViewBoosterDuration { get { return FinalBoosterDuration; } }
+    public float ViewBoosterMult { get { return FinalBoosterMult; } }
 
     /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우

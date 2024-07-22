@@ -90,41 +90,39 @@ public class UpgradeController : MonoBehaviour
 
     public void BoatUpGrade()
     {
-        FindObjectOfType<PlayerInventoryContainer>();
-        Player = FindObjectOfType<PlayerCore>();
-        if(PlayerInventoryContainer.Instance.RemoveItem(Boatitem, NeedUseItem))
+        Player = PlayerCore.Instance;
+        if (PlayerInventoryContainer.Instance.RemoveItem(Boatitem, NeedUseItem))
         {
-            switch(boatUpgradeType)
+            switch (boatUpgradeType)
             {
                 case BoatUpgradeType.PlusBoatJumpType:
-                Player.PlayerUpgradeState(PlusBoatJump);
-                NeedUseItem += UseItemCount;
-                break;
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.JumpPower, PlusBoatJump);
+                    NeedUseItem += UseItemCount;
+                    break;
 
                 case BoatUpgradeType.PlusBoatboosterDuration:
-                Player.PlayerUpgradeState(PlusboosterDuration);
-                NeedUseItem += UseItemCount;
-                break;
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+                    NeedUseItem += UseItemCount;
+                    break;
 
                 case BoatUpgradeType.PlusBoatboosterMult:
-                Player.PlayerUpgradeState(PlustboosterMult);
-                NeedUseItem += UseItemCount;
-                break;
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterMult, PlusboosterDuration);
+                    NeedUseItem += UseItemCount;
+                    break;
             }
         }
         else
         {
             Debug.Log("아이템 부족");
 
-            if(blinkCoroutine != null)
+            if (blinkCoroutine != null)
             {
                 StopCoroutine(blinkCoroutine);
+                blinkCoroutine = null;
             }
 
             blinkCoroutine = StartCoroutine(BlinkText(Have_IntText));
         }
-
-
     }
 
 

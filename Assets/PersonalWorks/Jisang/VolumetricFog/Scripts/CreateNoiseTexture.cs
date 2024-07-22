@@ -104,7 +104,10 @@ public class CreateNoiseTexture : MonoBehaviour
             }
         }
         texture.Apply();
+
+#if UNITY_EDITOR
         AssetDatabase.CreateAsset(texture, "Assets/Cloud3dTexture.asset");
+#endif
 
         //noiseTexture.SetPixel(0, 0, 0, Color.white);
     }
