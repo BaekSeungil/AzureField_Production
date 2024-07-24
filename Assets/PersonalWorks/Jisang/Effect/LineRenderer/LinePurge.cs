@@ -68,18 +68,43 @@ namespace JJS
             [ReadOnly] public float normalizedRuntime;
 
             public NativeArray<Vector3> vertices;
+            private const float NoiseFactor = 12f;
+            private const float RunSpeed = 0.5f;
 
             public void Execute(int vi)
             {
                 var pos = defaultLineLocalPosition[vi];
-                var diff = pos - massCenterLocalPosition;
+                var targetpos = defaultLineLocalPosition[Mathf.Max(0, vi - 1)];
+                var runtimeSpeedFactor = -((1 - (2 * normalizedRuntime)) * (1 - (2 * normalizedRuntime))) + 1f;
 
-                var diffVector = diff.normalized * Mathf.Pow(diff.magnitude, 0.12f) * normalizedRuntime * 0.5f;
-                var noiseVector = new Vector3(Mathf.PerlinNoise(pos.x, vi) - 0.5f, Mathf.PerlinNoise(pos.y, vi) - 0.5f, Mathf.PerlinNoise(pos.z, vi) - 0.5f) * normalizedRuntime;
-                var nextPos = pos + diffVector + noiseVector;
+                if (vi == 0) //head
+                {
+                    var rand = new Random();
+                    var targetDirection = pos - defaultLineLocalPosition[vi + 1];
 
+                    var noiseVector = new Vector3((float)rand.NextDouble() - 0.5f, (float)rand.NextDouble() - 0.5f, (float)rand.NextDouble() - 0.5f);
 
-                vertices[vi] = nextPos;
+                    var rotation = Quaternion.Euler(noiseVector * 270 * runtimeSpeedFactor);
+
+                    var forward = Vector3.Lerp(rotation * targetDirection.normalized, (pos - massCenterLocalPosition).normalized, 0.2f);
+
+                    var nextPos = pos + forward * 0.5f * RunSpeed * runtimeSpeedFactor * 1.2f;
+
+                    vertices[vi] = nextPos;
+                }
+                else //body
+                {
+                    var targetpos2 = defaultLineLocalPosition[Mathf.Max(0, vi - 2)];
+
+                    var cubicInterpolation = Vector3.Lerp(Vector3.Lerp(pos, targetpos, 0.5f), Vector3.Lerp(targetpos, targetpos2, 0.5f), 0.5f);
+
+                    var diff = cubicInterpolation - pos;
+
+                    var diffVector = diff.normalized * /*normalizedRuntime **/ 0.5f;
+
+                    var nextPos = pos + (diffVector) * RunSpeed * runtimeSpeedFactor;
+                    vertices[vi] = nextPos;
+                }
             }
         }
 
@@ -189,7 +214,10 @@ namespace JJS
 
             //color
             lineRenderer.startColor = gradient.Evaluate(normalizedTime);
-            lineRenderer.endColor = gradient.Evaluate(normalizedTime);
+
+            var endColor = gradient.Evaluate(normalizedTime);
+            endColor.a *= 0.7f;
+            lineRenderer.endColor = endColor;
 
             //width
             lineRenderer.widthMultiplier = Mathf.Lerp(0.1f, 0f, normalizedTime);
