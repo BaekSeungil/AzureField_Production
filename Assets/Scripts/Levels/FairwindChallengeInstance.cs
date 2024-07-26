@@ -263,6 +263,10 @@ public class FairwindChallengeInstance : MonoBehaviour
         isChallengeDone = true;
         PlayerCore.Instance.DisableIndicator();
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
+
+        AlphaEndingPanel alphaEnding = FindObjectOfType<AlphaEndingPanel>(true);
+        if (alphaEnding != null) alphaEnding.OnClearedFairwind();
+
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
         currentState = ChallengeState.Closed;
