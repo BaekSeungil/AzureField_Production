@@ -140,6 +140,8 @@ public class FairwindChallengeInstance : MonoBehaviour
     {
         if (!IsActiveChallengeExists) return false;
 
+        UI_FairwindInfo.Instance.OnAdditionalTime(time);
+
         Debug.Log(ActiveChallenge.name);
 
         ActiveChallenge.timer_playCountdown += time;
@@ -184,11 +186,11 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <param name="pointOnSpline"> Spline으로부터 최단지점에 위치한 지점 </param>
     /// <param name="t"> 0-1 값으로 보간된 지점 </param>
     /// <returns></returns>
-    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t)
+    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t,int resolutions = 2, int iterations = 1)
     {
         float3 p;
         point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
-        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t);
+        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t,2,1);
         pointOnSpline = new Vector3(p.x, p.y, p.z);
         pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
 
@@ -261,6 +263,10 @@ public class FairwindChallengeInstance : MonoBehaviour
         isChallengeDone = true;
         PlayerCore.Instance.DisableIndicator();
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
+
+        AlphaEndingPanel alphaEnding = FindObjectOfType<AlphaEndingPanel>(true);
+        if (alphaEnding != null) alphaEnding.OnClearedFairwind();
+
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
         currentState = ChallengeState.Closed;
@@ -307,6 +313,8 @@ public class FairwindChallengeInstance : MonoBehaviour
         lightPilarObject.transform.position = new Vector3(knot.x, lightPilarObject.transform.position.y, knot.z);
     }
 
+    float abortTimer = 0f;
+
     private void Update()
     {
         if (currentState == ChallengeState.Closed) return;
@@ -327,7 +335,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
             float t = 0;
-            if (GetDistanceFromSpline(activeSplineSegment,PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
+            if (GetDistanceFromSpline(activeSplineSegment, PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
             {
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
@@ -351,7 +359,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Standby)
         {
-
             if (GetProjectedDistanceFromPlayer(startKnotPosition) < triggerDistance)
             {
                 currentState = ChallengeState.Active;
@@ -361,13 +368,15 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Aborted)
         {
-            if (GetProjectedDistanceFromPlayer(startKnotPosition) > triggerDistance)
+            abortTimer += Time.deltaTime;
+
+            if (abortTimer > 4.0f)
             {
+                abortTimer = 0f;
                 currentState = ChallengeState.Standby;
             }
+
         }
-
-
     }
 
     private float GetProjectedDistanceFromPlayer(Vector3 target)

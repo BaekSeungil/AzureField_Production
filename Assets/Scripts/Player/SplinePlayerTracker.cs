@@ -10,6 +10,7 @@ public class SplinePlayerTracker : MonoBehaviour
 
     [SerializeField] private SplineContainer track;                 // 스플라인
     [SerializeField] private float maxTrackDistance = 100f;         // 인식 최대거리
+    [SerializeField] private Vector3 trackLimitOffset = Vector3.zero;
     Transform playerTF;
 
     private void OnEnable()
@@ -24,15 +25,15 @@ public class SplinePlayerTracker : MonoBehaviour
     {
         if (playerTF != null)
         {
-            if (Vector3.Distance(playerTF.position, transform.position) < maxTrackDistance)
+            if (Vector3.Distance(playerTF.position, track.transform.position + trackLimitOffset) < maxTrackDistance)
             {
-
-                float3 playerPoint = new float3(playerTF.position.x, playerTF.position.y, playerTF.position.z); ;
+                Vector3 positionLocal = track.transform.worldToLocalMatrix.MultiplyPoint3x4(playerTF.position);
+                float3 playerPoint = new float3(positionLocal.x, positionLocal.y, positionLocal.z);
                 float3 nearPoint;
                 float t;
 
-                SplineUtility.GetNearestPoint(track.Spline, playerPoint, out nearPoint, out t);
-                transform.position = new Vector3(nearPoint.x, nearPoint.y, nearPoint.z);
+                SplineUtility.GetNearestPoint(track.Spline, playerPoint, out nearPoint, out t,2,1);
+                transform.position = track.transform.localToWorldMatrix.MultiplyPoint3x4(new Vector3(nearPoint.x, nearPoint.y, nearPoint.z));
             }
         }
     }
@@ -40,7 +41,7 @@ public class SplinePlayerTracker : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, maxTrackDistance);
+        Gizmos.DrawWireSphere(track.transform.position + trackLimitOffset, maxTrackDistance);
     }
 }
 

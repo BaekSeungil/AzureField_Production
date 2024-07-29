@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,7 +34,10 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     private GameObject failedUI;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private TextMeshProUGUI failedUI_text;
-
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject additinalTime;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private TextMeshProUGUI additinalTime_text;
 
     private void Start()
     {
@@ -103,5 +107,12 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         ToggleAlertUI(false);
         failedUI.SetActive(true);
         failedUI_text.text = message_failRouteout.GetLocalizedString();
+    }
+
+    public void OnAdditionalTime(float time)
+    {
+        additinalTime.SetActive(false);
+        additinalTime.SetActive(true);
+        additinalTime_text.text = "+ " + ((int)time).ToString();
     }
 }

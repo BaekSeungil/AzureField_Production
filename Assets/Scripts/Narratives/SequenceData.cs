@@ -91,14 +91,16 @@ public class Sequence_DialogueBranch : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
+        if (branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
 
         Debug.Log(sequenceAssets[index]);
 
-        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+        if (sequenceAssets[index] != null)
+            yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+
     }
 }
 
@@ -319,7 +321,7 @@ public class Sequence_EnableVCam : Sequence_Base
 
 public class Sequence_DisableVCam : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    [InfoBox("name 이름을 가진 카메라를 끕니다.")]
     public string name;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -354,7 +356,6 @@ public class Sequence_Animation : Sequence_Base
             if (anim.name == objectName)
             {
                 anim.Play(stateName);
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
                 yield break;
             }
         }
@@ -398,7 +399,7 @@ public class Sequence_DotweenAnimation : Sequence_Base
     }
 }
 
-public class Sequence_IntroCanves : Sequence_Base
+public class Sequence_IntroCanvas : Sequence_Base
 {
     public LocalizedString[] texts;
 
@@ -406,5 +407,55 @@ public class Sequence_IntroCanves : Sequence_Base
     {
         UI_IntroCanvas intro = UI_IntroCanvas.Instance;
         yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
+}
+
+public class Sequence_ToggleIsmael : Sequence_Base
+{
+    [InfoBox("플레이어로부터 이스마엘 파티클을 소환합니다.")]
+    public bool value;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (value)
+            PlayerCore.Instance.EnableIsamel();
+        else
+            PlayerCore.Instance.DisableIsmael();
+
+        yield return new WaitForSeconds(0.5f);
+    }
+}
+
+public class Sequence_PlayOtherSequence : Sequence_Base
+{
+    [InfoBox("다른 시퀀스 에셋 번들을 이어서 재생합니다.")]
+    public SequenceBundleAsset sequenceBundle;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceBundle.SequenceBundles));
+    }
+}
+
+public class Sequence_StorylineProgress : Sequence_Base
+{
+    [InfoBox("스토리라인을 진행시킵니다 [스토리라인이름,번호]")]
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.MakeProgressStoryline(storyline);
+        yield return null;
+    }
+}
+
+public class Sequence_AZFLangDialogue : Sequence_Base
+{
+    [InfoBox("AZFLang폰트, 고대어를 출력하는 대사창을 띄웁니다. 영문을 입력하세요"),TextArea()]
+    public string[] contexts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return UI_AZFLangDialogue.Instance.StartCoroutine(UI_AZFLangDialogue.Instance.Cor_Dialogue(contexts));
     }
 }

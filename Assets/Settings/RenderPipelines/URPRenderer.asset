@@ -23,6 +23,49 @@ MonoBehaviour:
       normalBlend: 0
   m_CopyDepthPS: {fileID: 4800000, guid: d6dae50ee9e1bfa4db75f19f99355220, type: 3}
   m_DBufferClear: {fileID: 4800000, guid: f056d8bd2a1c7e44e9729144b4c70395, type: 3}
+--- !u!114 &-6848526865090744150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: RenderOutline
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: RenderOutline
+    Event: 300
+    filterSettings:
+      RenderQueueType: 0
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      PassNames:
+      - PlayerOutline
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideShader: {fileID: 0}
+    overrideShaderPassIndex: 0
+    overrideMode: 0
+    overrideDepthState: 0
+    depthCompareFunction: 4
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
 --- !u!114 &-1878332245247344467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45,8 +88,8 @@ MonoBehaviour:
     Intensity: 0.2
     DirectLightingStrength: 0.25
     Radius: 0.2
-    Samples: 0
-    BlurQuality: 2
+    Samples: 2
+    BlurQuality: 1
     Falloff: 100
     SampleCount: -1
   m_BlueNoise256Textures:
@@ -79,7 +122,9 @@ MonoBehaviour:
   - {fileID: -7084241246333202316}
   - {fileID: 1398414563853004887}
   - {fileID: 5899858740986036993}
-  m_RendererFeatureMap: adc0de57c6d2eee5749023d11eb8af9d57f030ffa22a681301c374214482e051
+  - {fileID: -6848526865090744150}
+  - {fileID: 3912267916599633072}
+  m_RendererFeatureMap: adc0de57c6d2eee5749023d11eb8af9d57f030ffa22a681301c374214482e051aaf08beb1925f5a0b024142bf12a4b36
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -119,7 +164,7 @@ MonoBehaviour:
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 1
   m_DepthPrimingMode: 2
-  m_CopyDepthMode: 1
+  m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
 --- !u!114 &1398414563853004887
@@ -142,6 +187,30 @@ MonoBehaviour:
   passIndex: 0
   bindDepthStencilAttachment: 0
   m_Version: 1
+--- !u!114 &3912267916599633072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af24e90db4bf58443aff8888b8b7e207, type: 3}
+  m_Name: VolumetricCloudsURP
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  material: {fileID: 2100000, guid: 3748131af20412e478461c6445c73923, type: 2}
+  renderingDebugger: 0
+  reflectionProbe: 0
+  resolutionScale: 1
+  upscaleMode: 0
+  preferredRenderMode: 1
+  ambientProbe: 0
+  ambientColor:
+    m_OverrideState: 1
+    m_Value: {r: 0.1462264, g: 0.79819876, b: 1, a: 0}
+  resetOnStart: 1
 --- !u!114 &5899858740986036993
 MonoBehaviour:
   m_ObjectHideFlags: 0

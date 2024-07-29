@@ -80,6 +80,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField, LabelText("입수 소리")] private EventReference sound_splash;
     [SerializeField, LabelText("드리프트 순간추진")] private EventReference sound_driftKick;
     [SerializeField, LabelText("드리프트 충전됨")] private EventReference sound_driftCharged;
+    [SerializeField, LabelText("조각배 충돌")] private EventReference sound_SailboatBump;
 
     [Title("기타")]
     [SerializeField, LabelText("캐릭터 시선 타겟 유지거리")] private float interestDistance = 10.0f;
@@ -90,6 +91,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     [Title("Info")]
     [SerializeField, ReadOnly, LabelText("PlayerControl enabled")] private bool control_disabled_debug;
+    [SerializeField, ReadOnly, LabelText("Control Disable Stack")] private int control_disableStack_debug;
     [SerializeField, ReadOnly, LabelText("Currentmove")] private string current_move_debug = "";
     [SerializeField, ReadOnly, LabelText("Velocity")] private Vector3 velocity_debug;
     [SerializeField, ReadOnly, LabelText("Velocity magnitude")] private float velocity_mag_debug;
@@ -115,10 +117,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem sailingSwooshEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem footstepEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem jumpEffect;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stoneAttackEffect;
+    [SerializeField, Required(), FoldoutGroup("ChildReferences")] private ParticleSystem stunEffect;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform headTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform leftHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform rightHandTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform holdingItemTarget;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform flowerHodlingTarget;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig headRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig sailboatFootRig;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Rig handRig;
@@ -127,12 +132,20 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter waterScratchSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter sailboatEngineSound;
     [SerializeField , Required(), FoldoutGroup("ChildReferences")] private StudioEventEmitter driftSound;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private GameObject IsmaelSpiritObject;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator IsmaelSpiritAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Animator bellflowerLockPointAnimator;
+    [SerializeField , Required(), FoldoutGroup("ChildReferences")] private Transform IsmaelSpiritLookTarget;
+
+    public Transform HoldingItemTarget { get { return holdingItemTarget; } }
+    public Transform FlowerHoldingTarget { get { return flowerHodlingTarget; } }
     #endregion
 
 
     #endregion
 
     private Rigidbody rBody;
+    public Rigidbody Rigidbody { get { return rBody; } }
     public Vector3 Velocity { get { return rBody.velocity; } }
     private StudioEventEmitter sound;
     private Transform interestPoint;
@@ -218,7 +231,10 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         JumpPower,
         Steering,
         SailboatAcceleration,
-        SailboatGliding
+        SailboatGliding,
+        LeapupPower,
+        BoosterDuration,
+        BoosterMult
     }
 
     public class AbilityAttributeUnit
@@ -384,6 +400,81 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
+    public float FinalLeapupPower
+    {
+        get
+        {
+            float result = leapupPower;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.LeapupPower)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterDuration
+    {
+        get
+        {
+            float result = boosterDuration;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterDuration)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
+    public float FinalBoosterMult
+    {
+        get
+        {
+            float result = boosterMult;
+
+            for (int i = 0; i < permenentAttributes.Count; i++)
+            {
+                if (permenentAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= permenentAttributes[i].value;
+            }
+            for (int i = 0; i < timeAttributes.Count; i++)
+            {
+                if (timeAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= timeAttributes[i].value;
+            }
+            for (int i = 0; i < IDAttributes.Count; i++)
+            {
+                if (IDAttributes[i].attribute == AbilityAttribute.BoosterMult)
+                    result *= IDAttributes[i].value;
+            }
+            return result;
+        }
+    }
+
 
     /// <summary>
     /// 영구적인 플레이어 속성 값을 더합니다.
@@ -455,7 +546,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" + ID);
     }
-
 
     #endregion
 
@@ -711,6 +801,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             current_holding_item_debug = currentHoldingItem.gameObject.name;
         else
             current_holding_item_debug = "NULL";
+
+        control_disableStack_debug = disableStack;
 #endif
     }
 
@@ -757,13 +849,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         public virtual void OnMovementExit(PlayerCore @player) { }
     }
 
+    float slopeResistence = 1f;
+
+
 /// <summary>
 /// 플레이어가 땅 위를 뛰어다니는 상태일 때
 /// </summary>
     protected class Movement_Ground : MovementState
     {
         bool sliding = false;
-
+        float idleAnimationtime = 30f;
+        float IdleTimer = 0f;
         private float GetSlopeForwardInterpolation(PlayerCore player,Vector3 forward)
         {
             return Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f, Vector3.Dot(forward, Vector3.up));
@@ -792,10 +888,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                 Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
+                player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
 
-                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
+                Vector3 finalVelocity = slopedMoveVector * adjuestedScale * player.slopeResistence * player.FinalMoveSpeed * ((player.currentHoldingItem == null)?1.0f:player.holdingMoveSpeedMult);
                 if (player.buoyant.WaterDetected)
                 {
                     finalVelocity = finalVelocity * (1f - Mathf.Lerp(0.5f, 0f, player.buoyant.SubmergeRate) * player.waterWalkDragging);
@@ -803,14 +900,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
                 player.rBody.velocity = new Vector3(finalVelocity.x, player.rBody.velocity.y, finalVelocity.z);
 
-                //slope boost
-                //float upSloping = Vector3.Dot(player.groundNormal, player.transform.forward) < 0f &&
-                //                Vector3.Angle(player.groundNormal, Vector3.up) < player.maxClimbSlope
-                //                ? 1.0f : 0.5f;
-
-                //player.rBody.AddForce(Vector3.up * (1f - Vector3.Dot(Vector3.up, player.groundNormal)) * slopeBoostForce * upSloping);
-
-                //rotation
                 bool LargeTurn = Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(lookTransformedVector, Vector3.up)) > 60f;
 
                 player.transform.rotation = Quaternion.RotateTowards(
@@ -825,11 +914,23 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                     player.animator.speed = 1.0f;
 
                 player.animator.SetBool("MovementInput", true);
+
+                IdleTimer = 0f;
             }
             else
             {
                 player.rBody.velocity = Vector3.Lerp(player.rBody.velocity, new Vector3(0f, player.rBody.velocity.y, 0f), player.horizontalDrag / 0.2f);
                 player.animator.SetBool("MovementInput", false);
+
+                IdleTimer += Time.fixedDeltaTime;
+
+                if (IdleTimer > idleAnimationtime)
+                {
+                    player.animator.SetTrigger("IdleAnimation");
+                    IdleTimer = 0f;
+                    idleAnimationtime = Random.Range(25f, 40f);
+                }
+
             }
         }
 
@@ -846,6 +947,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.ReleaseHoldingItem();
         }
     }
+
+    readonly float waterjumpInterval = 1f;
+    float waterjumpTimer = 0f;
 
     /// <summary>
     /// 플레이어가 수영중인 상황일 때
@@ -864,6 +968,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         public override void OnFixedUpdate(PlayerCore player)
         {
             base.OnFixedUpdate(player);
+            player.waterjumpTimer += Time.fixedDeltaTime;
 
             if (player.buoyant.SubmergeRateZeroClamped < 0)
             {
@@ -935,37 +1040,37 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             Vector3 lookTransformedVector;
             //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
 
-            if (input.x != 0)
+            //if (input.x != 0)
+            //{
+            //    if (player.boosterActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
+            //    }
+            //    if (player.DriftActive)
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
+            //    }
+            //    else
+            //    {
+            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
+            //    }
+            //}
+            //else
+            //{
+            if (player.boosterActive)
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
-                }
-                else
-                {
-                    lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-                }
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
+            }
+            if (player.DriftActive)
+            {
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
             }
             else
             {
-                if (player.boosterActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
-                }
-                if (player.DriftActive)
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, Mathf.Clamp(input.y, 0.5f, 1.0f))), player.FinalSteering, 1.0f);
-                }
-                else
-                {
-                    lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
-                }
-
+                lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y)), player.FinalSteering, 1.0f);
             }
+
+            //}
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
@@ -976,7 +1081,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
-                player.driftActive = true;
+                //player.driftActive = true;
                 driftDirection = new Vector3(player.input.Player.Move.ReadValue<Vector2>().x > 0 ? 1f : -1,0f,0f);
             }
 
@@ -1207,11 +1312,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             player.transform.forward = Vector3.ProjectOnPlane(sailboat.transform.forward, Vector3.up);
 
 
-            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 0.5f)
+            if (player.rBody.velocity.magnitude > 10f && sailboat.SubmergeRate < 1f)
             {
                 Vector3 pos = player.sailingSprayEffect.transform.position;
-                Vector3 surfacePos = player.transform.position;
-                player.sailingSprayEffect.transform.position = surfacePos;
+                float surfaceHeight = GlobalOceanManager.Instance.GetWaveHeight(pos);
+                player.sailingSprayEffect.transform.position = new Vector3(pos.x,surfaceHeight,pos.z);
 
 
                 if (!player.sailingSprayEffect.isPlaying)
@@ -1317,12 +1422,22 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     {
         if (CurrentMovement.GetType() == typeof(Movement_Ground) && grounding)
         {
-            if (Vector3.Angle(groundNormal, Vector3.up) < slopeEffect.x)
+            float groundNormAngle = Vector3.Angle(groundNormal, Vector3.up);
+            if (groundNormAngle < slopeEffect.y)
             {
-                rBody.velocity += Vector3.up * jumpPower;
+                rBody.velocity += Vector3.up * jumpPower * Mathf.InverseLerp(slopeEffect.y, slopeEffect.x, groundNormAngle);
                 jumpEffect.Emit((int)jumpEffect.emission.GetBurst(0).count.constant);
                 animator.SetFloat("AirboneBlend", 0f);
                 PlayFootstepSound();
+            }
+        }
+        else if (CurrentMovement.GetType() == typeof(Movement_Swimming))
+        {
+            if(buoyant.SubmergeRate < 0f && buoyant.SubmergeRate > -1f && waterjumpTimer > waterjumpInterval)
+            {
+                waterjumpTimer = 0f;
+                rBody.velocity += Vector3.up * jumpPower;
+                Instantiate(normalSplashEffectPrefab, new Vector3(transform.position.x, GlobalOceanManager.Instance.GetWaveHeight(transform.position), transform.position.z), Quaternion.identity);
             }
         }
     }
@@ -1350,7 +1465,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     }
 
-
     private void OnLeapupStart(InputAction.CallbackContext context)
     {
         if (CurrentMovement.GetType() != typeof(Movement_Sailboat)) return;
@@ -1373,7 +1487,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     bool leapupRecharging = false;
     bool leapupRechargeTriggered = false;
 
-
     public void AbortBooster()
     {
         if (boosterCoroutine == null) return;
@@ -1394,13 +1507,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         boosterGauge = 1f;
         animator.SetBool("Booster", true);
 
-        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, boosterMult, "SailboatBooster");
+        SetAttributeWithID(AbilityAttribute.SailboatAcceleration, FinalBoosterMult, "SailboatBooster");
 
         boosterActive = true;
 
-        for(float t = boosterDuration; t > 0; t -= Time.deltaTime)
+        for(float t = FinalBoosterDuration; t > 0; t -= Time.deltaTime)
         {
-            boosterGauge = t / boosterDuration;
+            boosterGauge = t / FinalBoosterDuration;
             UI_SailboatSkillInfo.Instance.SetBoosterRing(boosterGauge);
             SpeedLineControl.Instance.SetSpeedLine(Mathf.Clamp01(rBody.velocity.magnitude / 40f)*2.0f);
             yield return null;
@@ -1425,7 +1538,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
         for (float t = leapupDuration; t > 0; t -= Time.fixedDeltaTime)
         {
-            rBody.AddForce(Vector3.up * leapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
+            rBody.AddForce(Vector3.up * FinalLeapupPower * leapupForceCurve.Evaluate(1 - (t/leapupDuration)) , ForceMode.VelocityChange);
             leapupGauge = t / leapupDuration;
             UI_SailboatSkillInfo.Instance.SetLeapupRing(leapupGauge);
             yield return new WaitForFixedUpdate();
@@ -1450,6 +1563,24 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     bool holdItemCoroutineFlag = false;
+
+    public void EnableIsamel()
+    {
+        IsmaelSpiritObject.SetActive(true);
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", true);
+        SetInterestPoint(IsmaelSpiritLookTarget);
+    }
+    public void DisableIsmael()
+    {
+        IsmaelSpiritAnimator.SetBool("IsmaelActive", false);
+        SetInterestPoint(null);
+        Invoke("DisableIsmaelDelayed", 1.0f);
+    }
+
+    private void DisableIsmaelDelayed()
+    {
+        IsmaelSpiritObject.SetActive(false);
+    }
 
 /// <summary>
 ///     //Interactable_Holding과 함께 사용합니다. 아이템을 듭니다.
@@ -1558,26 +1689,40 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         holdObjectRig.weight = 0.0f;
     }
 
+    int disableStack = 0;
+    public int DisableStack { get { return disableStack; } }
+
     /// <summary>
     ///  시퀀스 시작시 플레이어의 조작을 비활성화하기 위한 함수.
     /// </summary>
     public void DisableControls()
     {
-        input.Player.Disable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if(cameraInputProvider != null) { cameraInputProvider.enabled = false; }
-        if(CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        if(disableStack <= 0)
+        {
+            input.Player.Disable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = false; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(false);
+        }
+
+        disableStack++;
     }
 
     /// <summary>
     /// 시퀀스 종료시 플레이어의 조작을 활성화하기 위한 함수.
     /// </summary>
-    public void EnableControlls()
+    public void EnableControls()
     {
-        input.Player.Enable();
-        Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
-        if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
-        if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+        disableStack--;
+
+        if (disableStack <= 0)
+        {
+            input.Player.Enable();
+            Cinemachine.CinemachineInputProvider cameraInputProvider = FindFirstObjectByType<Cinemachine.CinemachineInputProvider>();
+            if (cameraInputProvider != null) { cameraInputProvider.enabled = true; }
+            if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) UI_SailboatSkillInfo.Instance.ToggleInfo(true);
+            disableStack = 0;
+        }
     }
 
     /// <summary>
@@ -1587,6 +1732,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     public void EnableAndSetIndicator(Vector3 target)
     {
         directionIndicator.EnableAndSetIndicator(target);
+    }
+
+    public void OnFlowerPicked(bool value)
+    {
+        animator.SetBool("PickupBlossom",value);
+        bellflowerLockPointAnimator.GetComponent<Animator>().SetBool("Pickup",true);
     }
 
     /// <summary>
@@ -1667,15 +1818,19 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                         sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
                         break;
                 }
-           
-                if(buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
-                }
-                else if(buoyant.SubmergeRate <= 0.5f)
-                {
-                    sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
-                }
+            }
+            else
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Default");
+            }
+
+            if (buoyant.SubmergeRate < 1.0f && buoyant.SubmergeRate > 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "Water");
+            }
+            else if (buoyant.SubmergeRate <= 0.5f)
+            {
+                sound.EventInstance.setParameterByNameWithLabel("GroundMaterial", "WaterSplash");
             }
 
             sound.Play();
@@ -1695,17 +1850,36 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     /// <summary>
+    /// 플레이어의 업그레이드 함수관리를 하는 변수
+    /// </summary>
+    
+    public void PlayerUpgradeState(float UpgradeState)
+    {
+        leapupPower += UpgradeState;
+        boosterDuration += UpgradeState;
+        boosterMult += UpgradeState;
+    }
+
+    public float ViewleapupPower {get {return FinalLeapupPower;}}
+    public float ViewBoosterDuration { get { return FinalBoosterDuration; } }
+    public float ViewBoosterMult { get { return FinalBoosterMult; } }
+
+    /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
     /// </summary>
     IEnumerator ReefCrash()
     {
         DisableControls();
         animator.SetTrigger("ReefCrash");
+        RuntimeManager.PlayOneShot(sound_SailboatBump);
         AbortBooster();
         driftActive = false;
+        stunEffect.Play(true);
+        stoneAttackEffect.Play(true);
 
         rBody.velocity = new Vector3(0f, rBody.velocity.y, 0f);
         rBody.AddForce(-transform.forward * reefCrashPower, ForceMode.Impulse);
+        
         yield return new WaitForSeconds(reefCrashStifftime);
 
 
@@ -1715,7 +1889,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         yield return new WaitForSeconds(reefCrashbindTime);
 
 
-        EnableControlls();
+        EnableControls();
     }
 
     float reefCrashStifftime = 0.5f;

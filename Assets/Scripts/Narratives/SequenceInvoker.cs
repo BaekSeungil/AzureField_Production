@@ -41,6 +41,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         dialogue = UI_DialogueBehavior.Instance;
         inventoryContainer = PlayerInventoryContainer.Instance;
         displayImage = UI_DisplayImage.Instance;
+        bindFromSequences = BindFromSequences.Instance;
 
         playable = GetComponent<PlayableDirector>();
         sequenceQueue = new Queue<Sequence_Base>();
@@ -69,6 +70,10 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         StartCoroutine(Cor_StartSequenceQueue());
     }
 
+    public void StartSequence(SequenceBundleAsset sequenceBundleAsset)
+    {
+        StartSequence(sequenceBundleAsset.SequenceBundles);
+    }
     public void StartSequence(Sequence_Base[] sequenceChain)
     {
         if (sequenceRunning) {
@@ -103,7 +108,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         if (dialogue.DialogueOpened) { dialogue.StopAllCoroutines(); dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         UI_PlaymenuBehavior.Instance.EnableInput();
-        PlayerCore.Instance.EnableControlls();
+        PlayerCore.Instance.EnableControls();
     }
 
     public void SetSequenceCamera(CinemachineVirtualCameraBase cam)
@@ -138,7 +143,7 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         yield return null;
         EndSequenceCamera();
         playmenu.EnableInput();
-        player.EnableControlls();
+        player.EnableControls();
 
         sequenceRunning = false;
     }
