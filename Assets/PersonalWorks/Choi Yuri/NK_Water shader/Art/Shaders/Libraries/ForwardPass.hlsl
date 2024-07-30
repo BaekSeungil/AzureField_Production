@@ -158,7 +158,7 @@ float3 GetWaterColor(SceneData scene, float3 scatterColor, float density, float 
 	//Color of light ray passing through the water, hitting the sea floor (extinction)
 	const float3 underwaterColor = saturate(scene.color * exp(-density * (depth + accumulation)));
 	//Energy loss of ray, as it travels deeper and scatters (absorption)
-	const float scatterAmount = saturate(exp(-absorption * accumulation));
+	const float scatterAmount = saturate(exp(-absorption * accumulation) - 0.5);
 
 	return lerp(underwaterColor, scatterColor, scatterAmount);
 }
