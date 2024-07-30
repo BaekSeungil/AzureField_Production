@@ -21,18 +21,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Orb
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: f280a329737631c4e908509e9f483fcf,
+    type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _EMISSION
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
+  m_CustomRenderQueue: 3039
+  stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -70,6 +69,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseMap:
+        m_Texture: {fileID: 2800000, guid: c02105582f088b9479a9e9204f46c72f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 884b0fd082f5b5942aaf30ded96a2276, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -80,6 +87,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceMap:
+        m_Texture: {fileID: 2800000, guid: c3513bfd8bc30844f93d6273c4b55089, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -98,9 +109,11 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _AngleOffset: 48.73
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
+    - _CellDensity: 7.5
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
@@ -109,26 +122,46 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EmissionIntensity: 0
+    - _EmittionStepper: 0.69
     - _EnvironmentReflections: 1
+    - _ForwardBlend: 0.5
+    - _ForwardParallax: 3.09
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _InnerBlend: 0.721
+    - _InnerParallax: 3.8
+    - _Metalic: 0.283
     - _Metallic: 0.316
     - _OcclusionStrength: 1
+    - _OverlayFactor: 0.571
     - _Parallax: 0.005
-    - _QueueOffset: 0
+    - _QueueControl: 0
+    - _QueueOffset: 39
     - _ReceiveShadows: 1
-    - _Smoothness: 0.834
+    - _RefractColorOpacity: 0.216
+    - _RefrectionBlend: 1
+    - _SceneColorPower: 0.597
+    - _Smoothness: 0.805
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _SurfaceBlend: 0.593
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.10898005, g: 0.46199352, b: 0.745283, a: 1}
     - _Color: {r: 0.10898001, g: 0.46199352, b: 0.745283, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmmisionColor: {r: 0.11360805, g: 0.6223072, b: 0.6509434, a: 0}
+    - _ForwardColor: {r: 0.25943398, g: 0.66109693, b: 1, a: 1}
+    - _InnerColor: {r: 0.39215708, g: 0, b: 1, a: 1}
+    - _RefreactColor: {r: 0.2971698, g: 0.9007769, b: 1, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SurfaceColor: {r: 0.3537736, g: 0.7969003, b: 1, a: 1}
+    - _SurfaceColorBright: {r: 0, g: 0.67219925, b: 1, a: 0}
+    - _SurfaceColorDark: {r: 0.8484633, g: 0.3160377, b: 1, a: 0}
   m_BuildTextureStacks: []
