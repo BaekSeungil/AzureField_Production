@@ -40,9 +40,11 @@ public class TreasureObj : Interactable_Base
     IEnumerator Cor_PickTreasure()
     {
         treasurePickFlag = true;
-        DestroyTreasure();
-        yield return StartCoroutine(PlayerInventoryContainer.Instance.Cor_ItemWindow(treasureItem, 1));
+        
         PlayerInventoryContainer.Instance.AddItem(treasureItem, 1);
+        yield return StartCoroutine(PlayerInventoryContainer.Instance.Cor_ItemWindow(treasureItem, 1));
+        DestroyTreasure();
+
     }
 }
 
