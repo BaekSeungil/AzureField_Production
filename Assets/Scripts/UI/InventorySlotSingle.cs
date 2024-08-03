@@ -1,4 +1,4 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,10 +14,13 @@ public class InventorySlotSingle : MonoBehaviour
     public UI_InventoryBehavior InventoryManager { get { return inventoryManager; } }
 
     [SerializeField] private Image itemImage;
+    [SerializeField] private Image itemPopUpImage;
     [SerializeField] private TextMeshProUGUI quantityText;
 
     private MainPlayerInputActions input;
     private Sprite debug_imageError;
+
+    [SerializeField] private TreasureControl treasureControl;
 
     private void Awake()
     {
@@ -30,6 +33,7 @@ public class InventorySlotSingle : MonoBehaviour
     {
         assignedItem = item;
         itemImage.sprite = item.ItemImage;
+        itemPopUpImage.sprite = item.ItemPopUpImage;
         inventoryManager = inventory;
         if(quantity >= 1) quantityText.text = quantity.ToString();
     }
@@ -47,5 +51,10 @@ public class InventorySlotSingle : MonoBehaviour
         assignedItem = null;
         itemImage.sprite = debug_imageError;
         quantityText.text = string.Empty;
+    }
+
+    public void ButtonClickEvent(int code)
+    {        
+        treasureControl.OpenTreasurePopUp(code);
     }
 }
