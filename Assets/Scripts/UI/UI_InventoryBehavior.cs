@@ -66,10 +66,12 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         {
             for (int x = 0; x < Mathf.Clamp(itemArray.Length - y*rowCount,0,rowCount); x++)
             {
+
                 GameObject newSlot = Instantiate(slotPrefab, slotViewport,false);
-                RectTransform slotRect = newSlot.GetComponent<RectTransform>();
-                slotRect.anchoredPosition = new Vector2(slotDistance.x * x + offset.x, slotDistance.y * y + offset.y);
-                slotRect.sizeDelta = slotSize;
+                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = slotSize;
+                rectTransform.anchoredPosition = new Vector2(x * (slotSize.x + slotDistance.x) + offset.x,-y * 
+                (slotSize.y + slotDistance.y) + offset.y);
                 InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
                 slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
                 instanciatedSlots.Add(newSlot);
@@ -148,8 +150,11 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         {
             for (int x = 0; x < rowCount; x++)
             {
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) + 
-                new Vector3(offset.x, offset.y, 0f) + squareSize * new Vector3(0.5f, -0.5f, 0f), new Vector3(slotSize.x, slotSize.y, 0)); // 슬롯 크기 적용
+                Vector3 slotPosition = slotViewport.position 
+                + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) 
+                + new Vector3(offset.x, offset.y, 0f)
+                + new Vector3(slotSize.x * 0.5f, -slotSize.y * 0.5f, 0f);
+                Gizmos.DrawWireCube(slotPosition, new Vector3(slotSize.x, slotSize.y, 0));
             }
         }
     }
