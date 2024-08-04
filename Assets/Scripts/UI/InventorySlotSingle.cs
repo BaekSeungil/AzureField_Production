@@ -20,7 +20,6 @@ public class InventorySlotSingle : MonoBehaviour
     private MainPlayerInputActions input;
     private Sprite debug_imageError;
 
-    [SerializeField] private TreasureControl treasureControl;
 
     private void Awake()
     {
@@ -53,8 +52,8 @@ public class InventorySlotSingle : MonoBehaviour
         quantityText.text = string.Empty;
     }
 
-    public void ButtonClickEvent(int code)
-    {        
-        treasureControl.OpenTreasurePopUp(code);
+    public void ButtonClickEvent()
+    {
+        inventoryManager.OpenItemPopUp(assignedItem);
     }
 }
