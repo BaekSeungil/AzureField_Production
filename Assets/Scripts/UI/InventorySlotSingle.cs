@@ -32,7 +32,6 @@ public class InventorySlotSingle : MonoBehaviour
     {
         assignedItem = item;
         itemImage.sprite = item.ItemImage;
-        itemPopUpImage.sprite = item.ItemPopUpImage;
         inventoryManager = inventory;
         if(quantity >= 1) quantityText.text = quantity.ToString();
     }
@@ -52,8 +51,12 @@ public class InventorySlotSingle : MonoBehaviour
         quantityText.text = string.Empty;
     }
 
-    public void ButtonClickEvent()
+    public void ButtonClickEvent(UI_InventoryBehavior inventory, ItemData item)
     {
-        inventoryManager.OpenItemPopUp(assignedItem);
+        assignedItem = item;
+        itemImage.sprite = item.ItemImage;
+        itemPopUpImage.sprite = item.ItemPopUpImage;
+        inventoryManager = inventory;
+        inventory.OpenItemPopUp(assignedItem);
     }
 }
