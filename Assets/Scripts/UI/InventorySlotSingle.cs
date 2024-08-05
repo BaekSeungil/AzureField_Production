@@ -14,8 +14,11 @@ public class InventorySlotSingle : MonoBehaviour
     public UI_InventoryBehavior InventoryManager { get { return inventoryManager; } }
 
     [SerializeField] private Image itemImage;
-    [SerializeField] private Image itemPopUpImage;
     [SerializeField] private TextMeshProUGUI quantityText;
+
+    [SerializeField] private GameObject popUpWindow;
+    [SerializeField] private Image popUpImage;
+    [SerializeField] private TextMeshProUGUI popUpText;
 
     private MainPlayerInputActions input;
     private Sprite debug_imageError;
@@ -53,10 +56,21 @@ public class InventorySlotSingle : MonoBehaviour
 
     public void ButtonClickEvent(UI_InventoryBehavior inventory, ItemData item)
     {
-        assignedItem = item;
-        itemImage.sprite = item.ItemImage;
-        itemPopUpImage.sprite = item.ItemPopUpImage;
-        inventoryManager = inventory;
-        inventory.OpenItemPopUp(assignedItem);
+        OpenItemPopUp();
+    }
+
+    public void OpenItemPopUp()
+    {
+        //assignedItem = item;
+        popUpWindow.SetActive(true);
+        popUpText.text = assignedItem.ItemDiscription.GetLocalizedString();
+        popUpImage.sprite = assignedItem.ItemPopUpImage;
+    }
+
+    public void CloseItemPopUp()
+    {
+        popUpText.text = "";
+        popUpImage.sprite = null;
+        popUpWindow.SetActive(false);
     }
 }

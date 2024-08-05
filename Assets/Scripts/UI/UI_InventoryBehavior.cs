@@ -28,9 +28,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI noItemText;
 
-    [SerializeField] private GameObject popUpWindow;
-    [SerializeField] private Image popUpImage;
-    [SerializeField] private TextMeshProUGUI popUpText;
+    
     
 
     private MainPlayerInputActions input;
@@ -154,19 +152,5 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
                 Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x , -slotDistance.y * y , 0f) + new Vector3(offset.x,offset.y,0f) + squareSize * new Vector3(0.5f,-0.5f,0f) , squareSize * new Vector3(1,1,0));
             }
         }
-    }
-
-    public void OpenItemPopUp(ItemData item)
-    {
-        popUpWindow.SetActive(true);
-        popUpText.text= item.ItemDiscription.GetLocalizedString();
-        popUpImage.sprite = item.ItemPopUpImage;
-    }
-
-    public void CloseItemPopUp()
-    {
-        popUpText.text = "";
-        popUpImage.sprite = null;
-        popUpWindow.SetActive(false);
     }
 }
