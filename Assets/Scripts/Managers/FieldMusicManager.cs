@@ -15,20 +15,28 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
     protected override void Awake()
     {
         base.Awake();
-        sound = new StudioEventEmitter();
+        sound = GetComponent<StudioEventEmitter>();
     }
 
-    public void ChangeActiveMusic(EventReference music,float fade = 0f,float waitTime = 0f)
+    public void ChangeActiveMusic(EventReference music, float fade = 0f, float waitTime = 0f)
     {
-        if (transitionCoroutine != null)
+        if(transitionCoroutine != null) StopCoroutine(transitionCoroutine);
+
+        transitionCoroutine = StartCoroutine(Cor_ChangeMusic(music, fade, waitTime));
+
+    }
+
+    public void ChangeActiveMusic(string music)
+    {
+        if (transitionCoroutine == null)
         {
-            transitionCoroutine = StartCoroutine(Cor_ChangeMusic(music, fade,waitTime));
+            transitionCoroutine = StartCoroutine(Cor_ChangeMusic(RuntimeManager.PathToEventReference(music), 1.0f, 0f));
         }
     }
 
     public void StopActiveMusic(float fade = 0f)
     {
-        if(transitionCoroutine != null)
+        if(transitionCoroutine == null)
         {
             transitionCoroutine = StartCoroutine(Cor_StopMusic(fade));
         }
@@ -53,8 +61,11 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
 
         sound.EventInstance.setVolume(0f);
         yield return new WaitForSeconds(waitTime);
-        sound.EventReference = music;
+
+        sound.Stop();
+        sound.ChangeEvent(music);
         sound.Play();
+        
 
         for (float t = 0; t < fade; t += Time.deltaTime)
         {
@@ -76,6 +87,7 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
             yield return null;
         }
 
+        transitionCoroutine = null;
         sound.EventInstance.setVolume(0f);
         sound.Stop();
     }
