@@ -1586,7 +1586,7 @@ GameObject:
   - component: {fileID: 469552459}
   - component: {fileID: 469552458}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Ambient
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1631,12 +1631,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 469552457}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 964.9277, y: 546.7125, z: 144.87332}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 588021379}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &524488443
 GameObject:
@@ -1760,6 +1760,8 @@ Transform:
   m_Children:
   - {fileID: 1824884836}
   - {fileID: 1184770993}
+  - {fileID: 469552459}
+  - {fileID: 1502679699}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &662293169
@@ -2840,10 +2842,10 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1927989425
-      Data2: 1322753499
-      Data3: 519544969
-      Data4: -450945381
+      Data1: 282027311
+      Data2: 1173542549
+      Data3: 1629996441
+      Data4: 758323243
     Path: event:/UI/ButtonDown
   Event: 
   PlayEvent: 0
@@ -3725,6 +3727,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493900424}
   m_CullTransparentMesh: 1
+--- !u!1 &1502679698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1502679699}
+  - component: {fileID: 1502679700}
+  m_Layer: 0
+  m_Name: Music
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1502679699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502679698}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 964.9277, y: 546.7125, z: 144.87332}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 588021379}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1502679700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502679698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1660917361
+      Data2: 1165435181
+      Data3: -879670092
+      Data4: 981955323
+    Path: event:/Music/Mus_Maintitle
+  Event: 
+  PlayEvent: 11
+  StopEvent: 12
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &1551534727
 GameObject:
   m_ObjectHideFlags: 0
@@ -4189,6 +4254,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -92
       objectReference: {fileID: 0}
+    - target: {fileID: 8243259987549091910, guid: 945b1585acdb0f548a88449793ef5abc,
+        type: 3}
+      propertyPath: m_StringReference.m_TableEntryReference.m_KeyId
+      value: 32825375371161600
+      objectReference: {fileID: 0}
     - target: {fileID: 8290789119228267331, guid: 945b1585acdb0f548a88449793ef5abc,
         type: 3}
       propertyPath: m_text
@@ -4440,11 +4510,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1378162601
-      Data2: 1198282839
-      Data3: -196620665
-      Data4: 1901033525
-    Path: event:/UI/Tick
+      Data1: -976852681
+      Data2: 1128131922
+      Data3: 1642459283
+      Data4: -1344614941
+    Path: event:/UI/MoneyTick
   Event: 
   PlayEvent: 0
   StopEvent: 0
@@ -6493,4 +6563,3 @@ SceneRoots:
   - {fileID: 1726157233}
   - {fileID: 37200521}
   - {fileID: 588021379}
-  - {fileID: 469552459}

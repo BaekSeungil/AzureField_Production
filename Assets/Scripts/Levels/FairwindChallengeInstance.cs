@@ -29,6 +29,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     public float Timelimit { get { return timelimit; } }
     [SerializeField, LabelText("보상 아이템 (선택사항)")] private ItemData[] rewardItems;
     [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
+    [SerializeField, LabelText("음악 (선택사항)")] private EventReference musicOnPlay;
 
 
     [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Info)]
@@ -53,6 +54,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private float triggerDistance = 5;
     private float distanceAllowence = 10;
     private float distanceAllowenceTime = 5;
+    private bool musicEnabled = false;
 
     /// <summary>
     /// 경로의 스플라인 데이터를 가져옵니다.
@@ -115,6 +117,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         lightPilarObject.transform.position = new Vector3(startKnotPosition.x, lightPilarObject.transform.position.y, startKnotPosition.z);
         StopAllCoroutines();
         currentState = ChallengeState.Aborted;
+        FieldMusicManager.Instance.StopActiveMusic(3f);
         activeKnotIndex = 0;
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
@@ -208,6 +211,12 @@ public class FairwindChallengeInstance : MonoBehaviour
         extrude.gameObject.SetActive(true);
         isChallengeDone = false;
 
+        if(!musicOnPlay.IsNull)
+        {
+            musicEnabled = true;
+            FieldMusicManager.Instance.ChangeActiveMusic(musicOnPlay, 3f, 1f);
+        }
+
         FairwindProgress = StartCoroutine(Cor_FairwindMainProgress());
 
         if (OnChallengeStart != null)
@@ -263,6 +272,8 @@ public class FairwindChallengeInstance : MonoBehaviour
         isChallengeDone = true;
         PlayerCore.Instance.DisableIndicator();
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
+
+        FieldMusicManager.Instance.StopActiveMusic(3f);
 
         AlphaEndingPanel alphaEnding = FindObjectOfType<AlphaEndingPanel>(true);
         if (alphaEnding != null) alphaEnding.OnClearedFairwind();
