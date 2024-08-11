@@ -138,7 +138,9 @@ public class IslandArea : MonoBehaviour
         {
             regionEnter.OnRegionEnter(islandName.GetLocalizedString());
             RuntimeManager.PlayOneShot(sound_Enter);
-            AreaControl.RecentLandRecord(islandID, spawnTransform.position);
+
+            if (spawnTransform != null)
+                AreaControl.RecentLandRecord(islandID, spawnTransform.position);
         }
     }
 
