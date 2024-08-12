@@ -62,9 +62,16 @@ public class InventorySlotSingle : MonoBehaviour
         quantityText.text = string.Empty;
     }
 
-    public void ButtonClickEvent(UI_InventoryBehavior inventory, ItemData item)
+    public void ButtonClickEvent()
     {
-        OpenItemPopUp();
+        if (assignedItem.ItemPopUpImage == null)
+        {
+        }
+        else 
+        {
+            OpenItemPopUp();
+        }
+        
     }
 
     public void OpenItemPopUp()
