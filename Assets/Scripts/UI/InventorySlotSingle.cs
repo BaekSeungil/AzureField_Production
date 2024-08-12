@@ -31,6 +31,14 @@ public class InventorySlotSingle : MonoBehaviour
         input.UI.Enable();
     }
 
+    private void Update()
+    {
+        if (Input.anyKeyDown)
+        {
+            CloseItemPopUp();
+        }
+    }
+
     public void InitializeSlot(UI_InventoryBehavior inventory, ItemData item, int quantity = 1)
     {
         assignedItem = item;
