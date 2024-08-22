@@ -1853,16 +1853,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// 플레이어의 업그레이드 함수관리를 하는 변수
     /// </summary>
     
-    public void PlayerUpgradeState(float UpgradeState)
+    public void PlayerUpgradeState(AbilityAttribute Type ,float UpgradeState)
     {
-        leapupPower += UpgradeState;
-        boosterDuration += UpgradeState;
-        boosterMult += UpgradeState;
+        if(Type == AbilityAttribute.LeapupPower)
+        {
+            leapupPower += UpgradeState;
+        }
+        
+        if(Type == AbilityAttribute.BoosterDuration)
+        {
+            boosterDuration += UpgradeState;
+        }
+
+        if(Type == AbilityAttribute.BoosterMult)
+        {
+            boosterMult += UpgradeState;
+        }
     }
 
-    public float ViewleapupPower {get {return FinalLeapupPower;}}
-    public float ViewBoosterDuration { get { return FinalBoosterDuration; } }
-    public float ViewBoosterMult { get { return FinalBoosterMult; } }
+    public float ViewleapupPower {get {return leapupPower;}}
+    public float ViewBoosterDuration { get { return boosterDuration; } }
+    public float ViewBoosterMult { get { return boosterMult; } }
 
     /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우
