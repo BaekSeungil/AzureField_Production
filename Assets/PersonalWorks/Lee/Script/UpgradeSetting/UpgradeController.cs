@@ -168,7 +168,7 @@ public class UpgradeController : MonoBehaviour
 
     }
 
-    #if UNITY_EDITOR
+ //   #if UNITY_EDITOR
     public void ButtonTypeJump()
     {
         BoatWindow.SetActive(true);
@@ -214,5 +214,5 @@ public class UpgradeController : MonoBehaviour
     }
 
 
-    #endif
+ //   #endif
 }
