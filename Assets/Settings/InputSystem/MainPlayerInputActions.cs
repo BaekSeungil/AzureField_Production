@@ -304,6 +304,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""2972965c-0481-4355-a472-838833195f79"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""832d553b-2fdc-4b43-8d08-70bfa2a24e80"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",

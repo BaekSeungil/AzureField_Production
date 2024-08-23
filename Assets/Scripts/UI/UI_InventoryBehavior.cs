@@ -19,6 +19,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
 
     [SerializeField] private Vector2 slotDistance;  // 아이템 슬롯 간격
     [SerializeField] private Vector2 offset;        // 아이템 슬롯 오프셋
+    [SerializeField] private Vector2 slotSize;      // 아이템 슬롯 사이즈 
     [SerializeField] private int rowCount;          // 가로줄 숫자
 
     [Title("References")]
@@ -65,8 +66,12 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         {
             for (int x = 0; x < Mathf.Clamp(itemArray.Length - y*rowCount,0,rowCount); x++)
             {
+
                 GameObject newSlot = Instantiate(slotPrefab, slotViewport,false);
-                newSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(slotDistance.x * x + offset.x, slotDistance.y * y + offset.y);
+                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = slotSize;
+                rectTransform.anchoredPosition = new Vector2(x * (slotSize.x + slotDistance.x) + offset.x,-y * 
+                (slotSize.y + slotDistance.y) + offset.y);
                 InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
                 slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
                 instanciatedSlots.Add(newSlot);
@@ -140,12 +145,16 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         Gizmos.color = Color.green;
 
         int itemCount = 20;
-        float squareSize = 175;
+        float squareSize = slotSize.x;
         for (int y = 0; y < (int)(itemCount / rowCount); y++)
         {
             for (int x = 0; x < rowCount; x++)
             {
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x , -slotDistance.y * y , 0f) + new Vector3(offset.x,offset.y,0f) + squareSize * new Vector3(0.5f,-0.5f,0f) , squareSize * new Vector3(1,1,0));
+                Vector3 slotPosition = slotViewport.position 
+                + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) 
+                + new Vector3(offset.x, offset.y, 0f)
+                + new Vector3(slotSize.x * 0.5f, -slotSize.y * 0.5f, 0f);
+                Gizmos.DrawWireCube(slotPosition, new Vector3(slotSize.x, slotSize.y, 0));
             }
         }
     }
