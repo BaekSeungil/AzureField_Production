@@ -459,3 +459,30 @@ public class Sequence_AZFLangDialogue : Sequence_Base
         yield return UI_AZFLangDialogue.Instance.StartCoroutine(UI_AZFLangDialogue.Instance.Cor_Dialogue(contexts));
     }
 }
+
+public class Sequence_PlayMusic : Sequence_Base
+{
+    [InfoBox("새로운 배경음악을 재생합니다.")]
+    public EventReference music;
+    public float fadeTime;
+    public float waitTime;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        FieldMusicManager.Instance.ChangeActiveMusic(music,fadeTime,waitTime);
+        yield return null;
+    }
+}
+
+public class Sequence_StopMusic : Sequence_Base
+{
+    [InfoBox("재생중인 배경음악을 정지합니다.")]
+    public float fadeTime;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        FieldMusicManager.Instance.StopActiveMusic(fadeTime);
+        yield return null;
+    }
+
+}
