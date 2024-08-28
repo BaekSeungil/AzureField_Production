@@ -22,41 +22,41 @@ namespace DistantLands.Cozy.Data
 
         [Tooltip("Multiplier for cumulus clouds.")]
         [OverrideRange(0, 2)]
-        public OverrideData cumulusCoverage = 1;
+        public Overridable<float> cumulusCoverage = 1;
         [Tooltip("Multiplier for altocumulus clouds.")]
         [OverrideRange(0, 2)]
-        public OverrideData altocumulusCoverage = 0;
+        public Overridable<float> altocumulusCoverage = 0;
         [Tooltip("Multiplier for chemtrails.")]
         [OverrideRange(0, 2)]
-        public OverrideData chemtrailCoverage = 0;
+        public Overridable<float> chemtrailCoverage = 0;
         [Tooltip("Multiplier for cirrostratus clouds.")]
         [OverrideRange(0, 2)]
-        public OverrideData cirrostratusCoverage = 0;
+        public Overridable<float> cirrostratusCoverage = 0;
         [Tooltip("Multiplier for cirrus clouds.")]
         [OverrideRange(0, 2)]
-        public OverrideData cirrusCoverage = 0;
+        public Overridable<float> cirrusCoverage = 0;
         [Tooltip("Multiplier for nimbus clouds.")]
         [OverrideRange(0, 2)]
-        public OverrideData nimbusCoverage = 0;
+        public Overridable<float> nimbusCoverage = 0;
         [Tooltip("Variation for nimbus clouds.")]
         [OverrideRange(0, 1)]
-        public OverrideData nimbusVariation = 0.9f;
+        public Overridable<float> nimbusVariation = 0.9f;
         [Tooltip("Height mask effect for nimbus clouds.")]
         [OverrideRange(0, 1)]
-        public OverrideData nimbusHeightEffect = 1;
+        public Overridable<float> nimbusHeightEffect = 1;
 
         [Tooltip("Starting height for cloud border.")]
         [OverrideRange(0, 1)]
-        public OverrideData borderHeight = 0.5f;
+        public Overridable<float> borderHeight = 0.5f;
         [Tooltip("Variation for cloud border.")]
         [OverrideRange(0, 1)]
-        public OverrideData borderVariation = 0.9f;
+        public Overridable<float> borderVariation = 0.9f;
         [Tooltip("Multiplier for the border. Values below zero clip the clouds whereas values above zero add clouds.")]
         [OverrideRange(-1, 1)]
-        public OverrideData borderEffect = 1;
+        public Overridable<float> borderEffect = 1;
         [Tooltip("Controls the average density of the fog.")]
         [OverrideRange(0, 5)]
-        public OverrideData fogDensity = 1;
+        public Overridable<float> fogDensity = 1;
 
         CozyWeatherModule weatherModule;
 

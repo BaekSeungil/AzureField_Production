@@ -22,7 +22,22 @@ namespace DistantLands.Cozy
         public float transitionDistance = 5;
         public Collider trigger;
         public List<ICozyBiomeModule> modules = new List<ICozyBiomeModule>();
-        public CozyWeather weatherSphere;
+        public CozyWeather weatherSphere
+        {
+            get
+            {
+                if (!cachedWeatherSphere)
+                {
+                    cachedWeatherSphere = CozyWeather.instance;
+                }
+
+                return cachedWeatherSphere;
+            }
+        }
+
+        public CozyWeather cachedWeatherSphere;
+        
+        
         [Range(0, 1)]
         public float maxWeight = 1;
         public enum BiomeMode
@@ -41,8 +56,6 @@ namespace DistantLands.Cozy
         // Start is called before the first frame update
         void Start()
         {
-            weatherSphere = CozyWeather.instance;
-
             if (Application.isPlaying)
             {
                 weatherSphere.systems.Add(this);
@@ -51,9 +64,6 @@ namespace DistantLands.Cozy
 
         void Update()
         {
-            if (weatherSphere == null)
-                weatherSphere = CozyWeather.instance;
-
             if (modules.Count == 0)
                 modules = GetComponents<ICozyBiomeModule>().ToList();
 
@@ -88,20 +98,21 @@ namespace DistantLands.Cozy
             else
             {
                 if (!trigger)
-                    targetWeight = 0;
-
-                Vector3 closestPoint = trigger.ClosestPoint(weatherSphere.transform.position);
-
-                if (weatherSphere.transform.position == closestPoint)
                 {
-                    targetWeight = maxWeight;
+                    targetWeight = 0; 
+                    trigger = GetComponent<Collider>();
                 }
 
-                float distToClosestPoint = Vector3.Distance(weatherSphere.transform.position, closestPoint);
-                targetWeight = maxWeight - (Mathf.Clamp(distToClosestPoint, 0, transitionDistance) / transitionDistance);
+                var weatherSpherePoint = weatherSphere.transform.position;
+                var closestPoint = trigger.ClosestPoint(weatherSpherePoint);
+                var distToClosestPoint = Vector3.Distance(weatherSpherePoint, closestPoint);
 
+                targetWeight = distToClosestPoint <= transitionDistance
+                    ? CozyUtilities.Remap(0, transitionDistance, maxWeight, 0, distToClosestPoint)
+                    : 0f;
             }
         }
+        
         public void SetWeightByTime()
         {
             if (!weatherSphere)
@@ -119,13 +130,19 @@ namespace DistantLands.Cozy
 
                 Vector3 closestPoint = trigger.ClosestPoint(weatherSphere.transform.position);
 
-                if (weatherSphere.transform.position == closestPoint)
+                if (transitionTime > 0)
                 {
-                    targetWeight = Mathf.Clamp01(targetWeight + (1 / transitionTime * Time.deltaTime));
+                    if (weatherSphere.transform.position == closestPoint)
+                    {
+                        targetWeight = Mathf.Clamp01(targetWeight + (1 / transitionTime * Time.deltaTime));
+                    }
+                    else
+                        targetWeight = Mathf.Clamp01(targetWeight - (1 / transitionTime * Time.deltaTime));
                 }
                 else
-                    targetWeight = Mathf.Clamp01(targetWeight - (1 / transitionTime * Time.deltaTime));
-
+                {
+                    targetWeight = maxWeight;
+                }
             }
         }
 
@@ -159,13 +176,12 @@ namespace DistantLands.Cozy
                 return;
 
             ICozyBiomeModule mod = (ICozyBiomeModule)gameObject.AddComponent(module);
-            ((CozyModule)mod).weatherSphere = weatherSphere;
             if (!mod.CheckBiome())
             {
                 DestroyImmediate((CozyModule)mod);
                 return;
             }
-            ((CozyModule)mod).system = this;
+            // ((CozyModule)mod).system = this;
             mod.AddBiome();
             modules.Add(mod);
 
@@ -203,6 +219,7 @@ namespace DistantLands.Cozy
         SerializedProperty transitionMode;
         SerializedProperty trigger;
         SerializedProperty weight;
+        SerializedProperty priority;
         SerializedProperty transitionDistance;
         SerializedProperty transitionTime;
 
@@ -216,6 +233,7 @@ namespace DistantLands.Cozy
             transitionMode = serializedObject.FindProperty("transitionMode");
             trigger = serializedObject.FindProperty("trigger");
             weight = serializedObject.FindProperty("maxWeight");
+            priority = serializedObject.FindProperty("priority");
             transitionDistance = serializedObject.FindProperty("transitionDistance");
             transitionTime = serializedObject.FindProperty("transitionTime");
 
@@ -266,6 +284,7 @@ namespace DistantLands.Cozy
 
                 }
                 EditorGUILayout.PropertyField(weight, new GUIContent("Weight"));
+                EditorGUILayout.PropertyField(priority, new GUIContent("Priority"));
 
                 EditorGUI.indentLevel--;
 
@@ -331,11 +350,14 @@ namespace DistantLands.Cozy
                 if (mods.Contains(typeof(ICozyBiomeModule)))
                     mods.Remove(typeof(ICozyBiomeModule));
 
+                if (mods.Contains(typeof(CozyBiomeModuleBase<>)))
+                    mods.Remove(typeof(CozyBiomeModuleBase<>));
+
                 foreach (ICozyBiomeModule a in biome.modules)
                     if (mods.Contains(a.GetType()))
                         mods.Remove(a.GetType());
 
-                BiomeModulesSearchProvider provider = ScriptableObject.CreateInstance<BiomeModulesSearchProvider>();
+                BiomeModulesSearchProvider provider = CreateInstance<BiomeModulesSearchProvider>();
                 provider.modules = mods;
                 provider.biome = biome;
                 SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), provider);

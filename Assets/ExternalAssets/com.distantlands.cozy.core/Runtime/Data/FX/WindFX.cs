@@ -30,9 +30,14 @@ namespace DistantLands.Cozy.Data
 
         public override void PlayEffect(float weight)
         {
-            if (!windModule && weatherSphere)
+            if (!weatherSphere)
+                return;
+
+            if (!windModule)
+            {
                 if (!InitializeEffect(weatherSphere))
                     return;
+            }
 
             windModule.windAmount += windAmount * weight;
             windModule.windSpeed += windSpeed * weight;

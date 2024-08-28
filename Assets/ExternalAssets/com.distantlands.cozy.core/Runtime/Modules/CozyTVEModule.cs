@@ -6,6 +6,9 @@ using UnityEngine;
 #if THE_VEGETATION_ENGINE
 using TheVegetationEngine;
 #endif
+#if THE_VISUAL_ENGINE
+using TheVisualEngine;
+#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -26,6 +29,11 @@ namespace DistantLands.Cozy
         public TVEGlobalMotion globalMotion;
 
 #endif
+#if THE_VISUAL_ENGINE
+
+        public TVEManager visualManager;
+
+#endif
 
         // Start is called before the first frame update
         void Awake()
@@ -37,10 +45,14 @@ namespace DistantLands.Cozy
             if (updateFrequency == UpdateFrequency.onAwake)
                 UpdateTVE();
 #endif
+#if THE_VISUAL_ENGINE
+            if (updateFrequency == UpdateFrequency.onAwake)
+                UpdateTVE();
+#endif
+
 
         }
 
-#if THE_VEGETATION_ENGINE
         public override void InitializeModule()
         {
 
@@ -55,6 +67,18 @@ namespace DistantLands.Cozy
                 return;
             }
 
+#if THE_VISUAL_ENGINE
+            if (!visualManager)
+                visualManager = FindObjectOfType<TVEManager>();
+
+            if (!visualManager)
+            {
+                enabled = false;
+                return;
+            }
+
+            visualManager.mainLight = weatherSphere.sunLight;
+#elif THE_VEGETATION_ENGINE
             if (!globalControl)
                 globalControl = FindObjectOfType<TVEGlobalControl>();
 
@@ -73,8 +97,8 @@ namespace DistantLands.Cozy
                 return;
             }
 
-
             globalControl.mainLight = weatherSphere.sunLight;
+#endif
 
 
         }
@@ -86,7 +110,7 @@ namespace DistantLands.Cozy
 
             if (weatherSphere.freezeUpdateInEditMode && !Application.isPlaying)
                 return;
-                
+
             if (updateFrequency == UpdateFrequency.everyFrame)
                 UpdateTVE();
 
@@ -96,6 +120,23 @@ namespace DistantLands.Cozy
 
         public void UpdateTVE()
         {
+
+#if THE_VISUAL_ENGINE
+            
+            if (weatherSphere.climateModule)
+            {
+                visualManager.globalAtmoData.wetnessIntensity = weatherSphere.climateModule.wetness;
+                visualManager.globalAtmoData.overlayIntensity = weatherSphere.climateModule.snowAmount;
+            }
+
+            visualManager.seasonControl = weatherSphere.timeModule.yearPercentage * 4;
+
+            if (weatherSphere.windModule)
+            {
+                visualManager.motionControl = weatherSphere.windModule.windAmount;
+                visualManager.transform.LookAt(visualManager.transform.position + weatherSphere.windModule.WindDirection, Vector3.up);
+            }
+#elif THE_VEGETATION_ENGINE
 
             if (weatherSphere.climateModule)
             {
@@ -110,9 +151,8 @@ namespace DistantLands.Cozy
                 globalMotion.windPower = weatherSphere.windModule.windAmount;
                 globalMotion.transform.LookAt(globalMotion.transform.position + weatherSphere.windModule.WindDirection, Vector3.up);
             }
-        }
-
 #endif
+        }
     }
 #if UNITY_EDITOR
     [CustomEditor(typeof(CozyTVEModule))]
@@ -156,14 +196,21 @@ namespace DistantLands.Cozy
             {
                 EditorGUILayout.Space(20);
                 EditorGUILayout.HelpBox("Make sure that you have active TVE Global Motion and TVE Global Control objects in your scene!", MessageType.Warning);
-
+            }
+#elif THE_VISUAL_ENGINE
+            if (!module.visualManager)
+            {
+                EditorGUILayout.Space(20);
+                EditorGUILayout.HelpBox("Make sure that you have an active TVE Manager in your scene!", MessageType.Warning);
             }
 #else
-            EditorGUILayout.Space(20);
-            EditorGUILayout.HelpBox("The Vegetation Engine is not currently in this project! Please make sure that it has been properly downloaded before using this module.", MessageType.Warning);
+        {
+        EditorGUILayout.Space(20);
+        EditorGUILayout.HelpBox("TVE is not currently in this project! Please make sure that it has been properly downloaded before using this module.", MessageType.Warning);
+        }
 
 #endif
         }
-    }
-#endif
+    }  
+#endif 
 }
