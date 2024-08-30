@@ -1,78 +1,94 @@
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 public class EtherSystem : MonoBehaviour
 {
 
-    [SerializeField, LabelText("파도 x축 크기")] public float TargetWaveScaleX;
-    [SerializeField, LabelText("파도 Y축 크기")] public float TargetWaveScaleY;
-    [SerializeField, LabelText("파도 Z축 크기")] public float TargetWaveScaleZ;
+    public bool CalledWave = false;
+    private Transform SetTransform; // 생성지점
+    [SerializeField,LabelText("파도 시작부분")] private GameObject StartCollider;
+    [SerializeField,LabelText("파도 머리부분")] private GameObject EndCollider;
 
-    [SerializeField, LabelText("크기 증가 속도")] public float ScaleSpeed;
 
-    private bool CalledWave = false;
-    private ParticleSystem particleSystem;
+    private Vector3 StartinitialScale; //  시작부분 콜라이더 스케일 값
+    private Vector3 EndinitialScale; // 머리부분 콜라이더 스케일 값
+    [SerializeField]private ParticleSystem Startparticl;
+    [SerializeField]private ParticleSystem Idleparticl;
+    [SerializeField]private ParticleSystem Endparticl;
+
+    public float moveingSpeed; //스케일 증가 속도
+
+    public bool Moving = true;
 
     private float currentWaveScaleX = 0f;
     private float currentWaveScaleY = 0f;
     private float currentWaveScaleZ = 0f;
 
-
+    
 
     // Start is called before the first frame update
     private void Start()
     {
-        particleSystem = GetComponent<ParticleSystem>();
-        var main = particleSystem.main;
-        currentWaveScaleX = main.startSizeX.constant;
-        currentWaveScaleY = main.startSizeY.constant;
-        currentWaveScaleZ = main.startSizeZ.constant;
+        StartinitialScale = StartCollider.transform.localScale;
+        EndinitialScale = EndCollider.transform.localScale;
+
+        Startparticl.Stop();
+        Idleparticl.Stop();
+        Endparticl.Stop();
+
+        StartCollider.transform.localScale = Vector3.zero;
+        EndCollider.transform.localScale = Vector3.zero;
+
     }
 
     // Update is called once per frame
-    private void Update()
+    private void FixedUpdate() 
     {
-        UpdateWaveParticleScale();
-        
-    }
-
-    private void UpdateWaveParticleScale()
-    {
-
-        if (particleSystem == null) return;
-
-        if(CalledWave == true)
+        //콜라이더가 원래 값으로 천천히 증가
+        if(Moving)
         {
-            if(currentWaveScaleX <= TargetWaveScaleX)
-            {
-                currentWaveScaleX += ScaleSpeed * Time.deltaTime;
-                if(currentWaveScaleX > TargetWaveScaleX)
-                {
-                    currentWaveScaleX = TargetWaveScaleX;
-                }
-            }
+            StartCollider.transform.localScale = Vector3.Lerp(StartCollider.transform.localScale,
+            StartinitialScale,Time.fixedDeltaTime * moveingSpeed);
 
-            if(currentWaveScaleY <= TargetWaveScaleY)
-            {
-                currentWaveScaleY += ScaleSpeed * Time.deltaTime;
-                if(currentWaveScaleY > TargetWaveScaleY)
-                {
-                    currentWaveScaleY = TargetWaveScaleY;
-                }
-            }
+            EndCollider.transform.localScale = Vector3.Lerp(StartCollider.transform.localScale,
+            EndinitialScale,Time.fixedDeltaTime * moveingSpeed);
 
-            if(currentWaveScaleZ <= TargetWaveScaleZ)
+            if(Vector3.Distance(StartCollider.transform.localScale, StartinitialScale)< 0.01f &&
+            Vector3.Distance(EndCollider.transform.localScale, EndinitialScale) < 0.01f)
             {
-                currentWaveScaleZ += ScaleSpeed * Time.deltaTime;
-                if(currentWaveScaleZ > TargetWaveScaleZ)
-                {
-                    currentWaveScaleZ = TargetWaveScaleZ;
-                }
+                IdelWave();
             }
         }
+    }
 
+    
+    public void WaveParticleOn()
+    {
+        if(Moving == true)
+        {
+            Startparticl.Play();
 
+        }
+        else if (Moving == false)
+        {
+            Endparticl.Play();
+            Idleparticl.Stop();
+        }
+    }
+
+    public void IdelWave()
+    {
+        Idleparticl.Play();
+    }
+
+    private void OnCollisionEnter(Collision other) {
+        if (other.gameObject.tag == "Reef")
+        {
+            Destroy(gameObject);
+            
+        }
     }
 }

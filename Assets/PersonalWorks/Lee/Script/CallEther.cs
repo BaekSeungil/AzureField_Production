@@ -5,15 +5,34 @@ using UnityEngine;
 public class CallEther : MonoBehaviour
 {
     MainPlayerInputActions inputActions;
-    // Start is called before the first frame update
+    EtherSystem etherSystem;
+
+
+
     void Start()
     {
-        
+        etherSystem.GetComponent<EtherSystem>();
+        inputActions = new MainPlayerInputActions();
+        inputActions.Player.Interact.Enable();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if(inputActions.Player.Interact)
+        
+        if (inputActions.Player.Interact.triggered)
+        {
+            SendboolTrigger();
+        }
+    }
+
+    private void SendboolTrigger()
+    {
+        etherSystem.CalledWave = true;
+    }
+
+    public void CreatedBoxObject()
+    {
+        
     }
 }
