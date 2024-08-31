@@ -3,6 +3,10 @@
 //  All code included in this file is protected under the Unity Asset Store Eula
 
 using UnityEngine;
+using DistantLands.Cozy.Data;
+using System.Collections.Generic;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,12 +16,17 @@ namespace DistantLands.Cozy
     public class CozySaveLoadModule : CozyModule
     {
 
-        struct DataSave
+        public struct DataSave
         {
-            public string settings;
-            public string weather;
-            public string time;
-            public string ambience;
+            public MeridiemTime currentTime;
+            public int day;
+            public int year;
+            public AmbienceProfile currentAmbience;
+            public float ambienceTimer;
+            public WeatherProfile currentWeather;
+            public float weatherTimer;
+            public List<CozyEcosystem.WeatherPattern> forecast;
+
         }
 
         // Start is called before the first frame update
@@ -31,37 +40,67 @@ namespace DistantLands.Cozy
 
         }
 
-
         public void Save()
+        {
+            Save(0);
+        }
+
+        public void Save(int slot)
         {
 
             if (weatherSphere == null)
                 InitializeModule();
 
-            Debug.Log(JsonUtility.ToJson(weatherSphere));
 
-            PlayerPrefs.SetString("CZY_Save_Settings", JsonUtility.ToJson(weatherSphere));
-            if (weatherSphere.timeModule)
-                PlayerPrefs.SetString("CZY_Save_Time", JsonUtility.ToJson(weatherSphere.timeModule));
-            if (weatherSphere.weatherModule)
-                PlayerPrefs.SetString("CZY_Save_Weather", JsonUtility.ToJson(weatherSphere.weatherModule));
+            DataSave save = new DataSave();
+
             if (weatherSphere.GetModule(out CozyAmbienceModule module))
-                PlayerPrefs.SetString("CZY_Save_Ambience", JsonUtility.ToJson(module));
+            {
+                save.ambienceTimer = module.ambienceTimer;
+                save.currentAmbience = module.currentAmbienceProfile;
+            }
+            if (weatherSphere.weatherModule)
+            {
+                save.forecast = weatherSphere.weatherModule.ecosystem.currentForecast;
+                save.currentWeather = weatherSphere.weatherModule.ecosystem.currentWeather;
+                save.weatherTimer = weatherSphere.weatherModule.ecosystem.weatherTimer;
+            }
+            if (weatherSphere.timeModule)
+            {
+                save.currentTime = weatherSphere.timeModule.currentTime;
+                save.day = weatherSphere.timeModule.currentDay;
+                save.year = weatherSphere.timeModule.currentYear;
+            }
 
-            Debug.Log("Saved COZY instance");
+            PlayerPrefs.SetString($"CZY_Save_{slot}", JsonUtility.ToJson(save));
+
+            Debug.Log($"Saved COZY instance to slot 0\n{save}");
 
         }
 
         public string SaveToExternalJSON()
         {
 
-            DataSave save = new DataSave()
+            DataSave save = new DataSave();
+
+            if (weatherSphere.GetModule(out CozyAmbienceModule module))
             {
-                settings = JsonUtility.ToJson(weatherSphere),
-                weather = weatherSphere.weatherModule ? JsonUtility.ToJson(weatherSphere.weatherModule) : "",
-                time = weatherSphere.timeModule ? JsonUtility.ToJson(weatherSphere.timeModule) : "",
-                ambience = weatherSphere.GetModule(out CozyAmbienceModule module) ? JsonUtility.ToJson(module) : ""
-            };
+                save.ambienceTimer = module.ambienceTimer;
+                save.currentAmbience = module.currentAmbienceProfile;
+            }
+            if (weatherSphere.weatherModule)
+            {
+                save.forecast = weatherSphere.weatherModule.ecosystem.currentForecast;
+                save.currentWeather = weatherSphere.weatherModule.ecosystem.currentWeather;
+                save.weatherTimer = weatherSphere.weatherModule.ecosystem.weatherTimer;
+            }
+            if (weatherSphere.timeModule)
+            {
+                save.currentTime = weatherSphere.timeModule.currentTime;
+                save.day = weatherSphere.timeModule.currentDay;
+                save.year = weatherSphere.timeModule.currentYear;
+            }
+
 
             Debug.Log("Wrote COZY instance to external JSON");
             return JsonUtility.ToJson(save);
@@ -70,17 +109,31 @@ namespace DistantLands.Cozy
         public void Load()
         {
 
+            Load(0);
+
+        }
+        public void Load(int slot)
+        {
+
 
             if (weatherSphere == null)
                 InitializeModule();
 
-            JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString("CZY_Save_Settings"), weatherSphere);
-            if (weatherSphere.timeModule)
-                JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString("CZY_Save_Time"), weatherSphere.timeModule);
-            if (weatherSphere.weatherModule)
-                JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString("CZY_Save_Weather"), weatherSphere.weatherModule);
+            DataSave save = JsonUtility.FromJson<DataSave>(PlayerPrefs.GetString("CZY_Save_0"));
+
             if (weatherSphere.GetModule(out CozyAmbienceModule module))
-                JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString("CZY_Save_Ambience"), module);
+            {
+                module.ambienceTimer = save.ambienceTimer;
+                module.currentAmbienceProfile = save.currentAmbience;
+            }
+            weatherSphere.weatherModule.ecosystem.currentForecast = save.forecast;
+            weatherSphere.weatherModule.ecosystem.currentWeather = save.currentWeather;
+            weatherSphere.weatherModule.ecosystem.weatherTimer = save.weatherTimer;
+            weatherSphere.timeModule.currentTime = save.currentTime;
+            weatherSphere.timeModule.currentDay = save.day;
+            weatherSphere.timeModule.currentYear = save.year;
+
+            weatherSphere.SetupReferences();
 
             Debug.Log("Loaded COZY save to current instance");
         }
@@ -90,13 +143,23 @@ namespace DistantLands.Cozy
 
             DataSave save = JsonUtility.FromJson<DataSave>(JSONSave);
 
-            JsonUtility.FromJsonOverwrite(save.settings, weatherSphere);
-            if (weatherSphere.timeModule)
-                JsonUtility.FromJsonOverwrite(save.time, weatherSphere.timeModule);
-            if (weatherSphere.weatherModule)
-                JsonUtility.FromJsonOverwrite(save.weather, weatherSphere.weatherModule);
+            JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString("CZY_Save_0"), save);
+
             if (weatherSphere.GetModule(out CozyAmbienceModule module))
-                JsonUtility.FromJsonOverwrite(save.ambience, module);
+            {
+                module.ambienceTimer = save.ambienceTimer;
+                module.currentAmbienceProfile = save.currentAmbience;
+            }
+            weatherSphere.weatherModule.ecosystem.currentForecast = save.forecast;
+            weatherSphere.weatherModule.ecosystem.currentWeather = save.currentWeather;
+            weatherSphere.weatherModule.ecosystem.weatherTimer = save.weatherTimer;
+            weatherSphere.timeModule.currentTime = save.currentTime;
+            weatherSphere.timeModule.currentDay = save.day;
+            weatherSphere.timeModule.currentYear = save.year;
+
+            weatherSphere.SetupReferences();
+
+            weatherSphere.SetupReferences();
 
             Debug.Log("Loaded external JSON to current COZY instance");
 
@@ -109,6 +172,7 @@ namespace DistantLands.Cozy
     {
 
         CozySaveLoadModule saveLoad;
+        public static int saveSlot = 0;
 
         void OnEnable()
         {
@@ -140,10 +204,14 @@ namespace DistantLands.Cozy
             EditorGUI.indentLevel = 0;
             EditorGUILayout.BeginHorizontal();
 
+            saveSlot = EditorGUILayout.IntPopup(saveSlot,
+            new GUIContent[5] { new GUIContent("Save Slot 0 (Default)"), new GUIContent("Save Slot 1"), new GUIContent("Save Slot 2"), new GUIContent("Save Slot 3"), new GUIContent("Save Slot 4") },
+            new int[5] { 0, 1, 2, 3, 4 });
+
             if (GUILayout.Button("Save"))
-                saveLoad.Save();
+                saveLoad.Save(saveSlot);
             if (GUILayout.Button("Load"))
-                saveLoad.Load();
+                saveLoad.Load(saveSlot);
 
             EditorGUILayout.EndHorizontal();
 

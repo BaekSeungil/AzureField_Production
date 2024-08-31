@@ -121,8 +121,6 @@ namespace DistantLands.Cozy
             serializedObject.Update();
 
             EditorGUI.indentLevel++;
-
-            EditorGUILayout.HelpBox("Please make sure the \"Import for Buto Integration\" unity package is installed for the shaders to properly recompile.", MessageType.Info);
             
 #if BUTO
             if (serializedObject.FindProperty("fog").objectReferenceValue == null)

@@ -9,6 +9,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 
 #if UNITY_EDITOR
@@ -177,6 +178,8 @@ namespace DistantLands.Cozy
         public bool followEditorCamera = true;
         public bool disableSunAtNight = true;
         public bool handleSceneLighting = true;
+        private bool sceneFogRendering = true;
+        public bool dontDestroyOnLoad;
 
         #endregion
 
@@ -280,12 +283,11 @@ namespace DistantLands.Cozy
 
         [HideInInspector]
         public List<Collider> cozyTriggers;
+        public Dictionary<int, List<Collider>> triggersPerScene = new();
 
         #endregion
 
         #region Ecosystem  
-
-
         public List<CozySystem> systems;
 
 
@@ -357,8 +359,9 @@ namespace DistantLands.Cozy
 
         public GameObject moduleHolder;
         public List<CozyModule> modules = new List<CozyModule>();
+        public IEnumerable<CozyModule> ActiveAndEnabledModules => modules.Where(module => module.isActiveAndEnabled);
 
-        private void SetupReferences()
+        public void SetupReferences()
         {
             if (!separateSunLightAndTransform)
             {
@@ -387,22 +390,29 @@ namespace DistantLands.Cozy
             if (cozyTriggers.Count == 0)
                 ResetFXTriggers();
 
-            RenderSettings.ambientMode = AmbientMode.Trilight;
+            if (handleSceneLighting)
+                RenderSettings.ambientMode = AmbientMode.Trilight;
 
         }
 
-#if UNITY_EDITOR
         private new void OnEnable()
         {
             base.OnEnable();
+            SceneManager.sceneLoaded += UpdateOnSceneLoaded;
+            SceneManager.sceneUnloaded += UpdateOnSceneUnLoaded;
+#if UNITY_EDITOR
             SceneView.beforeSceneGui += UpdateSkydomePositionAndScale;
+#endif
         }
 
         private void OnDisable()
         {
+            SceneManager.sceneLoaded -= UpdateOnSceneLoaded;
+            SceneManager.sceneUnloaded -= UpdateOnSceneUnLoaded;
+#if UNITY_EDITOR
             SceneView.beforeSceneGui -= UpdateSkydomePositionAndScale;
-        }
 #endif
+        }
 
         private void Awake()
         {
@@ -416,6 +426,8 @@ namespace DistantLands.Cozy
 
             if (Application.isPlaying)
             {
+                if (dontDestroyOnLoad)
+                    DontDestroyOnLoad(this);
                 ResetFXTriggers();
             }
         }
@@ -435,6 +447,48 @@ namespace DistantLands.Cozy
                 {
                     cozyTriggers.Add(i);
                 }
+            }
+        }
+
+        public void UpdateTriggersInScene(Scene scene)
+        {
+            var rootGameObjects = scene.GetRootGameObjects();
+
+            if (!GetBlockZonesFromObjects(rootGameObjects, out var blockZones))
+            {
+                return;
+            }
+
+            triggersPerScene.Add(scene.handle, blockZones);
+            RefreshTriggers();
+        }
+
+        public void RemoveTriggersInScene(Scene scene)
+        {
+            triggersPerScene.Remove(scene.handle);
+            RefreshTriggers();
+        }
+
+        public bool GetBlockZonesFromObjects(IEnumerable<GameObject> gameObjects, out List<Collider> blockZones)
+        {
+            blockZones = gameObjects
+                .SelectMany(item => FindChildrenComponentsByTag<Collider>(item.transform, cozyTriggerTag))
+                .ToList();
+
+            return blockZones.Count > 0;
+        }
+
+        public void RefreshTriggers()
+        {
+            var colliders = triggersPerScene.Values.SelectMany(trigger => trigger);
+            cozyTriggers.Clear();
+            cozyTriggers.AddRange(colliders);
+
+            var cozyParticles = particleFXParent.GetComponentsInChildren<CozyParticles>();
+
+            foreach (var cozyParticle in cozyParticles)
+            {
+                cozyParticle.SetupTriggers();
             }
         }
 
@@ -499,11 +553,11 @@ namespace DistantLands.Cozy
             {
                 case FogStyle.stylized:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Default Fog Reference")).shader;
-                    //RenderSettings.fog = true;
+                    RenderSettings.fog = false;
                     break;
                 case FogStyle.heightFog:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Height Fog Reference")).shader;
-                    //RenderSettings.fog = true;
+                    RenderSettings.fog = false;
                     break;
                 // case FogStyle.volumetric:
                 //     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Volumetric Fog Reference")).shader;
@@ -511,15 +565,15 @@ namespace DistantLands.Cozy
                 //     break;
                 case FogStyle.steppedFog:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Stepped Fog Reference")).shader;
-                   // RenderSettings.fog = true;
+                    RenderSettings.fog = false;
                     break;
                 case FogStyle.unity:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Disabled")).shader;
-                   // RenderSettings.fog = true;
+                    RenderSettings.fog = true;
                     break;
                 case FogStyle.off:
                     fogMesh.sharedMaterial.shader = ((Material)Resources.Load("Materials/Disabled")).shader;
-                   // RenderSettings.fog = false;
+                    RenderSettings.fog = false;
                     break;
                 default:
                     break;
@@ -529,8 +583,6 @@ namespace DistantLands.Cozy
         // Update is called once per frame
         void Update()
         {
-
-
 
             RaiseOnFrameReset();
             RaiseUpdateWeatherWeights();
@@ -575,6 +627,8 @@ namespace DistantLands.Cozy
 #if UNITY_EDITOR
         public void UpdateSkydomePositionAndScale(SceneView sceneView)
         {
+            sceneFogRendering = sceneView.sceneViewState.fogEnabled;
+
             if (freezeUpdateInEditMode || !followEditorCamera || Application.isFocused)
                 return;
 
@@ -641,7 +695,14 @@ namespace DistantLands.Cozy
                 Shader.SetGlobalFloat(CozyShaderIDs.CZY_FogOffsetID, fogHeight);
                 Shader.SetGlobalFloat(CozyShaderIDs.CZY_LightFlareSquishID, fogLightFlareSquish);
                 Shader.SetGlobalFloat(CozyShaderIDs.CZY_FogSmoothnessID, fogSmoothness);
+#if UNITY_EDITOR
+                if (Application.isPlaying)
+                    Shader.SetGlobalFloat(CozyShaderIDs.CZY_FogDepthMultiplierID, fogDensityMultiplier * fogDensity);
+                else
+                    Shader.SetGlobalFloat(CozyShaderIDs.CZY_FogDepthMultiplierID, fogDensityMultiplier * fogDensity * (sceneFogRendering ? 1 : 0));
+#else
                 Shader.SetGlobalFloat(CozyShaderIDs.CZY_FogDepthMultiplierID, fogDensityMultiplier * fogDensity);
+#endif
                 Shader.SetGlobalColor(CozyShaderIDs.CZY_LightColorID, fogFlareColor);
                 Shader.SetGlobalColor(CozyShaderIDs.CZY_FogMoonFlareColorID, fogMoonFlareColor);
 
@@ -786,6 +847,8 @@ namespace DistantLands.Cozy
                 sunLight.enabled = false;
             }
 
+            sunLight.shadows = sunLight.enabled ? LightShadows.Soft : LightShadows.None;
+
             if (climateModule)
             {
                 if (useRainbow)
@@ -897,7 +960,7 @@ namespace DistantLands.Cozy
         }
 
 
-        #region MODULES
+        #region Modules
 
         /// <summary>
         /// Makes sure that all module connections are setup properly. Run this after adding or removing a module.
@@ -1009,9 +1072,29 @@ namespace DistantLands.Cozy
 
             return moduleHolder.GetComponent(type) ? moduleHolder.GetComponent(type) as CozyModule : null;
         }
+
+        public void UpdateOnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            UpdateTriggersInScene(scene);
+
+            foreach (var module in ActiveAndEnabledModules)
+            {
+                module.OnSceneLoaded();
+            }
+        }
+
+        public void UpdateOnSceneUnLoaded(Scene scene)
+        {
+            RemoveTriggersInScene(scene);
+
+            foreach (var module in ActiveAndEnabledModules)
+            {
+                module.OnSceneUnloaded();
+            }
+        }
         #endregion
 
-        #region GENERIC
+        #region Generic
 
         public Transform GetChild(string name)
         {
@@ -1034,6 +1117,29 @@ namespace DistantLands.Cozy
             }
 
             return default;
+        }
+
+        public List<T> FindChildrenComponentsByTag<T>(Transform parentTransform, string tag)
+            where T : Component
+        {
+            var components = new List<T>();
+
+            foreach (Transform child in parentTransform)
+            {
+                if (child && child.CompareTag(tag))
+                {
+                    var component = child.GetComponent<T>();
+
+                    if (component)
+                    {
+                        components.Add(component);
+                    }
+                }
+
+                components.AddRange(FindChildrenComponentsByTag<T>(child, tag));
+            }
+
+            return components;
         }
 
         /// <summary>
@@ -1105,7 +1211,7 @@ namespace DistantLands.Cozy
 
     }
 
-
+    #region Meridiem Time
     [Serializable]
     public class MeridiemTime
     {
@@ -1165,7 +1271,9 @@ namespace DistantLands.Cozy
 
     }
 
+    #endregion
 
+    #region Editor
 #if UNITY_EDITOR
 
     [CustomEditor(typeof(CozyWeather))]
@@ -1221,13 +1329,13 @@ namespace DistantLands.Cozy
             Vector3 west = t.sunTransform.parent.forward;
             Vector3 pos = t.transform.position;
             GUIStyle textStyleSec = new GUIStyle();
-            textStyleSec.normal.textColor = Color.green;
+            textStyleSec.normal.textColor = new Color(0, 1, 0, 0.4f);
             textStyleSec.alignment = TextAnchor.MiddleLeft;
             textStyleSec.contentOffset = new Vector2(23, 0);
 
-            if (t.GetModule<CozySatelliteModule>(out CozySatelliteModule module))
+            if (t.GetModule(out CozySatelliteModule module))
             {
-                Handles.color = Color.green;
+                Handles.color = new Color(0, 1, 0, 0.4f);
                 Handles.DrawWireArc(pos + t.moonDirection.normalized * 10, t.moonDirection, sunNormal, 360, 0.5f, 1);
                 Handles.Label(pos + t.moonDirection, $"  Current Moon Phase: {module.GetMoonPhase()}", textStyleSec);
                 SatelliteProfile moon = module.satellites[module.mainMoon];
@@ -1264,7 +1372,7 @@ namespace DistantLands.Cozy
             }
             Handles.DrawWireArc(pos - sunDir.normalized * 10, sunDir, sunNormal, 360, 0.5f, 1);
 
-            Handles.color = Color.white;
+            Handles.color = new Color(1, 1, 1, 0.3f);
 
             Handles.Label(pos + west, "W", compassTextStyle);
             Handles.Label(pos - west, "E", compassTextStyle);
@@ -1441,6 +1549,9 @@ namespace DistantLands.Cozy
                 if (mods.Contains(typeof(CozyDateOverride)))
                     mods.Remove(typeof(CozyDateOverride));
 
+                if (mods.Contains(typeof(CozyBiomeModuleBase<>)))
+                    mods.Remove(typeof(CozyBiomeModuleBase<>));
+
                 t.modules.RemoveAll(x => x == null);
 
                 foreach (CozyModule a in t.modules)
@@ -1590,6 +1701,7 @@ namespace DistantLands.Cozy
                     EditorGUILayout.Space();
                 }
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("freezeUpdateInEditMode"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("dontDestroyOnLoad"));
                 EditorGUILayout.Space();
 
 
@@ -1646,5 +1758,5 @@ namespace DistantLands.Cozy
 
 
 #endif
-
+    #endregion
 }
