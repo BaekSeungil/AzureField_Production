@@ -134,6 +134,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ether"",
+                    ""type"": ""Button"",
+                    ""id"": ""5fe96fda-655d-4b6d-912e-1f54be0d299e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -304,17 +313,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2972965c-0481-4355-a472-838833195f79"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Interact"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""832d553b-2fdc-4b43-8d08-70bfa2a24e80"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -420,6 +418,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""SailboatDrift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e0d50455-09c5-4bac-8db8-1230da85085b"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Ether"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1057,6 +1066,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_SailboatBooster = m_Player.FindAction("SailboatBooster", throwIfNotFound: true);
         m_Player_SailboatLeapup = m_Player.FindAction("SailboatLeapup", throwIfNotFound: true);
         m_Player_SailboatDrift = m_Player.FindAction("SailboatDrift", throwIfNotFound: true);
+        m_Player_Ether = m_Player.FindAction("Ether", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1145,6 +1155,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_SailboatBooster;
     private readonly InputAction m_Player_SailboatLeapup;
     private readonly InputAction m_Player_SailboatDrift;
+    private readonly InputAction m_Player_Ether;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1161,6 +1172,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @SailboatBooster => m_Wrapper.m_Player_SailboatBooster;
         public InputAction @SailboatLeapup => m_Wrapper.m_Player_SailboatLeapup;
         public InputAction @SailboatDrift => m_Wrapper.m_Player_SailboatDrift;
+        public InputAction @Ether => m_Wrapper.m_Player_Ether;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1206,6 +1218,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatDrift.started += instance.OnSailboatDrift;
             @SailboatDrift.performed += instance.OnSailboatDrift;
             @SailboatDrift.canceled += instance.OnSailboatDrift;
+            @Ether.started += instance.OnEther;
+            @Ether.performed += instance.OnEther;
+            @Ether.canceled += instance.OnEther;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1246,6 +1261,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatDrift.started -= instance.OnSailboatDrift;
             @SailboatDrift.performed -= instance.OnSailboatDrift;
             @SailboatDrift.canceled -= instance.OnSailboatDrift;
+            @Ether.started -= instance.OnEther;
+            @Ether.performed -= instance.OnEther;
+            @Ether.canceled -= instance.OnEther;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1464,6 +1482,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnSailboatBooster(InputAction.CallbackContext context);
         void OnSailboatLeapup(InputAction.CallbackContext context);
         void OnSailboatDrift(InputAction.CallbackContext context);
+        void OnEther(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
