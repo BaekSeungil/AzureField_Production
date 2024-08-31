@@ -27,9 +27,9 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("가지고 있는재료 텍스쳐")] public TMP_Text Have_IntText;
     [SerializeField,LabelText("필요한 재료 텍스쳐")] public TMP_Text Need_IntText;
     [SerializeField,LabelText("업글 전 수치")] public TMP_Text BeforeText;
-    private float BeforeUpgrade;
+    private int BeforeUpgrade;
     [SerializeField,LabelText("업글 후 수치")] public TMP_Text AfterText;
-    private float AtfterUpgrade;
+    private int AtfterUpgrade;
     [SerializeField,LabelText("가속도 아이콘")] private GameObject Duration_ICON;
     [SerializeField,LabelText("점프 아이콘")] private GameObject Jump_ICON;
 
@@ -71,13 +71,13 @@ public class UpgradeController : MonoBehaviour
     {
        if(boatUpgradeType == BoatUpgradeType.PlusBoatJumpType)
        {
-            BeforeUpgrade = Player.ViewleapupPower;
+            BeforeUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.LeapupPower);
             BeforeText.text = $"{BeforeUpgrade}";
-            BeforeText.text = BeforeUpgrade.ToString("F1");
+            //BeforeText.text = BeforeUpgrade.ToString("F1");
 
-            AtfterUpgrade =  Player.ViewleapupPower + PlusleapupPower;
+            AtfterUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.LeapupPower) + 1;
             AfterText.text = $"{AtfterUpgrade}";
-            AfterText.text = BeforeUpgrade.ToString("F1");
+            //AfterText.text = BeforeUpgrade.ToString("F1");
        }
 
     }
@@ -86,13 +86,13 @@ public class UpgradeController : MonoBehaviour
     {
         if(boatUpgradeType == BoatUpgradeType.PlusBoatboosterMult)
         {
-            BeforeUpgrade = Player.ViewBoosterMult;
+            BeforeUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.BoosterMult);
             BeforeText.text = $"{BeforeUpgrade}";
-            BeforeText.text = BeforeUpgrade.ToString("F1");
+            //BeforeText.text = BeforeUpgrade.ToString("F1");
 
-            AtfterUpgrade = Player.ViewBoosterMult + PlustboosterMult;
+            AtfterUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.BoosterMult) + 1;
             AfterText.text = $"{AtfterUpgrade}";
-            AfterText.text = AtfterUpgrade.ToString("F1");
+            //AfterText.text = AtfterUpgrade.ToString("F1");
         }
         
     }
@@ -101,15 +101,14 @@ public class UpgradeController : MonoBehaviour
     {
         if(boatUpgradeType == BoatUpgradeType.PlusBoatboosterDuration)
         {
-            BeforeUpgrade = Player.ViewBoosterDuration;
+            BeforeUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.BoosterDuration);
             BeforeText.text = $"{BeforeUpgrade}";
-            BeforeText.text = BeforeUpgrade.ToString("F1");
+            //BeforeText.text = BeforeUpgrade.ToString("F1");
 
-            AtfterUpgrade =  Player.ViewBoosterDuration + PlusboosterDuration;
+            AtfterUpgrade = Player.GetPermenentUpgradeCount(PlayerCore.AbilityAttribute.BoosterDuration)+1;
             AfterText.text = $"{AtfterUpgrade}";
-            AfterText.text = AtfterUpgrade.ToString("F1");
+            //AfterText.text = AtfterUpgrade.ToString("F1");
         }
-        
     }
 
 
@@ -121,21 +120,24 @@ public class UpgradeController : MonoBehaviour
             switch (boatUpgradeType)
             {
                 case BoatUpgradeType.PlusBoatJumpType:
-                    Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
+                    //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
                     NeedUseItem += UseItemCount;
                     Debug.Log("점프력: "+ Player.ViewleapupPower);
                     break;
 
                 case BoatUpgradeType.PlusBoatboosterDuration:
-                    Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+                    //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
                     NeedUseItem += UseItemCount;
-                    Debug.Log("가속도: "+ Player.ViewBoosterDuration);
+                    Debug.Log("부스터 지속시간: "+ Player.ViewBoosterDuration);
                     break;
 
                 case BoatUpgradeType.PlusBoatboosterMult:
-                    Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
+                    //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
+                    Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
                     NeedUseItem += UseItemCount;
-                    Debug.Log("부스터: "+ Player.ViewBoosterMult);
+                    Debug.Log("부스터 가속도: "+ Player.ViewBoosterMult);
                     break;
             }
         }
@@ -214,5 +216,31 @@ public class UpgradeController : MonoBehaviour
     }
 
 
- //   #endif
+#if UNITY_EDITOR
+    [Button(), DisableInEditorMode(),FoldoutGroup("디버그")]
+    public void Debug_UpgradeLeapup()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
+        NeedUseItem += UseItemCount;
+        Debug.Log("점프력: " + Player.ViewleapupPower);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterDuration()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 지속시간: " + Player.ViewBoosterDuration);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterMult()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 가속도: " + Player.ViewBoosterMult);
+    }
+#endif
+
+    //   #endif
 }

@@ -112,9 +112,7 @@ namespace DistantLands.Cozy
             if (!moonLight)
                 return;
 
-            moonLight.enabled = weatherSphere.moonlightColor.grayscale > 0.05f && satellites.Length > 0 && useLight;
 
-            moonLight.transform.forward = satellites[mainMoon].orbitRef.GetChild(0).forward;
             weatherSphere.moonDirection = -moonLight.transform.forward;
             Shader.SetGlobalVector("CZY_MoonDirection", -moonLight.transform.forward);
 
@@ -122,12 +120,12 @@ namespace DistantLands.Cozy
                 mainMoon = satellites.Length - 1;
 
             float moonBrightness = Mathf.Clamp01(Mathf.Sin((weatherSphere.dayPercentage + 0.25f) * 2 * Mathf.PI) + 0.25f) * Mathf.Clamp01(4 * Vector3.Dot(moonLight.transform.forward, Vector3.down));
+            
+            moonLight.transform.forward = satellites[mainMoon].orbitRef.GetChild(0).forward;
+            moonLight.enabled = weatherSphere.moonlightColor.grayscale > 0.05f && satellites.Length > 0 && useLight && !weatherSphere.sunLight.enabled;
             moonLight.color = weatherSphere.moonlightColor * weatherSphere.sunFilter * moonBrightness;
-#if COZY_HDRP
-                moonLight.shadows = LightShadows.None;
-#else
-            moonLight.shadows = moonlightShadows;
-#endif
+            moonLight.shadows = moonLight.enabled ? moonlightShadows : LightShadows.None;
+
 #if COZY_URP || COZY_HDRP
             if (moonLensFlare)
             {
@@ -148,8 +146,6 @@ namespace DistantLands.Cozy
 
         public void UpdateSatellites()
         {
-            if (weatherSphere == null)
-                weatherSphere = CozyWeather.instance;
 
             Transform oldHolder = null;
 
@@ -225,40 +221,6 @@ namespace DistantLands.Cozy
             sat.moonRef.transform.localScale = sat.satelliteReference.transform.localScale * sat.size * (sat.autoScaleByDistance ? dist / 1000 : 1);
             sat.orbitRef.localEulerAngles = new Vector3(0, sat.satelliteDirection, sat.satellitePitch);
             sat.orbitRef.GetChild(0).localEulerAngles = Vector3.right * ((360 * weatherSphere.dayPercentage) + sat.orbitOffset);
-
-            //             if (sat.useLight)
-            //             {
-            //                 var obj = new GameObject("Light");
-            //                 obj.transform.parent = sat.orbitRef.GetChild(0);
-            //                 sat.lightRef = obj.AddComponent<Light>();
-            //                 sat.lightRef.transform.localEulerAngles = new Vector3(0, 0, 0);
-            //                 sat.lightRef.transform.localPosition = -Vector3.forward * dist;
-            //                 sat.lightRef.type = LightType.Directional;
-            //                 sat.lightRef.shadows = sat.castShadows;
-            // #if COZY_URP
-            //                 if (sat.flare.flare)
-            //                 {
-            //                     sat.flareRef = obj.AddComponent<LensFlareComponentSRP>();
-            //                     sat.flareRef.intensity = sat.flare.intensity;
-            //                     sat.flareRef.lensFlareData = sat.flare.flare;
-            //                     sat.flareRef.allowOffScreen = sat.flare.allowOffscreen;
-            //                     sat.flareRef.radialScreenAttenuationCurve = sat.flare.screenAttenuation;
-            //                     sat.flareRef.distanceAttenuationCurve = sat.flare.screenAttenuation;
-            //                     sat.flareRef.scale = sat.flare.scale;
-            //                     sat.flareRef.occlusionRadius = sat.flare.occlusionRadius;
-            //                     sat.flareRef.useOcclusion = sat.flare.useOcclusion;
-            //                 }
-            // #else
-            //                 if (sat.flare)
-            //                     sat.lightRef.flare = sat.flare;
-            // #endif
-
-            //             }
-            //             if (mainMoon)
-            //             {
-            //                 sat.orbitRef.GetChild(0).gameObject.AddComponent<CozySetMoonDirection>();
-            //             }
-
             sat.changedLastFrame = false;
         }
 
@@ -275,7 +237,7 @@ namespace DistantLands.Cozy
         public MoonPhase GetMoonPhase()
         {
             SatelliteProfile moon = satellites[mainMoon];
-            int phase = Mathf.FloorToInt(((weatherSphere.timeModule.currentDay + moon.rotationPeriodOffset + 1 + weatherSphere.timeModule.GetDaysPerYear() * weatherSphere.timeModule.currentYear) % moon.rotationPeriod) / (moon.rotationPeriod / 8));
+            int phase = Mathf.FloorToInt((weatherSphere.timeModule.currentDay + moon.rotationPeriodOffset + 1 + weatherSphere.timeModule.GetDaysPerYear() * weatherSphere.timeModule.currentYear) % moon.rotationPeriod / (moon.rotationPeriod / 8));
 
             return (MoonPhase)Mathf.Clamp(phase, 0, 7);
 

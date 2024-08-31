@@ -15,28 +15,11 @@ using DistantLands.Cozy.Data;
 namespace DistantLands.Cozy
 {
     [ExecuteAlways]
-    public class CozyAtmosphereModule : CozyModule, ICozyBiomeModule
+    public class CozyAtmosphereModule : CozyBiomeModuleBase<CozyAtmosphereModule>
     {
         [CozyProfile]
         public AtmosphereProfile atmosphereProfile;
         public bool transitioningAtmosphere = false;
-        public List<CozyAtmosphereModule> biomes = new List<CozyAtmosphereModule>();
-        public bool isBiomeModule { get; set; }
-        float weight;
-        public override void InitializeModule()
-        {
-            isBiomeModule = GetComponent<CozyBiome>();
-
-            if (isBiomeModule)
-            {
-                AddBiome();
-                return;
-            }
-            base.InitializeModule();
-            weatherSphere.atmosphereModule = this;
-            biomes = FindObjectsOfType<CozyAtmosphereModule>().Where(x => x != this).ToList();
-
-        }
 
         public override void PropogateVariables()
         {
@@ -176,66 +159,134 @@ namespace DistantLands.Cozy
                 if (biome == null) continue;
                 if (biome.system.weight == 0) continue;
 
-                weatherSphere.gradientExponent = Mathf.Lerp(weatherSphere.gradientExponent, biome.atmosphereProfile.gradientExponent.GetFloatValue(i), biome.weight);
-                weatherSphere.ambientLightHorizonColor = Color.Lerp(weatherSphere.ambientLightHorizonColor, biome.atmosphereProfile.ambientLightHorizonColor.GetColorValue(i), biome.weight);
-                weatherSphere.ambientLightZenithColor = Color.Lerp(weatherSphere.ambientLightZenithColor, biome.atmosphereProfile.ambientLightZenithColor.GetColorValue(i), biome.weight);
-                weatherSphere.ambientLightMultiplier = Mathf.Lerp(weatherSphere.ambientLightMultiplier, biome.atmosphereProfile.ambientLightMultiplier.GetFloatValue(i), biome.weight);
-                weatherSphere.clippingThreshold = Mathf.Lerp(weatherSphere.clippingThreshold, biome.atmosphereProfile.clippingThreshold.GetFloatValue(i), biome.weight);
-                weatherSphere.cloudCohesion = Mathf.Lerp(weatherSphere.cloudCohesion, biome.atmosphereProfile.cloudCohesion.GetFloatValue(i), biome.weight);
-                weatherSphere.cloudColor = Color.Lerp(weatherSphere.cloudColor, biome.atmosphereProfile.cloudColor.GetColorValue(i), biome.weight);
-                weatherSphere.cloudHighlightColor = Color.Lerp(weatherSphere.cloudHighlightColor, biome.atmosphereProfile.cloudHighlightColor.GetColorValue(i), biome.weight);
-                weatherSphere.cloudMoonColor = Color.Lerp(weatherSphere.cloudMoonColor, biome.atmosphereProfile.cloudMoonColor.GetColorValue(i), biome.weight);
-                weatherSphere.cloudMoonHighlightFalloff = Mathf.Lerp(weatherSphere.cloudMoonHighlightFalloff, biome.atmosphereProfile.cloudMoonHighlightFalloff.GetFloatValue(i), biome.weight);
-                weatherSphere.cloudSunHighlightFalloff = Mathf.Lerp(weatherSphere.cloudSunHighlightFalloff, biome.atmosphereProfile.cloudSunHighlightFalloff.GetFloatValue(i), biome.weight);
-                weatherSphere.cloudTextureColor = Color.Lerp(weatherSphere.cloudTextureColor, biome.atmosphereProfile.cloudTextureColor.GetColorValue(i), biome.weight);
-                weatherSphere.cloudThickness = Mathf.Lerp(weatherSphere.cloudThickness, biome.atmosphereProfile.cloudThickness.GetFloatValue(i), biome.weight);
-                weatherSphere.fogColor1 = Color.Lerp(weatherSphere.fogColor1, biome.atmosphereProfile.fogColor1.GetColorValue(i), biome.weight);
-                weatherSphere.fogColor2 = Color.Lerp(weatherSphere.fogColor2, biome.atmosphereProfile.fogColor2.GetColorValue(i), biome.weight);
-                weatherSphere.fogColor3 = Color.Lerp(weatherSphere.fogColor3, biome.atmosphereProfile.fogColor3.GetColorValue(i), biome.weight);
-                weatherSphere.fogColor4 = Color.Lerp(weatherSphere.fogColor4, biome.atmosphereProfile.fogColor4.GetColorValue(i), biome.weight);
-                weatherSphere.fogColor5 = Color.Lerp(weatherSphere.fogColor5, biome.atmosphereProfile.fogColor5.GetColorValue(i), biome.weight);
-                weatherSphere.fogDensityMultiplier = Mathf.Lerp(weatherSphere.fogDensityMultiplier, biome.atmosphereProfile.fogDensityMultiplier.GetFloatValue(i), biome.weight);
-                weatherSphere.fogFlareColor = Color.Lerp(weatherSphere.fogFlareColor, biome.atmosphereProfile.fogFlareColor.GetColorValue(i), biome.weight);
-                weatherSphere.fogMoonFlareColor = Color.Lerp(weatherSphere.fogMoonFlareColor, biome.atmosphereProfile.fogMoonFlareColor.GetColorValue(i), biome.weight);
-                weatherSphere.fogHeight = Mathf.Lerp(weatherSphere.fogHeight, biome.atmosphereProfile.fogHeight.GetFloatValue(i), biome.weight);
-                weatherSphere.fogVariationAmount = Mathf.Lerp(weatherSphere.fogVariationAmount, biome.atmosphereProfile.fogVariationAmount.GetFloatValue(i), biome.weight);
-                weatherSphere.fogVariationDistance = Mathf.Lerp(weatherSphere.fogVariationDistance, biome.atmosphereProfile.fogVariationDistance.GetFloatValue(i), biome.weight);
-                weatherSphere.fogLightFlareFalloff = Mathf.Lerp(weatherSphere.fogLightFlareFalloff, biome.atmosphereProfile.fogLightFlareFalloff.GetFloatValue(i), biome.weight);
-                weatherSphere.fogLightFlareIntensity = Mathf.Lerp(weatherSphere.fogLightFlareIntensity, biome.atmosphereProfile.fogLightFlareIntensity.GetFloatValue(i), biome.weight);
-                weatherSphere.fogLightFlareSquish = Mathf.Lerp(weatherSphere.fogLightFlareSquish, biome.atmosphereProfile.fogLightFlareSquish.GetFloatValue(i), biome.weight);
-                weatherSphere.galaxy1Color = Color.Lerp(weatherSphere.galaxy1Color, biome.atmosphereProfile.galaxy1Color.GetColorValue(i), biome.weight);
-                weatherSphere.galaxy2Color = Color.Lerp(weatherSphere.galaxy2Color, biome.atmosphereProfile.galaxy2Color.GetColorValue(i), biome.weight);
-                weatherSphere.galaxy3Color = Color.Lerp(weatherSphere.galaxy3Color, biome.atmosphereProfile.galaxy3Color.GetColorValue(i), biome.weight);
-                weatherSphere.galaxyIntensity = Mathf.Lerp(weatherSphere.galaxyIntensity, biome.atmosphereProfile.galaxyIntensity.GetFloatValue(i), biome.weight);
-                weatherSphere.highAltitudeCloudColor = Color.Lerp(weatherSphere.highAltitudeCloudColor, biome.atmosphereProfile.highAltitudeCloudColor.GetColorValue(i), biome.weight);
-                weatherSphere.lightScatteringColor = Color.Lerp(weatherSphere.lightScatteringColor, biome.atmosphereProfile.lightScatteringColor.GetColorValue(i), biome.weight);
-                weatherSphere.moonlightColor = Color.Lerp(weatherSphere.moonlightColor, biome.atmosphereProfile.moonlightColor.GetColorValue(i), biome.weight);
-                weatherSphere.moonColor = Color.Lerp(weatherSphere.moonColor, biome.atmosphereProfile.moonColor.GetColorValue(i), biome.weight);
-                weatherSphere.moonFalloff = Mathf.Lerp(weatherSphere.moonFalloff, biome.atmosphereProfile.moonFalloff.GetFloatValue(i), biome.weight);
-                weatherSphere.moonFlareColor = Color.Lerp(weatherSphere.moonFlareColor, biome.atmosphereProfile.moonFlareColor.GetColorValue(i), biome.weight);
-                weatherSphere.rainbowPosition = Mathf.Lerp(weatherSphere.rainbowPosition, biome.atmosphereProfile.rainbowPosition.GetFloatValue(i), biome.weight);
-                weatherSphere.rainbowWidth = Mathf.Lerp(weatherSphere.rainbowWidth, biome.atmosphereProfile.rainbowWidth.GetFloatValue(i), biome.weight);
-                weatherSphere.shadowDistance = Mathf.Lerp(weatherSphere.shadowDistance, biome.atmosphereProfile.shadowDistance.GetFloatValue(i), biome.weight);
-                weatherSphere.skyHorizonColor = Color.Lerp(weatherSphere.skyHorizonColor, biome.atmosphereProfile.skyHorizonColor.GetColorValue(i), biome.weight);
-                weatherSphere.skyZenithColor = Color.Lerp(weatherSphere.skyZenithColor, biome.atmosphereProfile.skyZenithColor.GetColorValue(i), biome.weight);
-                weatherSphere.spherize = Mathf.Lerp(weatherSphere.spherize, biome.atmosphereProfile.spherize.GetFloatValue(i), biome.weight);
-                weatherSphere.starColor = Color.Lerp(weatherSphere.starColor, biome.atmosphereProfile.starColor.GetColorValue(i), biome.weight);
-                weatherSphere.sunColor = Color.Lerp(weatherSphere.sunColor, biome.atmosphereProfile.sunColor.GetColorValue(i), biome.weight);
-                weatherSphere.sunDirection = Mathf.Lerp(weatherSphere.sunDirection, biome.atmosphereProfile.sunDirection.GetFloatValue(i), biome.weight);
-                weatherSphere.sunFalloff = Mathf.Lerp(weatherSphere.sunFalloff, biome.atmosphereProfile.sunFalloff.GetFloatValue(i), biome.weight);
-                weatherSphere.sunFlareColor = Color.Lerp(weatherSphere.sunFlareColor, biome.atmosphereProfile.sunFlareColor.GetColorValue(i), biome.weight);
-                weatherSphere.sunlightColor = Color.Lerp(weatherSphere.sunlightColor, biome.atmosphereProfile.sunlightColor.GetColorValue(i), biome.weight);
-                weatherSphere.sunPitch = Mathf.Lerp(weatherSphere.sunPitch, biome.atmosphereProfile.sunPitch.GetFloatValue(i), biome.weight);
-                weatherSphere.sunSize = Mathf.Lerp(weatherSphere.sunSize, biome.atmosphereProfile.sunSize.GetFloatValue(i), biome.weight);
-                weatherSphere.textureAmount = Mathf.Lerp(weatherSphere.textureAmount, biome.atmosphereProfile.textureAmount.GetFloatValue(i), biome.weight);
-                weatherSphere.fogSmoothness = Mathf.Lerp(weatherSphere.fogSmoothness, biome.atmosphereProfile.fogSmoothness.GetFloatValue(i), biome.weight);
-                weatherSphere.fogBase = Mathf.Lerp(weatherSphere.fogBase, biome.atmosphereProfile.fogBase.GetFloatValue(i), biome.weight);
-                weatherSphere.heightFogColor = Color.Lerp(weatherSphere.heightFogColor, biome.atmosphereProfile.heightFogColor.GetColorValue(i), biome.weight);
-                weatherSphere.heightFogDistance = Mathf.Lerp(weatherSphere.heightFogDistance, biome.atmosphereProfile.heightFogDistance.GetFloatValue(i), biome.weight);
-                weatherSphere.heightFogIntensity = Mathf.Lerp(weatherSphere.heightFogIntensity, biome.atmosphereProfile.heightFogIntensity.GetFloatValue(i), biome.weight);
-                weatherSphere.heightFogTransition = Mathf.Lerp(weatherSphere.heightFogTransition, biome.atmosphereProfile.heightFogTransition.GetFloatValue(i), biome.weight);
-                weatherSphere.heightFogVariationAmount = Mathf.Lerp(weatherSphere.heightFogVariationAmount, biome.atmosphereProfile.heightFogVariationAmount.GetFloatValue(i), biome.weight);
-                weatherSphere.heightFogVariationScale = Mathf.Lerp(weatherSphere.heightFogVariationScale, biome.atmosphereProfile.heightFogVariationScale.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.gradientExponent)
+                    weatherSphere.gradientExponent = Mathf.Lerp(weatherSphere.gradientExponent, biome.atmosphereProfile.gradientExponent.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.ambientLightHorizonColor)
+                    weatherSphere.ambientLightHorizonColor = Color.Lerp(weatherSphere.ambientLightHorizonColor, biome.atmosphereProfile.ambientLightHorizonColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.ambientLightZenithColor)
+                    weatherSphere.ambientLightZenithColor = Color.Lerp(weatherSphere.ambientLightZenithColor, biome.atmosphereProfile.ambientLightZenithColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.ambientLightMultiplier)
+                    weatherSphere.ambientLightMultiplier = Mathf.Lerp(weatherSphere.ambientLightMultiplier, biome.atmosphereProfile.ambientLightMultiplier.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.clippingThreshold)
+                    weatherSphere.clippingThreshold = Mathf.Lerp(weatherSphere.clippingThreshold, biome.atmosphereProfile.clippingThreshold.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudCohesion)
+                    weatherSphere.cloudCohesion = Mathf.Lerp(weatherSphere.cloudCohesion, biome.atmosphereProfile.cloudCohesion.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudColor)
+                    weatherSphere.cloudColor = Color.Lerp(weatherSphere.cloudColor, biome.atmosphereProfile.cloudColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudHighlightColor)
+                    weatherSphere.cloudHighlightColor = Color.Lerp(weatherSphere.cloudHighlightColor, biome.atmosphereProfile.cloudHighlightColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudMoonColor)
+                    weatherSphere.cloudMoonColor = Color.Lerp(weatherSphere.cloudMoonColor, biome.atmosphereProfile.cloudMoonColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudMoonHighlightFalloff)
+                    weatherSphere.cloudMoonHighlightFalloff = Mathf.Lerp(weatherSphere.cloudMoonHighlightFalloff, biome.atmosphereProfile.cloudMoonHighlightFalloff.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudSunHighlightFalloff)
+                    weatherSphere.cloudSunHighlightFalloff = Mathf.Lerp(weatherSphere.cloudSunHighlightFalloff, biome.atmosphereProfile.cloudSunHighlightFalloff.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudTextureColor)
+                    weatherSphere.cloudTextureColor = Color.Lerp(weatherSphere.cloudTextureColor, biome.atmosphereProfile.cloudTextureColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.cloudThickness)
+                    weatherSphere.cloudThickness = Mathf.Lerp(weatherSphere.cloudThickness, biome.atmosphereProfile.cloudThickness.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogColor1)
+                    weatherSphere.fogColor1 = Color.Lerp(weatherSphere.fogColor1, biome.atmosphereProfile.fogColor1.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogColor2)
+                    weatherSphere.fogColor2 = Color.Lerp(weatherSphere.fogColor2, biome.atmosphereProfile.fogColor2.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogColor3)
+                    weatherSphere.fogColor3 = Color.Lerp(weatherSphere.fogColor3, biome.atmosphereProfile.fogColor3.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogColor4)
+                    weatherSphere.fogColor4 = Color.Lerp(weatherSphere.fogColor4, biome.atmosphereProfile.fogColor4.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogColor5)
+                    weatherSphere.fogColor5 = Color.Lerp(weatherSphere.fogColor5, biome.atmosphereProfile.fogColor5.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogStart1)
+                    weatherSphere.fogStart1 = Mathf.Lerp(weatherSphere.fogStart1, biome.atmosphereProfile.fogStart1, biome.weight);
+                if (biome.atmosphereProfile.fogStart2)
+                    weatherSphere.fogStart2 = Mathf.Lerp(weatherSphere.fogStart2, biome.atmosphereProfile.fogStart2, biome.weight);
+                if (biome.atmosphereProfile.fogStart3)
+                    weatherSphere.fogStart3 = Mathf.Lerp(weatherSphere.fogStart3, biome.atmosphereProfile.fogStart3, biome.weight);
+                if (biome.atmosphereProfile.fogStart4)
+                    weatherSphere.fogStart4 = Mathf.Lerp(weatherSphere.fogStart4, biome.atmosphereProfile.fogStart4, biome.weight);
+                if (biome.atmosphereProfile.fogDensityMultiplier)
+                    weatherSphere.fogDensityMultiplier = Mathf.Lerp(weatherSphere.fogDensityMultiplier, biome.atmosphereProfile.fogDensityMultiplier.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogFlareColor)
+                    weatherSphere.fogFlareColor = Color.Lerp(weatherSphere.fogFlareColor, biome.atmosphereProfile.fogFlareColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogMoonFlareColor)
+                    weatherSphere.fogMoonFlareColor = Color.Lerp(weatherSphere.fogMoonFlareColor, biome.atmosphereProfile.fogMoonFlareColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogHeight)
+                    weatherSphere.fogHeight = Mathf.Lerp(weatherSphere.fogHeight, biome.atmosphereProfile.fogHeight.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogVariationAmount)
+                    weatherSphere.fogVariationAmount = Mathf.Lerp(weatherSphere.fogVariationAmount, biome.atmosphereProfile.fogVariationAmount.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogVariationDistance)
+                    weatherSphere.fogVariationDistance = Mathf.Lerp(weatherSphere.fogVariationDistance, biome.atmosphereProfile.fogVariationDistance.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogLightFlareFalloff)
+                    weatherSphere.fogLightFlareFalloff = Mathf.Lerp(weatherSphere.fogLightFlareFalloff, biome.atmosphereProfile.fogLightFlareFalloff.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogLightFlareIntensity)
+                    weatherSphere.fogLightFlareIntensity = Mathf.Lerp(weatherSphere.fogLightFlareIntensity, biome.atmosphereProfile.fogLightFlareIntensity.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogLightFlareSquish)
+                    weatherSphere.fogLightFlareSquish = Mathf.Lerp(weatherSphere.fogLightFlareSquish, biome.atmosphereProfile.fogLightFlareSquish.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.galaxy1Color)
+                    weatherSphere.galaxy1Color = Color.Lerp(weatherSphere.galaxy1Color, biome.atmosphereProfile.galaxy1Color.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.galaxy2Color)
+                    weatherSphere.galaxy2Color = Color.Lerp(weatherSphere.galaxy2Color, biome.atmosphereProfile.galaxy2Color.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.galaxy3Color)
+                    weatherSphere.galaxy3Color = Color.Lerp(weatherSphere.galaxy3Color, biome.atmosphereProfile.galaxy3Color.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.galaxyIntensity)
+                    weatherSphere.galaxyIntensity = Mathf.Lerp(weatherSphere.galaxyIntensity, biome.atmosphereProfile.galaxyIntensity.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.highAltitudeCloudColor)
+                    weatherSphere.highAltitudeCloudColor = Color.Lerp(weatherSphere.highAltitudeCloudColor, biome.atmosphereProfile.highAltitudeCloudColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.lightScatteringColor)
+                    weatherSphere.lightScatteringColor = Color.Lerp(weatherSphere.lightScatteringColor, biome.atmosphereProfile.lightScatteringColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.moonlightColor)
+                    weatherSphere.moonlightColor = Color.Lerp(weatherSphere.moonlightColor, biome.atmosphereProfile.moonlightColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.moonColor)
+                    weatherSphere.moonColor = Color.Lerp(weatherSphere.moonColor, biome.atmosphereProfile.moonColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.moonFalloff)
+                    weatherSphere.moonFalloff = Mathf.Lerp(weatherSphere.moonFalloff, biome.atmosphereProfile.moonFalloff.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.moonFlareColor)
+                    weatherSphere.moonFlareColor = Color.Lerp(weatherSphere.moonFlareColor, biome.atmosphereProfile.moonFlareColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.rainbowPosition)
+                    weatherSphere.rainbowPosition = Mathf.Lerp(weatherSphere.rainbowPosition, biome.atmosphereProfile.rainbowPosition.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.rainbowWidth)
+                    weatherSphere.rainbowWidth = Mathf.Lerp(weatherSphere.rainbowWidth, biome.atmosphereProfile.rainbowWidth.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.shadowDistance)
+                    weatherSphere.shadowDistance = Mathf.Lerp(weatherSphere.shadowDistance, biome.atmosphereProfile.shadowDistance.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.skyHorizonColor)
+                    weatherSphere.skyHorizonColor = Color.Lerp(weatherSphere.skyHorizonColor, biome.atmosphereProfile.skyHorizonColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.skyZenithColor)
+                    weatherSphere.skyZenithColor = Color.Lerp(weatherSphere.skyZenithColor, biome.atmosphereProfile.skyZenithColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.spherize)
+                    weatherSphere.spherize = Mathf.Lerp(weatherSphere.spherize, biome.atmosphereProfile.spherize.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.starColor)
+                    weatherSphere.starColor = Color.Lerp(weatherSphere.starColor, biome.atmosphereProfile.starColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunColor)
+                    weatherSphere.sunColor = Color.Lerp(weatherSphere.sunColor, biome.atmosphereProfile.sunColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunDirection)
+                    weatherSphere.sunDirection = Mathf.Lerp(weatherSphere.sunDirection, biome.atmosphereProfile.sunDirection.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunFalloff)
+                    weatherSphere.sunFalloff = Mathf.Lerp(weatherSphere.sunFalloff, biome.atmosphereProfile.sunFalloff.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunFlareColor)
+                    weatherSphere.sunFlareColor = Color.Lerp(weatherSphere.sunFlareColor, biome.atmosphereProfile.sunFlareColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunlightColor)
+                    weatherSphere.sunlightColor = Color.Lerp(weatherSphere.sunlightColor, biome.atmosphereProfile.sunlightColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunPitch)
+                    weatherSphere.sunPitch = Mathf.Lerp(weatherSphere.sunPitch, biome.atmosphereProfile.sunPitch.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.sunSize)
+                    weatherSphere.sunSize = Mathf.Lerp(weatherSphere.sunSize, biome.atmosphereProfile.sunSize.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.textureAmount)
+                    weatherSphere.textureAmount = Mathf.Lerp(weatherSphere.textureAmount, biome.atmosphereProfile.textureAmount.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogSmoothness)
+                    weatherSphere.fogSmoothness = Mathf.Lerp(weatherSphere.fogSmoothness, biome.atmosphereProfile.fogSmoothness.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.fogBase)
+                    weatherSphere.fogBase = Mathf.Lerp(weatherSphere.fogBase, biome.atmosphereProfile.fogBase.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogColor)
+                    weatherSphere.heightFogColor = Color.Lerp(weatherSphere.heightFogColor, biome.atmosphereProfile.heightFogColor.GetColorValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogDistance)
+                    weatherSphere.heightFogDistance = Mathf.Lerp(weatherSphere.heightFogDistance, biome.atmosphereProfile.heightFogDistance.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogIntensity)
+                    weatherSphere.heightFogIntensity = Mathf.Lerp(weatherSphere.heightFogIntensity, biome.atmosphereProfile.heightFogIntensity.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogTransition)
+                    weatherSphere.heightFogTransition = Mathf.Lerp(weatherSphere.heightFogTransition, biome.atmosphereProfile.heightFogTransition.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogVariationAmount)
+                    weatherSphere.heightFogVariationAmount = Mathf.Lerp(weatherSphere.heightFogVariationAmount, biome.atmosphereProfile.heightFogVariationAmount.GetFloatValue(i), biome.weight);
+                if (biome.atmosphereProfile.heightFogVariationScale)
+                    weatherSphere.heightFogVariationScale = Mathf.Lerp(weatherSphere.heightFogVariationScale, biome.atmosphereProfile.heightFogVariationScale.GetFloatValue(i), biome.weight);
 
 
             }
@@ -395,56 +446,6 @@ namespace DistantLands.Cozy
             transitioningAtmosphere = false;
             atmosphereProfile = end;
 
-        }
-
-        public void AddBiome()
-        {
-            weatherSphere = CozyWeather.instance;
-            weatherSphere.atmosphereModule.biomes = FindObjectsOfType<CozyAtmosphereModule>().Where(x => x != weatherSphere.atmosphereModule).ToList();
-        }
-
-        public void RemoveBiome()
-        {
-            weatherSphere.atmosphereModule.biomes.Remove(this);
-        }
-
-        public void UpdateBiomeModule()
-        {
-
-        }
-
-        public void ComputeBiomeWeights()
-        {
-
-            float totalSystemWeight = 0;
-            biomes.RemoveAll(x => x == null);
-
-            foreach (CozyAtmosphereModule biome in biomes)
-            {
-                if (biome != this)
-                {
-                    totalSystemWeight += biome.system.targetWeight;
-                }
-            }
-
-            weight = Mathf.Clamp01(1 - (totalSystemWeight));
-            totalSystemWeight += weight;
-
-            foreach (CozyAtmosphereModule biome in biomes)
-            {
-                if (biome.system != this)
-                    biome.weight = biome.system.targetWeight / (totalSystemWeight == 0 ? 1 : totalSystemWeight);
-            }
-        }
-
-        public bool CheckBiome()
-        {
-            if (!weatherSphere.atmosphereModule)
-            {
-                Debug.LogError("The atmosphere biome module requires the atmosphere module to be enabled on your weather sphere. Please add the atmosphere module before setting up your biome.");
-                return false;
-            }
-            return true;
         }
     }
 
