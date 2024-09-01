@@ -36,18 +36,18 @@ public class CallEther : MonoBehaviour
     {
         if(inputActions.Player.Ether.WasPressedThisFrame())
         {
-            OnSpawn = true;
-            EtherCount += 1;
-
-            if(EtherWave != null && !IsCreat)
+            if (!IsCreat)
             {
                 Instantiate(EtherWave, Spawn.transform.position, Quaternion.identity);
                 IsCreat = true;
+                EtherCount = 1;  // 상태를 1로 설정하여 생성된 상태로 표시합니다.
+                Debug.Log("파도 생성");
             }
-
-            if(inputActions.Player.Ether.WasPressedThisFrame())
+            // 파도가 이미 생성된 상태에서 다시 키를 누르면 파도를 이동시킵니다.
+            else if (IsCreat && EtherCount == 1)
             {
-                EtherCount = 2;
+                EtherCount = 2;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
+                Debug.Log("파도 이동 신호 전송");
             }
         }
     }

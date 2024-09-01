@@ -11,22 +11,25 @@ public class EtherSystem : MonoBehaviour
     public bool CalledWave = false;
     [SerializeField,LabelText("전진 속도")] public float MoveSpeed;
     [SerializeField,LabelText("최종도착 거리")] public float FinalDistance;
-    [SerializeField,LabelText("도착 거리 허용 오차")] public float Arrival = 0.1f;
+    [SerializeField,LabelText("소멸시간")] public float DeletTime;
     [SerializeField]private ParticleSystem Idleparticl;
 
     private Vector3 startPosition; // 에테르가 생성된 초기 위치
-     private Vector3 targetPosition; // 목표 위치
+    private Vector3 targetPosition;
     // Start is called before the first frame update
     private void Start()
     {
         callEther = FindObjectOfType<CallEther>();
         Idleparticl.Play();
-        startPosition = transform.position;
-        targetPosition = startPosition + transform.forward * FinalDistance;
+        startPosition = callEther.Spawn.transform.position;
+        transform.position = startPosition;
+        targetPosition = startPosition + callEther.Spawn.transform.forward.normalized * FinalDistance;
+        StartCoroutine(DestroyAfterTime());
+
     }
 
     // Update is called once per frame
-    private void FixedUpdate() 
+    private void Update() 
     {
         MoveWave();
     }
@@ -37,39 +40,42 @@ public class EtherSystem : MonoBehaviour
         {
            
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
-
             // 도착 여부 확인
-            if (Vector3.Distance(transform.position, targetPosition) < Arrival)
+            if (Vector3.Distance(startPosition, targetPosition) > FinalDistance)
             {
                 callEther.IsCreat = false;
+                callEther.EtherCount = 0;
                 Destroy(gameObject);
+                Debug.Log("파도소멸");
             }
         }
     }
 
-    private void OnCollisionEnter(Collision other) 
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Reef" && other.gameObject.layer == 8)
+        if (other.gameObject.tag == "Reef" || other.gameObject.layer == 8)
         {
             Destroy(gameObject);
+            callEther.IsCreat = false;
         }
+    }
+
+    private IEnumerator DestroyAfterTime()
+    {
+        // 일정 시간이 지난 후 파도를 소멸시키는 코루틴
+        yield return new WaitForSeconds(DeletTime);
+        callEther.IsCreat = false;
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmos() 
     {
       
-            // 초기 위치가 설정되어 있으면 그 위치를 기준으로 기즈모를 그립니다.
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(startPosition, targetPosition);
-            
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(targetPosition, 0.2f);
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(targetPosition, Arrival);
-
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(startPosition, transform.forward * FinalDistance);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(startPosition, transform.position);
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(targetPosition, 0.2f);
         
     }
 }

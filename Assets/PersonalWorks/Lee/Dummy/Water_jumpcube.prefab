@@ -4914,7 +4914,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552434420154239688}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
@@ -4924,7 +4924,7 @@ Transform:
   - {fileID: 8985196270020049271}
   - {fileID: 9096496192970743782}
   m_Father: {fileID: 1334098969054108551}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: -90}
 --- !u!198 &6125733276043746775
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -5499,7 +5499,7 @@ ParticleSystem:
     maxNumParticles: 1000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 1
-    rotation3D: 0
+    rotation3D: 1
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
@@ -14785,7 +14785,8 @@ GameObject:
   - component: {fileID: 1334098969054108551}
   - component: {fileID: 2061361646228270769}
   - component: {fileID: 3005556600401691091}
-  m_Layer: 4
+  - component: {fileID: 5340851298212597025}
+  m_Layer: 0
   m_Name: Water_jumpcube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14823,7 +14824,7 @@ MonoBehaviour:
   CalledWave: 0
   MoveSpeed: 15
   FinalDistance: 32
-  Arrival: 0.1
+  DeletTime: 5
   Idleparticl: {fileID: 6125733276043746775}
 --- !u!114 &3005556600401691091
 MonoBehaviour:
@@ -14914,7 +14915,7 @@ MonoBehaviour:
   autoPlay: 1
   useTargetAsV3: 0
   endValueFloat: 0
-  endValueV3: {x: 0, y: -6.32, z: 0}
+  endValueV3: {x: 0, y: -5, z: 0}
   endValueV2: {x: 0, y: 0}
   endValueColor: {r: 1, g: 1, b: 1, a: 1}
   endValueString: 
@@ -14933,3 +14934,24 @@ MonoBehaviour:
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
   optionalString: 
+--- !u!65 &5340851298212597025
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7762785597541677280}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8, y: 10, z: 12}
+  m_Center: {x: 0.08, y: 0, z: -4.33}
