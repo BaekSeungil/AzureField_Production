@@ -14,6 +14,7 @@ public class EtherSystem : MonoBehaviour
     [SerializeField,LabelText("소멸시간")] public float DeletTime;
     [SerializeField]private ParticleSystem Idleparticl;
 
+
     private Vector3 startPosition; // 에테르가 생성된 초기 위치
     private Vector3 targetPosition;
     // Start is called before the first frame update
@@ -23,9 +24,17 @@ public class EtherSystem : MonoBehaviour
         Idleparticl.Play();
         startPosition = callEther.Spawn.transform.position;
         transform.position = startPosition;
-        targetPosition = startPosition + callEther.Spawn.transform.forward.normalized * FinalDistance;
-        StartCoroutine(DestroyAfterTime());
 
+        Vector3 playerForward = callEther.Spawn.transform.forward;
+
+        targetPosition = startPosition + playerForward.normalized * FinalDistance;
+
+
+         // 목표 지점을 향하도록 오브젝트 회전 설정
+        Quaternion rotation = Quaternion.LookRotation(playerForward);
+        transform.rotation = rotation;
+
+        StartCoroutine(DestroyAfterTime());
     }
 
     // Update is called once per frame
@@ -38,10 +47,9 @@ public class EtherSystem : MonoBehaviour
     {
         if(callEther.EtherCount >=2)
         {
-           
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
             // 도착 여부 확인
-            if (Vector3.Distance(startPosition, targetPosition) > FinalDistance)
+            if (Vector3.Distance(startPosition, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
                 callEther.EtherCount = 0;
