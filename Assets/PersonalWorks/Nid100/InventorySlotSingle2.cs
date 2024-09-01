@@ -5,13 +5,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySlotSingle : MonoBehaviour
+public class InventorySlotSingle2 : MonoBehaviour
 {
     [SerializeField,ReadOnly()] private ItemData assignedItem; 
     public ItemData AssignedItem { get { return assignedItem; } }
 
-    [SerializeField] private UI_InventoryBehavior inventoryManager;
-    public UI_InventoryBehavior InventoryManager { get { return inventoryManager; } }
+    [SerializeField] private UI_InventoryBehaviorBB inventoryManager;
+    public UI_InventoryBehaviorBB InventoryManager { get { return inventoryManager; } }
 
     [SerializeField] private Image itemImage;
     [SerializeField] private TextMeshProUGUI quantityText;
@@ -39,7 +39,7 @@ public class InventorySlotSingle : MonoBehaviour
         }
     }
 
-    public void InitializeSlot(UI_InventoryBehavior inventory, ItemData item, int quantity = 1)
+    public void InitializeSlot(UI_InventoryBehaviorBB inventory, ItemData item, int quantity = 1)
     {
         assignedItem = item;
         itemImage.sprite = item.ItemImage;

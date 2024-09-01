@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBehavior>
+public class UI_InventoryBehaviorBB : StaticSerializedMonoBehaviour<UI_InventoryBehaviorBB>
 {
     //============================================
     //
@@ -76,7 +76,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
                 rectTransform.sizeDelta = slotSize;
                 rectTransform.anchoredPosition = new Vector2(x * (slotSize.x + slotDistance.x) + offset.x,-y * 
                 (slotSize.y + slotDistance.y) + offset.y);
-                InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
+                InventorySlotSingle2 slot = newSlot.GetComponent<InventorySlotSingle2>();
                 slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
                 instanciatedSlots.Add(newSlot);
             }
