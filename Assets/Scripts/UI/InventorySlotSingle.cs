@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class InventorySlotSingle : MonoBehaviour
@@ -33,7 +34,7 @@ public class InventorySlotSingle : MonoBehaviour
 
     private void Update()
     {
-        if (Input.anyKeyDown)
+        if (input.UI.Cancel.IsPressed() || input.UI.Positive.IsPressed() || input.UI.Navigate.IsPressed() )
         {
             CloseItemPopUp();
         }
