@@ -14,7 +14,7 @@ using UnityEditor;
 namespace DistantLands.Cozy
 {
     [ExecuteAlways]
-    public class CozyWeatherModule : CozyModule, ICozyEcosystem, ICozyBiomeModule
+    public class CozyWeatherModule : CozyBiomeModuleBase<CozyWeatherModule>, ICozyEcosystem
     {
         public float cumulus;
         public float cirrus;
@@ -28,7 +28,6 @@ namespace DistantLands.Cozy
         public float borderEffect;
         public float borderVariation;
         public float fogDensity;
-        public float weight = 1;
 
         public float filterSaturation;
         public float filterValue;
@@ -37,13 +36,9 @@ namespace DistantLands.Cozy
         public Color cloudFilter = Color.white;
 
         public CozyEcosystem ecosystem;
-        public CozyWeatherModule parentModule;
-        public List<CozyWeatherModule> biomes = new List<CozyWeatherModule>();
 
         public CozyEcosystem Ecosystem { get => ecosystem; set => ecosystem = value; }
-        public CozySystem LocalSystem { get => system; set => system = value; }
-
-        public bool isBiomeModule { get; set; }
+        public CozySystem LocalSystem { get => system; }
 
         [WeatherRelation]
         public List<WeatherRelation> currentWeatherProfiles = new List<WeatherRelation>();
@@ -75,15 +70,12 @@ namespace DistantLands.Cozy
             }
             base.InitializeModule();
             weatherSphere.weatherModule = this;
-            biomes = FindObjectsOfType<CozyWeatherModule>().Where(x => x != this).ToList();
+            AddBiome();
 
         }
 
         private void RunChecks()
         {
-
-            weatherSphere ??= CozyWeather.instance;
-
             defaultClouds = (CloudFX)Resources.Load("Default Profiles/Default Clouds");
             defaultFilter = (FilterFX)Resources.Load("Default Profiles/Default Filter");
 
@@ -111,6 +103,7 @@ namespace DistantLands.Cozy
             UpdateWeatherByWeight();
 
         }
+
         public override void UpdateFXWeights()
         {
             foreach (WeatherRelation weather in currentWeatherProfiles)
@@ -193,7 +186,6 @@ namespace DistantLands.Cozy
         void ManageGlobalEcosystem()
         {
             if (system == null) RunChecks();
-
             currentWeatherProfiles.Clear();
 
             if (weight > 0)
@@ -211,9 +203,11 @@ namespace DistantLands.Cozy
                         continue;
                     }
 
-                    WeatherRelation l = new WeatherRelation();
-                    l.profile = weatherRelation.profile;
-                    l.weight = weatherRelation.weight * weight;
+                    WeatherRelation l = new WeatherRelation
+                    {
+                        profile = weatherRelation.profile,
+                        weight = weatherRelation.weight * weight
+                    };
                     currentWeatherProfiles.Add(l);
 
                 }
@@ -230,7 +224,8 @@ namespace DistantLands.Cozy
                     {
                         if (weatherRelation.weight == 0)
                         {
-                            weatherRelation.profile.SetWeatherWeight(0);
+                            if (weatherRelation.profile)
+                                weatherRelation.profile.SetWeatherWeight(0);
                             continue;
                         }
 
@@ -275,58 +270,6 @@ namespace DistantLands.Cozy
             }
         }
 
-        public void AddBiome()
-        {
-            if (parentModule == null)
-                parentModule = weatherSphere.weatherModule;
-
-            weatherSphere = CozyWeather.instance;
-            weatherSphere.GetModule<CozyWeatherModule>().biomes = FindObjectsOfType<CozyWeatherModule>().Where(x => x != weatherSphere.GetModule<CozyWeatherModule>()).ToList();
-        }
-
-        public void RemoveBiome()
-        {
-            parentModule?.biomes.Remove(this);
-        }
-
-        public void UpdateBiomeModule()
-        {
-            ecosystem.UpdateEcosystem();
-        }
-
-        public bool CheckBiome()
-        {
-            if (!CozyWeather.instance.weatherModule)
-            {
-                Debug.LogError("The weather biome module requires the weather module to be enabled on your weather sphere. Please add the weather module before setting up your biome.");
-                return false;
-            }
-            return true;
-        }
-
-        public void ComputeBiomeWeights()
-        {
-
-            float totalSystemWeight = 0;
-            biomes.RemoveAll(x => x == null);
-
-            foreach (CozyWeatherModule biome in biomes)
-            {
-                if (biome != this)
-                {
-                    totalSystemWeight += biome.system.targetWeight;
-                }
-            }
-
-            weight = Mathf.Clamp01(1 - (totalSystemWeight));
-            totalSystemWeight += weight;
-
-            foreach (CozyWeatherModule biome in biomes)
-            {
-                if (biome.system != this)
-                    biome.weight = biome.system.targetWeight / (totalSystemWeight == 0 ? 1 : totalSystemWeight);
-            }
-        }
     }
 
 

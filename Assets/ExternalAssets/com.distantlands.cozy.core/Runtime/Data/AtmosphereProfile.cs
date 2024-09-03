@@ -20,208 +20,207 @@ namespace DistantLands.Cozy.Data
     public class AtmosphereProfile : ScriptableObject
     {
 
-        public bool win1;
-        public bool win2;
-        public bool win3;
-        public bool win4;
 
         [Tooltip("Sets the color of the zenith (or top) of the skybox at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty skyZenithColor;
+        public VariableProperty skyZenithColor;
         [Tooltip("Sets the color of the horizon (or middle) of the skybox at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty skyHorizonColor;
+        public VariableProperty skyHorizonColor;
 
         [Tooltip("Sets the main color of the clouds at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty cloudColor;
+        public VariableProperty cloudColor;
         [Tooltip("Sets the highlight color of the clouds at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty cloudHighlightColor;
+        public VariableProperty cloudHighlightColor;
         [Tooltip("Sets the color of the high altitude clouds at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty highAltitudeCloudColor;
+        public VariableProperty highAltitudeCloudColor;
         [Tooltip("Sets the color of the sun light source at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty sunlightColor;
+        public VariableProperty sunlightColor;
         [Tooltip("Sets the color of the moon light source at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty moonlightColor;
+        public VariableProperty moonlightColor;
         [Tooltip("Sets the color of the star particle FX and textures at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty starColor;
+        public VariableProperty starColor;
         [Tooltip("Sets the color of the zenith (or top) of the ambient scene lighting at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty ambientLightHorizonColor;
+        public VariableProperty ambientLightHorizonColor;
         [Tooltip("Sets the color of the horizon (or middle) of the ambient scene lighting at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(true)]
-        public CustomProperty ambientLightZenithColor;
+        public VariableProperty ambientLightZenithColor;
         [Tooltip("Multiplies the ambient light intensity.")]
         [CozyPropertyType(false, 0, 4)]
-        public CustomProperty ambientLightMultiplier;
+        public VariableProperty ambientLightMultiplier;
         [Tooltip("Sets the intensity of the galaxy effects at a certain time. Starts and ends at midnight.")]
         [CozyPropertyType(false, 0, 1)]
-        public CustomProperty galaxyIntensity;
+        public VariableProperty galaxyIntensity;
 
 
         [CozyPropertyType(true)]
         [Tooltip("Sets the fog color from 0m away from the camera to fog start 1.")]
-        public CustomProperty fogColor1;
+        public VariableProperty fogColor1;
         [CozyPropertyType(true)]
         [Tooltip("Sets the fog color from fog start 1 to fog start 2.")]
-        public CustomProperty fogColor2;
+        public VariableProperty fogColor2;
         [Tooltip("Sets the fog color from fog start 2 to fog start 3.")]
         [CozyPropertyType(true)]
-        public CustomProperty fogColor3;
+        public VariableProperty fogColor3;
         [Tooltip("Sets the fog color from fog start 3 to fog start 4.")]
         [CozyPropertyType(true)]
-        public CustomProperty fogColor4;
+        public VariableProperty fogColor4;
         [Tooltip("Sets the fog color from fog start 4 to fog start 5.")]
         [CozyPropertyType(true)]
-        public CustomProperty fogColor5;
+        public VariableProperty fogColor5;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the fog flare.")]
-        public CustomProperty fogFlareColor;
+        public VariableProperty fogFlareColor;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the moon flare for the fog.")]
-        public CustomProperty fogMoonFlareColor;
+        public VariableProperty fogMoonFlareColor;
         [CozyPropertyType(false, 0, 1)]
         [Tooltip("Sets the smoothness of the fog.")]
-        public CustomProperty fogSmoothness;
+        public VariableProperty fogSmoothness;
 
         public Vector3 fogVariationDirection;
         [CozyPropertyType(false, 0, 30)]
         [Tooltip("Sets the variation scale of the fog.")]
-        public CustomProperty fogVariationScale;
+        public VariableProperty fogVariationScale;
         [CozyPropertyType(false, 0, 1)]
         [Tooltip("Sets the variation amount.")]
-        public CustomProperty fogVariationAmount;
+        public VariableProperty fogVariationAmount;
         [Tooltip("Sets the variation distance of the fog.")]
         [CozyPropertyType(false, 0, 200)]
-        public CustomProperty fogVariationDistance;
+        public VariableProperty fogVariationDistance;
 
 
         [CozyPropertyType(false, 0, 1)]
-        public CustomProperty heightFogIntensity;
+        public VariableProperty heightFogIntensity;
 
         [CozyPropertyType(false, 100, 1000)]
-        public CustomProperty heightFogVariationScale;
+        public VariableProperty heightFogVariationScale;
 
         [CozyPropertyType(false, 0, 50)]
-        public CustomProperty heightFogVariationAmount;
+        public VariableProperty heightFogVariationAmount;
 
         [CozyPropertyType(false)]
-        public CustomProperty fogBase;
+        public VariableProperty fogBase;
 
         [CozyPropertyType(false, 0, 500)]
-        public CustomProperty heightFogTransition;
+        public VariableProperty heightFogTransition;
 
         [CozyPropertyType(false, 0, 5000)]
-        public CustomProperty heightFogDistance;
+        public VariableProperty heightFogDistance;
 
         [CozyPropertyType(true)]
-        public CustomProperty heightFogColor;
+        public VariableProperty heightFogColor;
 
 
 
 
         [CozyPropertyType(false, 0, 1)]
         [Tooltip("Controls the exponent used to modulate from the horizon color to the zenith color of the sky.")]
-        public CustomProperty gradientExponent;
+        public VariableProperty gradientExponent;
         [CozyPropertyType(false, 0, 5)]
         [Tooltip("Sets the size of the visual sun in the sky.")]
-        public CustomProperty sunSize;
+        public VariableProperty sunSize;
         [Tooltip("Sets the world space direction of the sun in degrees.")]
         [CozyPropertyType(false, 0, 360)]
-        public CustomProperty sunDirection;
+        public VariableProperty sunDirection;
         [Tooltip("Sets the roll value of the sun's rotation. Allows the sun to be slightly off from directly overhead at noon.")]
         [CozyPropertyType(false, -90, 90)]
-        public CustomProperty sunPitch;
+        public VariableProperty sunPitch;
         [Tooltip("Sets the color of the visual sun in the sky.")]
         [CozyPropertyType(true)]
-        public CustomProperty sunColor;
+        public VariableProperty sunColor;
         [Tooltip("Sets the color of the visual moon in the sky (only impacts the global shader variable for the stylized moon material).")]
         [CozyPropertyType(true)]
-        public CustomProperty moonColor;
+        public VariableProperty moonColor;
 
 
         [CozyPropertyType(false, 0, 1)]
         [Tooltip("Sets the falloff of the halo around the visual sun.")]
-        public CustomProperty sunFalloff;
+        public VariableProperty sunFalloff;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the halo around the visual sun.")]
-        public CustomProperty sunFlareColor;
+        public VariableProperty sunFlareColor;
         [CozyPropertyType(false, 0, 1)]
         [Tooltip("Sets the falloff of the halo around the main moon.")]
-        public CustomProperty moonFalloff;
+        public VariableProperty moonFalloff;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the halo around the main moon.")]
-        public CustomProperty moonFlareColor;
+        public VariableProperty moonFlareColor;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the first galaxy algorithm.")]
-        public CustomProperty galaxy1Color;
+        public VariableProperty galaxy1Color;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the second galaxy algorithm.")]
-        public CustomProperty galaxy2Color;
+        public VariableProperty galaxy2Color;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the third galaxy algorithm.")]
-        public CustomProperty galaxy3Color;
+        public VariableProperty galaxy3Color;
         [CozyPropertyType(true)]
         [Tooltip("Sets the color of the light columns around the horizon.")]
-        public CustomProperty lightScatteringColor;
+        public VariableProperty lightScatteringColor;
         [Tooltip("Should COZY use a rainbow?")]
         public bool useRainbow = true;
         [Tooltip("Sets the position of the rainbow in the sky.")]
         [CozyPropertyType(false, 0, 100)]
-        public CustomProperty rainbowPosition;
+        public VariableProperty rainbowPosition;
         [Tooltip("Sets the width of the rainbow in the sky.")]
         [CozyPropertyType(false, 0, 50)]
-        public CustomProperty rainbowWidth;
+        public VariableProperty rainbowWidth;
 
 
         [CozyPropertyType(false, 0, 5)]
         [Tooltip("Multiplies the world space distance before entering the fog algorithm. Use this for simple density changes.")]
-        public CustomProperty fogDensityMultiplier;
+        public VariableProperty fogDensityMultiplier;
 
         [Tooltip("Sets the distance at which the first fog color fades into the second fog color.")]
-        public float fogStart1;
-        public float fogStart2;
-        public float fogStart3;
-        public float fogStart4;
+        public Overridable<float> fogStart1 = 5;
+        [Tooltip("Sets the distance at which the second fog color fades into the third fog color.")]
+        public Overridable<float> fogStart2 = 12;
+        [Tooltip("Sets the distance at which the third fog color fades into the fourth fog color.")]
+        public Overridable<float> fogStart3 = 20;
+        [Tooltip("Sets the distance at which the fourth fog color fades into the fifth fog color.")]
+        public Overridable<float> fogStart4 = 35;
         [CozyPropertyType(false, 0, 2)]
-        public CustomProperty fogHeight;
+        public VariableProperty fogHeight;
         [CozyPropertyType(false, 0, 2)]
-        public CustomProperty fogLightFlareIntensity;
+        public VariableProperty fogLightFlareIntensity;
         [CozyPropertyType(false, 0, 40)]
-        public CustomProperty fogLightFlareFalloff;
+        public VariableProperty fogLightFlareFalloff;
         [CozyPropertyType(false, 0, 10)]
         [Tooltip("Sets the height divisor for the fog flare. High values sit the flare closer to the horizon, small values extend the flare into the sky.")]
-        public CustomProperty fogLightFlareSquish;
+        public VariableProperty fogLightFlareSquish;
 
         [CozyPropertyType(true)]
-        public CustomProperty cloudMoonColor;
+        public VariableProperty cloudMoonColor;
         [CozyPropertyType(false, 0, 50)]
-        public CustomProperty cloudSunHighlightFalloff;
+        public VariableProperty cloudSunHighlightFalloff;
         [CozyPropertyType(false, 0, 50)]
-        public CustomProperty cloudMoonHighlightFalloff;
+        public VariableProperty cloudMoonHighlightFalloff;
         [CozyPropertyType(false, 0, 10)]
-        public CustomProperty cloudWindSpeed;
+        public VariableProperty cloudWindSpeed;
         [CozyPropertyType(false, 0, 1)]
-        public CustomProperty clippingThreshold;
+        public VariableProperty clippingThreshold;
         [CozyPropertyType(false, 2, 60)]
-        public CustomProperty cloudMainScale;
+        public VariableProperty cloudMainScale;
         [CozyPropertyType(false, 0.2f, 10)]
-        public CustomProperty cloudDetailScale;
+        public VariableProperty cloudDetailScale;
         [CozyPropertyType(false, 0, 30)]
-        public CustomProperty cloudDetailAmount;
+        public VariableProperty cloudDetailAmount;
         [CozyPropertyType(false, 0.1f, 3)]
-        public CustomProperty acScale;
+        public VariableProperty acScale;
         [CozyPropertyType(false, 0, 3)]
-        public CustomProperty cirroMoveSpeed;
+        public VariableProperty cirroMoveSpeed;
         [CozyPropertyType(false, 0, 3)]
-        public CustomProperty cirrusMoveSpeed;
+        public VariableProperty cirrusMoveSpeed;
         [CozyPropertyType(false, 0, 3)]
-        public CustomProperty chemtrailsMoveSpeed;
+        public VariableProperty chemtrailsMoveSpeed;
 
 
 
@@ -248,17 +247,17 @@ namespace DistantLands.Cozy.Data
         public Texture luxuryVariation;
 
         [CozyPropertyType(true)]
-        public CustomProperty cloudTextureColor;
+        public VariableProperty cloudTextureColor;
         [CozyPropertyType(false, 0, 10)]
-        public CustomProperty cloudCohesion;
+        public VariableProperty cloudCohesion;
         [CozyPropertyType(false, 0, 1)]
-        public CustomProperty spherize;
+        public VariableProperty spherize;
         [CozyPropertyType(false, 0, 10)]
-        public CustomProperty shadowDistance;
+        public VariableProperty shadowDistance;
         [CozyPropertyType(false, 0, 4)]
-        public CustomProperty cloudThickness;
+        public VariableProperty cloudThickness;
         [CozyPropertyType(false, 0, 3)]
-        public CustomProperty textureAmount;
+        public VariableProperty textureAmount;
         public Vector3 texturePanDirection;
 #if COZY_URP || COZY_HDRP
         [System.Serializable]
@@ -285,16 +284,10 @@ namespace DistantLands.Cozy.Data
     {
 
 
-        Vector2 scrollPos;
-
-        public int windowNum;
         public bool tooltips;
 
         public CozyWeather defaultWeather;
 
-
-        Color proCol = (Color)new Color32(50, 50, 50, 255);
-        Color unityCol = (Color)new Color32(194, 194, 194, 255);
 
         void OnEnable()
         {
@@ -434,25 +427,13 @@ namespace DistantLands.Cozy.Data
             EditorGUI.indentLevel--;
             EditorGUILayout.LabelField(" Placement", labelStyle);
             EditorGUI.indentLevel++;
-            float fogStart1 = serializedObject.FindProperty("fogStart1").floatValue;
-            float fogStart2 = serializedObject.FindProperty("fogStart2").floatValue;
-            float fogStart3 = serializedObject.FindProperty("fogStart3").floatValue;
-            float fogStart4 = serializedObject.FindProperty("fogStart4").floatValue;
-
-            fogStart1 = Mathf.Clamp(EditorGUILayout.Slider("Fog Start 2", fogStart1, 0, 50), 0, fogStart2 - 0.1f);
-            fogStart2 = Mathf.Clamp(EditorGUILayout.Slider("Fog Start 3", fogStart2, 0, 50), fogStart1 + 0.1f, fogStart3 - 0.1f);
-            fogStart3 = Mathf.Clamp(EditorGUILayout.Slider("Fog Start 4", fogStart3, 0, 50), fogStart2 + 0.1f, fogStart4 - 0.1f);
-            fogStart4 = Mathf.Clamp(EditorGUILayout.Slider("Fog Start 5", fogStart4, 0, 50), fogStart3 + 0.1f, 50);
-
-            serializedObject.FindProperty("fogStart1").floatValue = fogStart1;
-            serializedObject.FindProperty("fogStart2").floatValue = fogStart2;
-            serializedObject.FindProperty("fogStart3").floatValue = fogStart3;
-            serializedObject.FindProperty("fogStart4").floatValue = fogStart4;
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("fogStart1"), false);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("fogStart2"), false);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("fogStart3"), false);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("fogStart4"), false);
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("fogHeight"), false);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("fogSmoothness"), false);
-
-            EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("fogDensityMultiplier"), false);
 
 
