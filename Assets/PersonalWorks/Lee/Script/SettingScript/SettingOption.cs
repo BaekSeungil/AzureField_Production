@@ -114,6 +114,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
+        ControlSetting.SetActive(false);
     }
 
     public void SetGrapicprefab()
