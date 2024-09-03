@@ -23,6 +23,7 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   itemImage: {fileID: 21300000, guid: 42c3f080f3fba8b43b234666f63f4554, type: 3}
+  itemPopUpImage: {fileID: 21300000, guid: 028e4075486bd4142a9c7e2ecc63e07d, type: 3}
   itemDiscription:
     m_TableReference:
       m_TableCollectionName: GUID:7baa641a24ebab34eb21bbd662513315
@@ -31,9 +32,17 @@ MonoBehaviour:
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
-    m_LocalVariables: []
+    m_LocalVariables:
+    - name: TreasureNum
+      variable:
+        rid: 5864240938180673539
   tags:
   - TREASURE
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5864240938180673539
+      type: {class: IntVariable, ns: UnityEngine.Localization.SmartFormat.PersistentVariables,
+        asm: Unity.Localization}
+      data:
+        m_Value: 0

@@ -259,7 +259,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.MoveSpeed)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -284,7 +284,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.SwimSpeed)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -309,7 +309,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.JumpPower)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -334,7 +334,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.SailboatAcceleration)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -359,7 +359,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.SailboatGliding)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -384,7 +384,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.Steering)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -409,7 +409,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.LeapupPower)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -434,7 +434,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.BoosterDuration)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -459,7 +459,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             for (int i = 0; i < permenentAttributes.Count; i++)
             {
                 if (permenentAttributes[i].attribute == AbilityAttribute.BoosterMult)
-                    result *= permenentAttributes[i].value;
+                    result += permenentAttributes[i].value;
             }
             for (int i = 0; i < timeAttributes.Count; i++)
             {
@@ -477,20 +477,11 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
 
     /// <summary>
-    /// 영구적인 플레이어 속성 값을 더합니다.
+    /// 영구적인 플레이어 속성 값을 더합니다.(합연산)
     /// </summary>
     /// <param name="attr">속성</param>
     public void AddPermernentAttribute(AbilityAttribute ability, float value)
     {
-        for (int i = 0; i < permenentAttributes.Count; i++)
-        {
-            if (permenentAttributes[i].attribute == ability)
-            {
-                permenentAttributes[i].value += value;
-                return;
-            }
-        }
-
         AbilityAttributeUnit newAttr = new AbilityAttributeUnit();
         newAttr.attribute = ability; newAttr.value = value;
         permenentAttributes.Add(newAttr);
@@ -545,6 +536,40 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
 
         Debug.LogWarning("ATTRIBUTE ID를 찾을 수 없었습니다 :" + ID);
+    }
+
+    /// <summary>
+    /// 해당 영구 업그레이드가 몇 번 쌓였는지 가져옵니다.
+    /// </summary>
+    /// <param name="abilityAttribute"></param>
+    /// <returns></returns>
+    public int GetPermenentUpgradeCount(AbilityAttribute abilityAttribute)
+    {
+        int count = 0;
+        for(int i = 0; i < permenentAttributes.Count; i++)
+        {
+            if (permenentAttributes[i].attribute == abilityAttribute)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// 적용중인 일시 속성을 모두 제거합니다.
+    /// </summary>
+    public void ClearTempoaryAttribute()
+    {
+        timeAttributes.Clear();
+    }
+
+    /// <summary>
+    /// 적용중인 ID가 붙어있는 속성을 모두 제거합니다
+    /// </summary>
+    public void ClearIDAttribute()
+    {
+        IDAttributes.Clear();
     }
 
     #endregion
@@ -1317,6 +1342,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Vector3 pos = player.sailingSprayEffect.transform.position;
                 float surfaceHeight = GlobalOceanManager.Instance.GetWaveHeight(pos);
                 player.sailingSprayEffect.transform.position = new Vector3(pos.x,surfaceHeight,pos.z);
+                player.sailingSprayEffect.transform.rotation.SetLookRotation(directionCache, sailboat.SurfacePlane.normal);
 
 
                 if (!player.sailingSprayEffect.isPlaying)
@@ -1871,9 +1897,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         }
     }
 
-    public float ViewleapupPower {get {return leapupPower;}}
-    public float ViewBoosterDuration { get { return boosterDuration; } }
-    public float ViewBoosterMult { get { return boosterMult; } }
+    public float ViewleapupPower {get {return FinalLeapupPower;}}
+    public float ViewBoosterDuration { get { return FinalBoosterDuration; } }
+    public float ViewBoosterMult { get { return FinalBoosterMult; } }
 
     /// <summary>
     /// 플레이어가 조각배 탑승 중에 암초에 충돌할 경우

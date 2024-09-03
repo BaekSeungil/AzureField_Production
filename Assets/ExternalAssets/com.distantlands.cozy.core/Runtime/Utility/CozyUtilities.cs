@@ -6,13 +6,20 @@ namespace DistantLands.Cozy
 {
     public class CozyUtilities
     {
-
-        public Color DoubleGradient(Gradient start, Gradient target, float depth, float time)
+        public static float Remap(float sourceStart, float sourceEnd, float destinationStart, float destinationEnd, float value)
         {
-            return Color.Lerp(start.Evaluate(time), target.Evaluate(time), depth);
+            var ratio = Mathf.InverseLerp(sourceStart, sourceEnd, value);
+            return Mathf.Lerp(destinationStart, destinationEnd, ratio);
         }
 
-
+        public static T GetOverriableDefault<T>()
+        {
+            return default;
+        }
+        public static Color GetOverriableDefault()
+        {
+            return Color.clear;
+        }
 
     }
 
@@ -46,5 +53,28 @@ namespace DistantLands.Cozy
 
     }
 
+    [System.Serializable]
+    public struct Overridable<T>
+    {  
+        public T value;
+        public bool overrideValue;
+        public static implicit operator bool(Overridable<T> data)
+        {
+            return data.overrideValue;
+        }
+        public Overridable(T _value, bool _overrideValue)
+        {
+            overrideValue = _overrideValue;
+            value = _value;
+        }
+        public static implicit operator T(Overridable<T> data)
+        {
+            return data.overrideValue ? data.value : CozyUtilities.GetOverriableDefault<T>();
+        }
+        public static implicit operator Overridable<T>(T value)
+        {
+            return new Overridable<T>(value, true);
+        }
+    }
 
 }

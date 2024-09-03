@@ -226,7 +226,7 @@ namespace DistantLands.Cozy
         {
             get
             {
-                return perennialProfile.timeMovementSpeed * perennialProfile.timeSpeedMultiplier.Evaluate(m_DayPercentage) / 1440;
+                return perennialProfile.timeMovementSpeed * (perennialProfile.pauseTime ? 0 : 1) * perennialProfile.timeSpeedMultiplier.Evaluate(m_DayPercentage) / 1440;
             }
         }
 
@@ -338,7 +338,9 @@ namespace DistantLands.Cozy
 
 
         /// <summary>
-        /// Smoothly skips time.
+        /// Smoothly skips a set amount of time into the future.
+        /// <param name="timeToSkip">The day percentage (given in a float or Meridiem Time) to skip forward.</param>
+        /// <param name="time">The time in seconds it takes to transition to the new time.</param>
         /// </summary> 
         public void TransitionTime(float timeToSkip, float time)
         {

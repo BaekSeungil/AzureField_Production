@@ -14,7 +14,7 @@ using UnityEditor;
 namespace DistantLands.Cozy
 {
     [ExecuteAlways]
-    public class CozyClimateModule : CozyModule, ICozyBiomeModule
+    public class CozyClimateModule : CozyBiomeModuleBase<CozyClimateModule>
     {
 
         [CozyProfile]
@@ -41,12 +41,7 @@ namespace DistantLands.Cozy
         private float m_DryingSpeed = 0.5f;
         public float snowSpeed;
         public float rainSpeed;
-
-
-        public List<CozyClimateModule> biomes = new List<CozyClimateModule>();
-        public bool isBiomeModule { get; set; }
-        public float weight = 1;
-
+        
         public override void InitializeModule()
         {
             isBiomeModule = GetComponent<CozyBiome>();
@@ -54,15 +49,13 @@ namespace DistantLands.Cozy
                 return;
             base.InitializeModule();
             weatherSphere.climateModule = this;
-            biomes = FindObjectsOfType<CozyClimateModule>().Where(x => x != this).ToList();
+            AddBiome();
 
         }
 
         public override void CozyUpdateLoop()
         {
             ComputeBiomeWeights();
-
-
 
             snowAmount += Time.deltaTime * snowSpeed;
 
@@ -142,19 +135,8 @@ namespace DistantLands.Cozy
             Shader.SetGlobalVector("CZY_WindDirection", Vector3.zero);
 
         }
-
-        public void AddBiome()
-        {
-            weatherSphere = CozyWeather.instance;
-            weatherSphere.climateModule.biomes = FindObjectsOfType<CozyClimateModule>().Where(x => x != weatherSphere.climateModule).ToList();
-        }
-
-        public void RemoveBiome()
-        {
-            weatherSphere.climateModule.biomes.Remove(this);
-        }
-
-        public void UpdateBiomeModule()
+        
+        public override void UpdateBiomeModule()
         {
             if (controlMethod == CozyWeather.ControlMethod.profile)
             {
@@ -166,41 +148,6 @@ namespace DistantLands.Cozy
             }
         }
 
-        public bool CheckBiome()
-        {
-
-            if (!weatherSphere.climateModule)
-            {
-                Debug.LogError("The atmosphere biome module requires the atmosphere module to be enabled on your weather sphere. Please add the atmosphere module before setting up your biome.");
-                return false;
-            }
-            return true;
-        }
-
-        public void ComputeBiomeWeights()
-        {
-
-            float totalSystemWeight = 0;
-            biomes.RemoveAll(x => x == null);
-
-            foreach (CozyClimateModule biome in biomes)
-            {
-                if (biome != this)
-                {
-                    totalSystemWeight += biome.system.targetWeight;
-                }
-            }
-
-            weight = Mathf.Clamp01(1 - (totalSystemWeight));
-            totalSystemWeight += weight;
-
-            foreach (CozyClimateModule biome in biomes)
-            {
-                if (biome.system != this)
-                    biome.weight = biome.system.targetWeight / (totalSystemWeight == 0 ? 1 : totalSystemWeight);
-            }
-
-        }
     }
 
 #if UNITY_EDITOR

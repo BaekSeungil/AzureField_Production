@@ -194,7 +194,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
                 return m;
         }
 
-        Debug.LogWarning("Failed to file PlaymenuElement : " + playmenu.ToString() + " | FindElement will return NullElement");
+        Debug.LogWarning("Failed to file PlaymenuE  lement : " + playmenu.ToString() + " | FindElement will return NullElement");
         PlaymenuElement nullElement = new PlaymenuElement();
         nullElement.assignedType = PlaymenuType.Null;
         return nullElement;
