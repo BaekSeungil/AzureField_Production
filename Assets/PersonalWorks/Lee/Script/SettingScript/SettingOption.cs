@@ -19,6 +19,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
     [SerializeField] public GameObject MoveSetting;
+    [SerializeField] public GameObject ControlSetting;
     [SerializeField] public TMP_Dropdown languageDropdown;
 
     MainPlayerInputActions settigUI_inputs;
@@ -97,6 +98,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
+        ControlSetting.SetActive(false);
     }
 
     public void SetSoundprefab()
@@ -125,6 +127,14 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     public void SetMoveprefab()
     {
         MoveSetting.SetActive(true);
+        Setting.SetActive(false);
+        SoundSetting.SetActive(false);
+        MoveSetting.SetActive(false);
+    }
+
+    public void SetControlprefab()
+    {
+        ControlSetting.SetActive(true);
         Setting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
