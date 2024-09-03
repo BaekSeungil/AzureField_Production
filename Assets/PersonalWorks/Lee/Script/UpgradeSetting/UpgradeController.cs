@@ -38,15 +38,17 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("아이템 소비 증가 값")] private int UseItemCount;
 
     [SerializeField,LabelText("부스터 업글 횟수 제한")] public int UpBooster_CountLimit = 3;
-    private int UpBooster_Count;
+    private int UpBooster_Count = 0;
     [SerializeField,LabelText("점프 업글횟수 제한")] public int UpJump_CountLimit = 3 ;
-    private int UpJump_Count;
+    private int UpJump_Count = 0;
     [SerializeField,LabelText("가속도 업글 횟수 제한")] public int UpDuration_CountLimit = 3;
     [SerializeField,LabelText("업글제한 점프 메세지 게임")] public GameObject LimitObject;
     [SerializeField,LabelText("필요강화 재료 오브젝트")] public GameObject ItemTitleObj;
     [SerializeField,LabelText("업글 종류 텍스쳐")] public TMP_Text UpTypeText;
-    private int UpDuration_Count;
+    private int UpDuration_Count = 0;
     private int HaveItem;
+
+    private bool UpLimit = false;
 
     private bool CanUpgrade = true; // 업그레이드 가능 여부
 
@@ -129,75 +131,67 @@ public class UpgradeController : MonoBehaviour
     public void BoatUpGrade()
     {
         Player = PlayerCore.Instance;
-        if (PlayerInventoryContainer.Instance.RemoveItem(Boatitem, NeedUseItem))
+    
+        // 현재 강화 상태 체크
+        if (UpJump_CountLimit <= UpJump_Count && 
+            UpDuration_CountLimit <= UpDuration_Count && 
+            UpBooster_CountLimit <= UpBooster_Count)
         {
-            switch (boatUpgradeType)
-            {
-                case BoatUpgradeType.PlusBoatJumpType:
-                    if(CanUpgrade)
-                    {
-                        Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
-                        NeedUseItem += UseItemCount;
-                        UpJump_Count += 1;
-                        if(UpJump_CountLimit <= UpJump_Count)
-                        {
-                            CanUpgrade = false;
-                            LimitUpgradeObj();
-                        }
-                    }
-                   
-
-                    Debug.Log("점프력: "+ Player.ViewleapupPower);
-                    break;
-
-                case BoatUpgradeType.PlusBoatboosterDuration:
-
-                    if(CanUpgrade)
-                    {
-                        Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
-                        NeedUseItem += UseItemCount;
-                        UpDuration_Count += 1;
-                        if(UpDuration_CountLimit <= UpDuration_Count)
-                        {
-                            CanUpgrade = false;
-                            LimitUpgradeObj();
-                        }
-                        
-                    }
- 
-                    Debug.Log("가속도: "+ Player.ViewBoosterDuration);
-                    break;
-
-                case BoatUpgradeType.PlusBoatboosterMult:
-
-                    if(CanUpgrade)
-                    {
-                        Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
-                        NeedUseItem += UseItemCount;
-                        UpBooster_Count += 1;
-                        if(UpBooster_CountLimit <=  UpBooster_Count)
-                        {
-                            CanUpgrade = false;
-                            LimitUpgradeObj();
-                        }
-                    }
-
-                    Debug.Log("부스터: "+ Player.ViewBoosterMult);
-                    break;
-            }
+            CanUpgrade = false;
+            UpLimit = true;
+            LimitUpgradeObj();
+            return; // 최대 강화 횟수에 도달했을 경우 함수 종료
         }
+
+        
+        if(CanUpgrade)
+        {
+            if (PlayerInventoryContainer.Instance.RemoveItem(Boatitem, NeedUseItem))
+            {
+                switch (boatUpgradeType)
+                {
+                    case BoatUpgradeType.PlusBoatJumpType:
+                        if (UpJump_Count < UpJump_CountLimit) // 최대 횟수 체크
+                        {
+                            Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
+                            NeedUseItem += UseItemCount;
+                            UpJump_Count += 1;
+                        }
+                        break;
+
+                    case BoatUpgradeType.PlusBoatboosterDuration:
+                        if (UpDuration_Count < UpDuration_CountLimit) // 최대 횟수 체크
+                        {
+                            Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+                            NeedUseItem += UseItemCount;
+                            UpDuration_Count += 1;
+                        }
+                        break;
+
+                    case BoatUpgradeType.PlusBoatboosterMult:
+                        if (UpBooster_Count < UpBooster_CountLimit) // 최대 횟수 체크
+                        {
+                            Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
+                            NeedUseItem += UseItemCount;
+                            UpBooster_Count += 1;
+                        }
+                        break;
+                }
+            }
+
+        }
+       
         else
         {
             Debug.Log("아이템 부족");
-
             if (blinkCoroutine != null)
             {
                 StopCoroutine(blinkCoroutine);
                 blinkCoroutine = null;
             }
-
             blinkCoroutine = StartCoroutine(BlinkText(Have_IntText));
         }
+        LimitUpgradeObj();
     }
 
 
@@ -257,37 +251,23 @@ public class UpgradeController : MonoBehaviour
 
     public void LimitUpgradeObj()
     {
-        // 모든 경우에 기본적으로 LimitObject를 비활성화합니다.
-        LimitObject.SetActive(false);
-        ItemTitleObj.SetActive(true);
-
-        // 현재 선택된 업그레이드 유형에 따라 제한을 체크합니다.
-        switch (boatUpgradeType)
+        if(UpLimit)
         {
-            case BoatUpgradeType.PlusBoatJumpType:
-                if (UpJump_CountLimit == UpJump_Count)
-                {
-                    LimitObject.SetActive(true);
-                    ItemTitleObj.SetActive(false);
-                }
-                break;
-
-            case BoatUpgradeType.PlusBoatboosterDuration:
-                if (UpDuration_CountLimit == UpDuration_Count)
-                {
-                    LimitObject.SetActive(true);
-                    ItemTitleObj.SetActive(false);
-                }
-                break;
-
-            case BoatUpgradeType.PlusBoatboosterMult:
-                if (UpBooster_CountLimit == UpBooster_Count)
-                {
-                    LimitObject.SetActive(true);
-                    ItemTitleObj.SetActive(false);
-                }
-                break;
+            LimitObject.SetActive(true);
+            ItemTitleObj.SetActive(false);
         }
+        else if(!UpLimit)
+        {
+            LimitObject.SetActive(false);
+            ItemTitleObj.SetActive(true);
+        }
+
+    }
+
+    public void OffLimitUpgradeObj()
+    {
+        LimitObject.SetActive(!UpLimit);
+        ItemTitleObj.SetActive(UpLimit);
     }
 
     public void Outupgrade()
