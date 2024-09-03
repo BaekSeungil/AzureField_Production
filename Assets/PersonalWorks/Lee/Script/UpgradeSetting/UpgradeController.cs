@@ -66,7 +66,7 @@ public class UpgradeController : MonoBehaviour
         ViewLeaupText();
         ViewBoosterMult();
         ViewBoosterDurationText();
-
+        LimitUpgradeObj();
         
     }
 
@@ -148,11 +148,9 @@ public class UpgradeController : MonoBehaviour
                         LimitObject.SetActive(false);
                         ItemTitleObj.SetActive(true);
                     }
-                    else
+                    else if(UpBooster_CountLimit <= UpBooster_Count)
                     {
                         CanUpgrade = false;
-                        LimitObject.SetActive(true);
-                        ItemTitleObj.SetActive(false);
                     }
                     Debug.Log("점프력: "+ Player.ViewleapupPower);
                     break;
@@ -173,11 +171,9 @@ public class UpgradeController : MonoBehaviour
                         LimitObject.SetActive(false);
                         LimitObject.SetActive(true);
                     }
-                    else
+                    else if(UpDuration_CountLimit <= UpDuration_Count)
                     {
                         CanUpgrade = false;
-                        LimitObject.SetActive(true);
-                        ItemTitleObj.SetActive(false);
                     }
                     Debug.Log("가속도: "+ Player.ViewBoosterDuration);
                     break;
@@ -194,13 +190,10 @@ public class UpgradeController : MonoBehaviour
                     if(UpBooster_CountLimit > UpBooster_Count)
                     {
                         CanUpgrade = true;
-                        LimitObject.SetActive(false);
                     }
-                    else
+                    else if(UpBooster_CountLimit <= UpBooster_Count)
                     {
                         CanUpgrade = false;
-                        LimitObject.SetActive(true);
-                        ItemTitleObj.SetActive(false);
                     }
 
                     Debug.Log("부스터: "+ Player.ViewBoosterMult);
@@ -274,6 +267,28 @@ public class UpgradeController : MonoBehaviour
     {
         Need_IntText.text = NeedUseItem.ToString();
         BoatUpGrade();
+    }
+
+    public void LimitUpgradeObj()
+    {
+        if(UpDuration_CountLimit <= UpDuration_Count)
+        {
+            LimitObject.SetActive(true);
+            ItemTitleObj.SetActive(false);
+        }
+
+        if(UpBooster_CountLimit <= UpBooster_Count)
+        {
+            LimitObject.SetActive(true);
+            ItemTitleObj.SetActive(false);
+        }
+
+        if(UpBooster_CountLimit <= UpBooster_Count)
+        {
+            CanUpgrade = false;
+            LimitObject.SetActive(true);
+            ItemTitleObj.SetActive(false);
+        }
     }
 
     public void Outupgrade()
