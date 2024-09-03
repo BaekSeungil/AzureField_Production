@@ -32,11 +32,17 @@ public class UpgradeController : MonoBehaviour
     private int AtfterUpgrade;
     [SerializeField,LabelText("가속도 아이콘")] private GameObject Duration_ICON;
     [SerializeField,LabelText("점프 아이콘")] private GameObject Jump_ICON;
-
     [SerializeField,LabelText("부스터 아이콘")] private GameObject Booster_ICON;
     [SerializeField,LabelText("보트 업그레이드 소비아이템")]ItemData Boatitem;
     [SerializeField,LabelText("아이템 소비 초기 값")] private int NeedUseItem;
     [SerializeField,LabelText("아이템 소비 증가 값")] private int UseItemCount;
+
+    [SerializeField,LabelText("부스터 업글 횟수 제한")] public int UpBooster_CountLimit;
+    private int UpBooster_Count;
+    [SerializeField,LabelText("점프 업글횟수 제한")] public int UpJump_CountLimit;
+    private int UpJump_Count;
+    [SerializeField,LabelText("가속도 업글 횟수 제한")] public int UpDuration_CountLimit;
+    private int UpDuration_Count;
     private int HaveItem;
 
     private Coroutine blinkCoroutine;
@@ -123,6 +129,8 @@ public class UpgradeController : MonoBehaviour
                     //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
                     Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
                     NeedUseItem += UseItemCount;
+                    UpJump_Count += 1;
+                    
                     Debug.Log("점프력: "+ Player.ViewleapupPower);
                     break;
 
@@ -130,14 +138,16 @@ public class UpgradeController : MonoBehaviour
                     //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
                     Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
                     NeedUseItem += UseItemCount;
-                    Debug.Log("부스터 지속시간: "+ Player.ViewBoosterDuration);
+                    UpDuration_Count += 1;
+                    Debug.Log("가속도: "+ Player.ViewBoosterDuration);
                     break;
 
                 case BoatUpgradeType.PlusBoatboosterMult:
                     //Player.PlayerUpgradeState(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
                     Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
                     NeedUseItem += UseItemCount;
-                    Debug.Log("부스터 가속도: "+ Player.ViewBoosterMult);
+                    UpBooster_Count += 1;
+                    Debug.Log("부스터: "+ Player.ViewBoosterMult);
                     break;
             }
         }
