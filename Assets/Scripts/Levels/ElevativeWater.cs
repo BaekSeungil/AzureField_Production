@@ -22,9 +22,6 @@ public class ElevativeWater : MonoBehaviour
     [SerializeField,LabelText("수위 조절 커브")] private AnimationCurve changeCurve;
 
     [Title("")]
-    [SerializeField] private EventReference sound_levelChangeLoop;
-    [SerializeField] private EventReference sound_leveChangeEnd;
-
     [SerializeField] private Transform waterTF;
 
     private StudioEventEmitter sound;
@@ -66,7 +63,7 @@ public class ElevativeWater : MonoBehaviour
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[currentindex].height, 1.0f));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[currentindex].height, waterLevelOptions[currentindex].time));
         currentindex++;
         if (currentindex >= waterLevelOptions.Length) currentindex = 0;
         return;
@@ -76,8 +73,8 @@ public class ElevativeWater : MonoBehaviour
     {
         float from = waterTF.localScale.y;
 
-        sound.ChangeEvent(sound_levelChangeLoop);
         sound.Play();
+        sound.SetParameter("ElevativeWaterParam", 0);
 
         for(float t = 0; t < time; t+= Time.fixedDeltaTime)
         {
@@ -86,9 +83,7 @@ public class ElevativeWater : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        sound.Stop();
-        sound.ChangeEvent(sound_leveChangeEnd);
-        sound.Play();
+        sound.SetParameter("ElevativeWaterParam", 1);
 
         waterTF.localScale = new Vector3(waterTF.localScale.x, waterLevel, waterTF.localScale.z);
 
