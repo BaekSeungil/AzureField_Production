@@ -45,20 +45,14 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("아이템 소비 증가 값")] private int UseItemCount;
 
     [SerializeField,LabelText("부스터 업글 횟수 제한")] public UpgradeLimit UpBooster_CountLimit = new UpgradeLimit{maxCount = 5};
-    private int UpBooster_Count = 0;
     [SerializeField,LabelText("점프 업글횟수 제한")] public UpgradeLimit UpJump_CountLimit= new UpgradeLimit{maxCount = 5};
-    private int UpJump_Count = 0;
     [SerializeField,LabelText("가속도 업글 횟수 제한")] public UpgradeLimit UpDuration_CountLimit= new UpgradeLimit{maxCount = 5};
-    private int UpDuration_Count;
 
     [SerializeField,LabelText("업글제한 점프 메세지 게임")] public GameObject LimitObject;
     [SerializeField,LabelText("필요강화 재료 오브젝트")] public GameObject ItemTitleObj;
     [SerializeField,LabelText("업글 종류 텍스쳐")] public TMP_Text UpTypeText;
 
     private int HaveItem;
-    private bool CanUpgradeJump = true;
-    private bool CanUpgradeDuration = true;
-    private bool CanUpgradeBooster = true;
 
     private bool CanUpgrade = true; // 업그레이드 가능 여부
 
@@ -74,7 +68,7 @@ public class UpgradeController : MonoBehaviour
 
     private void FixedUpdate()
     {
-         SetItemCountText();
+        SetItemCountText();
         UpdateUpgradeView();
         
         
@@ -90,6 +84,7 @@ public class UpgradeController : MonoBehaviour
 
     }
 
+    // 텍스쳐 업데이트
     private void UpdateUpgradeView()
     {
         switch (boatUpgradeType)
@@ -156,6 +151,7 @@ public class UpgradeController : MonoBehaviour
 
     }
 
+    //강화 상태및 필요한 아이템 개수 증가
     private void TryUpgrade(ref UpgradeLimit limit, PlayerCore.AbilityAttribute attribute, float upgradeValue)
     {
         if (limit.CanUpgrade())
@@ -175,6 +171,7 @@ public class UpgradeController : MonoBehaviour
      
     }
 
+    // 타입별 강화 가능 여부 판별
     private bool GetCurrentCanUpgradeStatus()
     {
         switch (boatUpgradeType)
