@@ -127,7 +127,7 @@ public class UpgradeController : MonoBehaviour
         
     }
 
-
+    //보트 강화 아이템 소비하고 업그레이드 수치처리
     public void BoatUpGrade()
     {
         Player = PlayerCore.Instance;
@@ -139,7 +139,6 @@ public class UpgradeController : MonoBehaviour
         {
             CanUpgrade = false;
             UpLimit = true;
-            LimitUpgradeObj();
             return; // 최대 강화 횟수에 도달했을 경우 함수 종료
         }
 
