@@ -10,15 +10,18 @@ using UnityEngine;
 [RequireComponent(typeof(StudioEventEmitter))]
 public class ElevativeWater : MonoBehaviour
 {
+    [System.Serializable]
+    class WaterChange
+    {
+        [LabelText("수위 (M)")] public float height = 0f;
+        [LabelText("시간 (초)")] public float time = 1f;
+    }
+
     [Title("")]
-    [SerializeField,LabelText("수위 조절 옵션(M)")] private float[] waterLevelOptions;
-    [SerializeField,LabelText("수위 조절 시간")] private float changeTime = 1.0f;
+    [SerializeField,LabelText("수위 조절 옵션")] private WaterChange[] waterLevelOptions;
     [SerializeField,LabelText("수위 조절 커브")] private AnimationCurve changeCurve;
 
     [Title("")]
-    [SerializeField] private EventReference sound_levelChangeLoop;
-    [SerializeField] private EventReference sound_leveChangeEnd;
-
     [SerializeField] private Transform waterTF;
 
     private StudioEventEmitter sound;
@@ -35,7 +38,15 @@ public class ElevativeWater : MonoBehaviour
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevel));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevel,1.0f));
+        return;
+    }
+
+    public void SetWaterlevel(float waterLevel, float time)
+    {
+        if (transition != null) return;
+
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevel, time));
         return;
     }
 
@@ -43,7 +54,7 @@ public class ElevativeWater : MonoBehaviour
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index]));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index].height,1.0f));
         currentindex = index;
         return;
     }
@@ -52,29 +63,27 @@ public class ElevativeWater : MonoBehaviour
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[currentindex]));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[currentindex].height, waterLevelOptions[currentindex].time));
         currentindex++;
         if (currentindex >= waterLevelOptions.Length) currentindex = 0;
         return;
     }
 
-    IEnumerator Cor_SetWaterlevel(float waterLevel)
+    IEnumerator Cor_SetWaterlevel(float waterLevel,float time)
     {
         float from = waterTF.localScale.y;
 
-        sound.ChangeEvent(sound_levelChangeLoop);
         sound.Play();
+        sound.SetParameter("ElevativeWaterParam", 0);
 
-        for(float t = 0; t < changeTime; t+= Time.fixedDeltaTime)
+        for(float t = 0; t < time; t+= Time.fixedDeltaTime)
         {
-            float segment = changeCurve.Evaluate(t/changeTime);
+            float segment = changeCurve.Evaluate(t/time);
             waterTF.localScale = new Vector3(waterTF.localScale.x,Mathf.Lerp(from,waterLevel,segment) ,waterTF.localScale.z);
             yield return new WaitForFixedUpdate();
         }
 
-        sound.Stop();
-        sound.ChangeEvent(sound_leveChangeEnd);
-        sound.Play();
+        sound.SetParameter("ElevativeWaterParam", 1);
 
         waterTF.localScale = new Vector3(waterTF.localScale.x, waterLevel, waterTF.localScale.z);
 
@@ -92,14 +101,14 @@ public class ElevativeWater : MonoBehaviour
         {
             for (int i = 0; i < waterLevelOptions.Length; i++)
             {
-                if (i != 0) DrawArrow.ForGizmo(transform.position + Vector3.up*waterLevelOptions[i - 1] + Vector3.right*(i-2)*0.2f, Vector3.up * (waterLevelOptions[i] - waterLevelOptions[i - 1]));
+                if (i != 0) DrawArrow.ForGizmo(transform.position + Vector3.up*waterLevelOptions[i - 1].height + Vector3.right*(i-2)*0.2f, Vector3.up * (waterLevelOptions[i].height - waterLevelOptions[i - 1].height));
 
-                Gizmos.DrawWireCube(transform.position + Vector3.up * waterLevelOptions[i], new Vector3(2f, 0f, 2f));
-                Handles.Label(transform.position + Vector3.up * waterLevelOptions[i] + Vector3.right * -1f, i.ToString() + "번 수위 : " + waterLevelOptions[i] + "M",labelStyle);
+                Gizmos.DrawWireCube(transform.position + Vector3.up * waterLevelOptions[i].height, new Vector3(2f, 0f, 2f));
+                Handles.Label(transform.position + Vector3.up * waterLevelOptions[i].height + Vector3.right * -1f, i.ToString() + "번 수위 : " + waterLevelOptions[i].height + "M",labelStyle);
             }
             int last = waterLevelOptions.Length-1;
             Gizmos.color = Color.magenta;
-            DrawArrow.ForGizmo(transform.position + Vector3.up * waterLevelOptions[last] + Vector3.right * (last - 2) * 0.2f, Vector3.up * (waterLevelOptions[0] - waterLevelOptions[last]));
+            DrawArrow.ForGizmo(transform.position + Vector3.up * waterLevelOptions[last].height + Vector3.right * (last - 2) * 0.2f, Vector3.up * (waterLevelOptions[0].height - waterLevelOptions[last].height));
 
         }
     }
