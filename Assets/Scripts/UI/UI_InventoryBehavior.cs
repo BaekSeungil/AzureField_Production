@@ -6,6 +6,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBehavior>
 {
@@ -27,6 +28,9 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI noItemText;
+
+    
+    
 
     private MainPlayerInputActions input;
 

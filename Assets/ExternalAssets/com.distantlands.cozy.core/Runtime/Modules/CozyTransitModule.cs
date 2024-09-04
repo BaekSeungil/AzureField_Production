@@ -499,6 +499,14 @@ namespace DistantLands.Cozy
 
         }
 
+        public void DisplayBlockEditor(string blockName)
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(blockName).FindPropertyRelative("start"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(blockName).FindPropertyRelative("end"));
+            serializedObject.ApplyModifiedProperties();
+        }
+
     }
 #endif
 }

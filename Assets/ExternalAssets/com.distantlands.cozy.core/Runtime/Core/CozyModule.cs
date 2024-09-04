@@ -18,8 +18,50 @@ namespace DistantLands.Cozy
     {
 
         [HideInInspector]
-        public CozyWeather weatherSphere;
-        public CozySystem system;
+        public CozyWeather weatherSphere
+        {
+            get
+            {
+                if (!cachedWeatherSphere)
+                {
+                    cachedWeatherSphere = CozyWeather.instance;
+                }
+
+                return cachedWeatherSphere;
+            }
+
+            set
+            {
+                cachedWeatherSphere = value;
+            }
+        }
+
+        public CozyWeather cachedWeatherSphere;
+        
+        
+        public CozySystem cachedSystem;
+        
+        public CozySystem system
+        {
+            get
+            {
+                if (!cachedSystem)
+                {
+                    if (GetComponent<CozyBiome>())
+                        cachedSystem = GetComponent<CozyBiome>();
+                    else
+                        cachedSystem = weatherSphere;
+                }
+
+                return cachedSystem;
+            }
+
+            set
+            {
+                cachedSystem = value;
+            }
+        }
+        
         public void OnEnable()
         {
             InitializeModule();
@@ -37,13 +79,6 @@ namespace DistantLands.Cozy
                 return;
 
             }
-            weatherSphere = CozyWeather.instance;
-            if (system == null)
-                if (GetComponent<CozyBiome>())
-                    system = GetComponent<CozyBiome>();
-                else
-                    system = weatherSphere;
-
 
             CozyWeather.OnFrameReset += FrameReset;
             CozyWeather.UpdateWeatherWeights += UpdateWeatherWeights;
@@ -82,13 +117,22 @@ namespace DistantLands.Cozy
         {
 
         }
+        
+        public virtual void OnSceneLoaded()
+        {
+            
+        }
+
+        public virtual void OnSceneUnloaded()
+        {
+            
+        }
+        
         public virtual void SetupModule(Type[] requirements)
         {
 
             if (!enabled)
                 return;
-            weatherSphere = CozyWeather.instance;
-
 
             foreach (Type type in requirements)
             {

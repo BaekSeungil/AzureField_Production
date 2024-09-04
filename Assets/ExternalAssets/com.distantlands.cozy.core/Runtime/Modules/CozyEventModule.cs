@@ -16,7 +16,7 @@ using UnityEditor;
 
 namespace DistantLands.Cozy
 {
-    public class CozyEventModule : CozyModule, ICozyBiomeModule
+    public class CozyEventModule : CozyBiomeModuleBase<CozyEventModule>
     {
         public UnityEvent onDawn;
         public UnityEvent onMorning;
@@ -42,11 +42,7 @@ namespace DistantLands.Cozy
         }
 
         public CozyEvent[] cozyEvents;
-
-        public float weight;
-        public List<CozyEventModule> biomes = new List<CozyEventModule>();
-        public CozyEventModule parentModule;
-        public bool isBiomeModule { get; set; }
+        
         public bool inBiome = false;
         public UnityEvent onEnterBiome;
         public UnityEvent onExitBiome;
@@ -54,6 +50,9 @@ namespace DistantLands.Cozy
 
         public override void InitializeModule()
         {
+            if (!enabled)
+                return;
+            
             base.InitializeModule();
 
             if (GetComponent<CozyWeather>())
@@ -179,59 +178,6 @@ namespace DistantLands.Cozy
                 onExitBiome.Invoke();
             }
 
-        }
-
-        public void AddBiome()
-        {
-            if (parentModule == null)
-                parentModule = weatherSphere.GetModule<CozyEventModule>();
-
-            weatherSphere = CozyWeather.instance;
-            weatherSphere.GetModule<CozyEventModule>().biomes = FindObjectsOfType<CozyEventModule>().Where(x => x != weatherSphere.GetModule<CozyEventModule>()).ToList();
-
-        }
-
-        public void RemoveBiome()
-        {
-            parentModule?.biomes.Remove(this);
-        }
-
-        public void UpdateBiomeModule()
-        {
-
-        }
-
-        public bool CheckBiome()
-        {
-            if (!CozyWeather.instance.GetModule<CozyEventModule>())
-            {
-                Debug.LogError("The Events biome module requires the Events module to be enabled on your weather sphere. Please add the Events module before setting up your biome.");
-                return false;
-            }
-            return true;
-        }
-
-        public void ComputeBiomeWeights()
-        {
-            float totalSystemWeight = 0;
-            biomes.RemoveAll(x => x == null);
-
-            foreach (CozyEventModule biome in biomes)
-            {
-                if (biome != this)
-                {
-                    totalSystemWeight += biome.system.targetWeight;
-                }
-            }
-
-            weight = Mathf.Clamp01(1 - totalSystemWeight);
-            totalSystemWeight += weight;
-
-            foreach (CozyEventModule biome in biomes)
-            {
-                if (biome.system != this)
-                    biome.weight = biome.system.targetWeight / (totalSystemWeight == 0 ? 1 : totalSystemWeight);
-            }
         }
 
     }

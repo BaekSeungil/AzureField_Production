@@ -1342,6 +1342,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 Vector3 pos = player.sailingSprayEffect.transform.position;
                 float surfaceHeight = GlobalOceanManager.Instance.GetWaveHeight(pos);
                 player.sailingSprayEffect.transform.position = new Vector3(pos.x,surfaceHeight,pos.z);
+                player.sailingSprayEffect.transform.rotation.SetLookRotation(directionCache, sailboat.SurfacePlane.normal);
 
 
                 if (!player.sailingSprayEffect.isPlaying)
