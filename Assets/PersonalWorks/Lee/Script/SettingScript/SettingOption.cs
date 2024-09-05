@@ -145,6 +145,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     public void SetLanguage(int index)
     {
         LocalizationSettings.SelectedLocale = locales[index];
+        PlayerPrefs.SetInt("language", index);
     }
     
     public void QuitGame()

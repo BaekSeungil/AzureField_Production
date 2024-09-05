@@ -113,7 +113,7 @@ public class UpgradeController : MonoBehaviour
 
      private void UpdateView(float beforeValue, float upgradeValue)
     {
-        BeforeUpgrade = beforeValue;
+        BeforeUpgrade = (int)beforeValue;
         BeforeText.text = BeforeUpgrade.ToString("F1");
 
         AfterUpgrade = beforeValue + upgradeValue;
