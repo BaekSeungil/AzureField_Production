@@ -222,10 +222,10 @@ namespace FMODUnity
             }
         }
 
-        public void ChangeEvent(EventReference newEvent)
+        public void ChangeEvent(EventReference newEvent,FMOD.Studio.STOP_MODE stopmode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
         {
             EventReference = newEvent;
-            instance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            instance.stop(stopmode);
             Lookup();
         }
 

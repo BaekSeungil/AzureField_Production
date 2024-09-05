@@ -29,13 +29,17 @@ public class GrapicOption : MonoBehaviour
         else if (Screen.fullScreenMode == FullScreenMode.Windowed)
             screenmodeDropdown.value = 2;
 
+        Screen.fullScreenMode = (FullScreenMode)screenmodeDropdown.value;
+
         resolutionDropDown.value = Array.FindIndex<Resolution>(Screen.resolutions, res => (res.width == Screen.currentResolution.width) && (res.height == Screen.currentResolution.height));
 
         RpDropdown.value = QualitySettings.GetQualityLevel();
+
     }
 
     public void SetPipeLine(int value)
     {
+        PlayerPrefs.SetInt("renderpipeline", value);
         QualitySettings.SetQualityLevel(value);
         QualitySettings.renderPipeline = RenderPipeLine[value];
     }
@@ -73,6 +77,7 @@ public class GrapicOption : MonoBehaviour
     public void CangeResolution(int index)
     {
         Screen.SetResolution(Screen.resolutions[index].width, Screen.resolutions[index].height,Screen.fullScreenMode);
+        PlayerPrefs.SetInt("resolution_x", Screen.resolutions[index].width); PlayerPrefs.SetInt("resolution_y", Screen.resolutions[index].height);
     }
 
     public void ChangeScreenmode(int index)
@@ -91,6 +96,8 @@ public class GrapicOption : MonoBehaviour
         {
             Screen.fullScreenMode = FullScreenMode.Windowed;
         }
+
+        PlayerPrefs.SetInt("screenmode", index);
     }
 
     public void okBoolClick()
