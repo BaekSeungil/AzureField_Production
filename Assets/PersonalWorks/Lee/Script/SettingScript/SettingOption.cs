@@ -19,6 +19,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
     [SerializeField] public GameObject MoveSetting;
+    [SerializeField] public GameObject ControllSetting;
     [SerializeField] public TMP_Dropdown languageDropdown;
 
     MainPlayerInputActions settigUI_inputs;
@@ -73,6 +74,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
+        ControllSetting.SetActive(false);
     }
 
     public void Start()
@@ -97,6 +99,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
+        ControllSetting.SetActive(false);
     }
 
     public void SetSoundprefab()
@@ -112,6 +115,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
+        ControllSetting.SetActive(false);
     }
 
     public void SetGrapicprefab()
@@ -130,9 +134,18 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         MoveSetting.SetActive(false);
     }
 
+    public void SetControllprefab()
+    {
+        ControllSetting.SetActive(true);
+        Setting.SetActive(false);
+        SoundSetting.SetActive(false);
+        MoveSetting.SetActive(false);
+    }
+
     public void SetLanguage(int index)
     {
         LocalizationSettings.SelectedLocale = locales[index];
+        PlayerPrefs.SetInt("language", index);
     }
     
     public void QuitGame()

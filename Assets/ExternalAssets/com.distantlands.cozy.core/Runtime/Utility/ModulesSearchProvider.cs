@@ -100,11 +100,11 @@ namespace DistantLands.Cozy
                     category = "Atmosphere";
                     break;
                 case "PlumeModule":
-                    content = new GUIContent(" Plum Module", (Texture)Resources.Load("Cloud"));
+                    content = new GUIContent(" Plume Module", (Texture)Resources.Load("Cloud"));
                     category = "Atmosphere";
                     break;
                 case "CataclysmModule":
-                    content = new GUIContent(" Catacylsm Module", (Texture)Resources.Load("Tornado"));
+                    content = new GUIContent(" Cataclysm Module", (Texture)Resources.Load("Tornado"));
                     category = "Ecosystem";
                     break;
                 case "LinkFishnetModule":
@@ -155,7 +155,7 @@ namespace DistantLands.Cozy
                     content = new GUIContent(" Atmosphere Module", (Texture)Resources.Load("Atmosphere"));
                     category = "Atmosphere";
                     break;
-                case "RadarModule":
+                case "CozyRadarModule":
                     content = new GUIContent(" Radar Module", (Texture)Resources.Load("CozyRadar"));
                     category = "Ecosystem";
                     break;

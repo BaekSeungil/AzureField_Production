@@ -18,6 +18,8 @@ public class ItemData : ScriptableObject
     public LocalizedString ItemName { get { return itemName; } }
     [SerializeField] private Sprite itemImage;                                      // 아이템의 이미지 ( UI )
     public Sprite ItemImage { get { return itemImage; } }
+    [SerializeField] private Sprite itemPopUpImage;                                 // 아이템의 팝업이미지 ( UI )
+    public Sprite ItemPopUpImage { get { return itemPopUpImage; } }
     [SerializeField] private LocalizedString itemDiscription;                       // 아이템 설명 ( UI )
     public LocalizedString ItemDiscription { get { return itemDiscription; } }
     [SerializeField] private string[] tags;                                         // 아이템 태그
