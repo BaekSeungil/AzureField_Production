@@ -66,8 +66,11 @@ public class CameraSensitivityControl : MonoBehaviour
 
     private void OnDisable()
     {
-        cinema.m_XAxis.m_MaxSpeed = defaultSpeed.x;
-        cinema.m_YAxis.m_MaxSpeed = defaultSpeed.y;
+        if (cinema != null)
+        {
+            cinema.m_XAxis.m_MaxSpeed = defaultSpeed.x;
+            cinema.m_YAxis.m_MaxSpeed = defaultSpeed.y;
+        }
     }
 
     Vector2 x_range = new Vector2(0.1f, 1.4f);
@@ -75,13 +78,15 @@ public class CameraSensitivityControl : MonoBehaviour
 
     public void SetSensitivityX(float value)
     {
-        cinema.m_XAxis.m_MaxSpeed = Mathf.Lerp(x_range.x * defaultSpeed.x, x_range.y * defaultSpeed.x, value);
+        if (cinema != null)
+            cinema.m_XAxis.m_MaxSpeed = Mathf.Lerp(x_range.x * defaultSpeed.x, x_range.y * defaultSpeed.x, value);
         PlayerPrefs.SetFloat("x_sensitivity", value);
     }
 
     public void SetSensitivityY(float value)
     {
-        cinema.m_YAxis.m_MaxSpeed = Mathf.Lerp(y_range.x * defaultSpeed.y, y_range.y * defaultSpeed.y, value);
+        if (cinema != null)
+            cinema.m_YAxis.m_MaxSpeed = Mathf.Lerp(y_range.x * defaultSpeed.y, y_range.y * defaultSpeed.y, value);
         PlayerPrefs.SetFloat("y_sensitivity", value);
     }
 }
