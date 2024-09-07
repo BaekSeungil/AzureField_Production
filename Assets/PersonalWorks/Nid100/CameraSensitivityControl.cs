@@ -30,7 +30,9 @@ public class CameraSensitivityControl : MonoBehaviour
         {
             sliderY.value = PlayerPrefs.GetFloat("y_sensitivity");
         }
-        defaultSpeed = new Vector2(cinema.m_XAxis.m_MaxSpeed, cinema.m_YAxis.m_MaxSpeed);
+
+        if (cinema != null)
+            defaultSpeed = new Vector2(cinema.m_XAxis.m_MaxSpeed, cinema.m_YAxis.m_MaxSpeed);
     }
 
     
