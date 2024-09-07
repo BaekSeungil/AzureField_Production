@@ -48,6 +48,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     MainPlayerInputActions input;
 
     private int activePlayemenuIndex = 0;
+    private bool browsePlaymenu = false;
 
     protected override void Awake()
     {
@@ -73,6 +74,11 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         input.Player.Disable();
     }
 
+    public void EnableBrowseMenu()
+    {
+        browsePlaymenu = true;
+    }
+
     public void OnOpenKeydown(InputAction.CallbackContext context)
     {
         if (visualGroup.activeInHierarchy == false)
@@ -89,10 +95,13 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     {
         if (visualGroup.activeInHierarchy == false) return;
 
+        if (!browsePlaymenu)
+        {
             if (context.ReadValue<Vector2>().x > 0)
-            BrowseNext();
-        else if (context.ReadValue<Vector2>().x < 0)
-            BrowsePrev();
+                BrowseNext();
+            else if (context.ReadValue<Vector2>().x < 0)
+                BrowsePrev();
+        }
     }
 
     public void BrowseNext()
