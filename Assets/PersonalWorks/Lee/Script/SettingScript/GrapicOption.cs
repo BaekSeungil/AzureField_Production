@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using System;
+using UnityEngine.EventSystems;
 
 public class GrapicOption : MonoBehaviour
 {

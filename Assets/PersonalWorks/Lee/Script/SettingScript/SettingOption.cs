@@ -12,6 +12,7 @@ using FMOD;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
 {
@@ -29,6 +30,8 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     {
         settigUI_inputs = new MainPlayerInputActions();
         settigUI_inputs.UI.Enable();
+
+
     }
 
     //private void Update()
@@ -75,6 +78,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
         ControllSetting.SetActive(false);
+        
     }
 
     public void Start()
@@ -100,6 +104,15 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         SoundSetting.SetActive(false);
         MoveSetting.SetActive(false);
         ControllSetting.SetActive(false);
+
+        if (TitleUI.IsInstanceValid)
+        {
+            TitleUI.Instance.SelectFirstButton();
+        }
+        else
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     public void SetSoundprefab()
