@@ -5,6 +5,7 @@ using FMOD.Studio;
 using FMODUnity;
 using UnityEngine.UI;
 using UnityEngine.Localization.SmartFormat.Utilities;
+using UnityEngine.EventSystems;
 
 public class SoundOpton : MonoBehaviour
 {
@@ -47,7 +48,6 @@ public class SoundOpton : MonoBehaviour
 
         SFX.getVolume(out f);
         SFXSlider.value = f;
-
     }
 
     public void SetMaster(float value)
