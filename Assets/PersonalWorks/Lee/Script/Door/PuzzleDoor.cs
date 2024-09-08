@@ -19,7 +19,7 @@ public class PuzzleDoor : Interactable_Base
     [Header("퍼즐문 이벤트 설정")]
     [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int OpenDoorCount;
     [SerializeField,LabelText("열쇠의 갯수")] public int KeyCount;
-    private bool Opendoor = false;
+    public bool Opendoor = false;
  
     // Update is called once per frame
     void Update()
