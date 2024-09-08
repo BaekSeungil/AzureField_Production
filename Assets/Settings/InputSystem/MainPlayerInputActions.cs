@@ -273,7 +273,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": ""ScaleVector2(x=50,y=50)"",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -295,7 +295,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Joystick>/{Hatswitch}"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Joystick"",
+                    ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
