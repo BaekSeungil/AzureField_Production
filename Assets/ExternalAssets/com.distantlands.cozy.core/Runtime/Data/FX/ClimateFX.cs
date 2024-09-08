@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using OverrideData = DistantLands.Cozy.Overridable<float>;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -40,7 +41,7 @@ namespace DistantLands.Cozy.Data
         {
 
             base.InitializeEffect(weather);
-            if (!weatherSphere.climateModule)
+            if (weatherSphere.climateModule == null)
                 return false;
 
             climate = weatherSphere.climateModule;

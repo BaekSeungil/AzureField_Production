@@ -58,16 +58,36 @@ namespace DistantLands.Cozy.Data
         {
             serializedObject.Update();
 
+            EditorGUILayout.LabelField("Profiles to Forecast");
 
-            EditorGUILayout.PropertyField(profilesToForecast);
+            EditorGUI.indentLevel++;
+            for (int i = 0; i < profilesToForecast.arraySize; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(profilesToForecast.GetArrayElementAtIndex(i), GUIContent.none);
+                if (GUILayout.Button("+"))
+                {
+                    profilesToForecast.InsertArrayElementAtIndex(i + 1);
+                }
+                if (GUILayout.Button("-"))
+                    profilesToForecast.DeleteArrayElementAtIndex(i);
+
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUI.indentLevel--;
+            
+            if (profilesToForecast.arraySize == 0 && GUILayout.Button("Add New"))
+            {
+                profilesToForecast.InsertArrayElementAtIndex(profilesToForecast.arraySize);
+            }
+
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(startWithRandomWeather);
             if (startWithRandomWeather.enumValueIndex == (int)ForecastProfile.StartWeatherWith.initialProfile)
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("initialProfile"));
             if (startWithRandomWeather.enumValueIndex == (int)ForecastProfile.StartWeatherWith.initialForecast)
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("initialForecast"), true);
-
-            EditorGUILayout.Space();
+                
             EditorGUILayout.PropertyField(forecastLength, new GUIContent("Profiles to Forecast Ahead"));
             serializedObject.ApplyModifiedProperties();
 

@@ -15,9 +15,19 @@ namespace DistantLands.Cozy
         [Range(0, 1)]
         public float targetWeight = 1;
 
+        /// <summary>
+        /// Determines the order in-which systems are weighted and processed.
+        /// Systems with the same priority will be weighted within each other. 
+        /// Systems with a higher priority will be evaluated after ones with lower priorities, thus taking precedence.
+        /// </summary>
+        public int priority;
+        
         public void OnEnable()
         {
-            CozyWeather.instance.SetupSystems();
+            if (CozyWeather.instance)
+            {
+                CozyWeather.instance.SetupSystems();
+            }
         }
 
         public void SkipTime(MeridiemTime time)
