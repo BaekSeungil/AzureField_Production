@@ -19,7 +19,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
     [SerializeField] public GameObject Setting;
     [SerializeField] public GameObject SoundSetting;
     [SerializeField] public GameObject GrapicSetting;
-    [SerializeField] public GameObject MoveSetting;
     [SerializeField] public GameObject ControllSetting;
     [SerializeField] public TMP_Dropdown languageDropdown;
 
@@ -76,7 +75,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         Setting.SetActive(true);
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
         ControllSetting.SetActive(false);
         
     }
@@ -102,7 +100,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         Setting.SetActive(false);
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
         ControllSetting.SetActive(false);
 
         if (TitleUI.IsInstanceValid)
@@ -127,7 +124,6 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         Setting.SetActive(true);
         GrapicSetting.SetActive(false);
         SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
         ControllSetting.SetActive(false);
     }
 
@@ -136,15 +132,8 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         GrapicSetting.SetActive(true);
         Setting.SetActive(false);
         SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
+        ControllSetting.SetActive(false);
 
-    }
-    public void SetMoveprefab()
-    {
-        MoveSetting.SetActive(true);
-        Setting.SetActive(false);
-        SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
     }
 
     public void SetControllprefab()
@@ -152,7 +141,7 @@ public class SettingOption : StaticSerializedMonoBehaviour<SettingOption>
         ControllSetting.SetActive(true);
         Setting.SetActive(false);
         SoundSetting.SetActive(false);
-        MoveSetting.SetActive(false);
+        GrapicSetting.SetActive(false);
     }
 
     public void SetLanguage(int index)
