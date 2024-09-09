@@ -78,11 +78,6 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     }
     public void EnableBrowseMenu()
     {
-        browsePlaymenu = true;
-    }
-
-    public void EnableBrowseMenu()
-    {
         EventSystem.current.SetSelectedGameObject(titleLineObject);
     }
 
