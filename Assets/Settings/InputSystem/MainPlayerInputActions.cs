@@ -82,6 +82,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""OpenPlaymenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SailboatForward"",
                     ""type"": ""Button"",
                     ""id"": ""a04d3e4f-efd3-4fde-bf6d-638c9793027e"",
@@ -94,15 +103,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""SailboatBackward"",
                     ""type"": ""Button"",
                     ""id"": ""3171b56e-e24a-4415-864b-7909325416ed"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""OpenPlaymenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -325,7 +325,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""832d553b-2fdc-4b43-8d08-70bfa2a24e80"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -336,7 +336,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""5ed3aa0f-1f4b-42d6-b70b-c3de3ef1a401"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -380,7 +380,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""e42e643b-dd3c-48fb-b0ef-8d2b0e02f68b"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -391,7 +391,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""0b40c763-5a00-44cf-b64c-45ab51a4be19"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -407,39 +407,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""SailboatForward"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bab663ee-17b4-43ac-912a-c561b0ee5d07"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""OpenPlaymenu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""71064dca-4d0e-408c-bfe3-c35e9593190b"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""OpenPlaymenu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b98dccab-1b3f-427d-9216-4f449f6c81a1"",
-                    ""path"": ""<Gamepad>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""OpenPlaymenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -523,7 +490,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""64164c81-1c07-4b58-b90f-e15d22546462"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -533,8 +500,19 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""0376eea5-6327-4951-aa7a-6b548b808743"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatBackward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""07e430ac-5b40-43a4-8ff9-62b5cf30f2e8"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -544,12 +522,34 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0376eea5-6327-4951-aa7a-6b548b808743"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""bab663ee-17b4-43ac-912a-c561b0ee5d07"",
+                    ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SailboatBackward"",
+                    ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""71064dca-4d0e-408c-bfe3-c35e9593190b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""OpenPlaymenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b98dccab-1b3f-427d-9216-4f449f6c81a1"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""OpenPlaymenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1234,9 +1234,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_ToggleSailboat = m_Player.FindAction("ToggleSailboat", throwIfNotFound: true);
+        m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         m_Player_SailboatForward = m_Player.FindAction("SailboatForward", throwIfNotFound: true);
         m_Player_SailboatBackward = m_Player.FindAction("SailboatBackward", throwIfNotFound: true);
-        m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         m_Player_SailboatBooster = m_Player.FindAction("SailboatBooster", throwIfNotFound: true);
         m_Player_SailboatLeapup = m_Player.FindAction("SailboatLeapup", throwIfNotFound: true);
         m_Player_SailboatDrift = m_Player.FindAction("SailboatDrift", throwIfNotFound: true);
@@ -1324,9 +1324,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_ToggleSailboat;
+    private readonly InputAction m_Player_OpenPlaymenu;
     private readonly InputAction m_Player_SailboatForward;
     private readonly InputAction m_Player_SailboatBackward;
-    private readonly InputAction m_Player_OpenPlaymenu;
     private readonly InputAction m_Player_SailboatBooster;
     private readonly InputAction m_Player_SailboatLeapup;
     private readonly InputAction m_Player_SailboatDrift;
@@ -1341,9 +1341,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @ToggleSailboat => m_Wrapper.m_Player_ToggleSailboat;
+        public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputAction @SailboatForward => m_Wrapper.m_Player_SailboatForward;
         public InputAction @SailboatBackward => m_Wrapper.m_Player_SailboatBackward;
-        public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputAction @SailboatBooster => m_Wrapper.m_Player_SailboatBooster;
         public InputAction @SailboatLeapup => m_Wrapper.m_Player_SailboatLeapup;
         public InputAction @SailboatDrift => m_Wrapper.m_Player_SailboatDrift;
@@ -1375,15 +1375,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @ToggleSailboat.started += instance.OnToggleSailboat;
             @ToggleSailboat.performed += instance.OnToggleSailboat;
             @ToggleSailboat.canceled += instance.OnToggleSailboat;
+            @OpenPlaymenu.started += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
             @SailboatForward.started += instance.OnSailboatForward;
             @SailboatForward.performed += instance.OnSailboatForward;
             @SailboatForward.canceled += instance.OnSailboatForward;
             @SailboatBackward.started += instance.OnSailboatBackward;
             @SailboatBackward.performed += instance.OnSailboatBackward;
             @SailboatBackward.canceled += instance.OnSailboatBackward;
-            @OpenPlaymenu.started += instance.OnOpenPlaymenu;
-            @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
-            @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
             @SailboatBooster.started += instance.OnSailboatBooster;
             @SailboatBooster.performed += instance.OnSailboatBooster;
             @SailboatBooster.canceled += instance.OnSailboatBooster;
@@ -1418,15 +1418,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @ToggleSailboat.started -= instance.OnToggleSailboat;
             @ToggleSailboat.performed -= instance.OnToggleSailboat;
             @ToggleSailboat.canceled -= instance.OnToggleSailboat;
+            @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
             @SailboatForward.started -= instance.OnSailboatForward;
             @SailboatForward.performed -= instance.OnSailboatForward;
             @SailboatForward.canceled -= instance.OnSailboatForward;
             @SailboatBackward.started -= instance.OnSailboatBackward;
             @SailboatBackward.performed -= instance.OnSailboatBackward;
             @SailboatBackward.canceled -= instance.OnSailboatBackward;
-            @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
-            @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
-            @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
             @SailboatBooster.started -= instance.OnSailboatBooster;
             @SailboatBooster.performed -= instance.OnSailboatBooster;
             @SailboatBooster.canceled -= instance.OnSailboatBooster;
@@ -1659,9 +1659,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnInteract(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnToggleSailboat(InputAction.CallbackContext context);
+        void OnOpenPlaymenu(InputAction.CallbackContext context);
         void OnSailboatForward(InputAction.CallbackContext context);
         void OnSailboatBackward(InputAction.CallbackContext context);
-        void OnOpenPlaymenu(InputAction.CallbackContext context);
         void OnSailboatBooster(InputAction.CallbackContext context);
         void OnSailboatLeapup(InputAction.CallbackContext context);
         void OnSailboatDrift(InputAction.CallbackContext context);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
@@ -41,6 +42,8 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     [SerializeField] EventReference sound_Close;        // 소리 : 메뉴 닫을시 소리
 
     [SerializeField] private GameObject visualGroup;
+    [SerializeField] private GameObject titleLineObject;
+    public bool IsTitlelineSelected { get { return EventSystem.current.gameObject.Equals(titleLineObject); } }
     [SerializeField] TextMeshProUGUI titleLineTextmesh;
     [SerializeField] TextMeshProUGUI nextTextmesh;
     [SerializeField] TextMeshProUGUI prevTextemesh;
@@ -75,7 +78,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     }
     public void EnableBrowseMenu()
     {
-        browsePlaymenu = true;
+        EventSystem.current.SetSelectedGameObject(titleLineObject);
     }
 
     public void OnOpenKeydown(InputAction.CallbackContext context)
@@ -94,7 +97,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     {
         if (visualGroup.activeInHierarchy == false) return;
 
-        if (!browsePlaymenu)
+        if (IsTitlelineSelected == true)
         {
             if (context.ReadValue<Vector2>().x > 0)
                 BrowseNext();
