@@ -260,8 +260,6 @@ public class UpgradeController : MonoBehaviour
     
         LimitObject.SetActive(true);
         ItemTitleObj.SetActive(false);
-     
-
     }
 
     public void OffLimitUpgradeObj()
