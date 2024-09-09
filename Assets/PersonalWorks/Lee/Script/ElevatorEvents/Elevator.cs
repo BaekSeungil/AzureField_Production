@@ -4,7 +4,7 @@ using System.Drawing;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-enum MoveType
+public enum MoveType
 {
     Elevator,
     MovingObjects

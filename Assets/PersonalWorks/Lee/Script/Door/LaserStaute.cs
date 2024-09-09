@@ -7,22 +7,16 @@ public class LaserStaute : MonoBehaviour
 {   
     [SerializeField,LabelText("레이저 시작지점")] public Transform startTrans; // 레이저 시작 위치
     [SerializeField,LabelText("오브젝트 지정")] public PuzzleDoor puzzleDoor; // 퍼즐 도어 오브젝트
-
-    [SerializeField,LabelText("석상 오브젝트")] public GameObject StatueObj; // 석상 오브젝트 지정
-
-    [SerializeField,LabelText("레이저 거리")]    public float maxLaserDistance = 20f; // 레이저 최대 거리
+    [SerializeField,LabelText("레이저 거리")] public float maxLaserDistance = 20f; // 레이저 최대 거리
     private Vector3 direction; // 레이저 방향
     private LineRenderer laser; // 레이저 시각화를 위한 LineRenderer
-
     private Vector3 StartLaserPos; //레이저 초기 좌표값
-    private Vector3 StartStatuePos; // 석상 초기 좌표값
   
 
     // Start is called before the first frame update
     void Start()
     {
         StartLaserPos = startTrans.position;
-        StartStatuePos = StatueObj.transform.position;
 
         laser = gameObject.GetComponent<LineRenderer>();
         direction = startTrans.forward; // 레이저는 시작점
@@ -51,21 +45,6 @@ public class LaserStaute : MonoBehaviour
         else
         {
             laser.SetPosition(1, startTrans.position + direction * maxLaserDistance); // 충돌하지 않으면 최대 거리까지 레이저 발사
-        }
-    }
-
-    // 레이저 반사 함수
-    void ReflectLaser(RaycastHit hit)
-    {
-        Vector3 reflectDir = Vector3.Reflect(direction, hit.normal); // 반사 방향 계산
-        direction = reflectDir; // 새로운 방향 설정
-    }
-
-    private void OnCollisionStay(Collision other) 
-    {
-        if(other.gameObject.layer == 4)
-        {
-
         }
     }
 
