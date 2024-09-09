@@ -684,6 +684,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryNav"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""fa551193-4cf6-4011-ab50-008213a317fb"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1159,6 +1168,72 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Pasue"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""92e4407e-a676-487d-81ab-ec702d01a065"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b8315dfd-e3e5-4aec-bc12-70f71e2d0ce8"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""c172fcdb-005b-4102-939b-43d4a0872d4d"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""14bf8720-43ae-4851-bfa1-b361c2ea9c0d"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""3ba088c2-7df1-49c7-8e83-afa31af5f876"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""debae06e-880f-45cd-a2cf-58f240938213"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1257,6 +1332,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_Pasue = m_UI.FindAction("Pasue", throwIfNotFound: true);
         m_UI_SimpleHelp = m_UI.FindAction("SimpleHelp", throwIfNotFound: true);
         m_UI_MapToggle = m_UI.FindAction("MapToggle", throwIfNotFound: true);
+        m_UI_SecondaryNav = m_UI.FindAction("SecondaryNav", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1474,6 +1550,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_Pasue;
     private readonly InputAction m_UI_SimpleHelp;
     private readonly InputAction m_UI_MapToggle;
+    private readonly InputAction m_UI_SecondaryNav;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1492,6 +1569,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @Pasue => m_Wrapper.m_UI_Pasue;
         public InputAction @SimpleHelp => m_Wrapper.m_UI_SimpleHelp;
         public InputAction @MapToggle => m_Wrapper.m_UI_MapToggle;
+        public InputAction @SecondaryNav => m_Wrapper.m_UI_SecondaryNav;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1543,6 +1621,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @MapToggle.started += instance.OnMapToggle;
             @MapToggle.performed += instance.OnMapToggle;
             @MapToggle.canceled += instance.OnMapToggle;
+            @SecondaryNav.started += instance.OnSecondaryNav;
+            @SecondaryNav.performed += instance.OnSecondaryNav;
+            @SecondaryNav.canceled += instance.OnSecondaryNav;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1589,6 +1670,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @MapToggle.started -= instance.OnMapToggle;
             @MapToggle.performed -= instance.OnMapToggle;
             @MapToggle.canceled -= instance.OnMapToggle;
+            @SecondaryNav.started -= instance.OnSecondaryNav;
+            @SecondaryNav.performed -= instance.OnSecondaryNav;
+            @SecondaryNav.canceled -= instance.OnSecondaryNav;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1683,5 +1767,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnPasue(InputAction.CallbackContext context);
         void OnSimpleHelp(InputAction.CallbackContext context);
         void OnMapToggle(InputAction.CallbackContext context);
+        void OnSecondaryNav(InputAction.CallbackContext context);
     }
 }
