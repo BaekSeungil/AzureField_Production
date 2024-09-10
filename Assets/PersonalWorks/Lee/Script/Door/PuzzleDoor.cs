@@ -17,8 +17,8 @@ public class PuzzleDoor : Interactable_Base
     [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
 
     [Header("퍼즐문 이벤트 설정")]
-    [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int OpenDoorCount;
-    [SerializeField,LabelText("열쇠의 갯수")] public int KeyCount;
+    [SerializeField,LabelText("문을 여는 열쇠 갯수")] public int OpenDoorCount;
+    [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int KeyCount;
     public bool Opendoor = false;
  
     // Update is called once per frame
