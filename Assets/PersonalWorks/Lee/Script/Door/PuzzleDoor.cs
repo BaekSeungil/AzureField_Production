@@ -31,6 +31,11 @@ public class PuzzleDoor : Interactable_Base
         }
     }
 
+    public void PlusOpenDoorCount()
+    {
+        OpenDoorCount++;
+    }
+
     public override void Interact()
     {
         if(Opendoor)
