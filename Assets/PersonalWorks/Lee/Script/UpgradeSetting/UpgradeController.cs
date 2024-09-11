@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Localization;
 
 public struct UpgradeLimit
 {
@@ -34,7 +35,7 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("가지고 있는재료 텍스쳐")] public TMP_Text Have_IntText;
     [SerializeField,LabelText("필요한 재료 텍스쳐")] public TMP_Text Need_IntText;
     [SerializeField,LabelText("업글 전 수치")] public TMP_Text BeforeText;
-    private float BeforeUpgrade;
+    private int BeforeUpgrade;
     [SerializeField,LabelText("업글 후 수치")] public TMP_Text AfterText;
     private float AfterUpgrade;
     [SerializeField,LabelText("가속도 아이콘")] private GameObject Duration_ICON;
@@ -51,6 +52,10 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("업글제한 점프 메세지 게임")] public GameObject LimitObject;
     [SerializeField,LabelText("필요강화 재료 오브젝트")] public GameObject ItemTitleObj;
     [SerializeField,LabelText("업글 종류 텍스쳐")] public TMP_Text UpTypeText;
+
+    [SerializeField, LabelText("텍스트 : 가속도 업그레이드")] private LocalizedString TXT_duration;
+    [SerializeField, LabelText("텍스트 : 점프 업그레이드")] private LocalizedString TXT_Jump;
+    [SerializeField, LabelText("텍스트 : 부스터 업그레이드")] private LocalizedString TXT_Booster;
 
     private int HaveItem;
 
@@ -113,7 +118,7 @@ public class UpgradeController : MonoBehaviour
 
      private void UpdateView(float beforeValue, float upgradeValue)
     {
-        BeforeUpgrade = beforeValue;
+        BeforeUpgrade = (int)beforeValue;
         BeforeText.text = BeforeUpgrade.ToString("F1");
 
         AfterUpgrade = beforeValue + upgradeValue;
@@ -217,7 +222,7 @@ public class UpgradeController : MonoBehaviour
         Jump_ICON.SetActive(true);
         Duration_ICON.SetActive(false);
         Booster_ICON.SetActive(false);
-        UpTypeText.text = $"{"점프력 강화"}";
+        UpTypeText.text = TXT_Jump.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
     }
 
@@ -229,7 +234,7 @@ public class UpgradeController : MonoBehaviour
         Duration_ICON.SetActive(true);
         Booster_ICON.SetActive(false);
         Jump_ICON.SetActive(false);
-        UpTypeText.text = $"{"보트속도 강화."}";
+        UpTypeText.text = TXT_duration.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
 
     }
@@ -240,7 +245,7 @@ public class UpgradeController : MonoBehaviour
         Booster_ICON.SetActive(true);
         Jump_ICON.SetActive(false);
         Duration_ICON.SetActive(false);
-        UpTypeText.text = $"{"부스터시간 강화"}";
+        UpTypeText.text = TXT_Booster.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
     }
 
@@ -255,8 +260,6 @@ public class UpgradeController : MonoBehaviour
     
         LimitObject.SetActive(true);
         ItemTitleObj.SetActive(false);
-     
-
     }
 
     public void OffLimitUpgradeObj()
@@ -274,5 +277,31 @@ public class UpgradeController : MonoBehaviour
     }
 
 
- //   #endif
+#if UNITY_EDITOR
+    [Button(), DisableInEditorMode(),FoldoutGroup("디버그")]
+    public void Debug_UpgradeLeapup()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.LeapupPower, PlusleapupPower);
+        NeedUseItem += UseItemCount;
+        Debug.Log("점프력: " + Player.ViewleapupPower);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterDuration()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterDuration, PlusboosterDuration);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 지속시간: " + Player.ViewBoosterDuration);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterMult()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.BoosterMult, PlustboosterMult);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 가속도: " + Player.ViewBoosterMult);
+    }
+#endif
+
+    //   #endif
 }

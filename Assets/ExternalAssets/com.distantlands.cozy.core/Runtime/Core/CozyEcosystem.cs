@@ -37,7 +37,7 @@ namespace DistantLands.Cozy
         }
         public float weatherTransitionTime = 15;
 
-        public float weatherTimer { get; private set; }
+        public float weatherTimer { get; set; }
         public CozyWeather weatherSphere;
         public CozySystem system;
 
