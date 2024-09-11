@@ -29,10 +29,10 @@ public class RingbellInteract : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Water")
-        {
-            
+        if (other.gameObject.tag == "WaterReaction")
+        {         
             ringbellSystem.connectionBellActive(myNumber);
+            Debug.Log(myNumber + "번 종 활성화");
         }
     }
 }
