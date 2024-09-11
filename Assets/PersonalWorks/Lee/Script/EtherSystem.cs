@@ -45,14 +45,21 @@ public class EtherSystem : MonoBehaviour
 
     public void MoveWave()
     {
-        if(callEther.EtherCount >=2)
+        if (callEther.EtherCount == 3)
+        {
+            // 파도 멈추기
+            MoveSpeed = 0;
+            Debug.Log("파도 멈춤");
+            return;  // 더 이상 아래 코드 실행하지 않음
+        }
+
+        if(callEther.EtherCount ==2)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
             // 도착 여부 확인
             if (Vector3.Distance(startPosition, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
-                callEther.EtherCount = 0;
                 Destroy(gameObject);
                 Debug.Log("파도소멸");
             }
