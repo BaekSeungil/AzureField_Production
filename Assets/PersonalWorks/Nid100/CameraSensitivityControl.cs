@@ -1,23 +1,33 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Processors;
 using UnityEngine.UI;
 
 public class CameraSensitivityControl : MonoBehaviour
 {
-    public CinemachineFreeLook cinema;
-
     public Slider sliderY;
     public Slider sliderX;
 
     float yValue = 1;
     float xValue = 1;
 
-    Vector2 defaultSpeed;
+    float gamepadScaleDefault = 50f;
+
+    Vector2 defaultValue = new Vector2(0.2f, 0.002f);
+
+    MainPlayerInputActions input;
+    private CinemachineFreeLook cinema;
 
     // Start is called before the first frame update
+
+    private void Awake()
+    {
+        input = new MainPlayerInputActions();
+    }
 
     void OnEnable()
     {
@@ -25,14 +35,14 @@ public class CameraSensitivityControl : MonoBehaviour
         if (PlayerPrefs.HasKey("x_sensitivity"))
         {
             sliderX.value = PlayerPrefs.GetFloat("x_sensitivity");
+            SetSensitivityX(sliderX.value);
+
         }
         if (PlayerPrefs.HasKey("y_sensitivity"))
         {
             sliderY.value = PlayerPrefs.GetFloat("y_sensitivity");
+            SetSensitivityY(sliderY.value); 
         }
-
-        if (cinema != null)
-            defaultSpeed = new Vector2(cinema.m_XAxis.m_MaxSpeed, cinema.m_YAxis.m_MaxSpeed);
     }
 
     
@@ -66,30 +76,35 @@ public class CameraSensitivityControl : MonoBehaviour
         //*/
     }
 
-    private void OnDisable()
-    {
-        if (cinema != null)
-        {
-            cinema.m_XAxis.m_MaxSpeed = defaultSpeed.x;
-            cinema.m_YAxis.m_MaxSpeed = defaultSpeed.y;
-        }
-    }
-
-    Vector2 x_range = new Vector2(0.1f, 1.4f);
-    Vector2 y_range = new Vector2(0.1f, 1.4f);
 
     public void SetSensitivityX(float value)
     {
-        if (cinema != null)
-            cinema.m_XAxis.m_MaxSpeed = Mathf.Lerp(x_range.x * defaultSpeed.x, x_range.y * defaultSpeed.x, value);
+        Debug.Log("Value x : " + value);
+        OverrideProcessor_x(value * defaultValue.x);
         PlayerPrefs.SetFloat("x_sensitivity", value);
     }
 
     public void SetSensitivityY(float value)
     {
-        if (cinema != null)
-            cinema.m_YAxis.m_MaxSpeed = Mathf.Lerp(y_range.x * defaultSpeed.y, y_range.y * defaultSpeed.y, value);
+        Debug.Log("Value y : " + value);
+        OverrideProcessor_y(value * defaultValue.y);
         PlayerPrefs.SetFloat("y_sensitivity", value);
+    }
+
+    public void OverrideProcessor_x(float x)
+    {
+        cinema = FindAnyObjectByType<CinemachineFreeLook>();
+        cinema.m_XAxis.m_MaxSpeed = x;
+        //input.Player.Look.ApplyParameterOverride("scaleVector2:x", x,InputBinding.MaskByGroup("Pointer"));
+        //input.Player.Look.ApplyParameterOverride("scaleVector2:x", x * gamepadScaleDefault, InputBinding.MaskByGroup("Gamepad"));
+    }
+
+    public void OverrideProcessor_y(float y)
+    {
+        cinema = FindAnyObjectByType<CinemachineFreeLook>();
+        cinema.m_YAxis.m_MaxSpeed = y;
+        //input.Player.Look.ApplyParameterOverride("scaleVector2:y", y, InputBinding.MaskByGroup("Pointer"));
+        //input.Player.Look.ApplyParameterOverride("scaleVector2:y", y * gamepadScaleDefault, InputBinding.MaskByGroup("Gamepad"));
     }
 }
 
