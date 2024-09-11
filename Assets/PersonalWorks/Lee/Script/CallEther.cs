@@ -44,11 +44,13 @@ public class CallEther : MonoBehaviour
             {
                 EtherCount = 2;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
                 Debug.Log("파도 이동 신호 전송");
-                if(EtherCount == 2)
-                {
-                    EtherCount = 0;
-                }
             }
+            else if (IsCreat && EtherCount == 2)
+            {
+                EtherCount = 3;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
+                Debug.Log("파도 이동 신호 전송");
+            }
+            
         }
     }
 
