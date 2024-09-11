@@ -6,12 +6,12 @@ using UnityEngine;
 public class LaserStaute : MonoBehaviour
 {   
     [SerializeField,LabelText("레이저 시작지점")] public Transform startTrans; // 레이저 시작 위치
-    [SerializeField,LabelText("오브젝트 지정")] public PuzzleDoor puzzleDoor; // 퍼즐 도어 오브젝트
+    [SerializeField,LabelText("오브젝트 지정")] public PuzzleDoor puzzleDoor; // 퍼즐 도어 스크립트가 있는 오브젝트
     [SerializeField,LabelText("레이저 거리")] public float maxLaserDistance = 20f; // 레이저 최대 거리
     private Vector3 direction; // 레이저 방향
     private LineRenderer laser; // 레이저 시각화를 위한 LineRenderer
     private Vector3 StartLaserPos; //레이저 초기 좌표값
-  
+    private bool CountSetKey = false; //오브젝트를 한번만 충돌을 허용하는 장치
 
     // Start is called before the first frame update
     void Start()
@@ -41,10 +41,27 @@ public class LaserStaute : MonoBehaviour
         if (Physics.Raycast(startTrans.position,direction, out hit, maxLaserDistance))
         {
             laser.SetPosition(1, hit.point); // 레이저가 충돌한 지점까지 시각화
+            if(!CountSetKey)
+            {
+                if(hit.collider.gameObject.layer == 8)
+                {
+                    CountSetKey = true;
+                    puzzleDoor.OpenDoorCount ++;
+                    Debug.Log("열쇠 카운트 쌓임");
+                }
+            }
+
         }
         else
         {
             laser.SetPosition(1, startTrans.position + direction * maxLaserDistance); // 충돌하지 않으면 최대 거리까지 레이저 발사
+             if (CountSetKey)
+            {
+                CountSetKey = false; // 충돌 상태 해제
+                puzzleDoor.OpenDoorCount--;
+                Debug.Log("열쇠 카운트 감소");
+            }
+                
         }
     }
 

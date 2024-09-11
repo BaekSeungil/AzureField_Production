@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -8,8 +9,16 @@ public class UISelectInitializer : MonoBehaviour
 {
     public GameObject FirstButton;
     public GameObject SelectOnDisable;
+    public UnityEvent OnCancel;
 
     string gamepadSchemeName = "Gamepad";
+
+    MainPlayerInputActions input;
+
+    private void Awake()
+    {
+        input = UI_InputManager.Instance.UI_Input;
+    }
 
     private void OnEnable()
     {
@@ -27,6 +36,16 @@ public class UISelectInitializer : MonoBehaviour
                 Debug.Log("EventSystem.current Changed : " + FirstButton.name);
             }
         }
+
+        if(OnCancel != null)
+        {
+            input.UI.Cancel.performed += CloseThis;
+        }
+    }
+
+    public void CloseThis(InputAction.CallbackContext context)
+    {
+        OnCancel.Invoke();
     }
 
     private void OnDisable()
@@ -44,6 +63,11 @@ public class UISelectInitializer : MonoBehaviour
                 EventSystem.current.SetSelectedGameObject(SelectOnDisable);
                 Debug.Log("EventSystem.current Changed : " + SelectOnDisable.name);
             }
+        }
+
+        if(OnCancel != null)
+        {
+            input.UI.Cancel.performed -= CloseThis; 
         }
     }
 }
