@@ -335,17 +335,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dd7aa963-968a-4c1a-8aa1-501a80187bc3"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Jump"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""1108743a-af9b-4085-888c-5b08235f68b9"",
                     ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
