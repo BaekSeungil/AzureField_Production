@@ -5,6 +5,7 @@ using UnityEngine;
 public class RingbellSystem : MonoBehaviour
 {
     [SerializeField] private RingbellInteract[] bell;
+    [SerializeField] private ObjMove objmove;
     
 
 
@@ -41,6 +42,26 @@ public class RingbellSystem : MonoBehaviour
                 bell[bell[num].connectionNumber[i]].onoff = true;
             }
         }
-        
+
+        AllbellActiveCheck();
+
+    }
+
+    int checknum = 0;
+    void AllbellActiveCheck()
+    {
+        for (int i = 0; i < bell.Length; i++)
+        {
+            if (bell[i].onoff == true)
+            {
+                checknum++;
+            }
+        }
+        if (checknum == bell.Length)
+        {
+            objmove.moveOnoff = true;
+        }
+
+        checknum = 0;
     }
 }
