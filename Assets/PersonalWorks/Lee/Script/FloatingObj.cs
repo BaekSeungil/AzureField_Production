@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class FloatingObj : MonoBehaviour
-{   
+{
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
     [SerializeField] float submergeOffset = 0f;
+
+
+    private EtherSystem WaveSystem;
 
     private float submergeRate = 0.0f;
     public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
@@ -22,6 +24,7 @@ public class FloatingObj : MonoBehaviour
     private void Awake()
     {
         rbody = GetComponent<Rigidbody>();
+        WaveSystem = FindObjectOfType<EtherSystem>();
     }
 
     private void Start()
@@ -35,6 +38,7 @@ public class FloatingObj : MonoBehaviour
 
     const int oceanLayerMask = 1 << 3;
     const float bouyancymagnitude = 50f;
+
 
     private void FixedUpdate()
     {
@@ -70,4 +74,13 @@ public class FloatingObj : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter(Collider other) 
+    {
+
+        if(other.gameObject.layer == 4)
+        {
+
+
+        }
+    }
 }
