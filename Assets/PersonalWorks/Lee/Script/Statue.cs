@@ -4,15 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum StatueMoveType
-{
-    realTimeType = 0, // 실시간으로 움직임
-    AngleType = 1 // 정해진 각도로 움직임
-};
-
 public class Statue : MonoBehaviour
 {
-    [SerializeField,LabelText("석상 움직임 타입")] public StatueMoveType movetype;
     [SerializeField,LabelText("석상 움직이는 각도")] public float[] MoveAngle; // 석상 움직이는 각도
     [SerializeField,LabelText("석상 오브젝트")] public GameObject StatueObj; // 석상 오브젝트 지정
     [SerializeField, LabelText("회전 속도")] public float rotationSpeed = 1.0f; // 회전 속도
@@ -39,14 +32,9 @@ public class Statue : MonoBehaviour
     
     public void MoveStatueType()
     {
-        if (movetype == StatueMoveType.AngleType)
-        {
-            AngleMoveStatue();
-        }
-        else if (movetype == StatueMoveType.realTimeType)
-        {
-            RealTimeStatue();
-        }
+
+        AngleMoveStatue();
+        
         
     }
 
@@ -67,12 +55,6 @@ public class Statue : MonoBehaviour
             Debug.Log("닿음2");
         }
     }
-
-    public void RealTimeStatue()
-    {
-
-    }
-
     public void AngleMoveStatue()
     {
 
