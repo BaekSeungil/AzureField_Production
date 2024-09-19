@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 
@@ -41,6 +42,9 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
     [SerializeField] EventReference sound_Close;        // 소리 : 메뉴 닫을시 소리
 
     [SerializeField] private GameObject visualGroup;
+    [SerializeField] private GameObject titleLineObject;
+
+    public bool IsTitlelineSelected { get { return EventSystem.current.gameObject.Equals(titleLineObject); } }
     [SerializeField] TextMeshProUGUI titleLineTextmesh;
     [SerializeField] TextMeshProUGUI nextTextmesh;
     [SerializeField] TextMeshProUGUI prevTextemesh;
@@ -55,12 +59,17 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         input = UI_InputManager.Instance.UI_Input;
         input.Player.Enable();
         input.Player.OpenPlaymenu.performed += OnOpenKeydown;
-        input.UI.Navigate.performed += OnNavigate;
+        input.UI.SecondaryNav.performed += OnSecondaryNavigate;
     }
 
     private void Start()
     {
         visualGroup.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        
     }
 
     public void EnableInput()
@@ -85,14 +94,15 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
         }
     }
 
-    public void OnNavigate(InputAction.CallbackContext context)
+    public void OnSecondaryNavigate(InputAction.CallbackContext context)
     {
         if (visualGroup.activeInHierarchy == false) return;
 
-            if (context.ReadValue<Vector2>().x > 0)
+        if (context.ReadValue<float>() > 0)
             BrowseNext();
-        else if (context.ReadValue<Vector2>().x < 0)
+        else if (context.ReadValue<float>() < 0)
             BrowsePrev();
+
     }
 
     public void BrowseNext()
@@ -194,7 +204,7 @@ public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBeha
                 return m;
         }
 
-        Debug.LogWarning("Failed to file PlaymenuElement : " + playmenu.ToString() + " | FindElement will return NullElement");
+        Debug.LogWarning("Failed to file PlaymenuE  lement : " + playmenu.ToString() + " | FindElement will return NullElement");
         PlaymenuElement nullElement = new PlaymenuElement();
         nullElement.assignedType = PlaymenuType.Null;
         return nullElement;

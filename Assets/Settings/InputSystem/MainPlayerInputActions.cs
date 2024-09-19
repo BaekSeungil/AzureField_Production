@@ -82,6 +82,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""OpenPlaymenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SailboatForward"",
                     ""type"": ""Button"",
                     ""id"": ""a04d3e4f-efd3-4fde-bf6d-638c9793027e"",
@@ -94,15 +103,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""SailboatBackward"",
                     ""type"": ""Button"",
                     ""id"": ""3171b56e-e24a-4415-864b-7909325416ed"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""OpenPlaymenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""1eea5282-6957-48dc-a9b4-ed83fa99d978"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -134,6 +134,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ether"",
+                    ""type"": ""Button"",
+                    ""id"": ""5fe96fda-655d-4b6d-912e-1f54be0d299e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -143,7 +152,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -253,7 +262,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""path"": ""<Joystick>/stick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Joystick"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -263,7 +272,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""id"": ""c1f7a91b-d0fd-4a62-997e-7fb9b69bf235"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=30,y=30)"",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
@@ -274,19 +283,8 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""id"": ""8c8e490b-c610-4785-884f-f04217b23ca4"",
                     ""path"": ""<Pointer>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse;Touch"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3e5f5442-8668-4b27-a940-df99bad7e831"",
-                    ""path"": ""<Joystick>/{Hatswitch}"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
+                    ""processors"": ""ScaleVector2"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -304,11 +302,11 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2972965c-0481-4355-a472-838833195f79"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""id"": ""7e7641db-78f3-49f4-b76c-d3dd660a36da"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -326,11 +324,33 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""5ed3aa0f-1f4b-42d6-b70b-c3de3ef1a401"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""1108743a-af9b-4085-888c-5b08235f68b9"",
                     ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e2022238-baa8-44bf-85ad-3de83b6a324a"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -348,8 +368,19 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""e42e643b-dd3c-48fb-b0ef-8d2b0e02f68b"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""ToggleSailboat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0b40c763-5a00-44cf-b64c-45ab51a4be19"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -359,11 +390,121 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""01dd6803-9e8a-42af-a3e7-67fba122c9a4"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""f84d6083-e6dd-42d3-877a-862f961b4821"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SailboatForward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e35a4b3-6605-4032-b301-08f1be4b3b60"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatLeapup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c76b1f60-7b4f-438f-992f-51a9227f9f46"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SailboatLeapup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05f6913d-c316-48b2-a6bb-e225f14c7960"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatBooster"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e1228706-06de-4c16-81f5-b8008f796eaa"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SailboatBooster"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4a8e49f-65d8-404f-93d1-69c056d79b9e"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatDrift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""64f0c9d0-5b87-47ff-aed8-ffff562e6719"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SailboatDrift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e0d50455-09c5-4bac-8db8-1230da85085b"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Ether"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""64164c81-1c07-4b58-b90f-e15d22546462"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Ether"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0376eea5-6327-4951-aa7a-6b548b808743"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SailboatBackward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07e430ac-5b40-43a4-8ff9-62b5cf30f2e8"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""SailboatBackward"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -392,34 +533,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3e35a4b3-6605-4032-b301-08f1be4b3b60"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""id"": ""b98dccab-1b3f-427d-9216-4f449f6c81a1"",
+                    ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SailboatLeapup"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""05f6913d-c316-48b2-a6bb-e225f14c7960"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SailboatBooster"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f4a8e49f-65d8-404f-93d1-69c056d79b9e"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SailboatDrift"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""OpenPlaymenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -511,6 +630,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Negative"",
+                    ""type"": ""Button"",
+                    ""id"": ""6d85dc99-f5e5-423d-a28f-d5ff3f801ae6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Close"",
                     ""type"": ""Button"",
                     ""id"": ""6842df42-01b3-46ae-9b59-059f6f277e11"",
@@ -542,6 +670,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""type"": ""Button"",
                     ""id"": ""83687b2c-eeb1-4a86-9a61-8ce0924e01ee"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryNav"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""fa551193-4cf6-4011-ab50-008213a317fb"",
+                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -659,61 +796,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Joystick"",
-                    ""id"": ""e25d9774-381c-4a61-b47c-7b6b299ad9f9"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Navigate"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""3db53b26-6601-41be-9887-63ac74e79d19"",
-                    ""path"": ""<Joystick>/stick/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Navigate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""0cb3e13e-3d90-4178-8ae6-d9c5501d653f"",
-                    ""path"": ""<Joystick>/stick/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Navigate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""0392d399-f6dd-4c82-8062-c1e9c0d34835"",
-                    ""path"": ""<Joystick>/stick/left"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Navigate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""942a66d9-d42f-43d6-8d70-ecb4ba5363bc"",
-                    ""path"": ""<Joystick>/stick/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Navigate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": ""Keyboard"",
                     ""id"": ""ff527021-f211-4c02-933e-5976594c46ed"",
                     ""path"": ""2DVector"",
@@ -815,10 +897,10 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""9e92bb26-7e3b-4ec4-b06b-3c8f8e498ddc"",
-                    ""path"": ""*/{Submit}"",
+                    ""path"": ""<XInputController>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -826,10 +908,21 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 {
                     ""name"": """",
                     ""id"": ""82627dcc-3b13-4ba9-841d-e4b746d6553e"",
-                    ""path"": ""*/{Cancel}"",
+                    ""path"": ""<XInputController>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d3fd113-e74a-40ff-a683-141d0a14f721"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -863,6 +956,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ScrollWheel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec7959e9-c695-4ef4-8944-5c789201a2c4"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""ScrollWheel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -935,6 +1039,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f02b1de4-0562-4734-9485-03fb2e65d85f"",
+                    ""path"": ""<XInputController>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Positive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""609d0ad2-be25-44b3-b109-c56276720fa8"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
@@ -946,12 +1061,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""1b36bf91-2800-42d8-b15c-90c0d5f34394"",
-                    ""path"": ""<Keyboard>/p"",
+                    ""id"": ""eb29aa6c-aff5-472e-b4e9-252e387b7227"",
+                    ""path"": ""<XInputController>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pasue"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Close"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -976,6 +1091,138 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""MapToggle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7d278ff6-217f-49cc-845e-b0a12220bf54"",
+                    ""path"": ""<XInputController>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Negative"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e83754e4-e541-451d-b8da-7f6b62f26857"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Negative"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""255c9677-ce72-4c7f-a24f-006aff73ffd7"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fe85083-1417-4591-81aa-5bd4822315ac"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b36bf91-2800-42d8-b15c-90c0d5f34394"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pasue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""627a1ffa-d89e-4011-b0b3-b163bdb92777"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pasue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""92e4407e-a676-487d-81ab-ec702d01a065"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b8315dfd-e3e5-4aec-bc12-70f71e2d0ce8"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""c172fcdb-005b-4102-939b-43d4a0872d4d"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""14bf8720-43ae-4851-bfa1-b361c2ea9c0d"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""3ba088c2-7df1-49c7-8e83-afa31af5f876"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""debae06e-880f-45cd-a2cf-58f240938213"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryNav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1051,12 +1298,13 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_ToggleSailboat = m_Player.FindAction("ToggleSailboat", throwIfNotFound: true);
+        m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         m_Player_SailboatForward = m_Player.FindAction("SailboatForward", throwIfNotFound: true);
         m_Player_SailboatBackward = m_Player.FindAction("SailboatBackward", throwIfNotFound: true);
-        m_Player_OpenPlaymenu = m_Player.FindAction("OpenPlaymenu", throwIfNotFound: true);
         m_Player_SailboatBooster = m_Player.FindAction("SailboatBooster", throwIfNotFound: true);
         m_Player_SailboatLeapup = m_Player.FindAction("SailboatLeapup", throwIfNotFound: true);
         m_Player_SailboatDrift = m_Player.FindAction("SailboatDrift", throwIfNotFound: true);
+        m_Player_Ether = m_Player.FindAction("Ether", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1068,10 +1316,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_Positive = m_UI.FindAction("Positive", throwIfNotFound: true);
+        m_UI_Negative = m_UI.FindAction("Negative", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
         m_UI_Pasue = m_UI.FindAction("Pasue", throwIfNotFound: true);
         m_UI_SimpleHelp = m_UI.FindAction("SimpleHelp", throwIfNotFound: true);
         m_UI_MapToggle = m_UI.FindAction("MapToggle", throwIfNotFound: true);
+        m_UI_SecondaryNav = m_UI.FindAction("SecondaryNav", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1139,12 +1389,13 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_ToggleSailboat;
+    private readonly InputAction m_Player_OpenPlaymenu;
     private readonly InputAction m_Player_SailboatForward;
     private readonly InputAction m_Player_SailboatBackward;
-    private readonly InputAction m_Player_OpenPlaymenu;
     private readonly InputAction m_Player_SailboatBooster;
     private readonly InputAction m_Player_SailboatLeapup;
     private readonly InputAction m_Player_SailboatDrift;
+    private readonly InputAction m_Player_Ether;
     public struct PlayerActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1155,12 +1406,13 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @ToggleSailboat => m_Wrapper.m_Player_ToggleSailboat;
+        public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputAction @SailboatForward => m_Wrapper.m_Player_SailboatForward;
         public InputAction @SailboatBackward => m_Wrapper.m_Player_SailboatBackward;
-        public InputAction @OpenPlaymenu => m_Wrapper.m_Player_OpenPlaymenu;
         public InputAction @SailboatBooster => m_Wrapper.m_Player_SailboatBooster;
         public InputAction @SailboatLeapup => m_Wrapper.m_Player_SailboatLeapup;
         public InputAction @SailboatDrift => m_Wrapper.m_Player_SailboatDrift;
+        public InputAction @Ether => m_Wrapper.m_Player_Ether;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1188,15 +1440,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @ToggleSailboat.started += instance.OnToggleSailboat;
             @ToggleSailboat.performed += instance.OnToggleSailboat;
             @ToggleSailboat.canceled += instance.OnToggleSailboat;
+            @OpenPlaymenu.started += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
             @SailboatForward.started += instance.OnSailboatForward;
             @SailboatForward.performed += instance.OnSailboatForward;
             @SailboatForward.canceled += instance.OnSailboatForward;
             @SailboatBackward.started += instance.OnSailboatBackward;
             @SailboatBackward.performed += instance.OnSailboatBackward;
             @SailboatBackward.canceled += instance.OnSailboatBackward;
-            @OpenPlaymenu.started += instance.OnOpenPlaymenu;
-            @OpenPlaymenu.performed += instance.OnOpenPlaymenu;
-            @OpenPlaymenu.canceled += instance.OnOpenPlaymenu;
             @SailboatBooster.started += instance.OnSailboatBooster;
             @SailboatBooster.performed += instance.OnSailboatBooster;
             @SailboatBooster.canceled += instance.OnSailboatBooster;
@@ -1206,6 +1458,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatDrift.started += instance.OnSailboatDrift;
             @SailboatDrift.performed += instance.OnSailboatDrift;
             @SailboatDrift.canceled += instance.OnSailboatDrift;
+            @Ether.started += instance.OnEther;
+            @Ether.performed += instance.OnEther;
+            @Ether.canceled += instance.OnEther;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1228,15 +1483,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @ToggleSailboat.started -= instance.OnToggleSailboat;
             @ToggleSailboat.performed -= instance.OnToggleSailboat;
             @ToggleSailboat.canceled -= instance.OnToggleSailboat;
+            @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
+            @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
             @SailboatForward.started -= instance.OnSailboatForward;
             @SailboatForward.performed -= instance.OnSailboatForward;
             @SailboatForward.canceled -= instance.OnSailboatForward;
             @SailboatBackward.started -= instance.OnSailboatBackward;
             @SailboatBackward.performed -= instance.OnSailboatBackward;
             @SailboatBackward.canceled -= instance.OnSailboatBackward;
-            @OpenPlaymenu.started -= instance.OnOpenPlaymenu;
-            @OpenPlaymenu.performed -= instance.OnOpenPlaymenu;
-            @OpenPlaymenu.canceled -= instance.OnOpenPlaymenu;
             @SailboatBooster.started -= instance.OnSailboatBooster;
             @SailboatBooster.performed -= instance.OnSailboatBooster;
             @SailboatBooster.canceled -= instance.OnSailboatBooster;
@@ -1246,6 +1501,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SailboatDrift.started -= instance.OnSailboatDrift;
             @SailboatDrift.performed -= instance.OnSailboatDrift;
             @SailboatDrift.canceled -= instance.OnSailboatDrift;
+            @Ether.started -= instance.OnEther;
+            @Ether.performed -= instance.OnEther;
+            @Ether.canceled -= instance.OnEther;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1276,10 +1534,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_MiddleClick;
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_Positive;
+    private readonly InputAction m_UI_Negative;
     private readonly InputAction m_UI_Close;
     private readonly InputAction m_UI_Pasue;
     private readonly InputAction m_UI_SimpleHelp;
     private readonly InputAction m_UI_MapToggle;
+    private readonly InputAction m_UI_SecondaryNav;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1293,10 +1553,12 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @MiddleClick => m_Wrapper.m_UI_MiddleClick;
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @Positive => m_Wrapper.m_UI_Positive;
+        public InputAction @Negative => m_Wrapper.m_UI_Negative;
         public InputAction @Close => m_Wrapper.m_UI_Close;
         public InputAction @Pasue => m_Wrapper.m_UI_Pasue;
         public InputAction @SimpleHelp => m_Wrapper.m_UI_SimpleHelp;
         public InputAction @MapToggle => m_Wrapper.m_UI_MapToggle;
+        public InputAction @SecondaryNav => m_Wrapper.m_UI_SecondaryNav;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1333,6 +1595,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Positive.started += instance.OnPositive;
             @Positive.performed += instance.OnPositive;
             @Positive.canceled += instance.OnPositive;
+            @Negative.started += instance.OnNegative;
+            @Negative.performed += instance.OnNegative;
+            @Negative.canceled += instance.OnNegative;
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
@@ -1345,6 +1610,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @MapToggle.started += instance.OnMapToggle;
             @MapToggle.performed += instance.OnMapToggle;
             @MapToggle.canceled += instance.OnMapToggle;
+            @SecondaryNav.started += instance.OnSecondaryNav;
+            @SecondaryNav.performed += instance.OnSecondaryNav;
+            @SecondaryNav.canceled += instance.OnSecondaryNav;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1376,6 +1644,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @Positive.started -= instance.OnPositive;
             @Positive.performed -= instance.OnPositive;
             @Positive.canceled -= instance.OnPositive;
+            @Negative.started -= instance.OnNegative;
+            @Negative.performed -= instance.OnNegative;
+            @Negative.canceled -= instance.OnNegative;
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
@@ -1388,6 +1659,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @MapToggle.started -= instance.OnMapToggle;
             @MapToggle.performed -= instance.OnMapToggle;
             @MapToggle.canceled -= instance.OnMapToggle;
+            @SecondaryNav.started -= instance.OnSecondaryNav;
+            @SecondaryNav.performed -= instance.OnSecondaryNav;
+            @SecondaryNav.canceled -= instance.OnSecondaryNav;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1458,12 +1732,13 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnInteract(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnToggleSailboat(InputAction.CallbackContext context);
+        void OnOpenPlaymenu(InputAction.CallbackContext context);
         void OnSailboatForward(InputAction.CallbackContext context);
         void OnSailboatBackward(InputAction.CallbackContext context);
-        void OnOpenPlaymenu(InputAction.CallbackContext context);
         void OnSailboatBooster(InputAction.CallbackContext context);
         void OnSailboatLeapup(InputAction.CallbackContext context);
         void OnSailboatDrift(InputAction.CallbackContext context);
+        void OnEther(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1476,9 +1751,11 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnMiddleClick(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
         void OnPositive(InputAction.CallbackContext context);
+        void OnNegative(InputAction.CallbackContext context);
         void OnClose(InputAction.CallbackContext context);
         void OnPasue(InputAction.CallbackContext context);
         void OnSimpleHelp(InputAction.CallbackContext context);
         void OnMapToggle(InputAction.CallbackContext context);
+        void OnSecondaryNav(InputAction.CallbackContext context);
     }
 }

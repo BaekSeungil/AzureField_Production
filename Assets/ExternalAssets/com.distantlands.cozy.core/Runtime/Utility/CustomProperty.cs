@@ -9,9 +9,10 @@ using UnityEditor;
 namespace DistantLands.Cozy
 {
     [Serializable]
-    public class CustomProperty
+    public class VariableProperty
     {
 
+        public bool overrideValue = true;
         public enum Mode { interpolate, constant }
         public Mode mode = Mode.constant;
 
@@ -22,6 +23,11 @@ namespace DistantLands.Cozy
         public float floatVal = 1;
         public AnimationCurve curveVal = new AnimationCurve() { keys = new Keyframe[2] { new Keyframe(0, 1), new Keyframe(1, 1) } };
 
+
+        public static implicit operator bool(VariableProperty data)
+        {
+            return data.overrideValue;
+        }
 
         public void GetValue(out Color color, float time)
         {
@@ -54,7 +60,7 @@ namespace DistantLands.Cozy
     {
 
 
-        public CustomProperty property;
+        public VariableProperty property;
 
 
     }
@@ -83,17 +89,19 @@ namespace DistantLands.Cozy
 
             EditorGUI.BeginProperty(position, label, property);
 
-            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Keyboard), label);
 
-            var indent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
+            var toggleRect = new Rect(position.x, position.y, 20, position.height);
+            var labelRect = new Rect(position.x + 22, position.y, (position.width - 45) / 2, position.height);
+            var unitRect = new Rect(position.x + 22 + ((position.width - 45) / 2), position.y, (position.width - 45) / 2, position.height);
+            var dropdown = new Rect(position.x + (position.width - 35), position.y, 35, position.height);
 
-            var unitRect = new Rect(position.x, position.y, position.width - 25, position.height);
-            var dropdown = new Rect(position.x + (position.width - 20), position.y, 20, position.height);
-
+            var toggle = property.FindPropertyRelative("overrideValue");
             var mode = property.FindPropertyRelative("mode");
             var floatVal = property.FindPropertyRelative("floatVal");
 
+            EditorGUI.PropertyField(toggleRect, toggle, GUIContent.none);
+            EditorGUI.PrefixLabel(labelRect, label);
+            EditorGUI.BeginDisabledGroup(!toggle.boolValue);
 
             if (color)
             {
@@ -110,12 +118,11 @@ namespace DistantLands.Cozy
                     if (_attribute.min != _attribute.max)
                         EditorGUI.Slider(unitRect, floatVal, min, max, GUIContent.none);
                     else
-                        EditorGUI.PropertyField(unitRect, property.FindPropertyRelative("floatVal"), GUIContent.none);
+                        EditorGUI.PropertyField(unitRect, floatVal, GUIContent.none);
             }
-            EditorGUI.PropertyField(dropdown, property.FindPropertyRelative("mode"), GUIContent.none);
+            EditorGUI.PropertyField(dropdown, mode, GUIContent.none);
 
-
-            EditorGUI.indentLevel = indent;
+            EditorGUI.EndDisabledGroup();
 
             EditorGUI.EndProperty();
         }
@@ -504,7 +511,7 @@ namespace DistantLands.Cozy
         }
     }
 
-    [UnityEditor.CustomPropertyDrawer(typeof(FXProfile.OverrideData))]
+    [UnityEditor.CustomPropertyDrawer(typeof(Overridable<float>))]
     public class OverrideDrawer : PropertyDrawer
     {
         SerializedProperty useOverride;
@@ -519,6 +526,29 @@ namespace DistantLands.Cozy
 
             EditorGUI.PropertyField(posA, property.FindPropertyRelative("overrideValue"), GUIContent.none);
             EditorGUI.BeginDisabledGroup(!useOverride.boolValue);
+            EditorGUI.PropertyField(posB, property.FindPropertyRelative("value"), label);
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUI.EndProperty();
+        }
+    }
+
+    [UnityEditor.CustomPropertyDrawer(typeof(Overridable<Color>))]
+    public class OverrideColorDrawer : PropertyDrawer
+    {
+        SerializedProperty useOverride;
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+
+            useOverride = property.FindPropertyRelative("overrideValue");
+            EditorGUI.BeginProperty(position, label, property);
+            Rect posA = new Rect(position.x, position.y, position.height, position.height);
+            Rect posB = new Rect(position.x + position.height + 5, position.y, position.width - (position.height + 5), position.height);
+
+            EditorGUI.PropertyField(posA, property.FindPropertyRelative("overrideValue"), GUIContent.none);
+            EditorGUI.BeginDisabledGroup(!useOverride.boolValue);
+            property.FindPropertyRelative("value").colorValue = EditorGUI.ColorField(posB, label, property.FindPropertyRelative("value").colorValue, true, true, true);
             EditorGUI.PropertyField(posB, property.FindPropertyRelative("value"), label);
             EditorGUI.EndDisabledGroup();
 

@@ -16,7 +16,7 @@ namespace DistantLands.Cozy
 {
 
     [ExecuteAlways]
-    public class CozyAmbienceModule : CozyModule, ICozyBiomeModule
+    public class CozyAmbienceModule : CozyBiomeModuleBase<CozyAmbienceModule>
     {
 
         public AmbienceProfile[] ambienceProfiles = new AmbienceProfile[0];
@@ -57,12 +57,7 @@ namespace DistantLands.Cozy
         public AmbienceProfile currentAmbienceProfile;
         public AmbienceProfile ambienceChangeCheck;
         public float timeToChangeProfiles = 7;
-        private float m_AmbienceTimer;
-        public float weight;
-
-        public List<CozyAmbienceModule> biomes = new List<CozyAmbienceModule>();
-        public CozyAmbienceModule parentModule;
-        public bool isBiomeModule { get; set; }
+        public float ambienceTimer;
 
         void Start()
         {
@@ -84,19 +79,6 @@ namespace DistantLands.Cozy
                 weightedAmbience = new List<WeightedAmbience>() { new WeightedAmbience() { weight = 1, ambienceProfile = currentAmbienceProfile } };
             }
 
-        }
-
-        public override void InitializeModule()
-        {
-            isBiomeModule = GetComponent<CozyBiome>();
-
-            if (isBiomeModule)
-            {
-                AddBiome();
-                return;
-            }
-            base.InitializeModule();
-            biomes = FindObjectsOfType<CozyAmbienceModule>().Where(x => x != this).ToList();
         }
 
         public void FindAllAmbiences()
@@ -129,39 +111,45 @@ namespace DistantLands.Cozy
                 }
 
                 if (weatherSphere.timeModule)
-                    m_AmbienceTimer -= Time.deltaTime * weatherSphere.timeModule.modifiedTimeSpeed;
+                    ambienceTimer -= Time.deltaTime * weatherSphere.timeModule.modifiedTimeSpeed;
                 else
-                    m_AmbienceTimer -= Time.deltaTime * 0.005f;
+                    ambienceTimer -= Time.deltaTime * 0.005f;
 
-                if (m_AmbienceTimer <= 0)
+                if (ambienceTimer <= 0)
                 {
                     SetNextAmbience();
                 }
 
-                foreach (WeightedAmbience i in weightedAmbience)
-                {
-                    i.weight = i.weight * weight;
-                }
-
-                weightedAmbience.RemoveAll(x => x.weight == 0 && x.transitioning == false);
-
             }
 
             ComputeBiomeWeights();
-            // ManageBiomeWeights();
         }
 
         public override void UpdateFXWeights()
         {
-            foreach (WeightedAmbience weather in weightedAmbience)
+            foreach (WeightedAmbience i in weightedAmbience)
             {
-                weather.ambienceProfile.SetWeight(weather.weight);
+                i.ambienceProfile.SetWeight(i.weight * weight);
+            }
+            foreach (CozyAmbienceModule biome in biomes)
+            {
+                foreach (WeightedAmbience i in biome.weightedAmbience)
+                {
+                    i.ambienceProfile.SetWeight(i.weight * biome.weight);
+                }
             }
         }
-        public void UpdateBiomeModule()
+        public override void UpdateBiomeModule()
         {
-
-            currentAmbienceProfile.SetWeight(weight);
+            if (weightedAmbience.Count == 0 || weightedAmbience[0].ambienceProfile != currentAmbienceProfile)
+            {
+                weightedAmbience = new List<WeightedAmbience>() {
+                    new WeightedAmbience() {
+                        ambienceProfile = currentAmbienceProfile,
+                        weight = 1
+                    }
+                };
+            }
 
         }
 
@@ -191,7 +179,7 @@ namespace DistantLands.Cozy
 
             }
 
-            m_AmbienceTimer += Random.Range(currentAmbienceProfile.minTime, currentAmbienceProfile.maxTime);
+            ambienceTimer += Random.Range(currentAmbienceProfile.minTime, currentAmbienceProfile.maxTime);
         }
 
         public void SetAmbience(AmbienceProfile profile, float timeToChange)
@@ -213,10 +201,10 @@ namespace DistantLands.Cozy
 
             }
 
-            m_AmbienceTimer += Random.Range(currentAmbienceProfile.minTime, currentAmbienceProfile.maxTime);
+            ambienceTimer += Random.Range(currentAmbienceProfile.minTime, currentAmbienceProfile.maxTime);
         }
 
-        public void SkipTime(float timeToSkip) => m_AmbienceTimer -= timeToSkip;
+        public void SkipTime(float timeToSkip) => ambienceTimer -= timeToSkip;
 
         public AmbienceProfile WeightedRandom(AmbienceProfile[] profiles)
         {
@@ -272,57 +260,7 @@ namespace DistantLands.Cozy
             return i;
         }
 
-        public float GetTimeTillNextAmbience() => m_AmbienceTimer;
-
-        public void AddBiome()
-        {
-            weatherSphere = CozyWeather.instance;
-
-            if (parentModule == null)
-                parentModule = weatherSphere.GetModule<CozyAmbienceModule>();
-
-            weatherSphere.GetModule<CozyAmbienceModule>().biomes = FindObjectsOfType<CozyAmbienceModule>().Where(x => x != weatherSphere.GetModule<CozyAmbienceModule>()).ToList();
-
-        }
-
-        public bool CheckBiome()
-        {
-
-            if (!CozyWeather.instance.GetModule<CozyAmbienceModule>())
-            {
-                Debug.LogError("The ambience biome module requires the ambience module to be enabled on your weather sphere. Please add the ambience module before setting up your biome.");
-                return false;
-            }
-            return true;
-        }
-
-        public void RemoveBiome()
-        {
-            parentModule.biomes.Remove(this);
-        }
-
-        public void ComputeBiomeWeights()
-        {
-            float totalSystemWeight = 0;
-            biomes.RemoveAll(x => x == null);
-
-            foreach (CozyAmbienceModule biome in biomes)
-            {
-                if (biome != this)
-                {
-                    totalSystemWeight += biome.system.targetWeight;
-                }
-            }
-
-            weight = Mathf.Clamp01(1 - (totalSystemWeight));
-            totalSystemWeight += weight;
-
-            foreach (CozyAmbienceModule biome in biomes)
-            {
-                if (biome.system != this)
-                    biome.weight = biome.system.targetWeight / (totalSystemWeight == 0 ? 1 : totalSystemWeight);
-            }
-        }
+        public float GetTimeTillNextAmbience() => ambienceTimer;
 
     }
 
