@@ -37,13 +37,19 @@ public class PrefabSpawner : MonoBehaviour
             float randomZ = Random.Range(-spawnRangeZ, spawnRangeZ);
 
             // Y축을 -3으로 고정하고, 무작위로 생성된 X, Z 좌표를 설정
-            Vector3 spawnPosition = new Vector3(player.position.x + randomX, -3f, player.position.z + randomZ);
+            Vector3 spawnPosition = new Vector3(player.position.x + randomX, 0f, player.position.z + randomZ);
+
+            // 무작위로 Y축 회전 값 설정
+            float randomYRotation = Random.Range(0f, 360f);
+
+            // Y축 회전만 무작위로 설정하여 회전값 생성
+            Quaternion randomRotation = Quaternion.Euler(0, randomYRotation, 0);
 
             // 무작위로 프리팹 선택
             GameObject prefabToSpawn = prefabs[Random.Range(0, prefabs.Length)];
 
-            // 프리팹 생성
-            GameObject spawnedPrefab = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
+            // 프리팹 생성 (무작위 회전 적용)
+            GameObject spawnedPrefab = Instantiate(prefabToSpawn, spawnPosition, randomRotation);
 
             // 생성된 프리팹의 레이어를 Ocean으로 설정
             SetLayerRecursively(spawnedPrefab, oceanLayer);
