@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class FlyingFish : MonoBehaviour
 {
-    [SerializeField, LabelText("이동속도")] public float Speed;
-    [SerializeField, LabelText("최종도착거리")] public float FinalLine;
-    [SerializeField, LabelText("점프 높이")] public float JumpHeight;
-    [SerializeField, LabelText("점프 주기")] public float JumpFrequency;
+    [SerializeField, LabelText("이동속도")] private float Speed;
+    [SerializeField, LabelText("최종도착거리")] private float FinalLine;
+    [SerializeField, LabelText("점프 높이")] private float JumpHeight;
+    [SerializeField, LabelText("점프 주기")] private float JumpFrequency;
 
     private Vector3 initialPosition;
     private float journeyLength;
