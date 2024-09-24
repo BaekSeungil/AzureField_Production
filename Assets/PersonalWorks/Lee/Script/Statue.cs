@@ -78,24 +78,4 @@ public class Statue : MonoBehaviour
             isRotating = false;
         }
     }
-    
-    private void OnDrawGizmos() 
-    {
-        Gizmos.color = Color.blue;
-
-        for(int i =0; i < MoveAngle.Length; i++)
-        {
-            // 레이저의 발사 지점 기준으로 석상의 각도값을 적용
-            float statueAngle = MoveAngle[i]; // 석상 각도
-            Quaternion rotation = Quaternion.Euler(0, statueAngle, 0); // 석상 각도를 레이저에 적용
-            Vector3 rotatedDirection = rotation * Vector3.forward; // 레이저 방향 회전
-
-            Vector3 targetPos = StartStatuePos + rotatedDirection * 20f; // 회전된 방향에 맞춰 최대 거리까지 예상 경로 계산
-            Gizmos.DrawLine(StartStatuePos, targetPos); // 예상 경로 그리기
-            Gizmos.DrawSphere(targetPos, 0.1f); // 예상 충돌 지점에 구 그리기
-        }
-
-
-    }
-
 }
