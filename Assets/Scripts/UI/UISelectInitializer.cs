@@ -37,9 +37,12 @@ public class UISelectInitializer : MonoBehaviour
             }
         }
 
-        if(OnCancel != null)
+        if (OnCancel != null)
         {
-            input.UI.Cancel.performed += CloseThis;
+            if (input.Player.OpenPlaymenu.IsPressed())
+                input.UI.Cancel.Reset();
+            else
+                input.UI.Cancel.performed += CloseThis;
         }
     }
 
