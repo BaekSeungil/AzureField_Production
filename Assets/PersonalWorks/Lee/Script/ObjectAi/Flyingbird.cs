@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class Flyingbird : MonoBehaviour
 {
     [SerializeField, LabelText("이동속도")] private float Speed;
     [SerializeField, LabelText("최종도착거리")] private float FinalLine;
+    [SerializeField,LabelText("애니메이션 재생속도")]private float AniSpeed;
 
     
     RandomFlyObj randomFlyObj;
