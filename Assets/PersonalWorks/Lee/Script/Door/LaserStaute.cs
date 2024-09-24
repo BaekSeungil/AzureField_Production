@@ -2,12 +2,14 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LaserStaute : MonoBehaviour
 {   
     [SerializeField,LabelText("레이저 시작지점")] public Transform startTrans; // 레이저 시작 위치
     [SerializeField,LabelText("오브젝트 지정")] public PuzzleDoor puzzleDoor; // 퍼즐 도어 스크립트가 있는 오브젝트
     [SerializeField,LabelText("레이저 거리")] public float maxLaserDistance = 20f; // 레이저 최대 거리
+    
     private Vector3 direction; // 레이저 방향
     private LineRenderer laser; // 레이저 시각화를 위한 LineRenderer
     private Vector3 StartLaserPos; //레이저 초기 좌표값
@@ -17,7 +19,6 @@ public class LaserStaute : MonoBehaviour
     void Start()
     {
         StartLaserPos = startTrans.position;
-
         laser = gameObject.GetComponent<LineRenderer>();
         direction = startTrans.forward; // 레이저는 시작점
         puzzleDoor = FindObjectOfType<PuzzleDoor>(); // 퍼즐 도어 찾기
@@ -84,6 +85,8 @@ public class LaserStaute : MonoBehaviour
             // 충돌하지 않으면 최대 거리까지 선 그리기
             Gizmos.DrawLine(laserStartPos, laserEndPos);
         }
+
+
     }
 
 }
