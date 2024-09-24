@@ -17,7 +17,22 @@ public class EtherSystem : MonoBehaviour
 
     private Vector3 startPosition; // 에테르가 생성된 초기 위치
     private Vector3 targetPosition;
-    // Start is called before the first frame update
+    
+    public static EtherSystem Instance { get; private set; }
+
+    private void Awake() 
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 씬 전환 시에도 파괴되지 않도록
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
         callEther = FindObjectOfType<CallEther>();
@@ -81,6 +96,13 @@ public class EtherSystem : MonoBehaviour
         yield return new WaitForSeconds(DeletTime);
         callEther.IsCreat = false;
         Destroy(gameObject);
+    }
+
+    public Vector3 GetWaveDirection()
+    {
+        Vector3 playerForward = callEther.Spawn.transform.forward;
+        targetPosition = startPosition + playerForward.normalized * FinalDistance;
+        return (targetPosition - startPosition).normalized;
     }
 
     private void OnDrawGizmos() 
