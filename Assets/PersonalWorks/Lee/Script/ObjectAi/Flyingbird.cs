@@ -14,12 +14,15 @@ public class Flyingbird : MonoBehaviour
     RandomFlyObj randomFlyObj;
     private Vector3 initialPosition;
     private float startTime;
+    private Animator animator;
 
     void Start()
     {
         initialPosition = transform.position;
         startTime = Time.time;
         randomFlyObj = FindObjectOfType<RandomFlyObj>();
+        animator = GetComponent<Animator>();
+        animator.SetFloat("AniSpeed", AniSpeed);
     }
 
     // Update is called once per frame
