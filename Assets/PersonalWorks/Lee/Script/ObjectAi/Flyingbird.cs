@@ -12,6 +12,7 @@ public class Flyingbird : MonoBehaviour
 
     
     RandomFlyObj randomFlyObj;
+    SpawnBird spawnBird;
     private Vector3 initialPosition;
     private float startTime;
     private Animator animator;
@@ -21,6 +22,7 @@ public class Flyingbird : MonoBehaviour
         initialPosition = transform.position;
         startTime = Time.time;
         randomFlyObj = FindObjectOfType<RandomFlyObj>();
+        spawnBird = FindObjectOfType<SpawnBird>();
         animator = GetComponent<Animator>();
         animator.SetFloat("AniSpeed", AniSpeed);
     }
@@ -42,6 +44,7 @@ public class Flyingbird : MonoBehaviour
         {
             // 오브젝트를 파괴하거나 다른 동작을 수행
             randomFlyObj.BoolSpawnbird = true;
+            spawnBird.BirdCount++;
             Destroy(gameObject);
         }
     }
