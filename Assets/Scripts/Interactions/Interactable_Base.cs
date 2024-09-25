@@ -46,6 +46,8 @@ public class Interactable_Base : SerializedMonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        if(!isEnabled) return;
+
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             input = other.GetComponentInParent<PlayerCore>().Input;

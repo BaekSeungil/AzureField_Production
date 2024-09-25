@@ -1,14 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
-using UnityEngine.Rendering;
-using Unity.Entities;
-using UnityEngine.InputSystem;
-using UnityEngine.PlayerLoop;
-using FMOD;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization;
 using System.Linq;
