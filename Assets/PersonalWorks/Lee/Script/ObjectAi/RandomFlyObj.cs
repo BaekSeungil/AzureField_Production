@@ -27,11 +27,6 @@ public class RandomFlyObj : MonoBehaviour
             StartCoroutine(SpawnWithInterval());  // 코루틴 시작
         }
     }
-
-    void Update()
-    {
-        TrySpawnObject();
-    }
     public void StartSpawning()
     {
         if (!BoolSpawnbird)
