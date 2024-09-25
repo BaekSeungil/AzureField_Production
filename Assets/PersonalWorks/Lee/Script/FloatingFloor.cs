@@ -5,54 +5,66 @@ using UnityEngine;
 using UnityEngine.Events;
 using Cinemachine;
 
-public class FloatingFloor : Interactable_Base
+public class FloatingFloor : MonoBehaviour
 {   
-    [Header("시스템 설정")]
-    [SerializeField, LabelText("플레이어 시선 유도")] private bool interestPlayer = true;            // true일 시 플레이어가 가까이 다가가면 해당 오브젝트를 바라봅니다.
-    [SerializeField, LabelText("일회성")] private bool disableAfterInteracted = false;   // true일 시 한 번만 재생됩니다.
-    [SerializeField, LabelText("시선 고정 지점")] private Transform interestPoint;
-    [SerializeField, LabelText("상호작용 시 이벤트")] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
-    [SerializeField, LabelText("시작할 시퀀스")] private SequenceBundleAsset sequenceAsset;     // Interact 됐을 때 시작하는 시퀀스 입니다.
-    [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
+    [Title("부유세팅")]
+    
+    [SerializeField,LabelText("속도는 0.1~10까지"), Range(0.1f, 10f), Tooltip("속도에 따라 0.1부터 10까지 움직임")]
+    private float floatSpeed = 2f;
 
-    [Header("퍼즐문 이벤트 설정")]
-    [SerializeField,LabelText("문을 여는 열쇠 갯수")] public int OpenDoorCount;
-    [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int KeyCount;
-    public bool Opendoor = false;
- 
-    // Update is called once per frame
-    void Update()
+    [SerializeField,LabelText("반복구간 0.1~5까지"), Range(0.1f, 5f), Tooltip("위아래 반복 구간")]
+    private float floatHeight = 1f;
+
+    private Vector3 startPos;
+
+    private void Start()
     {
-        if(KeyCount == OpenDoorCount)
+        startPos = transform.position;
+    }
+
+    private void Update()
+    {
+        // Floating up and down using Mathf.Sin
+        float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatHeight;
+        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+    }
+
+    private void OnCollisionEnter(Collision other) 
+    {
+        if (other.gameObject.layer == 0)
         {
-            Opendoor = true;
-            Interact();
+            // 밀어내는 힘을 계산하고 적용
+            Vector3 pushDirection = other.contacts[0].point - transform.position;
+            pushDirection = -pushDirection.normalized;  // 반대 방향으로 힘을 줌
+
+            float pushForce = 10f;  // 밀어내는 힘의 크기
+            GetComponent<Rigidbody>().AddForce(pushDirection * pushForce, ForceMode.Impulse);
         }
     }
 
-    public void PlusOpenDoorCount()
+    private void OnDrawGizmos()
     {
-        OpenDoorCount++;
-    }
-
-    public override void Interact()
-    {
-        if(Opendoor)
+        if (!Application.isPlaying)
         {
-            Debug.Log("작동시작");
-            if (eventsOnStartInteract != null)
-            eventsOnStartInteract.Invoke();
+            startPos = transform.position;
+            Gizmos.color = Color.green;
 
-            if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
-            if (sequenceAsset != null)
-            {
-                SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
-                if (virtualCamera != null)
-                    SequenceInvoker.Instance.SetSequenceCamera(virtualCamera);
-            }
+            Vector3 topPosition1 = new Vector3(startPos.x, startPos.y + floatHeight, startPos.z);
+            Vector3 bottomPosition1 = new Vector3(startPos.x, startPos.y - floatHeight, startPos.z);
 
-            if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
-            if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
+            Gizmos.DrawLine(topPosition1, bottomPosition1);
+            Gizmos.DrawSphere(topPosition1, 0.1f);
+            Gizmos.DrawSphere(bottomPosition1, 0.1f);
+
         }
+
+        Gizmos.color = Color.green;
+
+        Vector3 topPosition = new Vector3(startPos.x, startPos.y + floatHeight, startPos.z);
+        Vector3 bottomPosition = new Vector3(startPos.x, startPos.y - floatHeight, startPos.z);
+
+        Gizmos.DrawLine(topPosition, bottomPosition);
+        Gizmos.DrawSphere(topPosition, 0.1f);
+        Gizmos.DrawSphere(bottomPosition, 0.1f);
     }
 }
