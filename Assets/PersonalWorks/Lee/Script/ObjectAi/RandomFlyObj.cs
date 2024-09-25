@@ -8,12 +8,12 @@ public class RandomFlyObj : MonoBehaviour
     [SerializeField,LabelText("스폰할 오브젝트 선택")] public GameObject objectToSpawn;  // 스폰할 오브젝트
     public Transform player;  // 플레이어 Transform
     private float spawnRadius = 45f;  // 스폰 범위 반경
-    private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
-    private float spawnInterval = 5f;  // 스폰 간격 (초)
+    [SerializeField,LabelText("스폰확률")]private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
+    [SerializeField,LabelText("스폰간격")]private float spawnInterval = 120f;  // 스폰 간격 (초)
     public bool BoolSpawnbird  = true;
     public Color gizmoColor = Color.green;  // 기즈모 색상
 
-    private float heightOffset = 50;
+    private float heightOffset = 140;
 
     private Vector3 initialPosition;
     private float startTime;
@@ -27,11 +27,6 @@ public class RandomFlyObj : MonoBehaviour
             StartCoroutine(SpawnWithInterval());  // 코루틴 시작
         }
     }
-
-    void Update()
-    {
-        TrySpawnObject();
-    }
     public void StartSpawning()
     {
         if (!BoolSpawnbird)
@@ -44,8 +39,8 @@ public class RandomFlyObj : MonoBehaviour
     {
         while (BoolSpawnbird)
         {
-            TrySpawnObject();  // 스폰 시도
             yield return new WaitForSeconds(spawnInterval);  // 일정 간격 대기
+            TrySpawnObject();  // 스폰 시도
         }
     }
 
