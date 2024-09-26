@@ -10418,6 +10418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weight: 1
   targetWeight: 1
+  priority: 0
   cumulus: 0.1
   cirrus: 0.29
   altocumulus: 0
@@ -10632,6 +10633,7 @@ MonoBehaviour:
   followEditorCamera: 1
   disableSunAtNight: 0
   handleSceneLighting: 1
+  dontDestroyOnLoad: 0
   m_Stars: []
   m_CloudParticles:
   - {fileID: 8668661411578954566}
@@ -10982,8 +10984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a04d78c316cde1b4d9ab219d80d25d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weatherSphere: {fileID: 6971867062913007920}
-  system: {fileID: 6971867062913007920}
+  cachedWeatherSphere: {fileID: 0}
+  cachedSystem: {fileID: 0}
   transit: {fileID: 0}
   perennialProfile: {fileID: 11400000, guid: 8ce0d8458b4495b4593c1e03027a0ce5, type: 2}
   overrideDate: {fileID: 0}
@@ -11006,11 +11008,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc05fce84dfbb84699cd646f2c74e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weatherSphere: {fileID: 6971867062913007920}
-  system: {fileID: 6971867062913007920}
+  cachedWeatherSphere: {fileID: 0}
+  cachedSystem: {fileID: 0}
+  biomes: []
+  weight: 0
   atmosphereProfile: {fileID: 11400000, guid: 36450997aac00de4fad013bd648fa07a, type: 2}
   transitioningAtmosphere: 0
-  biomes: []
 --- !u!114 &7095009877342599391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11023,8 +11026,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a63f037b9d8b54987e07c69557b6f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weatherSphere: {fileID: 6971867062913007920}
-  system: {fileID: 6971867062913007920}
+  cachedWeatherSphere: {fileID: 0}
+  cachedSystem: {fileID: 0}
+  biomes: []
+  weight: 1
   cumulus: 0.1
   cirrus: 0.29
   altocumulus: 0
@@ -11037,7 +11042,6 @@ MonoBehaviour:
   borderEffect: 0.58
   borderVariation: 0.85
   fogDensity: 2
-  weight: 1
   filterSaturation: 0
   filterValue: 0
   filterColor: {r: 1, g: 1, b: 1, a: 0}
@@ -11060,8 +11064,6 @@ MonoBehaviour:
     - weight: 0
       profile: {fileID: 11400000, guid: 3fa9c46689f94e446b39ad4b623d08af, type: 2}
       transitioning: 1
-  parentModule: {fileID: 0}
-  biomes: []
   currentWeatherProfiles:
   - weight: 1
     profile: {fileID: 11400000, guid: 8cd5774237833514991d0dc93a215d37, type: 2}
