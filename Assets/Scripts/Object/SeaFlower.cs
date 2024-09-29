@@ -38,24 +38,18 @@ public class SeaFlower : Interactable_Base
         Debug.Log("PickUpFlower 시작");
         animator.SetTrigger("Pickup");
         PlayerInventoryContainer.Instance.AddItem(GetItem, ItemQuantity);
-        yield return new WaitForSeconds(1.0f);
-        if (DestoryObjQuantity >= DestoryObj.Length)
+        yield return new WaitForSeconds(5.0f);
+        for (int i = 0; i < DestoryObj.Length; i++)
         {
-            DestoryObjQuantity = DestoryObj.Length - 1; // 배열 범위를 초과하지 않도록 조정
-            Debug.LogWarning("DestoryObjQuantity 값이 배열 크기를 초과하여 마지막 인덱스로 조정됨.");
+            if (DestoryObj[i] != null)
+            {
+                Debug.Log("파괴할 오브젝트: " + DestoryObj[i].name);
+                Destroy(DestoryObj[i]); // 오브젝트 파괴
+            }
+            else
+            {
+                Debug.LogWarning("오브젝트가 null이거나 이미 파괴됨: 인덱스 " + i);
+            }
         }
-
-        if (DestoryObjQuantity >= 0 && DestoryObj[DestoryObjQuantity] != null)
-        {
-            Debug.Log("오브젝트 파괴: " + DestoryObj[DestoryObjQuantity].name);
-            DOTween.Kill(DestoryObj[DestoryObjQuantity].transform);
-            Destroy(DestoryObj[DestoryObjQuantity]);
-        }
-        else
-        {
-            Debug.LogWarning("파괴하려는 오브젝트가 비활성화 상태이거나 null입니다.");
-        }
-
-        yield return new WaitForSeconds(5.0f); // 추가 대기 시간
     }
 }
