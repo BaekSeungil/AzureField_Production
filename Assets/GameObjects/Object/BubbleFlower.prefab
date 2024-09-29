@@ -43,17 +43,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7877e07ad0ae76246ac05755ae0e751e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.4294542
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7877e07ad0ae76246ac05755ae0e751e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.159353
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7877e07ad0ae76246ac05755ae0e751e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.6288605
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7877e07ad0ae76246ac05755ae0e751e,
         type: 3}
@@ -107,7 +107,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7877e07ad0ae76246ac05755ae0e751e,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5005133370502147138}
+      addedObject: {fileID: 1910733755528448848}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7877e07ad0ae76246ac05755ae0e751e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3834023005078406654}
   m_SourcePrefab: {fileID: 100100000, guid: 7877e07ad0ae76246ac05755ae0e751e, type: 3}
 --- !u!4 &5086846321399796698 stripped
 Transform:
@@ -121,7 +125,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4688989083147760689}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5005133370502147138
+--- !u!114 &1910733755528448848
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,3 +137,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fd774c6b31bfba4eb98495119d51e86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  enableInteractionUI: 1
+  interactionUIText:
+    m_TableReference:
+      m_TableCollectionName: GUID:3a715556fda27954a99eef4a69db4cc8
+    m_TableEntryReference:
+      m_KeyId: 15897534599004160
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  GetItem: {fileID: 11400000, guid: 2e2d411ae2b5aca4598eb2b72daafda3, type: 2}
+  ItemQuantity: 1
+  DestoryObj:
+  - {fileID: 6357070718761905811}
+  DestoryObjQuantity: 1
+  sound_CarrotPicked:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  sound_CarrotGone:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  references:
+    version: 2
+    RefIds: []
+--- !u!65 &3834023005078406654
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5608049624460413280}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
+  m_Center: {x: 0, y: 0.92, z: 0}
+--- !u!1 &6357070718761905811 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1813394400162863778, guid: 7877e07ad0ae76246ac05755ae0e751e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4688989083147760689}
+  m_PrefabAsset: {fileID: 0}
