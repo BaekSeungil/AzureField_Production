@@ -330,6 +330,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             float evaluated = curve.Evaluate(t / time);
 
             oceanEmmision = Color.Lerp(opro_origin.OceanColor, to.OceanColor,evaluated);
+            oceanTipEmmision = Color.Lerp(opro_origin.OceanTipColor, to.OceanTipColor, evaluated);
 
             Wave1_Vector = Vector3.Lerp(opro_origin.Waveform1.vector, to.Waveform1.vector, evaluated);
             Wave1_Amplitude = Mathf.Lerp(opro_origin.Waveform1.amplitude, to.Waveform1.amplitude, evaluated);
@@ -351,7 +352,7 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             yield return null;
         }
 
-
+        activeOceanProfile = to;
         wavechangeAnimationCoroutine = null;
     }
 
@@ -443,5 +444,13 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     private void GUI_ChangeProfile()
     {
         SetWaveImmedietly(defaultOceanProfile);
+    }
+
+#if UNITY_EDITOR
+    [Button(ButtonSizes.Small, Name = "DefaultOceanProfile 적용"), PropertyOrder(-1)]
+#endif
+    private void Debug_ChangeProfile(OceanProfile profile)
+    {
+        SetWaveImmedietly(profile);
     }
 }

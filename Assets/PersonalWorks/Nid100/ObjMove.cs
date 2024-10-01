@@ -12,7 +12,7 @@ public class ObjMove : MonoBehaviour
 
     void Update()
     {
-        if (moveObj == true)
+        if (moveOnoff == true)
         {
             if (moveObj != null && movePoint != null)
             {
