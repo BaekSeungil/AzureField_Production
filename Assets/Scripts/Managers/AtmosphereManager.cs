@@ -80,7 +80,9 @@ public class AtmosphereManager : StaticSerializedMonoBehaviour<AtmosphereManager
         if (Instance == null) { Debug.LogError("AtmosphereManager가 없습니다."); return; }
 
         AtmosTransition newTransition = new AtmosTransition();
-        newTransition.atmosProfile = profile; newTransition.transitionTime = transitionTime;
+        newTransition.atmosProfile = profile; 
+        if(transitionTime <= 0.1f) { newTransition.transitionTime = 0.1f; }
+        newTransition.transitionTime = transitionTime;
 
         Instance.transitionQueue.Enqueue(newTransition);
 
@@ -102,7 +104,8 @@ public class AtmosphereManager : StaticSerializedMonoBehaviour<AtmosphereManager
 #endif
     public void Debug_TryAtmosphereProfile_Editor(AzfAtmosProfile profile)
     {
-        FindFirstObjectByType<CozyWeather>().weatherModule.ecosystem.SetWeather(profile.weatherProfile);
+        FindFirstObjectByType<CozyWeather>().weatherModule.currentWeatherProfiles[0].profile = profile.weatherProfile;
+        FindFirstObjectByType<CozyWeather>().weatherModule.UpdateWeatherWeights();
         FindFirstObjectByType<GlobalOceanManager>().SetWaveImmedietly(profile.oceanProfile);
         ppGlobalFirst.profile = profile.postprocessProfile;
         ppGlobalFirst.weight = 1.0f;
@@ -117,7 +120,8 @@ public class AtmosphereManager : StaticSerializedMonoBehaviour<AtmosphereManager
 #endif
     public void Debug_ResetAtmoProfile()
     {
-        FindFirstObjectByType<CozyWeather>().weatherModule.ecosystem.SetWeather(defaultAtmos.weatherProfile);
+        FindFirstObjectByType<CozyWeather>().weatherModule.currentWeatherProfiles[0].profile = defaultAtmos.weatherProfile;
+        FindFirstObjectByType<CozyWeather>().weatherModule.UpdateWeatherWeights();
         FindFirstObjectByType<GlobalOceanManager>().SetWaveImmedietly(defaultAtmos.oceanProfile);
         ppGlobalFirst.profile = defaultAtmos.postprocessProfile;
         ppGlobalFirst.weight = 1.0f;
@@ -169,7 +173,7 @@ public class AtmosphereManager : StaticSerializedMonoBehaviour<AtmosphereManager
                 if (!currentAtmos.atmosProfile.fogProfile.NoFogChange)
                 {
                     RenderSettings.fogColor = Color.Lerp(fromFogColor, currentAtmos.atmosProfile.fogProfile.FogColor, t);
-                    RenderSettings.fogStartDistance = Mathf.Lerp(fromFogStart, currentAtmos.atmosProfile.fogProfile.FogDistance.x, neg_t);
+                    RenderSettings.fogStartDistance = Mathf.Lerp(fromFogStart, currentAtmos.atmosProfile.fogProfile.FogDistance.x, t);
                     RenderSettings.fogEndDistance = Mathf.Lerp(fromFogEnd, currentAtmos.atmosProfile.fogProfile.FogDistance.y, t);
                 }
 
