@@ -414,6 +414,69 @@ Transform:
   - {fileID: 5603630444466634174}
   m_Father: {fileID: 2978598234990774612}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1857259382564521877
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4888482797352917917}
+  - component: {fileID: 1856996600605140371}
+  m_Layer: 0
+  m_Name: FMOD_Rainfall
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4888482797352917917
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857259382564521877}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2978598234990774612}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1856996600605140371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857259382564521877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 737417458
+      Data2: 1189468386
+      Data3: -647441490
+      Data4: 860499549
+    Path: event:/Ambient/HeavyRain
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &2289141714270654947
 GameObject:
   m_ObjectHideFlags: 0
@@ -10402,6 +10465,7 @@ Transform:
   - {fileID: 3378915655768273295}
   - {fileID: 6320696963468976921}
   - {fileID: 646744328994109537}
+  - {fileID: 4888482797352917917}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6971867062913007920
@@ -10419,7 +10483,7 @@ MonoBehaviour:
   weight: 1
   targetWeight: 1
   priority: 0
-  cumulus: 1
+  cumulus: 0.15
   cirrus: 0.52
   altocumulus: 0
   cirrostratus: 0.849
@@ -10675,6 +10739,7 @@ MonoBehaviour:
   - {fileID: 2431032585214928208}
   - {fileID: 5371171324449779932}
   - {fileID: 2429812715332793958}
+  - {fileID: 2190017777869560019}
 --- !u!1 &4482908366244751186
 GameObject:
   m_ObjectHideFlags: 0
@@ -10950,6 +11015,7 @@ GameObject:
   - component: {fileID: 2431032585214928208}
   - component: {fileID: 5371171324449779932}
   - component: {fileID: 2429812715332793958}
+  - component: {fileID: 2190017777869560019}
   m_Layer: 0
   m_Name: Modules
   m_TagString: Untagged
@@ -11030,7 +11096,7 @@ MonoBehaviour:
   cachedSystem: {fileID: 6971867062913007920}
   biomes: []
   weight: 1
-  cumulus: 1
+  cumulus: 0.15
   cirrus: 0.52
   altocumulus: 0
   cirrostratus: 0.849
@@ -11059,14 +11125,108 @@ MonoBehaviour:
       type: 2}
     weightedWeatherProfiles:
     - weight: 1
-      profile: {fileID: 11400000, guid: 84fe11c50c906d748a57d57910cb47a1, type: 2}
+      profile: {fileID: 11400000, guid: 8cd5774237833514991d0dc93a215d37, type: 2}
       transitioning: 1
   currentWeatherProfiles:
   - weight: 1
-    profile: {fileID: 11400000, guid: 84fe11c50c906d748a57d57910cb47a1, type: 2}
+    profile: {fileID: 11400000, guid: 8cd5774237833514991d0dc93a215d37, type: 2}
     transitioning: 1
   defaultFilter: {fileID: 11400000, guid: b3b90f04f4696264c9aab62e9c3c68a5, type: 2}
   defaultClouds: {fileID: 11400000, guid: 40c748033998bf243ae542ca195124b7, type: 2}
+--- !u!114 &2190017777869560019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4927049434155967204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbee55630edd4f4487bf959afde3d53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cachedWeatherSphere: {fileID: 0}
+  cachedSystem: {fileID: 0}
+  biomes: []
+  weight: 0
+  onDawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onMorning:
+    m_PersistentCalls:
+      m_Calls: []
+  onDay:
+    m_PersistentCalls:
+      m_Calls: []
+  onAfternoon:
+    m_PersistentCalls:
+      m_Calls: []
+  onEvening:
+    m_PersistentCalls:
+      m_Calls: []
+  onTwilight:
+    m_PersistentCalls:
+      m_Calls: []
+  onNight:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewMinute:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewHour:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewDay:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewYear:
+    m_PersistentCalls:
+      m_Calls: []
+  onWeatherProfileChange:
+    m_PersistentCalls:
+      m_Calls: []
+  cozyEvents:
+  - fxReference: {fileID: 11400000, guid: 97560ccbf87b15844a2aec22ed7f9e5c, type: 2}
+    onPlay:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1856996600605140371}
+          m_TargetAssemblyTypeName: FMODUnity.StudioEventEmitter, FMODUnity
+          m_MethodName: Play
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    onStop:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1856996600605140371}
+          m_TargetAssemblyTypeName: FMODUnity.StudioEventEmitter, FMODUnity
+          m_MethodName: Stop
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  inBiome: 0
+  onEnterBiome:
+    m_PersistentCalls:
+      m_Calls: []
+  onExitBiome:
+    m_PersistentCalls:
+      m_Calls: []
+  whileInBiome:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4977378867854123179
 GameObject:
   m_ObjectHideFlags: 0
