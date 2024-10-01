@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 648459660332914985}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.42622834, y: 0.3196219, z: -0.16409384, w: 0.83020747}
+  m_LocalRotation: {x: 0.186838, y: -0.16142006, z: 0.031139102, w: 0.96853787}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -52,7 +52,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -10419,7 +10419,7 @@ MonoBehaviour:
   weight: 1
   targetWeight: 1
   priority: 0
-  cumulus: 0.15
+  cumulus: 1
   cirrus: 0.52
   altocumulus: 0
   cirrostratus: 0.849
@@ -10649,7 +10649,7 @@ MonoBehaviour:
   sunLensFlare: {fileID: 7525121313116951542}
   interactionsModule: {fileID: 0}
   climateModule: {fileID: 0}
-  weatherModule: {fileID: 0}
+  weatherModule: {fileID: 2429812715332793958}
   timeModule: {fileID: 2431032585214928208}
   atmosphereModule: {fileID: 5371171324449779932}
   windModule: {fileID: 0}
@@ -10674,7 +10674,7 @@ MonoBehaviour:
   modules:
   - {fileID: 2431032585214928208}
   - {fileID: 5371171324449779932}
-  - {fileID: 0}
+  - {fileID: 2429812715332793958}
 --- !u!1 &4482908366244751186
 GameObject:
   m_ObjectHideFlags: 0
@@ -10949,7 +10949,7 @@ GameObject:
   - component: {fileID: 646744328994109537}
   - component: {fileID: 2431032585214928208}
   - component: {fileID: 5371171324449779932}
-  - component: {fileID: 8090466122054017919}
+  - component: {fileID: 2429812715332793958}
   m_Layer: 0
   m_Name: Modules
   m_TagString: Untagged
@@ -11010,12 +11010,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cachedWeatherSphere: {fileID: 6971867062913007920}
   cachedSystem: {fileID: 6971867062913007920}
-  biomes:
-  - {fileID: 0}
+  biomes: []
   weight: 1
   atmosphereProfile: {fileID: 11400000, guid: 36450997aac00de4fad013bd648fa07a, type: 2}
   transitioningAtmosphere: 0
---- !u!114 &8090466122054017919
+--- !u!114 &2429812715332793958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11031,7 +11030,7 @@ MonoBehaviour:
   cachedSystem: {fileID: 6971867062913007920}
   biomes: []
   weight: 1
-  cumulus: 0.15
+  cumulus: 1
   cirrus: 0.52
   altocumulus: 0
   cirrostratus: 0.849
@@ -11060,11 +11059,11 @@ MonoBehaviour:
       type: 2}
     weightedWeatherProfiles:
     - weight: 1
-      profile: {fileID: 11400000, guid: 8cd5774237833514991d0dc93a215d37, type: 2}
+      profile: {fileID: 11400000, guid: 84fe11c50c906d748a57d57910cb47a1, type: 2}
       transitioning: 1
   currentWeatherProfiles:
   - weight: 1
-    profile: {fileID: 11400000, guid: 8cd5774237833514991d0dc93a215d37, type: 2}
+    profile: {fileID: 11400000, guid: 84fe11c50c906d748a57d57910cb47a1, type: 2}
     transitioning: 1
   defaultFilter: {fileID: 11400000, guid: b3b90f04f4696264c9aab62e9c3c68a5, type: 2}
   defaultClouds: {fileID: 11400000, guid: 40c748033998bf243ae542ca195124b7, type: 2}
