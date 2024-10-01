@@ -11,6 +11,7 @@ public class AzfAtmosProfile : SerializedScriptableObject
 {
     public struct FogSetting
     {
+        [LabelText("안개 설정 안함")] public bool NoFogChange;
         [LabelText("안개 색상")]public Color FogColor;
         [MinMaxSlider(0f,5000f,ShowFields = true),LabelText("안개 거리 (최소, 최대)")] public Vector2 FogDistance;
     }
