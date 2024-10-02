@@ -15,7 +15,6 @@ public class SeaFlower : Interactable_Base
     [SerializeField, LabelText("사라질 오브젝트")] private GameObject[] DestoryObj;
     [SerializeField, LabelText("사라질 오브젝트 개수")] private int DestoryObjQuantity;
 
-
     [SerializeField] private EventReference sound_CarrotPicked;
     [SerializeField] private EventReference sound_CarrotGone;
     private Animator animator;
