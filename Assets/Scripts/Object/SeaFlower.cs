@@ -8,13 +8,10 @@ using FMODUnity;
 
 public class SeaFlower : Interactable_Base
 {
-    [Title("편집불가")]
-    [SerializeField] private Sequence_Base[] sequenceOnPickup;
     [SerializeField, LabelText("아이템 데이터")] private ItemData GetItem;
     [SerializeField, LabelText("아이템 개수")] private int ItemQuantity = 1;
     [SerializeField, LabelText("사라질 오브젝트")] private GameObject[] DestoryObj;
     [SerializeField, LabelText("사라질 오브젝트 개수")] private int DestoryObjQuantity;
-
 
     [SerializeField] private EventReference sound_CarrotPicked;
     [SerializeField] private EventReference sound_CarrotGone;
@@ -34,7 +31,6 @@ public class SeaFlower : Interactable_Base
     {
         Debug.Log("Interact 호출됨");
         StartCoroutine(PickUpFlower());
-        SequenceInvoker.Instance.StartSequence(sequenceOnPickup);
     }
 
     private IEnumerator PickUpFlower()
