@@ -7,7 +7,7 @@ using Cinemachine;
 
 public class PuzzleDoor : Interactable_Base
 {
-    
+
     [Header("시스템 설정")]
     [SerializeField, LabelText("플레이어 시선 유도")] private bool interestPlayer = true;            // true일 시 플레이어가 가까이 다가가면 해당 오브젝트를 바라봅니다.
     [SerializeField, LabelText("일회성")] private bool disableAfterInteracted = false;   // true일 시 한 번만 재생됩니다.
@@ -17,20 +17,21 @@ public class PuzzleDoor : Interactable_Base
     [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
 
     [Header("퍼즐문 이벤트 설정")]
-    [SerializeField,LabelText("문을 여는 열쇠 갯수")] public int OpenDoorCount;
-    [SerializeField,LabelText("문에 필요한 열쇠 갯수")] public int KeyCount;
+    [SerializeField, LabelText("문을 여는 열쇠 갯수")] public int OpenDoorCount;
+    [SerializeField, LabelText("문에 필요한 열쇠 갯수")] public int KeyCount;
     public bool Opendoor = false;
- 
+
     // Update is called once per frame
     void Update()
     {
-        if(KeyCount == OpenDoorCount)
+        if (KeyCount == OpenDoorCount)
         {
             Opendoor = true;
             Interact();
         }
     }
 
+    [Button("(디버그) 열쇠 추가"), DisableInEditorMode()]
     public void PlusOpenDoorCount()
     {
         OpenDoorCount++;
@@ -38,11 +39,11 @@ public class PuzzleDoor : Interactable_Base
 
     public override void Interact()
     {
-        if(Opendoor)
+        if (Opendoor)
         {
             Debug.Log("작동시작");
             if (eventsOnStartInteract != null)
-            eventsOnStartInteract.Invoke();
+                eventsOnStartInteract.Invoke();
 
             if (SequenceInvoker.Instance == null) { Debug.LogWarning("SequenceInvoker가 없습니다."); return; }
             if (sequenceAsset != null)
@@ -53,7 +54,13 @@ public class PuzzleDoor : Interactable_Base
             }
 
             if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
-            if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
+
+            Collider col;
+            if (disableAfterInteracted)
+            {
+                this.enabled = false;
+                if (TryGetComponent<Collider>(out col)) col.enabled = false;
+            }
         }
     }
 }
