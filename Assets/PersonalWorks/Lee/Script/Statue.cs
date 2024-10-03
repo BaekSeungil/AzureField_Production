@@ -78,4 +78,26 @@ public class Statue : MonoBehaviour
             isRotating = false;
         }
     }
+
+     private void OnDrawGizmosSelected()
+    {
+        if (StatueObj == null || MoveAngle.Length == 0) return;
+
+        Gizmos.color = Color.blue; // 기즈모 색상 설정
+
+        // 석상의 위치
+        Vector3 statuePos = StatueObj.transform.position;
+
+        // 각도에 따른 방향 표시
+        for (int i = 0; i < MoveAngle.Length; i++)
+        {
+            // 각도에 따른 방향 계산
+            Quaternion rotation = Quaternion.Euler(0, MoveAngle[i], 0);
+            Vector3 direction = rotation * Vector3.forward;
+
+            // 기즈모로 화살표 그리기
+            Gizmos.DrawRay(statuePos, direction * 10.0f); // 화살표 길이 2.0f로 설정
+            Gizmos.DrawSphere(statuePos + direction * 10.0f, 0.5f); // 화살표 끝에 구 표시
+        }
+    }
 }
