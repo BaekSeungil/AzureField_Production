@@ -16,9 +16,9 @@ public struct PlayerUpLimt
 
 public enum PlayerUpgedeType
 {
-    PlayerJump,
-    PlayerMoveSpeed,
-    WaveSpawnTime
+    PlusPlayerJump,
+    PlusPlayerMoveSpeed,
+    PlusWaveSpawnTime
 
 };
 
@@ -75,9 +75,10 @@ public class PlayerUpgrde : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        SetItemCountText();
+        PlayerUgradeView();
     }
 
     private void SetItemCountText()
@@ -90,6 +91,26 @@ public class PlayerUpgrde : MonoBehaviour
 
     private void PlayerUgradeView()
     {
-        
+        switch(playerUpgedeType)
+        {
+            case PlayerUpgedeType.PlusPlayerJump:
+            UpdateView(Player.ViewJumpPower, PlusJumpPower);
+            break;
+            case PlayerUpgedeType.PlusPlayerMoveSpeed:
+            UpdateView(Player.ViewMoveSpeed, PlusMoveSpeed);
+            break;
+            case PlayerUpgedeType.PlusWaveSpawnTime:
+            
+            break;
+        }
+    }
+
+    private void UpdateView(float beforeValue, float upgradeValue)
+    {
+        BeforeUpgrade = (int)beforeValue;
+        BeforeText.text = BeforeUpgrade.ToString("F1");
+
+        AfterUpgrade = beforeValue + upgradeValue;
+        AfterText.text = AfterUpgrade.ToString("F1");
     }
 }

@@ -116,7 +116,7 @@ public class UpgradeController : MonoBehaviour
         }
     }
 
-     private void UpdateView(float beforeValue, float upgradeValue)
+    private void UpdateView(float beforeValue, float upgradeValue)
     {
         BeforeUpgrade = (int)beforeValue;
         BeforeText.text = BeforeUpgrade.ToString("F1");
