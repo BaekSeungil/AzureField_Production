@@ -128,7 +128,7 @@ public class UpgradeController : MonoBehaviour
 
 
     //보트 강화 아이템 소비하고 업그레이드 수치처리
-    public void BoatUpGrade()
+    private void BoatUpGrade()
     {
         if (!CanUpgrade) return;
         Player = PlayerCore.Instance;
@@ -249,26 +249,25 @@ public class UpgradeController : MonoBehaviour
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
     }
 
-    public void GetAskUpgrade()
+    private void GetAskUpgrade()
     {
         Need_IntText.text = NeedUseItem.ToString();
         BoatUpGrade();
     }
 
-    public void LimitUpgradeObj()
+    private void LimitUpgradeObj()
     {
-    
         LimitObject.SetActive(true);
         ItemTitleObj.SetActive(false);
     }
 
-    public void OffLimitUpgradeObj()
+    private void OffLimitUpgradeObj()
     {
         LimitObject.SetActive(false);
         ItemTitleObj.SetActive(true);
     }
 
-    public void Outupgrade()
+    private void Outupgrade()
     {
         BoatWindow.SetActive(false);
         Jump_ICON.SetActive(false);

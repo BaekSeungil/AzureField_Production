@@ -9,9 +9,9 @@ public class EtherSystem : MonoBehaviour
 
     CallEther callEther;
     public bool CalledWave = false;
-    [SerializeField,LabelText("전진 속도")] public float MoveSpeed;
-    [SerializeField,LabelText("최종도착 거리")] public float FinalDistance;
-    [SerializeField,LabelText("소멸시간")] public float DeletTime;
+    [SerializeField,LabelText("전진 속도")] private float MoveSpeed;
+    [SerializeField,LabelText("최종도착 거리")] private float FinalDistance;
+    [SerializeField,LabelText("소멸시간")] private float DeletTime;
     [SerializeField]private ParticleSystem Idleparticl;
 
 
@@ -19,6 +19,8 @@ public class EtherSystem : MonoBehaviour
     private Vector3 targetPosition;
     
     public static EtherSystem Instance { get; private set; }
+
+    public float ViewDeletTime{get{return DeletTime;}}
 
     private void Awake() 
     {
@@ -79,6 +81,11 @@ public class EtherSystem : MonoBehaviour
                 Debug.Log("파도소멸");
             }
         }
+    }
+
+    public void EtherUpgradeState(float upgrdestate)
+    {
+        DeletTime += upgrdestate;
     }
 
     private void OnTriggerEnter(Collider other)
