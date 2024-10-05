@@ -5748,7 +5748,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
+      maxColor: {r: 0, g: 0.83345795, b: 2.3759778, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9553,7 +9553,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
+      maxColor: {r: 0, g: 0.83345795, b: 2.3759778, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -10501,20 +10501,20 @@ MonoBehaviour:
   moonDirection: {x: -0.8736698, y: 0.4242983, z: 0.23805858}
   skyZenithColor: {r: 0, g: 0.1390884, b: 0.6415094, a: 1}
   skyHorizonColor: {r: 0, g: 0.4549017, b: 1, a: 1}
-  cloudColor: {r: 1.0527136, g: 1.5110351, b: 2.0474796, a: 1}
-  cloudHighlightColor: {r: 0, g: 34.823433, b: 97.00585, a: 1}
+  cloudColor: {r: 0, g: 0.83345795, b: 2.3759778, a: 1}
+  cloudHighlightColor: {r: 129.51042, g: 128.4697, b: 108.12898, a: 1}
   highAltitudeCloudColor: {r: 2, g: 1.9320147, b: 1.6320754, a: 1}
-  sunlightColor: {r: 1, g: 1, b: 0.8349056, a: 1}
+  sunlightColor: {r: 0.8962264, g: 0.8962264, b: 0.71444464, a: 1}
   starColor: {r: 2.297397, g: 2.297397, b: 2.297397, a: 1}
   ambientLightHorizonColor: {r: 0.6084906, g: 0.7660657, b: 1, a: 1}
   ambientLightZenithColor: {r: 0.8632076, g: 0.9218329, b: 1, a: 1}
   ambientLightMultiplier: 1.3
   galaxyIntensity: 0.655
   fogColor1: {r: 0.8132075, g: 0.8981797, b: 1, a: 0}
-  fogColor2: {r: 0.49622637, g: 0.72539383, b: 1, a: 0.039215688}
-  fogColor3: {r: 0.18396229, g: 0.5554423, b: 1, a: 0.13725491}
-  fogColor4: {r: 0, g: 0.4666667, b: 1, a: 0.5529412}
-  fogColor5: {r: 0, g: 0.36649227, b: 1, a: 0.7490196}
+  fogColor2: {r: 0.49622637, g: 0.72539383, b: 1, a: 0.02745098}
+  fogColor3: {r: 0.18396229, g: 0.5554423, b: 1, a: 0.07058824}
+  fogColor4: {r: 0, g: 0.4666667, b: 1, a: 0.16470589}
+  fogColor5: {r: 0, g: 0.36649227, b: 1, a: 1}
   fogFlareColor: {r: 1.0833969, g: 1.3920008, b: 1.382235, a: 1}
   fogMoonFlareColor: {r: 0, g: 0, b: 0, a: 1}
   fogShadowColor: {r: 0, g: 0, b: 0, a: 0}
@@ -10534,8 +10534,8 @@ MonoBehaviour:
   lightScatteringColor: {r: 0.052331794, g: 0.14103463, b: 0.2264151, a: 0.7294118}
   rainbowPosition: 29.7
   rainbowWidth: 50
-  fogStart1: 5
-  fogStart2: 12
+  fogStart1: 8
+  fogStart2: 16
   fogStart3: 20
   fogStart4: 35
   fogHeight: 0.478
@@ -10558,11 +10558,11 @@ MonoBehaviour:
   cloudMoonColor: {r: 0, g: 0, b: 0, a: 1}
   cloudSunHighlightFalloff: 21.2
   cloudMoonHighlightFalloff: 11.9
-  cloudWindSpeed: 3.04
-  clippingThreshold: 0.575
-  cloudMainScale: 42
-  cloudDetailScale: 2.98
-  cloudDetailAmount: 25.9
+  cloudWindSpeed: 1
+  clippingThreshold: 0.689
+  cloudMainScale: 39.6
+  cloudDetailScale: 2.84
+  cloudDetailAmount: 30
   acScale: 0.371
   cirroMoveSpeed: 0.281
   cirrusMoveSpeed: 0.297
@@ -10615,17 +10615,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.5125
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.81036377
-        value: 1
+        time: 0.0063285828
+        value: 1.0023499
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -10633,8 +10624,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1.0729218
-        value: 0.5186798
+        time: 1
+        value: -0.011791229
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -10785,7 +10776,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 0.8349056, a: 0}
+  m_Color: {r: 0.8962264, g: 0.8962264, b: 0.71444464, a: 0}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
@@ -10879,17 +10870,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.5125
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.81036377
-      value: 1
+      time: 0.0063285828
+      value: 1.0023499
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -10897,8 +10879,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.0729218
-      value: 0.5186798
+      time: 1
+      value: -0.011791229
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -10937,17 +10919,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.5125
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.81036377
-      value: 1
+      time: 0.0063285828
+      value: 1.0023499
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -10955,8 +10928,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.0729218
-      value: 0.5186798
+      time: 1
+      value: -0.011791229
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -11078,7 +11051,7 @@ MonoBehaviour:
   cachedSystem: {fileID: 6971867062913007920}
   biomes: []
   weight: 1
-  atmosphereProfile: {fileID: 11400000, guid: 36450997aac00de4fad013bd648fa07a, type: 2}
+  atmosphereProfile: {fileID: 11400000, guid: af43c65b7ab5e4a4db2b48ade6ab2e06, type: 2}
   transitioningAtmosphere: 0
 --- !u!114 &2429812715332793958
 MonoBehaviour:
