@@ -10,7 +10,6 @@ public struct PlayerUpLimt
 {
     public int PlayercurrentCount;
     public int PlayermaxCount;
-
     public bool PlayerCanUpgrade() => PlayercurrentCount < PlayermaxCount;
 }
 
@@ -63,7 +62,6 @@ public class PlayerUpgrde : MonoBehaviour
     private Coroutine blinkCoroutine;
     private PlayerUpgedeType playerUpgedeType;
     private PlayerCore Player;
-
     private EtherSystem etherSystem;
 
 
@@ -104,6 +102,16 @@ public class PlayerUpgrde : MonoBehaviour
             case PlayerUpgedeType.PlusWaveSpawnTime:
             UpdateView(etherSystem.ViewDeletTime, PlusEtherTimeUp);
             break;
+        }
+
+        if(!GetCurrentCanUpgradeStatus())
+        {
+            if(NeedUseItem > UseItemCount)
+            LimitUpgradeObj();
+        }
+        else
+        {
+            OffLimitUpgradeObj();
         }
     }
 
