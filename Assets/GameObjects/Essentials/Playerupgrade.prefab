@@ -1497,7 +1497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5886645933712432913
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1528,14 +1528,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1233134918801374231}
-  - component: {fileID: 1708905234717544335}
   m_Layer: 5
   m_Name: UpgradeWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1233134918801374231
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1556,66 +1555,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1708905234717544335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2350181821717485278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dff50f0e5e07a3f4c98856e84f295a5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlusJumpPower: 0.02
-  PlusMoveSpeed: 0.5
-  PlusEtherTimeUp: 0
-  PlayerWindow: {fileID: 5224827021321397501}
-  TitleText: {fileID: 7812727575670389963}
-  Have_IntText: {fileID: 7976497217579883075}
-  Need_IntText: {fileID: 7556077290434209496}
-  BeforeText: {fileID: 5156938206104788880}
-  AfterText: {fileID: 436316165489692909}
-  Speed_ICON: {fileID: 2471932534735672540}
-  Jump_ICON: {fileID: 828598553028577279}
-  Ether_ICON: {fileID: 1553560375494005130}
-  Playeritem: {fileID: 11400000, guid: 2e2d411ae2b5aca4598eb2b72daafda3, type: 2}
-  NeedUseItem: 1
-  UseItemCount: 1
-  LimitObject: {fileID: 5205572691973888266}
-  ItemTitleObj: {fileID: 340784938114539360}
-  UpTypeText: {fileID: 206927654784700465}
-  TXT_movespeed:
-    m_TableReference:
-      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
-    m_TableEntryReference:
-      m_KeyId: 80956613721325568
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  TXT_PlayerJump:
-    m_TableReference:
-      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
-    m_TableEntryReference:
-      m_KeyId: 80956613721325569
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  TXT_Ether:
-    m_TableReference:
-      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
-    m_TableEntryReference:
-      m_KeyId: 80956613721325570
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  references:
-    version: 2
-    RefIds: []
 --- !u!1 &2471932534735672540
 GameObject:
   m_ObjectHideFlags: 0
@@ -2957,7 +2896,7 @@ GameObject:
   - component: {fileID: 3574804574296006268}
   - component: {fileID: 5354643125581022134}
   m_Layer: 5
-  m_Name: BoosterMult
+  m_Name: MoveSpeed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3066,9 +3005,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
-        m_MethodName: ButtonTypeboosterMult
+      - m_Target: {fileID: 6191176725074450429}
+        m_TargetAssemblyTypeName: PlayerUpgrde, Assembly-CSharp
+        m_MethodName: ButtonTypeSpeed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3763,7 +3702,7 @@ GameObject:
   - component: {fileID: 6751771309024894010}
   - component: {fileID: 2937790773369686969}
   m_Layer: 5
-  m_Name: Leapup
+  m_Name: Jump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3872,8 +3811,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
+      - m_Target: {fileID: 6191176725074450429}
+        m_TargetAssemblyTypeName: PlayerUpgrde, Assembly-CSharp
         m_MethodName: ButtonTypeJump
         m_Mode: 1
         m_Arguments:
@@ -5978,6 +5917,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4950175576286382160}
+  - component: {fileID: 6191176725074450429}
   m_Layer: 5
   m_Name: PlayerUpgradeWindow
   m_TagString: Untagged
@@ -6006,6 +5946,66 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6191176725074450429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7641862724473290449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff50f0e5e07a3f4c98856e84f295a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlusJumpPower: 0.2
+  PlusMoveSpeed: 0.3
+  PlusEtherTimeUp: 0.5
+  PlayerWindow: {fileID: 5224827021321397501}
+  TitleText: {fileID: 7812727575670389963}
+  Have_IntText: {fileID: 7976497217579883075}
+  Need_IntText: {fileID: 7556077290434209496}
+  BeforeText: {fileID: 5156938206104788880}
+  AfterText: {fileID: 436316165489692909}
+  Speed_ICON: {fileID: 2471932534735672540}
+  Jump_ICON: {fileID: 828598553028577279}
+  Ether_ICON: {fileID: 1553560375494005130}
+  Playeritem: {fileID: 11400000, guid: 2e2d411ae2b5aca4598eb2b72daafda3, type: 2}
+  NeedUseItem: 1
+  UseItemCount: 1
+  LimitObject: {fileID: 5205572691973888266}
+  ItemTitleObj: {fileID: 340784938114539360}
+  UpTypeText: {fileID: 206927654784700465}
+  TXT_movespeed:
+    m_TableReference:
+      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
+    m_TableEntryReference:
+      m_KeyId: 80956613721325568
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  TXT_PlayerJump:
+    m_TableReference:
+      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
+    m_TableEntryReference:
+      m_KeyId: 80956613721325569
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  TXT_Ether:
+    m_TableReference:
+      m_TableCollectionName: GUID:791f0411ad5610b458e1008d8e5a8aaf
+    m_TableEntryReference:
+      m_KeyId: 80956613721325570
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &7676746913723396674
 GameObject:
   m_ObjectHideFlags: 0
@@ -6514,7 +6514,7 @@ GameObject:
   - component: {fileID: 6842484328450635636}
   - component: {fileID: 173915412177399792}
   m_Layer: 5
-  m_Name: BoosterDuration
+  m_Name: EtherWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6623,9 +6623,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
-        m_MethodName: ButtonTypeboosterDuration
+      - m_Target: {fileID: 6191176725074450429}
+        m_TargetAssemblyTypeName: PlayerUpgrde, Assembly-CSharp
+        m_MethodName: ButtonTypeEther
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

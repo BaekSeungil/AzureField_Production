@@ -267,18 +267,44 @@ public class PlayerUpgrde : MonoBehaviour
         playerUpgedeType = PlayerUpgedeType.PlusWaveSpawnTime;
     }
 
-    private void GetAskUpgrade()
+    public void GetAskUpgrade()
     {
         Need_IntText.text = NeedUseItem.ToString();
         UpGrade();
     }
 
-    private void Outupgrade()
+    public void Outupgrade()
     {
         PlayerWindow.SetActive(false);
         Jump_ICON.SetActive(false);
         Speed_ICON.SetActive(false);
         Ether_ICON.SetActive(false);
     }
+
+#if UNITY_EDITOR
+    [Button(), DisableInEditorMode(),FoldoutGroup("디버그")]
+    public void Debug_UpgradeLeapup()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.JumpPower, PlusJumpPower);
+        NeedUseItem += UseItemCount;
+        Debug.Log("점프력: " + Player.ViewJumpPower);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterDuration()
+    {
+        Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.MoveSpeed, PlusMoveSpeed);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 지속시간: " + Player.ViewMoveSpeed);
+    }
+
+    [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
+    public void Debug_UpgradeBoosterMult()
+    {
+        etherSystem.EtherUpgradeState(PlusEtherTimeUp);
+        NeedUseItem += UseItemCount;
+        Debug.Log("부스터 가속도: " + etherSystem.ViewDeletTime);
+    }
+#endif
 
 }
