@@ -10,7 +10,6 @@ public struct PlayerUpLimt
 {
     public int PlayercurrentCount;
     public int PlayermaxCount;
-
     public bool PlayerCanUpgrade() => PlayercurrentCount < PlayermaxCount;
 }
 
@@ -27,7 +26,7 @@ public class PlayerUpgrde : MonoBehaviour
     [Header("업그레이 설정 값")]
     [SerializeField,LabelText("점프력 증가값")] float PlusJumpPower;
     [SerializeField,LabelText("이동속도 증가값")] public float PlusMoveSpeed;
-    [SerializeField,LabelText("에테르 시간 증가값")] public float EtherTimeUp;
+    [SerializeField,LabelText("에테르 시간 증가값")] public float PlusEtherTimeUp;
 
     [Header("업그레이드 창 설정")]
     [SerializeField,LabelText("플레이어 업그레이드 창")] public GameObject PlayerWindow;
@@ -63,7 +62,6 @@ public class PlayerUpgrde : MonoBehaviour
     private Coroutine blinkCoroutine;
     private PlayerUpgedeType playerUpgedeType;
     private PlayerCore Player;
-
     private EtherSystem etherSystem;
 
 
@@ -80,6 +78,8 @@ public class PlayerUpgrde : MonoBehaviour
         SetItemCountText();
         PlayerUgradeView();
     }
+
+
 
     private void SetItemCountText()
     {
@@ -100,8 +100,18 @@ public class PlayerUpgrde : MonoBehaviour
             UpdateView(Player.ViewMoveSpeed, PlusMoveSpeed);
             break;
             case PlayerUpgedeType.PlusWaveSpawnTime:
-            
+            UpdateView(etherSystem.ViewDeletTime, PlusEtherTimeUp);
             break;
+        }
+
+        if(!GetCurrentCanUpgradeStatus())
+        {
+            if(NeedUseItem > UseItemCount)
+            LimitUpgradeObj();
+        }
+        else
+        {
+            OffLimitUpgradeObj();
         }
     }
 
@@ -113,4 +123,162 @@ public class PlayerUpgrde : MonoBehaviour
         AfterUpgrade = beforeValue + upgradeValue;
         AfterText.text = AfterUpgrade.ToString("F1");
     }
+    private void UpGrade()
+    {
+        if (!CanUpgrade) return;
+        Player = PlayerCore.Instance;
+
+        if(!GetCurrentCanUpgradeStatus())return;
+
+        if (!PlayerInventoryContainer.Instance.RemoveItem(Playeritem, NeedUseItem))
+        {
+            StartBlinkingText(Have_IntText);
+            return;
+        }
+
+        switch (playerUpgedeType)
+        {
+            case PlayerUpgedeType.PlusPlayerJump:
+                TryUpgrade(ref UpJump_CountLimit, PlayerCore.AbilityAttribute.JumpPower, PlusJumpPower);
+                break;
+            case PlayerUpgedeType.PlusPlayerMoveSpeed:
+                TryUpgrade(ref UpSpeed_CountLimit, PlayerCore.AbilityAttribute.MoveSpeed, PlusMoveSpeed);
+                break;
+            case PlayerUpgedeType.PlusWaveSpawnTime:
+                TryToEtherUpgrade(ref Ether_CountLimit,PlusEtherTimeUp);
+                
+                break;
+        }
+
+    }
+
+    private bool GetCurrentCanUpgradeStatus()
+    {
+        switch (playerUpgedeType)
+        {
+            case PlayerUpgedeType.PlusPlayerJump:
+                return UpJump_CountLimit.PlayerCanUpgrade();
+            case PlayerUpgedeType.PlusPlayerMoveSpeed:
+                return UpSpeed_CountLimit.PlayerCanUpgrade();
+            case PlayerUpgedeType.PlusWaveSpawnTime:
+                return Ether_CountLimit.PlayerCanUpgrade();
+            default:
+                return false;
+        }
+    }
+
+    private void TryUpgrade(ref PlayerUpLimt limit, PlayerCore.AbilityAttribute attribute, float upgradeValue)
+    {
+        if (limit.PlayerCanUpgrade())
+        {
+            Player.PlayerUpgradeState(attribute, upgradeValue);
+            limit.PlayercurrentCount++;
+            NeedUseItem += UseItemCount;
+            OffLimitUpgradeObj();  // 강화 가능 상태 유지
+
+            if(!GetCurrentCanUpgradeStatus())
+            {
+                if(NeedUseItem > UseItemCount)
+                LimitUpgradeObj();
+            }
+            
+        }
+    }
+
+    private void TryToEtherUpgrade(ref PlayerUpLimt limit, float upgradeValue)
+    {
+        if (limit.PlayerCanUpgrade())
+        {
+            etherSystem.EtherUpgradeState(upgradeValue);
+            limit.PlayercurrentCount++;
+            NeedUseItem += UseItemCount;
+            OffLimitUpgradeObj();
+            if(!GetCurrentCanUpgradeStatus())
+            {
+                if(NeedUseItem > UseItemCount)
+                LimitUpgradeObj();
+            }
+        }
+    }
+
+    private void LimitUpgradeObj()
+    {
+    
+        LimitObject.SetActive(true);
+        ItemTitleObj.SetActive(false);
+    }
+
+    private void OffLimitUpgradeObj()
+    {
+        LimitObject.SetActive(false);
+        ItemTitleObj.SetActive(true);
+    }
+
+    private void StartBlinkingText(TMP_Text text)
+    {
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+        }
+        blinkCoroutine = StartCoroutine(BlinkText(text));
+    }
+
+    private IEnumerator BlinkText(TMP_Text text)
+    {
+        Color originalColor = text.color;
+        Color blinkColor = Color.red;
+        for (int i = 0; i < 4; i++) // 2번 깜빡임
+        {
+            text.color = blinkColor;
+            yield return new WaitForSeconds(0.25f);
+            text.color = originalColor;
+            yield return new WaitForSeconds(0.25f);
+        }
+
+    }
+
+    public void ButtonTypeJump()
+    {
+        PlayerWindow.SetActive(true);
+        Jump_ICON.SetActive(true);
+        Speed_ICON.SetActive(false);
+        Ether_ICON.SetActive(false);
+        UpTypeText.text = TXT_PlayerJump.GetLocalizedString();
+        playerUpgedeType = PlayerUpgedeType.PlusPlayerJump;
+    }
+
+    public void ButtonTypeSpeed()
+    {
+        PlayerWindow.SetActive(true);
+        Speed_ICON.SetActive(true);
+        Jump_ICON.SetActive(false);
+        Ether_ICON.SetActive(false);
+        UpTypeText.text = TXT_movespeed.GetLocalizedString();
+        playerUpgedeType = PlayerUpgedeType.PlusPlayerMoveSpeed;
+    }
+
+    public void ButtonTypeEther()
+    {
+        PlayerWindow.SetActive(true);
+        Ether_ICON.SetActive(true);
+        Speed_ICON.SetActive(false);
+        Jump_ICON.SetActive(false);
+        UpTypeText.text = TXT_Ether.GetLocalizedString();
+        playerUpgedeType = PlayerUpgedeType.PlusWaveSpawnTime;
+    }
+
+    private void GetAskUpgrade()
+    {
+        Need_IntText.text = NeedUseItem.ToString();
+        UpGrade();
+    }
+
+    private void Outupgrade()
+    {
+        PlayerWindow.SetActive(false);
+        Jump_ICON.SetActive(false);
+        Speed_ICON.SetActive(false);
+        Ether_ICON.SetActive(false);
+    }
+
 }
