@@ -3717,7 +3717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8097827325445149081
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6993,7 +6993,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8156024767508800352}
   - component: {fileID: 265870669007887369}
-  - component: {fileID: 1117627256421368802}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -7029,36 +7028,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2714579812912809790}
   m_CullTransparentMesh: 1
---- !u!114 &1117627256421368802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2714579812912809790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.31132078, g: 0.28131342, b: 0.2540495, a: 0.8156863}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: aba2d863d27af7845a6283ba614a04d7, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2794591370557111472
 GameObject:
   m_ObjectHideFlags: 0
@@ -10744,7 +10713,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3482077543294557838
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25336,6 +25305,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4153217626909081850, guid: 47ab58c1d8e0d134f849905d82d8ba93,
         type: 3}
+    - target: {fileID: 4153217626909081850, guid: 47ab58c1d8e0d134f849905d82d8ba93,
+        type: 3}
+      propertyPath: serializationData.SerializedFormat
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4218740011928999410, guid: 47ab58c1d8e0d134f849905d82d8ba93,
         type: 3}
       propertyPath: m_Pivot.x

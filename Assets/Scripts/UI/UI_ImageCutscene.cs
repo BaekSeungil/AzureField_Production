@@ -20,22 +20,26 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
     Image fixedImage;
     Image longImage;
-    TextMeshPro textMesh;
+    TextMeshProUGUI textMesh;
     Animator fixedAnimator;
     Animator longAnimator;
 
     protected override void Awake()
     {
         base.Awake();
-
-        fixedImage = fixedImageObject.GetComponent<Image>();
-        fixedAnimator = fixedImageObject.GetComponent<Animator>();
-        longImage = longImageObject.GetComponent<Image>();
-        textMesh = textObject.GetComponent<TextMeshPro>();
     }
 
     private void Start()
     {
+        visualGroup.SetActive(true);
+
+        fixedImage = fixedImageObject.GetComponent<Image>();
+        fixedAnimator = fixedImageObject.GetComponent<Animator>();
+        longImage = longImageObject.GetComponent<Image>();
+        longAnimator = longImageObject.GetComponent<Animator>();
+        textMesh = textObject.GetComponent<TextMeshProUGUI>();
+        textMesh.text = string.Empty;
+
         visualGroup.SetActive(false);
     }
 
@@ -47,7 +51,6 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         fixedImageObject.SetActive(false);
         textObject.SetActive(true);
 
-        textMesh.text = string.Empty;
 
         for (int i = 0; i < subsequences.Length; i++)
         {
@@ -115,7 +118,10 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         for (int seqIndex = 0; seqIndex < subsequence.elements.Length; seqIndex++)
         {
             var current = subsequence.elements[seqIndex];
-            for(float time = 0; time < current.scrollTime; time += Time.deltaTime)
+
+            yield return new WaitForSeconds(0.5f);
+
+            for (float time = 0; time < current.scrollTime; time += Time.deltaTime)
             {
                 if (UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed()) break;
                 float t = time / current.scrollTime;
@@ -135,8 +141,6 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
                 yield return new WaitForSeconds(0.2f);
                 yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
             }
-
-
             prevPoint = -current.scrollPoint;
 
         }
@@ -147,9 +151,8 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
     public IEnumerator Cor_EndCutsceneProgress()
     {
-        visualGroup.SetActive(true);
-
         textMesh.text = string.Empty;
+        visualGroup.SetActive(false);
         yield return null;
     }
 
