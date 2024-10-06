@@ -31,12 +31,12 @@ public class UpgradeController : MonoBehaviour
 
     [Header("업그레이드 창 설정")]
     [SerializeField,LabelText("보트 업그레이드 창")] public GameObject BoatWindow;
-    [SerializeField,LabelText("타이틀 텍스쳐")] public TMP_Text TitleText;
-    [SerializeField,LabelText("가지고 있는재료 텍스쳐")] public TMP_Text Have_IntText;
-    [SerializeField,LabelText("필요한 재료 텍스쳐")] public TMP_Text Need_IntText;
-    [SerializeField,LabelText("업글 전 수치")] public TMP_Text BeforeText;
+    [SerializeField,LabelText("타이틀 텍스쳐")] private TMP_Text TitleText;
+    [SerializeField,LabelText("가지고 있는재료 텍스쳐")] private TMP_Text Have_IntText;
+    [SerializeField,LabelText("필요한 재료 텍스쳐")] private TMP_Text Need_IntText;
+    [SerializeField,LabelText("업글 전 수치")] private TMP_Text BeforeText;
     private int BeforeUpgrade;
-    [SerializeField,LabelText("업글 후 수치")] public TMP_Text AfterText;
+    [SerializeField,LabelText("업글 후 수치")] private TMP_Text AfterText;
     private float AfterUpgrade;
     [SerializeField,LabelText("가속도 아이콘")] private GameObject Duration_ICON;
     [SerializeField,LabelText("점프 아이콘")] private GameObject Jump_ICON;
@@ -45,13 +45,13 @@ public class UpgradeController : MonoBehaviour
     [SerializeField,LabelText("아이템 소비 초기 값")] private int NeedUseItem;
     [SerializeField,LabelText("아이템 소비 증가 값")] private int UseItemCount;
 
-    [SerializeField,LabelText("부스터 업글 횟수 제한")] public UpgradeLimit UpBooster_CountLimit = new UpgradeLimit{maxCount = 5};
-    [SerializeField,LabelText("점프 업글횟수 제한")] public UpgradeLimit UpJump_CountLimit= new UpgradeLimit{maxCount = 5};
-    [SerializeField,LabelText("가속도 업글 횟수 제한")] public UpgradeLimit UpDuration_CountLimit= new UpgradeLimit{maxCount = 5};
+    [SerializeField,LabelText("부스터 업글 횟수 제한")] private UpgradeLimit UpBooster_CountLimit = new UpgradeLimit{maxCount = 5};
+    [SerializeField,LabelText("점프 업글횟수 제한")] private UpgradeLimit UpJump_CountLimit= new UpgradeLimit{maxCount = 5};
+    [SerializeField,LabelText("가속도 업글 횟수 제한")] private UpgradeLimit UpDuration_CountLimit= new UpgradeLimit{maxCount = 5};
 
-    [SerializeField,LabelText("업글제한 점프 메세지 게임")] public GameObject LimitObject;
-    [SerializeField,LabelText("필요강화 재료 오브젝트")] public GameObject ItemTitleObj;
-    [SerializeField,LabelText("업글 종류 텍스쳐")] public TMP_Text UpTypeText;
+    [SerializeField,LabelText("업글제한 점프 메세지 게임")] private GameObject LimitObject;
+    [SerializeField,LabelText("필요강화 재료 오브젝트")] private GameObject ItemTitleObj;
+    [SerializeField,LabelText("업글 종류 텍스쳐")] private TMP_Text UpTypeText;
 
     [SerializeField, LabelText("텍스트 : 가속도 업그레이드")] private LocalizedString TXT_duration;
     [SerializeField, LabelText("텍스트 : 점프 업그레이드")] private LocalizedString TXT_Jump;
@@ -116,7 +116,7 @@ public class UpgradeController : MonoBehaviour
         }
     }
 
-     private void UpdateView(float beforeValue, float upgradeValue)
+    private void UpdateView(float beforeValue, float upgradeValue)
     {
         BeforeUpgrade = (int)beforeValue;
         BeforeText.text = BeforeUpgrade.ToString("F1");
@@ -128,7 +128,7 @@ public class UpgradeController : MonoBehaviour
 
 
     //보트 강화 아이템 소비하고 업그레이드 수치처리
-    public void BoatUpGrade()
+    private void BoatUpGrade()
     {
         if (!CanUpgrade) return;
         Player = PlayerCore.Instance;
@@ -257,7 +257,6 @@ public class UpgradeController : MonoBehaviour
 
     public void LimitUpgradeObj()
     {
-    
         LimitObject.SetActive(true);
         ItemTitleObj.SetActive(false);
     }

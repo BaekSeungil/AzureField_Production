@@ -16,7 +16,7 @@ public class OceanProfile : SerializedScriptableObject
     [SerializeField, ColorUsage(false, true), LabelText("바다 고점 색상")] private Color oceanTipColor;      // 바다 머트리얼 고점 Emmision 색상
     public Color OceanColor { get { return oceanColor; } }
     public Color OceanTipColor { get { return oceanTipColor; } }
-    [SerializeField, Range(0.1f, 1.5f), LabelText("파도 강도 곱")] private float oceanIntensity;
+    [SerializeField, Range(0.0f, 2.0f), LabelText("파도 강도 곱")] private float oceanIntensity;
     public float OceanIntensity { get { return oceanIntensity; } }                                          // 파도 강도 곱
     
     public struct Waveform
