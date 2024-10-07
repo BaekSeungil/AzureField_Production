@@ -21,6 +21,11 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "f53051a8190f7044fa936bd7fbe116c1" );
 		}
+		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Baking/Bake HDRP", false, 85 )]
+		public static void ApplyTemplateImpostorsBakingBakeHDRP()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "5b7fbe5f8e132bd40b11a10c99044f79" );
+		}
 		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Baking/Bake URP", false, 85 )]
 		public static void ApplyTemplateImpostorsBakingBakeURP()
 		{
@@ -30,6 +35,11 @@ namespace AmplifyShaderEditor
 		public static void ApplyTemplateImpostorsLit()
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "30a8e337ed84177439ca24b6a5c97cd1" );
+		}
+		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Lit HDRP", false, 85 )]
+		public static void ApplyTemplateImpostorsLitHDRP()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "87e83e0e165df8c42a86552d2fc010f1" );
 		}
 		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Lit URP", false, 85 )]
 		public static void ApplyTemplateImpostorsLitURP()
