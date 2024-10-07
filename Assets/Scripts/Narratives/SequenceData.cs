@@ -486,3 +486,39 @@ public class Sequence_StopMusic : Sequence_Base
     }
 
 }
+
+public class Sequence_ImageCutscene : Sequence_Base
+{
+    [LabelText("(선택) 배경음악")] public EventReference music;
+    [LabelText("")] public ImgCutsceneSubsequence_Base[] subsequences;
+    public class ImgCutsceneSubsequence_Base
+    {
+        [LabelText("암전효과")]public bool blackout;
+        [LabelText("이미지")] public Sprite sprite;
+    }
+
+    public class ImgCutsceneSubsequence_Short:ImgCutsceneSubsequence_Base
+    {
+        //[LabelText("대기 시간")] public float waitTime;
+        [LabelText("텍스트")] public LocalizedString[] context;
+        //[LabelText("(선택)효과음")] public EventReference sound;
+    }
+
+    public class ImgCutsceneSubsequence_Long: ImgCutsceneSubsequence_Base
+    {
+        public class LongCutsceneElement
+        {
+            public float scrollPoint;
+            public float scrollTime;
+            public LocalizedString[] context;
+        }
+
+        public LongCutsceneElement[] elements;
+    }
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return UI_ImageCutscene.Instance.StartCutsceneProgress(subsequences);
+    }
+
+}
