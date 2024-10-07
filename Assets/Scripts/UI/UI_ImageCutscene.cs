@@ -1,3 +1,4 @@
+using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -73,16 +74,25 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     private IEnumerator Cor_ImageCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Short subsequence)
     {
         if (subsequence.blackout)
+        {
             blackoutCover.SetActive(true);
+            blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEIN");
+        }
         else
-            blackoutCover.SetActive(false);
+        {
+            if (blackoutCover.activeInHierarchy)
+                blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
+        }
 
         fixedImageObject.SetActive(true);
         fixedImage.sprite = subsequence.sprite;
         longImageObject.SetActive(false);
 
-        fixedAnimator.Play("IN");
-        yield return new WaitForSeconds(transitionLength);
+        if (!subsequence.blackout)
+        {
+            fixedAnimator.Play("IN");
+            yield return new WaitForSeconds(transitionLength);
+        }
 
         for (int textIndex = 0; textIndex < subsequence.context.Length; textIndex++)
         {
@@ -102,16 +112,26 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     private IEnumerator Cor_LongImageCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Long subsequence)
     {
         if (subsequence.blackout)
+        {
             blackoutCover.SetActive(true);
+            blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEIN");
+        }
         else
-            blackoutCover.SetActive(false);
+        {
+            if (blackoutCover.activeInHierarchy)
+                blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
+        }
+
 
         longImageObject.SetActive(true);
         longImage.sprite = subsequence.sprite;
         fixedImageObject.SetActive(false);
 
-        longAnimator.Play("IN");
-        yield return new WaitForSeconds(transitionLength);
+        if (!subsequence.blackout)
+        {
+            longAnimator.Play("IN");
+            yield return new WaitForSeconds(transitionLength);
+        }
 
         float prevPoint = 0f;
 
@@ -125,7 +145,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             {
                 if (UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed()) break;
                 float t = time / current.scrollTime;
-                longImage.rectTransform.anchoredPosition = Vector2.Lerp(Vector2.right * -prevPoint, Vector2.right * -current.scrollPoint, t);
+                longImage.rectTransform.anchoredPosition = Vector2.Lerp(Vector2.right * -prevPoint, Vector2.right * -current.scrollPoint, transitionCurve.Evaluate(t));
                 yield return null;
             }
             longImage.rectTransform.anchoredPosition = Vector2.right * -current.scrollPoint;
