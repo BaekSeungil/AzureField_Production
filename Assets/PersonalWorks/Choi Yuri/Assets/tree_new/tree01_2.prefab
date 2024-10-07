@@ -15,7 +15,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5238728150878112849
 Transform:
@@ -42,19 +42,17 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3013141038045349748}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
-  m_Size: 1
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
+  m_LocalReferencePoint: {x: 8.583124, y: 9.343837, z: 0.20765114}
+  m_Size: 20.85516
+  m_FadeMode: 1
+  m_AnimateCrossFading: 1
   m_LastLODIsBillboard: 0
   m_LODs:
   - screenRelativeHeight: 0.019989152
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 2775147364782233540, guid: 8396096105b2dbd4db3a4d34605db5cc,
-        type: 3}
-    - renderer: {fileID: 1623128640425303263, guid: 13fc0d006dd3967428edf61794f8a9ed,
-        type: 3}
+    - renderer: {fileID: 1241105342851490653}
+    - renderer: {fileID: 18677661269690055}
   m_Enabled: 1
 --- !u!1001 &4705086136909316289
 PrefabInstance:
@@ -127,13 +125,19 @@ PrefabInstance:
     - target: {fileID: 9169603263560853814, guid: da668351054f28e40b9707cdc3165005,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da668351054f28e40b9707cdc3165005, type: 3}
+--- !u!23 &1241105342851490653 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5796863150038508444, guid: da668351054f28e40b9707cdc3165005,
+    type: 3}
+  m_PrefabInstance: {fileID: 4705086136909316289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8394781529740713647 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3876354337046060654, guid: da668351054f28e40b9707cdc3165005,
@@ -206,7 +210,7 @@ PrefabInstance:
     - target: {fileID: 2278180650609225047, guid: 4a91212b0053a444898810b511e68528,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4700024763432193282, guid: 4a91212b0053a444898810b511e68528,
         type: 3}
@@ -218,6 +222,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a91212b0053a444898810b511e68528, type: 3}
+--- !u!23 &18677661269690055 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4700024763432193282, guid: 4a91212b0053a444898810b511e68528,
+    type: 3}
+  m_PrefabInstance: {fileID: 4718519675952909253}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6792281270963376293 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2249701331530079072, guid: 4a91212b0053a444898810b511e68528,
