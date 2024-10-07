@@ -82,13 +82,13 @@ MonoBehaviour:
   m_Settings:
     AOMethod: 1
     Downsample: 1
-    AfterOpaque: 1
+    AfterOpaque: 0
     Source: 1
-    NormalSamples: 2
-    Intensity: 0.2
-    DirectLightingStrength: 0.25
-    Radius: 0.2
-    Samples: 2
+    NormalSamples: 1
+    Intensity: 0.6
+    DirectLightingStrength: 0.643
+    Radius: 0.1
+    Samples: 1
     BlurQuality: 1
     Falloff: 100
     SampleCount: -1
@@ -111,11 +111,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: DepthPass
+  m_Name: Depth
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: DepthPass
+    passTag: Depth
     Event: 300
     filterSettings:
       RenderQueueType: 0
@@ -205,8 +205,8 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 1
-  m_DepthPrimingMode: 2
+  m_RenderingMode: 2
+  m_DepthPrimingMode: 1
   m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0

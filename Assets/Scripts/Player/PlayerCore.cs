@@ -1881,6 +1881,17 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     
     public void PlayerUpgradeState(AbilityAttribute Type ,float UpgradeState)
     {
+
+        if(Type == AbilityAttribute.MoveSpeed)
+        {
+            moveSpeed += UpgradeState;
+        }
+
+        if(Type == AbilityAttribute.JumpPower)
+        {
+            jumpPower += UpgradeState;
+        }
+
         if(Type == AbilityAttribute.LeapupPower)
         {
             leapupPower += UpgradeState;
@@ -1895,8 +1906,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
             boosterMult += UpgradeState;
         }
+
+
     }
 
+    public float ViewJumpPower{get{return jumpPower;}}
+    public float ViewMoveSpeed{get{return moveSpeed;}}
     public float ViewleapupPower {get {return FinalLeapupPower;}}
     public float ViewBoosterDuration { get { return FinalBoosterDuration; } }
     public float ViewBoosterMult { get { return FinalBoosterMult; } }

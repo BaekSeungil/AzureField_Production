@@ -239,24 +239,24 @@ MonoBehaviour:
     SerializationNodes: []
   ReferencingMaterials:
   - {fileID: 2100000, guid: e6d27f1efe00f4d418b9832a0ce39542, type: 2}
-  defaultOceanProfile: {fileID: 11400000, guid: 763df182391147541a1e380b4dbd8dac,
+  defaultOceanProfile: {fileID: 11400000, guid: f746c12690da5284780d1d9562e9ba2e,
     type: 2}
   islandregionIntensityFactor: 1
   rotation: 0
   depth: 50
   phase: 0
   gravity: 1
-  oceanEmmision: {r: 0, g: 0.40392157, b: 1, a: 1}
-  oceanTipEmmision: {r: 0, g: 0.6999998, b: 1, a: 0}
-  intensity: 0.1
-  Wave1_Vector: {x: 0.5, y: 0, z: 0.1}
+  oceanEmmision: {r: 0, g: 0.23026323, b: 0.6603774, a: 1}
+  oceanTipEmmision: {r: 0, g: 0.7088351, b: 1, a: 0}
+  intensity: 1
+  Wave1_Vector: {x: 0.2, y: 0, z: 0.1}
   Wave1_Amplitude: 1
   Wave1_Gravity: 1
-  Wave2_Vector: {x: 0, y: 0, z: 0.3}
+  Wave2_Vector: {x: 0.3, y: 0, z: -0.01}
   Wave2_Amplitude: 0.2
   Wave2_Gravity: 1
-  Wave3_Vector: {x: 0.3, y: 0, z: 0}
-  Wave3_Amplitude: 0.2
+  Wave3_Vector: {x: 0.4, y: 0, z: 0}
+  Wave3_Amplitude: 0.21
   Wave3_Gravity: 1
   Wave4_Vector: {x: 0.01, y: 0, z: 0.01}
   Wave4_Amplitude: 0
@@ -857,7 +857,10 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: transitionQueue
+      Entry: 6
+      Data: 
   defaultAtmos: {fileID: 11400000, guid: 7f931e283ac717246a69105e3120bf31, type: 2}
   ppGlobalFirst: {fileID: 5456777650761507234}
   ppGlobalSecond: {fileID: 5615390098287255850}
