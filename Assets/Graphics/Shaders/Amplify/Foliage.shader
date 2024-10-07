@@ -24,6 +24,7 @@ Shader "Foliage"
 		_VertexAnimateSpeed("VertexAnimateSpeed", Float) = 0
 		_VertexNoiseScale("VertexNoiseScale", Float) = 1
 		_VertexOffsetScale("VertexOffsetScale", Float) = 1
+		_NearDitherDistance("NearDitherDistance", Float) = 3
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 
 
@@ -342,23 +343,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -686,7 +688,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
@@ -1027,23 +1029,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1315,7 +1318,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				float2 uv_Basemap = IN.ase_texcoord3.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
@@ -1447,23 +1450,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1714,7 +1718,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				float2 uv_Basemap = IN.ase_texcoord3.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
@@ -1827,23 +1831,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2135,7 +2140,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
@@ -2238,23 +2243,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2527,7 +2533,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
@@ -2654,23 +2660,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2940,7 +2947,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				float2 uv_Basemap = IN.ase_texcoord5.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
@@ -3148,23 +3155,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3487,7 +3495,7 @@ Shader "Foliage"
 				ase_screenPosNorm.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? ase_screenPosNorm.z : ase_screenPosNorm.z * 0.5 + 0.5;
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , WorldPosition ) / _NearDitherDistance ) );
 				
 
 				float3 BaseColor = ( ( saturate( lerpBlendMode44_g9 )) + ( _SSS_Color * saturate( dotResult98 ) ) ).rgb;
@@ -3681,23 +3689,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3935,7 +3944,7 @@ Shader "Foliage"
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
 				float3 ase_worldPos = IN.ase_texcoord1.xyz;
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / _NearDitherDistance ) );
 				float2 uv_Basemap = IN.ase_texcoord2.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
@@ -4045,23 +4054,24 @@ Shader "Foliage"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _SSS_Color;
 			float4 _BaseColor;
 			float4 _Basemap_ST;
 			float4 _ShadeColor;
 			float4 _Emmision;
+			float4 _SSS_Color;
 			float4 _Normalmap_ST;
+			float _VertexAnimateSpeed;
+			float _Occlusion;
 			float _Smoothness;
 			float _Metallic;
 			float _SSS_Scale;
-			float _SSS_Power;
-			float _VertexAnimateSpeed;
-			float _Occlusion;
+			float _SubsurfaceDistortion;
+			float _NearDitherDistance;
 			float _ShadeRemapMax;
 			float _ShadeRemapMin;
 			float _VertexOffsetScale;
 			float _VertexNoiseScale;
-			float _SubsurfaceDistortion;
+			float _SSS_Power;
 			float _AlphaClipThershold;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -4298,7 +4308,7 @@ Shader "Foliage"
 				float2 clipScreen158 = ase_screenPosNorm.xy * _ScreenParams.xy;
 				float dither158 = Dither4x4Bayer( fmod(clipScreen158.x, 4), fmod(clipScreen158.y, 4) );
 				float3 ase_worldPos = IN.ase_texcoord1.xyz;
-				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / 3.0 ) );
+				dither158 = step( dither158, ( distance( _WorldSpaceCameraPos , ase_worldPos ) / _NearDitherDistance ) );
 				float2 uv_Basemap = IN.ase_texcoord2.xy * _Basemap_ST.xy + _Basemap_ST.zw;
 				float4 tex2DNode57 = tex2D( _Basemap, uv_Basemap );
 				
@@ -4347,13 +4357,14 @@ Node;AmplifyShaderEditor.WorldSpaceCameraPos;173;-1232,-928;Inherit;False;0;4;FL
 Node;AmplifyShaderEditor.SimpleAddOpNode;89;-656,1152;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.RangedFloatNode;78;-768,1296;Inherit;False;Property;_VertexNoiseScale;VertexNoiseScale;16;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.DistanceOpNode;171;-928,-784;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;177;-991.1361,-672.0087;Inherit;False;Property;_NearDitherDistance;NearDitherDistance;18;0;Create;True;0;0;0;False;0;False;3;3;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.NoiseGeneratorNode;91;-480,1152;Inherit;True;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleDivideOpNode;176;-752,-752;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;3;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SamplerNode;57;-1232,-416;Inherit;True;Property;_Basemap;Basemap;0;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TFHCRemapNode;125;-240,1152;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;114;-304,1392;Inherit;False;Property;_VertexOffsetScale;VertexOffsetScale;17;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.CommentaryNode;108;-3200,160;Inherit;False;2292;859;;17;49;96;98;97;99;100;102;101;46;92;95;47;94;121;122;123;124;SubsurfaceScattering;1,1,1,1;0;0
-Node;AmplifyShaderEditor.DitheringNode;158;-624,-640;Inherit;False;0;False;4;0;FLOAT;0;False;1;SAMPLER2D;;False;2;FLOAT4;0,0,0,0;False;3;SAMPLERSTATE;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DitheringNode;158;-600,-640;Inherit;False;0;False;4;0;FLOAT;0;False;1;SAMPLER2D;;False;2;FLOAT4;0,0,0,0;False;3;SAMPLERSTATE;;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;113;-16,1152;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;60;-960,64;Inherit;False;Property;_ShadeRemapMax;ShadeRemapMax;10;0;Create;True;0;0;0;False;0;False;0.7;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;59;-960,-16;Inherit;False;Property;_ShadeRemapMin;ShadeRemapMin;9;0;Create;True;0;0;0;False;0;False;0.2;0;0;0;0;1;FLOAT;0
@@ -4406,6 +4417,7 @@ WireConnection;171;1;174;0
 WireConnection;91;0;89;0
 WireConnection;91;1;78;0
 WireConnection;176;0;171;0
+WireConnection;176;1;177;0
 WireConnection;125;0;91;0
 WireConnection;158;0;176;0
 WireConnection;113;0;125;0
@@ -4447,4 +4459,4 @@ WireConnection;36;6;159;0
 WireConnection;36;7;72;0
 WireConnection;36;8;113;0
 ASEEND*/
-//CHKSM=31153D370D00335DC867959B6045C2852A028272
+//CHKSM=A1CB132CF556763D39331AE795F12A8CE52A3C6C
