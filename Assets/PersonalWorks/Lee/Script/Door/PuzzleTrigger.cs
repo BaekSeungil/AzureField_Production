@@ -19,6 +19,9 @@ public class PuzzleTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
+        if (puzzleDoor == null) return;
+        if (laserStaute == null) return;    
+
         if(!Callaction && (other.gameObject == laserStaute.gameObject))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
@@ -38,7 +41,10 @@ public class PuzzleTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if(Callaction && (other.gameObject == laserStaute.gameObject))
+        if (puzzleDoor == null) return;
+        if (laserStaute == null) return;
+
+        if (Callaction && (other.gameObject == laserStaute.gameObject))
         {
             puzzleDoor = FindObjectOfType<PuzzleDoor>();
             Debug.Log("빠짐 " + puzzleDoor.OpenDoorCount);

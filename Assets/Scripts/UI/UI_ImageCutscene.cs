@@ -172,7 +172,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     public IEnumerator Cor_EndCutsceneProgress()
     {
         textMesh.text = string.Empty;
-        visualGroup.SetActive(false);
+        visualGroup.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
         yield return null;
     }
 
