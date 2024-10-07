@@ -249,25 +249,25 @@ public class UpgradeController : MonoBehaviour
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
     }
 
-    private void GetAskUpgrade()
+    public void GetAskUpgrade()
     {
         Need_IntText.text = NeedUseItem.ToString();
         BoatUpGrade();
     }
 
-    private void LimitUpgradeObj()
+    public void LimitUpgradeObj()
     {
         LimitObject.SetActive(true);
         ItemTitleObj.SetActive(false);
     }
 
-    private void OffLimitUpgradeObj()
+    public void OffLimitUpgradeObj()
     {
         LimitObject.SetActive(false);
         ItemTitleObj.SetActive(true);
     }
 
-    private void Outupgrade()
+    public void Outupgrade()
     {
         BoatWindow.SetActive(false);
         Jump_ICON.SetActive(false);
