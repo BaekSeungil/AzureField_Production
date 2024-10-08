@@ -95,6 +95,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     /// <param name="data"></param>
     public void SetMoney(int value)
     {
+        if(moneyText == null) return;
         moneyText.text = value.ToString();
     }
 
