@@ -13,7 +13,7 @@ public class RandomFlyObj : MonoBehaviour
     public bool BoolSpawnbird  = true;
     public Color gizmoColor = Color.green;  // 기즈모 색상
 
-    private float heightOffset = 140;
+    private float heightOffset = 60f;
 
     private Vector3 initialPosition;
     private float startTime;
