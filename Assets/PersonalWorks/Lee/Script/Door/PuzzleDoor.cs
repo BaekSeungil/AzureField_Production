@@ -41,7 +41,7 @@ public class PuzzleDoor : Interactable_Base
     {
         if (Opendoor)
         {
-            Debug.Log("작동시작");
+            //Debug.Log("작동시작");
             if (eventsOnStartInteract != null)
                 eventsOnStartInteract.Invoke();
 
