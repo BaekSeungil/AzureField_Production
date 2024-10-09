@@ -5,8 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -95,6 +93,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     /// <param name="data"></param>
     public void SetMoney(int value)
     {
+        if (moneyText == null) return;
         moneyText.text = value.ToString();
     }
 

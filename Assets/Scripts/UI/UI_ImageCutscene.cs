@@ -1,3 +1,4 @@
+using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -20,22 +21,26 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
     Image fixedImage;
     Image longImage;
-    TextMeshPro textMesh;
+    TextMeshProUGUI textMesh;
     Animator fixedAnimator;
     Animator longAnimator;
 
     protected override void Awake()
     {
         base.Awake();
-
-        fixedImage = fixedImageObject.GetComponent<Image>();
-        fixedAnimator = fixedImageObject.GetComponent<Animator>();
-        longImage = longImageObject.GetComponent<Image>();
-        textMesh = textObject.GetComponent<TextMeshPro>();
     }
 
     private void Start()
     {
+        visualGroup.SetActive(true);
+
+        fixedImage = fixedImageObject.GetComponent<Image>();
+        fixedAnimator = fixedImageObject.GetComponent<Animator>();
+        longImage = longImageObject.GetComponent<Image>();
+        longAnimator = longImageObject.GetComponent<Animator>();
+        textMesh = textObject.GetComponent<TextMeshProUGUI>();
+        textMesh.text = string.Empty;
+
         visualGroup.SetActive(false);
     }
 
@@ -47,7 +52,6 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         fixedImageObject.SetActive(false);
         textObject.SetActive(true);
 
-        textMesh.text = string.Empty;
 
         for (int i = 0; i < subsequences.Length; i++)
         {
@@ -70,16 +74,25 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     private IEnumerator Cor_ImageCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Short subsequence)
     {
         if (subsequence.blackout)
+        {
             blackoutCover.SetActive(true);
+            blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEIN");
+        }
         else
-            blackoutCover.SetActive(false);
+        {
+            if (blackoutCover.activeInHierarchy)
+                blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
+        }
 
         fixedImageObject.SetActive(true);
         fixedImage.sprite = subsequence.sprite;
         longImageObject.SetActive(false);
 
-        fixedAnimator.Play("IN");
-        yield return new WaitForSeconds(transitionLength);
+        if (!subsequence.blackout)
+        {
+            fixedAnimator.Play("IN");
+            yield return new WaitForSeconds(transitionLength);
+        }
 
         for (int textIndex = 0; textIndex < subsequence.context.Length; textIndex++)
         {
@@ -99,27 +112,40 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     private IEnumerator Cor_LongImageCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Long subsequence)
     {
         if (subsequence.blackout)
+        {
             blackoutCover.SetActive(true);
+            blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEIN");
+        }
         else
-            blackoutCover.SetActive(false);
+        {
+            if (blackoutCover.activeInHierarchy)
+                blackoutCover.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
+        }
+
 
         longImageObject.SetActive(true);
         longImage.sprite = subsequence.sprite;
         fixedImageObject.SetActive(false);
 
-        longAnimator.Play("IN");
-        yield return new WaitForSeconds(transitionLength);
+        if (!subsequence.blackout)
+        {
+            longAnimator.Play("IN");
+            yield return new WaitForSeconds(transitionLength);
+        }
 
         float prevPoint = 0f;
 
         for (int seqIndex = 0; seqIndex < subsequence.elements.Length; seqIndex++)
         {
             var current = subsequence.elements[seqIndex];
-            for(float time = 0; time < current.scrollTime; time += Time.deltaTime)
+
+            yield return new WaitForSeconds(0.5f);
+
+            for (float time = 0; time < current.scrollTime; time += Time.deltaTime)
             {
                 if (UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed()) break;
                 float t = time / current.scrollTime;
-                longImage.rectTransform.anchoredPosition = Vector2.Lerp(Vector2.right * -prevPoint, Vector2.right * -current.scrollPoint, t);
+                longImage.rectTransform.anchoredPosition = Vector2.Lerp(Vector2.right * -prevPoint, Vector2.right * -current.scrollPoint, transitionCurve.Evaluate(t));
                 yield return null;
             }
             longImage.rectTransform.anchoredPosition = Vector2.right * -current.scrollPoint;
@@ -135,8 +161,6 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
                 yield return new WaitForSeconds(0.2f);
                 yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
             }
-
-
             prevPoint = -current.scrollPoint;
 
         }
@@ -147,9 +171,8 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
     public IEnumerator Cor_EndCutsceneProgress()
     {
-        visualGroup.SetActive(true);
-
         textMesh.text = string.Empty;
+        visualGroup.GetComponent<DOTweenAnimation>().DORestartById("FADEOUT");
         yield return null;
     }
 

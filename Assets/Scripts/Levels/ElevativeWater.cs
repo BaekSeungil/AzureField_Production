@@ -104,7 +104,9 @@ public class ElevativeWater : MonoBehaviour
                 if (i != 0) DrawArrow.ForGizmo(transform.position + Vector3.up*waterLevelOptions[i - 1].height + Vector3.right*(i-2)*0.2f, Vector3.up * (waterLevelOptions[i].height - waterLevelOptions[i - 1].height));
 
                 Gizmos.DrawWireCube(transform.position + Vector3.up * waterLevelOptions[i].height, new Vector3(2f, 0f, 2f));
+#if UNITY_EDITOR
                 Handles.Label(transform.position + Vector3.up * waterLevelOptions[i].height + Vector3.right * -1f, i.ToString() + "번 수위 : " + waterLevelOptions[i].height + "M",labelStyle);
+#endif
             }
             int last = waterLevelOptions.Length-1;
             Gizmos.color = Color.magenta;

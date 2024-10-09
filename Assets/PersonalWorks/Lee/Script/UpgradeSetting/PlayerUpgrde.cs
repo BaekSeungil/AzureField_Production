@@ -283,7 +283,7 @@ public class PlayerUpgrde : MonoBehaviour
 
 #if UNITY_EDITOR
     [Button(), DisableInEditorMode(),FoldoutGroup("디버그")]
-    public void Debug_UpgradeLeapup()
+    public void Debug_UpgradeJump()
     {
         Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.JumpPower, PlusJumpPower);
         NeedUseItem += UseItemCount;
@@ -291,7 +291,7 @@ public class PlayerUpgrde : MonoBehaviour
     }
 
     [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
-    public void Debug_UpgradeBoosterDuration()
+    public void Debug_UpgradeMoveSpeed()
     {
         Player.AddPermernentAttribute(PlayerCore.AbilityAttribute.MoveSpeed, PlusMoveSpeed);
         NeedUseItem += UseItemCount;
@@ -299,7 +299,7 @@ public class PlayerUpgrde : MonoBehaviour
     }
 
     [Button(), DisableInEditorMode(), FoldoutGroup("디버그")]
-    public void Debug_UpgradeBoosterMult()
+    public void Debug_UpgradeEther()
     {
         etherSystem.EtherUpgradeState(PlusEtherTimeUp);
         NeedUseItem += UseItemCount;

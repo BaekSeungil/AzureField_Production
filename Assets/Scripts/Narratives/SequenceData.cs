@@ -518,6 +518,7 @@ public class Sequence_ImageCutscene : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
+        yield return null;
         yield return UI_ImageCutscene.Instance.StartCutsceneProgress(subsequences);
     }
 
