@@ -172,8 +172,12 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     public IEnumerator Cor_EndCutsceneProgress()
     {
         textMesh.text = string.Empty;
-        visualGroup.SetActive(false);
-        yield return null;
+
+        DOTweenAnimation doAnim = visualGroup.GetComponent<DOTweenAnimation>();
+        Tween fadeoutTween = doAnim.GetTweens()[1];
+        doAnim.DORestartById("FADEOUT");
+
+        yield return fadeoutTween.WaitForCompletion();
     }
 
 }

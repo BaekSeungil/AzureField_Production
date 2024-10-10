@@ -1,10 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Processors;
 using UnityEngine.UI;
 
 public class CameraSensitivityControl : MonoBehaviour
