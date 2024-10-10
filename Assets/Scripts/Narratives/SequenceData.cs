@@ -346,7 +346,7 @@ public class Sequence_DisableVCam : Sequence_Base
 
 public class Sequence_Animation : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 오브젝트의 애니메이터를 재생합니다.")]
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에서 해당 state를 재생합니다.")]
     public string objectName;
     public string stateName;
 
