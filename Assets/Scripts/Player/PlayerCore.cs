@@ -679,7 +679,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             // get nearest groundhit from sweeptest
             groundHits_notFiltered.RemoveAll((RaycastHit h) => (1 << h.collider.gameObject.layer & groundIgnore) == 1);
             Vector3 groundNormal_nonDamped = groundHits_notFiltered.ToList()[0].normal;
-            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.5f);
+            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.25f);
 
             if (!grounding) OnGroundingEnter();
 
@@ -916,7 +916,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                 Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
-                player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
+                //player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
 
