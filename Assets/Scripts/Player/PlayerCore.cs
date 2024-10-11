@@ -626,9 +626,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
 
     private void FixedUpdate()
     {
-        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
-        CurrentMovement.OnFixedUpdate(this);
-        // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+        if (!Rigidbody.isKinematic)
+        {
+            // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+            CurrentMovement.OnFixedUpdate(this);
+            // =================== CURRENT MOVEMENT FIXED UPDATE =========================
+        }
 
         if (interestPoint == null)
         {
