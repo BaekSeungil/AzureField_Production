@@ -5,7 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 using FMODUnity;
 
-
+[RequireComponent(typeof(Collider))]
 public class SeaFlower : Interactable_Base
 {
     [SerializeField, LabelText("아이템 데이터")] private ItemData GetItem;
@@ -37,8 +37,30 @@ public class SeaFlower : Interactable_Base
     {
         Debug.Log("PickUpFlower 시작");
         animator.SetTrigger("Pickup");
-        PlayerInventoryContainer.Instance.AddItem(GetItem, ItemQuantity);
+
+        Sequence_Base[] sequence_chain = new Sequence_Base[3];
+
+        Sequence_PlaySound sound = new Sequence_PlaySound();
+        sound.sound = sound_CarrotPicked;
+
+        Sequence_WaitForSeconds wait = new Sequence_WaitForSeconds();
+        wait.time = 3.0f;
+
+        Sequence_ObtainItem item = new Sequence_ObtainItem();
+        item.item = GetItem;
+        item.quantity = ItemQuantity;
+
+        sequence_chain[0] = sound;
+        sequence_chain[1] = wait;
+        sequence_chain[2] = item;
+
+        SequenceInvoker.Instance.StartSequence(sequence_chain);
+
+        GetComponent<Collider>().enabled = false;
+        base.OnDisable();
+
         yield return new WaitForSeconds(5.0f);
+
         for (int i = 0; i < DestoryObj.Length; i++)
         {
             if (DestoryObj[i] != null)
