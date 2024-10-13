@@ -33,7 +33,7 @@ public class EtherSystem : MonoBehaviour
         }
         else
         {
-            EtherObj.SetActive(false)
+            EtherObj.SetActive(false);
         }
     }
 
@@ -79,7 +79,7 @@ public class EtherSystem : MonoBehaviour
             if (Vector3.Distance(startPosition, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
-                EtherObj.SetActive(false)
+                EtherObj.SetActive(false);
                 Debug.Log("파도소멸");
             }
         }
@@ -94,7 +94,7 @@ public class EtherSystem : MonoBehaviour
     {
         if (other.gameObject.tag == "Reef" || other.gameObject.layer == 8)
         {
-            EtherObj.SetActive(false)
+            EtherObj.SetActive(false);
             callEther.IsCreat = false;
         }
     }
@@ -104,7 +104,7 @@ public class EtherSystem : MonoBehaviour
         // 일정 시간이 지난 후 파도를 소멸시키는 코루틴
         yield return new WaitForSeconds(DeletTime);
         callEther.IsCreat = false;
-        EtherObj.SetActive(false)
+        EtherObj.SetActive(false);
     }
 
     public Vector3 GetWaveDirection()
