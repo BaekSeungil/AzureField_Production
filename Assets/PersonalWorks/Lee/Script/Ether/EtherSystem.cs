@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
+using EEtherCount = CallEther.EEtherCount;
+
 
 public class EtherSystem : MonoBehaviour
 {
@@ -40,7 +42,6 @@ public class EtherSystem : MonoBehaviour
     private void Start()
     {
         Initialized();
-
     }
     
     // Update is called once per frame
@@ -51,22 +52,26 @@ public class EtherSystem : MonoBehaviour
 
     public void MoveWave()
     {
-        if (callEther.EtherCount == 3)
+        if (callEther.EtherCount == EEtherCount.ETHEREND)
         {
             // 파도 멈추기
             currentSpeed = 0;
+#if UNITY_EDITOR
             Debug.Log("파도 멈춤");
+#endif
             return;  // 더 이상 아래 코드 실행하지 않음
         }
 
-        if(callEther.EtherCount ==2)
+        if(callEther.EtherCount == EEtherCount.ETHERMOVE)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
             // 도착 여부 확인
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
+#if UNITY_EDITOR
                 Debug.Log("파도소멸");
+#endif
                 gameObject.SetActive(false);
             }
         }
@@ -124,7 +129,6 @@ public class EtherSystem : MonoBehaviour
         Vector3 playerForward = PlayerCore.Instance.transform.forward;
 
         targetPosition = startPosition + playerForward.normalized * FinalDistance;
-
 
         // 목표 지점을 향하도록 오브젝트 회전 설정
         Quaternion rotation = Quaternion.LookRotation(playerForward);

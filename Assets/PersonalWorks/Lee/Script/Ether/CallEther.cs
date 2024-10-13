@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class CallEther : MonoBehaviour
 {
+    public enum EEtherCount
+    {
+        ETHERSPAWN,
+        ETHERMOVE,
+        ETHEREND,
+    }
+
     MainPlayerInputActions inputActions;
     EtherSystem etherSystem;
 
@@ -20,7 +27,7 @@ public class CallEther : MonoBehaviour
 
     public bool OnSpawn = false;
     public bool IsCreat = false;
-    public int EtherCount = 0; //에테르 입력 값 1번누르면 스폰, 2번누르면 에테르 정면이동
+    public EEtherCount EtherCount = EEtherCount.ETHERSPAWN; //에테르 입력 값 1번누르면 스폰, 2번누르면 에테르 정면이동
     private void Start()
     {
         Initialized();
@@ -45,15 +52,15 @@ public class CallEther : MonoBehaviour
             SpawnWave();
         }
         // 파도가 이미 생성된 상태에서 다시 키를 누르면 파도를 이동시킵니다.
-        else if (IsCreat && EtherCount == 1)
+        else if (IsCreat && EtherCount == EEtherCount.ETHERSPAWN)
         {
-            EtherCount = 2;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
+            EtherCount = EEtherCount.ETHERMOVE;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
             PrintDebug("파도 이동 신호 전송");
 
         }
-        else if (IsCreat && EtherCount == 2)
+        else if (IsCreat && EtherCount == EEtherCount.ETHERMOVE)
         {
-            EtherCount = 3;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
+            EtherCount = EEtherCount.ETHEREND;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
             PrintDebug("파도 이동 신호 전송");
         }
     }
@@ -64,7 +71,7 @@ public class CallEther : MonoBehaviour
         //Physics.Raycast(transform.position, Vector3.down, out RaycastHit ray, layerMask);
         //etherWave.transform.position = new Vector3(ray.point.x, 0, ray.point.z);
         IsCreat = true;
-        EtherCount = 1;  // 상태를 1로 설정하여 생성된 상태로 표시합니다.
+        EtherCount = EEtherCount.ETHERSPAWN;  // 상태를 1로 설정하여 생성된 상태로 표시합니다.
         PrintDebug("파도 생성 (범위 내에 객체 감지)");
     }
 
@@ -86,7 +93,8 @@ public class CallEther : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(SpawnPoint, detectionRadius);  // 감지 반경을 시각화
+        if(transform != null)
+            Gizmos.DrawWireSphere(transform.position + transform.forward * SpawnPoint.z, detectionRadius);  // 감지 반경을 시각화
     }   
 
     private void PrintDebug(string str)

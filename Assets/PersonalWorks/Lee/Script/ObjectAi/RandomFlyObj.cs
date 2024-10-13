@@ -5,16 +5,14 @@ using UnityEngine;
 
 public class RandomFlyObj : MonoBehaviour
 {
-    [SerializeField,LabelText("스폰할 오브젝트 선택")] public GameObject objectToSpawn;  // 스폰할 오브젝트
-    public Transform player;  // 플레이어 Transform
+    [LabelText("스폰할 오브젝트 선택")] public GameObject ObjectToSpawn;  // 스폰할 오브젝트
+    public Transform Player;  // 플레이어 Transform
     private float spawnRadius = 45f;  // 스폰 범위 반경
     [SerializeField,LabelText("스폰확률")]private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
     [SerializeField,LabelText("스폰간격")]private float spawnInterval = 120f;  // 스폰 간격 (초)
     [SerializeField,LabelText("스폰높이")]private float heightOffset = 60f;
     public bool BoolSpawnbird  = true;
-    public Color gizmoColor = Color.green;  // 기즈모 색상
-
-   
+    public Color GizmoColor = Color.green;  // 기즈모 색상
 
     private Vector3 initialPosition;
     private float startTime;
@@ -33,6 +31,7 @@ public class RandomFlyObj : MonoBehaviour
         if (!BoolSpawnbird)
         {
             BoolSpawnbird = true;
+            StopAllCoroutines();
             StartCoroutine(SpawnWithInterval());  // 다시 코루틴 시작
         }
     }
@@ -59,7 +58,7 @@ public class RandomFlyObj : MonoBehaviour
                 spawnPosition.y = PlayerCore.Instance.transform.position.y + heightOffset;
 
                 // 오브젝트 스폰
-                Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
+                Instantiate(ObjectToSpawn, spawnPosition, Quaternion.identity);
                 BoolSpawnbird = false;
             }
 
@@ -71,8 +70,8 @@ public class RandomFlyObj : MonoBehaviour
     {
         if (PlayerCore.Instance != null)
         {
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(player.position, spawnRadius);  // 플레이어 위치 기준으로 원형 기즈모 그리기
+            Gizmos.color = GizmoColor;
+            Gizmos.DrawWireSphere(Player.position, spawnRadius);  // 플레이어 위치 기준으로 원형 기즈모 그리기
         }
     }
 }
