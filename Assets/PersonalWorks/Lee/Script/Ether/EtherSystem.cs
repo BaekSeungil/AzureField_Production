@@ -14,7 +14,7 @@ public class EtherSystem : MonoBehaviour
     [SerializeField,LabelText("소멸시간")] private float DeletTime;
     [SerializeField]private ParticleSystem Idleparticl;
 
-
+    private GameObject EtherObj;
     private Vector3 startPosition; // 에테르가 생성된 초기 위치
     private Vector3 targetPosition;
     
@@ -24,6 +24,8 @@ public class EtherSystem : MonoBehaviour
 
     private void Awake() 
     {
+        EtherObj = GetComponent<GameObject>();
+
         if (Instance == null)
         {
             Instance = this;
@@ -31,7 +33,7 @@ public class EtherSystem : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            EtherObj.SetActive(false)
         }
     }
 
@@ -77,7 +79,7 @@ public class EtherSystem : MonoBehaviour
             if (Vector3.Distance(startPosition, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
-                Destroy(gameObject);
+                EtherObj.SetActive(false)
                 Debug.Log("파도소멸");
             }
         }
@@ -92,7 +94,7 @@ public class EtherSystem : MonoBehaviour
     {
         if (other.gameObject.tag == "Reef" || other.gameObject.layer == 8)
         {
-            Destroy(gameObject);
+            EtherObj.SetActive(false)
             callEther.IsCreat = false;
         }
     }
@@ -102,7 +104,7 @@ public class EtherSystem : MonoBehaviour
         // 일정 시간이 지난 후 파도를 소멸시키는 코루틴
         yield return new WaitForSeconds(DeletTime);
         callEther.IsCreat = false;
-        Destroy(gameObject);
+        EtherObj.SetActive(false)
     }
 
     public Vector3 GetWaveDirection()
