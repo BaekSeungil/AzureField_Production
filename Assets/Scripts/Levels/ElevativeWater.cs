@@ -34,6 +34,11 @@ public class ElevativeWater : MonoBehaviour
         sound = GetComponent<StudioEventEmitter>();
     }
 
+    private void Start()
+    {
+        waterTF.localScale = new Vector3(waterTF.localScale.x, waterLevelOptions[0].height , waterTF.localScale.z);
+    }
+
     public void SetWaterlevel(float waterLevel)
     {
         if (transition != null) return;
@@ -54,7 +59,7 @@ public class ElevativeWater : MonoBehaviour
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index].height,1.0f));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index].height,waterLevelOptions[index].time));
         currentindex = index;
         return;
     }

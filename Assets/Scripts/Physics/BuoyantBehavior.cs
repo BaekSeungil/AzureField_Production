@@ -50,8 +50,12 @@ public class BuoyantBehavior : MonoBehaviour
     private void FixedUpdate()
     {
         waterDetected = false;
-
+        
         RaycastHit hitWater;
+
+        submergeRate = float.PositiveInfinity;
+        waterDetected = false;
+
         if (Physics.Raycast(transform.position + Vector3.up * 5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
         {
             waterDetected = true;
@@ -65,7 +69,7 @@ public class BuoyantBehavior : MonoBehaviour
 
             submergeRate = distance;
         }
-        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
+        if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
             waterDetected = true;
@@ -85,12 +89,9 @@ public class BuoyantBehavior : MonoBehaviour
             }
 
             average /= submerged.Length;
-            submergeRate = average;
-        }
-        else
-        {
-            submergeRate = float.PositiveInfinity;
-            waterDetected = false;
+
+            if (submergeRate > average)
+                submergeRate = average;
         }
 
     }
