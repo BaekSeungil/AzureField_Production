@@ -26,7 +26,7 @@ public class Flyingbird : MonoBehaviour
         randomFlyObj = FindObjectOfType<RandomFlyObj>();
         spawnBird = FindObjectOfType<SpawnBird>();
         animator = GetComponent<Animator>();
-        BirdObject = GetComponent<GameObject>();
+        //BirdObject = GetComponent<GameObject>();
         animator.SetFloat("AniSpeed", AniSpeed);
     }
 
@@ -48,7 +48,7 @@ public class Flyingbird : MonoBehaviour
             // 오브젝트를 파괴하거나 다른 동작을 수행
             randomFlyObj.BoolSpawnbird = true;
             spawnBird.BirdCount++;
-            BirdObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }
