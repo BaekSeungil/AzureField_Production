@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
+using EEtherCount = CallEther.EEtherCount;
+
 
 public class EtherSystem : MonoBehaviour
 {
@@ -14,9 +16,10 @@ public class EtherSystem : MonoBehaviour
     [SerializeField,LabelText("소멸시간")] private float DeletTime;
     [SerializeField]private ParticleSystem Idleparticl;
 
-    private GameObject EtherObj;
     private Vector3 startPosition; // 에테르가 생성된 초기 위치
     private Vector3 targetPosition;
+
+    private float currentSpeed = 0;
     
     public static EtherSystem Instance { get; private set; }
 
@@ -24,8 +27,6 @@ public class EtherSystem : MonoBehaviour
 
     private void Awake() 
     {
-        EtherObj = GetComponent<GameObject>();
-
         if (Instance == null)
         {
             Instance = this;
@@ -33,29 +34,16 @@ public class EtherSystem : MonoBehaviour
         }
         else
         {
-            EtherObj.SetActive(false);
+            gameObject.SetActive(false);
         }
+        callEther = FindObjectOfType<CallEther>();
     }
 
     private void Start()
     {
-        callEther = FindObjectOfType<CallEther>();
-        Idleparticl.Play();
-        startPosition = callEther.Spawn.transform.position;
-        transform.position = startPosition;
-
-        Vector3 playerForward = callEther.Spawn.transform.forward;
-
-        targetPosition = startPosition + playerForward.normalized * FinalDistance;
-
-
-         // 목표 지점을 향하도록 오브젝트 회전 설정
-        Quaternion rotation = Quaternion.LookRotation(playerForward);
-        transform.rotation = rotation;
-
-        StartCoroutine(DestroyAfterTime());
+        Initialized();
     }
-
+    
     // Update is called once per frame
     private void Update() 
     {
@@ -64,23 +52,27 @@ public class EtherSystem : MonoBehaviour
 
     public void MoveWave()
     {
-        if (callEther.EtherCount == 3)
+        if (callEther.EtherCount == EEtherCount.ETHEREND)
         {
             // 파도 멈추기
-            MoveSpeed = 0;
+            currentSpeed = 0;
+#if UNITY_EDITOR
             Debug.Log("파도 멈춤");
+#endif
             return;  // 더 이상 아래 코드 실행하지 않음
         }
 
-        if(callEther.EtherCount ==2)
+        if(callEther.EtherCount == EEtherCount.ETHERMOVE)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
             // 도착 여부 확인
-            if (Vector3.Distance(startPosition, targetPosition) < 0.1f)
+            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
                 callEther.IsCreat = false;
-                EtherObj.SetActive(false);
+#if UNITY_EDITOR
                 Debug.Log("파도소멸");
+#endif
+                gameObject.SetActive(false);
             }
         }
     }
@@ -94,8 +86,8 @@ public class EtherSystem : MonoBehaviour
     {
         if (other.gameObject.tag == "Reef" || other.gameObject.layer == 8)
         {
-            EtherObj.SetActive(false);
             callEther.IsCreat = false;
+            gameObject.SetActive(false);
         }
     }
 
@@ -104,14 +96,44 @@ public class EtherSystem : MonoBehaviour
         // 일정 시간이 지난 후 파도를 소멸시키는 코루틴
         yield return new WaitForSeconds(DeletTime);
         callEther.IsCreat = false;
-        EtherObj.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     public Vector3 GetWaveDirection()
     {
-        Vector3 playerForward = callEther.Spawn.transform.forward;
+        Vector3 playerForward = PlayerCore.Instance.transform.forward;
         targetPosition = startPosition + playerForward.normalized * FinalDistance;
         return (targetPosition - startPosition).normalized;
+    }
+
+    private void OnEnable()
+    {
+        //SetTransform();
+        Initialized();
+    }
+    private void Initialized()
+    {
+        Idleparticl.Play();
+        currentSpeed = MoveSpeed;
+
+        SetTransform();
+
+        StartCoroutine(DestroyAfterTime());
+    }
+
+    private void SetTransform()
+    {
+        startPosition = (callEther.transform.forward * callEther.SpawnPoint.z) + callEther.transform.position;
+        transform.position = new Vector3(startPosition.x, 0, startPosition.z);
+
+        Vector3 playerForward = PlayerCore.Instance.transform.forward;
+
+        targetPosition = startPosition + playerForward.normalized * FinalDistance;
+
+        // 목표 지점을 향하도록 오브젝트 회전 설정
+        Quaternion rotation = Quaternion.LookRotation(playerForward);
+        transform.rotation = rotation;
+
     }
 
     private void OnDrawGizmos() 
