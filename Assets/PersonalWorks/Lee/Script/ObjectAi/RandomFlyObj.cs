@@ -53,10 +53,10 @@ public class RandomFlyObj : MonoBehaviour
             if (Random.Range(0f, 1f) < spawnRate)
             {
                 // 플레이어를 기준으로 무작위 위치 생성
-                Vector3 spawnPosition = player.position + Random.insideUnitSphere * spawnRadius;
+                Vector3 spawnPosition = PlayerCore.Instance.transform.position + Random.insideUnitSphere * spawnRadius;
 
                 // Y축을 플레이어보다 heightOffset만큼 더 높은 위치로 설정
-                spawnPosition.y = player.position.y + heightOffset;
+                spawnPosition.y = PlayerCore.Instance.transform.position.y + heightOffset;
 
                 // 오브젝트 스폰
                 Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
@@ -69,7 +69,7 @@ public class RandomFlyObj : MonoBehaviour
     // 기즈모로 스폰 반경을 시각화
     void OnDrawGizmosSelected()
     {
-        if (player != null)
+        if (PlayerCore.Instance != null)
         {
             Gizmos.color = gizmoColor;
             Gizmos.DrawWireSphere(player.position, spawnRadius);  // 플레이어 위치 기준으로 원형 기즈모 그리기
