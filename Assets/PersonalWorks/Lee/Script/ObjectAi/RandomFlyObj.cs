@@ -10,10 +10,11 @@ public class RandomFlyObj : MonoBehaviour
     private float spawnRadius = 45f;  // 스폰 범위 반경
     [SerializeField,LabelText("스폰확률")]private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
     [SerializeField,LabelText("스폰간격")]private float spawnInterval = 120f;  // 스폰 간격 (초)
+    [SerializeField,LabelText("스폰높이")]private float heightOffset = 60f;
     public bool BoolSpawnbird  = true;
     public Color gizmoColor = Color.green;  // 기즈모 색상
 
-    private float heightOffset = 60f;
+   
 
     private Vector3 initialPosition;
     private float startTime;
