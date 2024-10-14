@@ -1,6 +1,5 @@
 using FMODUnity;
 using Sirenix.OdinInspector;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +14,13 @@ public class IslandArea : MonoBehaviour
     // 또한, 플레이어가 섬에 가까워짐에 따라 파도를 잦아들게 설정할 수 있습니다.
     //
     //================================================
+
+    public static List<IslandArea> EnteredArea { get { return enteredArea; } }
+    private static List<IslandArea> enteredArea;
+
+#if UNITY_EDITOR
+    private List<IslandArea> deubg_currentEnteredArea;
+#endif
 
     [SerializeField] private string islandID;
     [SerializeField] private Transform spawnTransform;
@@ -31,6 +37,7 @@ public class IslandArea : MonoBehaviour
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
     private float waveIntensity = 0.1f;                     // 섬 구역 진입시 파도가 얼마나 잦아들지 설정
 
+
     private bool playerEnterFlag = false;
     private Transform playerPosition;
 
@@ -42,6 +49,11 @@ public class IslandArea : MonoBehaviour
 #pragma warning restore CS0414
 #endif
 
+    private void Awake()
+    {
+        if(enteredArea == null) enteredArea = new List<IslandArea>();
+    }
+
     private void Start()
     {
         if(PlayerCore.IsInstanceValid)
@@ -49,6 +61,19 @@ public class IslandArea : MonoBehaviour
             playerPosition = PlayerCore.Instance.transform;
             if (GetAreaInterpolation(playerPosition.position) > 0) playerEnterFlag = true;
         }
+
+        if (Vector3.Distance(playerPosition.position, transform.position) < innerArea)
+        {
+            playerEnterFlag = true;
+
+            enteredArea.Add(this);
+
+            if (EnterUIFilter())
+            {
+                OnInnerAreaEnter();
+            }
+        }
+
     }
 
     private void OnEnable()
@@ -65,6 +90,10 @@ public class IslandArea : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
+
+#endif
+
         enterTimer += Time.deltaTime;
 
         if(playerPosition != null)
@@ -79,6 +108,9 @@ public class IslandArea : MonoBehaviour
                 if (Vector3.Distance(playerPosition.position, transform.position) < innerArea)
                 {
                     playerEnterFlag = true;
+
+                    enteredArea.Add(this);
+
                     if (EnterUIFilter())
                     {
                         OnInnerAreaEnter();
@@ -89,6 +121,7 @@ public class IslandArea : MonoBehaviour
             {
                 if (Vector3.Distance(playerPosition.position, transform.position) > innerArea)
                 {
+                    enteredArea.Remove(this);
                     playerEnterFlag = false;
                 }
             }

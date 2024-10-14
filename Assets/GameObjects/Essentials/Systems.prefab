@@ -44,14 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e977a7a054a0647aa383c9399ab4b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectToSpawn: {fileID: 4924514468875497491, guid: b166ca8c69747744a91c2b8924b989b6,
-    type: 3}
-  player: {fileID: 0}
+  ObjectToSpawn: {fileID: 0}
+  Player: {fileID: 0}
   spawnRate: 0.6
   spawnInterval: 1
   heightOffset: 60
   BoolSpawnbird: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
+  GizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &949733038585303941
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,6 +849,21 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  oceanFieldMusics:
+  - Guid:
+      Data1: -786585645
+      Data2: 1182538678
+      Data3: -2125704515
+      Data4: 1545701713
+    Path: event:/Music/Mus_Onfield_Ocean
+  islandFieldMusics:
+  - Guid:
+      Data1: -570759523
+      Data2: 1080038753
+      Data3: -1068897112
+      Data4: 883872660
+    Path: event:/Music/Mus_Onfield_Land
+  fieldPlayChance: {x: 0, y: 0}
 --- !u!114 &6046807256115579371
 MonoBehaviour:
   m_ObjectHideFlags: 0
