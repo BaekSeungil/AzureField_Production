@@ -10,6 +10,8 @@ public class MoveAndBounce : MonoBehaviour
     public float detectionRadius = 10f;  // 플레이어 감지 범위
     public LayerMask playerLayer;  // Player 태그가 포함된 레이어 설정
 
+    private GameObject MoveObject;
+
     private float originalY;  // 원래의 Y좌표를 저장할 변수
 
     // Start is called before the first frame update
@@ -17,6 +19,7 @@ public class MoveAndBounce : MonoBehaviour
     {
         // 시작 시 오브젝트의 Y좌표를 저장합니다.
         originalY = transform.position.y;
+        MoveObject = GetComponent<GameObject>();
     }
 
     // Update is called once per frame
@@ -34,8 +37,8 @@ public class MoveAndBounce : MonoBehaviour
         // 일정 범위 내에 Player 태그가 있는지 확인합니다.
         if (!IsPlayerInRange())
         {
-            // 범위 내에 Player가 없으면 오브젝트를 삭제합니다.
-            Destroy(gameObject);
+            // 범위 내에 Player가 없으면 오브젝트를 비활성화합니다.
+            MoveObject.SetActive(false);
         }
     }
 
