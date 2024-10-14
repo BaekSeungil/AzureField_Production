@@ -29,6 +29,7 @@ public class RingbellSystem : MonoBehaviour
         {
             int connectedBellIndex = bell[num].connectionNumber[i];
             bell[connectedBellIndex].onoff = !bell[connectedBellIndex].onoff;
+            bell[connectedBellIndex].UpdateStoneMaterial();
         }
 
         // 모든 종의 onoff 상태를 확인
