@@ -40,7 +40,7 @@ public class IslandArea : MonoBehaviour
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
-
+    bool regionEnterIgnore = true;
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -169,8 +169,13 @@ public class IslandArea : MonoBehaviour
         UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
         {
-            regionEnter.OnRegionEnter(islandName.GetLocalizedString());
-            RuntimeManager.PlayOneShot(sound_Enter);
+            if (!regionEnterIgnore)
+            {
+                regionEnter.OnRegionEnter(islandName.GetLocalizedString());
+                RuntimeManager.PlayOneShot(sound_Enter);
+            }
+            else
+                regionEnterIgnore = false;
 
             if (spawnTransform != null)
                 AreaControl.RecentLandRecord(islandID, spawnTransform.position);
