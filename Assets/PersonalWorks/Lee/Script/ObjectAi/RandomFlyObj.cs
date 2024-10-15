@@ -14,6 +14,8 @@ public class RandomFlyObj : MonoBehaviour
     public bool BoolSpawnbird  = true;
     public Color GizmoColor = Color.green;  // 기즈모 색상
 
+    public Queue<GameObject> birdPool = new Queue<GameObject>();
+
     private Vector3 initialPosition;
     private float startTime;
 
@@ -26,6 +28,13 @@ public class RandomFlyObj : MonoBehaviour
             StartCoroutine(SpawnWithInterval());  // 코루틴 시작
         }
     }
+
+    public void ReturnBird(GameObject target)
+    {
+        BoolSpawnbird = true;
+        gameObject.SetActive(false);
+    }
+
     public void StartSpawning()
     {
         if (!BoolSpawnbird)
@@ -59,6 +68,7 @@ public class RandomFlyObj : MonoBehaviour
 
                 // 오브젝트 스폰
                 Instantiate(ObjectToSpawn, spawnPosition, Quaternion.identity);
+                //birdPool.Enqueue(Instantiate(ObjectToSpawn, spawnPosition, Quaternion.identity));
                 BoolSpawnbird = false;
             }
 

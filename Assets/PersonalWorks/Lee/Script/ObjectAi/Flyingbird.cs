@@ -11,8 +11,8 @@ public class Flyingbird : MonoBehaviour
     [SerializeField,LabelText("애니메이션 재생속도")]private float AniSpeed;
 
     
-    RandomFlyObj randomFlyObj;
-    SpawnBird spawnBird;
+    private RandomFlyObj randomFlyObj;
+    private SpawnBird spawnBird;
     private Vector3 initialPosition;
     private float startTime;
     private Animator animator;
@@ -26,7 +26,9 @@ public class Flyingbird : MonoBehaviour
         randomFlyObj = FindObjectOfType<RandomFlyObj>();
         spawnBird = FindObjectOfType<SpawnBird>();
         animator = GetComponent<Animator>();
+
         //BirdObject = GetComponent<GameObject>();
+
         animator.SetFloat("AniSpeed", AniSpeed);
     }
 
@@ -46,9 +48,10 @@ public class Flyingbird : MonoBehaviour
         if (Vector3.Distance(initialPosition, transform.position) >= FinalLine)
         {
             // 오브젝트를 파괴하거나 다른 동작을 수행
-            randomFlyObj.BoolSpawnbird = true;
             spawnBird.BirdCount++;
-            gameObject.SetActive(false);
+            randomFlyObj.ReturnBird(gameObject);
+            //randomFlyObj.BoolSpawnbird = true;
+            //gameObject.SetActive(false);
         }
     }
 }

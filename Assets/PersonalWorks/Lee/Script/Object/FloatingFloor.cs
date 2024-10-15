@@ -17,9 +17,14 @@ public class FloatingFloor : MonoBehaviour
 
     private Vector3 startPos;
 
+    // 캐싱 하세요 꼭.
+    // GetComponent로 지속적으로 호출하는 것은 메모리 낭비가 심해요.
+    private Rigidbody floorRigid ;
+
     private void Start()
     {
         startPos = transform.position;
+        floorRigid = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -38,7 +43,7 @@ public class FloatingFloor : MonoBehaviour
             pushDirection = -pushDirection.normalized;  // 반대 방향으로 힘을 줌
 
             float pushForce = 10f;  // 밀어내는 힘의 크기
-            GetComponent<Rigidbody>().AddForce(pushDirection * pushForce, ForceMode.Impulse);
+            floorRigid.AddForce(pushDirection * pushForce, ForceMode.Impulse);
         }
     }
 
