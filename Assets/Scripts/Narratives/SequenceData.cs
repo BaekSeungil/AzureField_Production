@@ -3,6 +3,7 @@ using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -365,6 +366,28 @@ public class Sequence_Animation : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_AnimationEscape : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에 \"Escape\" 트리거를 발동시킵니다. 일반적으로 시퀀스에서 재생한 루프 애니메이션을 탈출하는데 쓰입니다.")]
+    public string objectName;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Animator[] anims = GameObject.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Animator anim in anims)
+        {
+            if (anim.name == objectName)
+            {
+                anim.SetTrigger("Escape");
+                yield break;
+            }
+        }
+
+        Debug.Log(objectName + " 이름을 가진 Animator 오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
 }
 
 public class Sequence_PlaySound : Sequence_Base
