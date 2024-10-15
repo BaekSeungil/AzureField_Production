@@ -498,8 +498,8 @@ CanvasGroup:
   m_GameObject: {fileID: 98731470078729597}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &3861092838910967334
 MonoBehaviour:
@@ -7518,7 +7518,6 @@ GameObject:
   - component: {fileID: 5014317890395932866}
   - component: {fileID: 7696768884751274991}
   - component: {fileID: 864112618117255676}
-  - component: {fileID: 8764591062949371794}
   - component: {fileID: 1658031712147696270}
   m_Layer: 5
   m_Name: ImageCutscene
@@ -7593,23 +7592,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &8764591062949371794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2474161706976494178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 32767
 --- !u!114 &1658031712147696270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27367,6 +27349,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  debug_ui_input_enabled: 0
 --- !u!1 &8859642712578290637
 GameObject:
   m_ObjectHideFlags: 0
