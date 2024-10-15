@@ -3,7 +3,6 @@ using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
-using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -122,6 +121,24 @@ public class Sequence_Timeline : Sequence_Base
         yield return new WaitUntil(() => playable.state != PlayState.Playing);
     }
 }
+
+/// <summary>
+/// Pause상태인 현재의 타임라인을 다시 재생합니다.
+/// </summary>
+[System.Serializable]
+public class Sequence_ResumeTimeline : Sequence_Base
+{
+    [InfoBox("Pause상태인 현재의 타임라인을 다시 재생합니다.", InfoMessageType = InfoMessageType.None)]
+    [HideLabel()]public string fakePorperty;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        PlayableDirector playable = invoker.Playable;
+        playable.Resume();
+        yield return new WaitUntil(() => playable.state != PlayState.Playing);
+    }
+}
+
 
 /// <summary>
 /// 조개를 amount 만큼 지급합니다.
@@ -514,7 +531,6 @@ public class Sequence_StopMusic : Sequence_Base
 public class Sequence_ImageCutscene : Sequence_Base
 {
     [LabelText("(선택) 배경음악")] public EventReference music;
-    [LabelText("종료시 암전")] public bool blackOutOnFinished = false;
     [LabelText("")] public ImgCutsceneSubsequence_Base[] subsequences;
 
     public class ImgCutsceneSubsequence_Base
@@ -602,25 +618,46 @@ public class Sequence_Blackout : Sequence_Base
     [InfoBox("페이드 아웃/페이드 인을 합니다.")]
     [LabelText("모드")] public FadeMode fademode;
     [LabelText("시간")] public float duration = 1.0f;
+    [LabelText("페이드 까지 기다림")] public bool waitWhileFade;
     [LabelText("(선택) 애니메이션 커브")] public AnimationCurve curve;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
         UI_Blackout.Instance.StopAllCoroutines();
 
-        if (fademode == FadeMode.FadeOut)
+        if (waitWhileFade)
         {
-            if (curve.IsUnityNull())
-                yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration));
-            else
-                yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration, curve));
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration, curve));
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration, curve));
+            }
         }
-        else if (fademode == FadeMode.FadeIn)
+        else
         {
-            if (curve.IsUnityNull())
-                yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration));
-            else
-                yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration, curve));
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeOut(duration);
+                else
+                    UI_Blackout.Instance.FadeOut(duration,curve);
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeIn(duration);
+                else
+                    UI_Blackout.Instance.FadeIn(duration, curve);
+            }
         }
     }
 }

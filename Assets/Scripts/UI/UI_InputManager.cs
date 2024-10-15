@@ -19,10 +19,6 @@ public class UI_InputManager : StaticSerializedMonoBehaviour<UI_InputManager>
         ui_input.Enable();
     }
 
-    private void Update()
-    {
-    }
-
     public void DisableUIInputs()
     {
         ui_input.Disable();
