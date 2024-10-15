@@ -15,7 +15,19 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
         StartCoroutine(Cor_FadeOut(duration));
     }
 
+    public void FadeOut(float duration, AnimationCurve curve)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Cor_FadeOut(duration, curve));
+    }
+
     public void FadeIn(float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Cor_FadeIn(duration));
+    }
+
+    public void FadeIn(float duration, AnimationCurve curve)
     {
         StopAllCoroutines();
         StartCoroutine(Cor_FadeIn(duration));

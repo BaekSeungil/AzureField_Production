@@ -1704,6 +1704,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     }
 
     /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다.
+    /// </summary>
+    public void SetMovementState(PlayerMovementState state)
+    {
+        if (state == PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
+    }
+
+    /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다.
+    /// </summary>
+    /// <param name="state"></param>
+    public void SetMovementState(int state)
+    {
+        if (state == (int)PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == (int)PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == (int)PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
+    }
+
+    /// <summary>
     /// 현재 들고있는 아이템이 있으면 즉시 놓습니다.
     /// </summary>
     public void ReleaseHoldingItem()
