@@ -1,5 +1,6 @@
 using FMOD.Studio;
 using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,12 @@ using UnityEngine;
 public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager>
 {
     public EventReference ActiveMusic { get { return sound.EventReference; } }
+
+    [SerializeField] private EventReference[] oceanFieldMusics;
+    [SerializeField] private EventReference[] islandFieldMusics;
+    [SerializeField, MinMaxSlider(10f, 500f,ShowFields = true)] private Vector2 fieldPlayChance;
+
+    [ReadOnly()] public bool DoNotPlayFieldmusic = false;
 
     private StudioEventEmitter sound;
 
@@ -16,6 +23,37 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
     {
         base.Awake();
         sound = GetComponent<StudioEventEmitter>();
+    }
+
+    [SerializeField,ReadOnly()] private float fieldMusicTimer = 0f;
+    [SerializeField, ReadOnly()] private float nextFieldMusicTime = 0f;
+
+    private void Start()
+    {
+        nextFieldMusicTime = Random.Range(fieldPlayChance.x, fieldPlayChance.y);
+    }
+
+    float fieldMusicTransitionTime = 5.0f;
+
+    private void Update()
+    {
+        if (!DoNotPlayFieldmusic)
+        {
+            if (!sound.IsPlaying())
+            {
+                fieldMusicTimer += Time.deltaTime;
+                if (fieldMusicTimer > nextFieldMusicTime)
+                {
+                    if(IslandArea.EnteredArea.Count <= 0)
+                        ChangeActiveMusic(oceanFieldMusics[Random.Range(0, oceanFieldMusics.Length)], fieldMusicTransitionTime);
+                    else
+                        ChangeActiveMusic(islandFieldMusics[Random.Range(0, islandFieldMusics.Length)], fieldMusicTransitionTime);
+
+                    fieldMusicTimer = 0f;
+                    nextFieldMusicTime = Random.Range(fieldPlayChance.x, fieldPlayChance.y);
+                }
+            }
+        }
     }
 
     public void ChangeActiveMusic(EventReference music, float fade = 0f, float waitTime = 0f)
@@ -50,6 +88,8 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
 
     private IEnumerator Cor_ChangeMusic(EventReference music, float fade, float waitTime)
     {
+        fieldMusicTimer = 0f;
+
         if (!ActiveMusic.IsNull)
         {
             for (float t = 0; t < fade; t += Time.deltaTime)
