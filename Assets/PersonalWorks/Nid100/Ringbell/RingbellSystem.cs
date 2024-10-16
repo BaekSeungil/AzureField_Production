@@ -22,7 +22,7 @@ public class RingbellSystem : MonoBehaviour
     public void connectionBellActive(int num)
     {
         // num번 종의 onoff 값을 토글
-        bell[num].onoff = !bell[num].onoff;
+        //bell[num].onoff = !bell[num].onoff;
 
         // num번 종과 연동된 종들의 onoff 값을 토글
         for (int i = 0; i < bell[num].connectionNumber.Length; i++)
