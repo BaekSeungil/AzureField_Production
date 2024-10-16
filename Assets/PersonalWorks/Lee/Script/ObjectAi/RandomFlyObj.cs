@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class RandomFlyObj : MonoBehaviour
 {
-    [LabelText("스폰할 오브젝트 선택")] public GameObject ObjectToSpawn;  // 스폰할 오브젝트
+    [LabelText("스폰할 오브젝트 선택")] public GameObject[] ObjectToSpawn;  // 스폰할 오브젝트
+    public Transform Player;  // 플레이어 Transform
     private float spawnRadius = 45f;  // 스폰 범위 반경
     [SerializeField,LabelText("스폰확률")]private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
     [SerializeField,LabelText("스폰간격")]private float spawnInterval = 120f;  // 스폰 간격 (초)
@@ -56,11 +57,8 @@ public class RandomFlyObj : MonoBehaviour
                 // Y축을 플레이어보다 heightOffset만큼 더 높은 위치로 설정
                 spawnPosition.y = PlayerCore.Instance.transform.position.y + heightOffset;
 
-                if (ObjectToSpawn != null)
-                {
-                    // 오브젝트 스폰
-                    Instantiate(ObjectToSpawn, spawnPosition, Quaternion.identity);
-                }
+                // 오브젝트 스폰
+                Instantiate(ObjectToSpawn[Random.Range(0, ObjectToSpawn.Length)], spawnPosition, Quaternion.identity);
                 BoolSpawnbird = false;
             }
 
