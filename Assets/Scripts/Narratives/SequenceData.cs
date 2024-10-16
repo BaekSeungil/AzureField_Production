@@ -575,6 +575,8 @@ public class Sequence_FixPlayerPosition : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
+        if (invoker.isPlayerFixedBySequence) yield break;
+
         invoker.isPlayerFixedBySequence = true;
         if(hasVector)
         {
