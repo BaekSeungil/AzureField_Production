@@ -10,13 +10,14 @@ Shader "BarrierSurface"
 		_NoiseTiling("NoiseTiling", Vector) = (1,1,0,0)
 		_PhasingTiling("PhasingTiling", Vector) = (1,1,0,0)
 		_NoiseScrollSpeed("NoiseScrollSpeed", Float) = 1
-		_HexagonTiling("HexagonTiling", Vector) = (10,0.3,0,0)
+		_HexagonTiling1("HexagonTiling", Vector) = (10,0.3,0,0)
 		_Color("Color", Color) = (0,0,0,0)
 		[HDR]_Emmision("Emmision", Color) = (0,0,0,0)
 		_Metallic("Metallic", Float) = 0
 		_Smoothness("Smoothness", Float) = 0
 		_Occlusion("Occlusion", Float) = 0
 		_Alpha("Alpha", Range( 0 , 1)) = 1
+		_HexTexture("HexTexture", 2D) = "white" {}
 
 
 		//_TransmissionShadow( "Transmission Shadow", Range( 0, 1 ) ) = 0.5
@@ -333,7 +334,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -370,7 +371,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -639,12 +641,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord8.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord8.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -987,7 +986,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -1024,7 +1023,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -1256,12 +1256,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord3.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord3.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -1393,7 +1390,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -1430,7 +1427,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -1641,12 +1639,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord3.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord3.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord4.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -1756,7 +1751,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -1793,7 +1788,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -2017,12 +2013,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord4.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord5.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord4.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord5.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -2124,7 +2117,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -2161,7 +2154,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -2366,12 +2360,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord2.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord3.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord2.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord3.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -2500,7 +2491,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -2537,7 +2528,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -2764,12 +2756,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord5.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord6.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord5.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord6.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float3 Normal = float3(0, 0, 1);
@@ -2974,7 +2963,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -3011,7 +3000,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
 
@@ -3275,12 +3265,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord8.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord8.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord9.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				float3 BaseColor = ( _Color * temp_output_59_0 ).rgb;
@@ -3476,7 +3463,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -3513,7 +3500,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -3703,12 +3691,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				surfaceDescription.Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -3818,7 +3803,7 @@ Shader "BarrierSurface"
 			float4 _Emmision;
 			float2 _NoiseTiling;
 			float2 _PhasingTiling;
-			float2 _HexagonTiling;
+			float2 _HexagonTiling1;
 			float _NoiseScrollSpeed;
 			float _ScrollSpeed;
 			float _Metallic;
@@ -3855,7 +3840,8 @@ Shader "BarrierSurface"
 				int _PassValue;
 			#endif
 
-			
+			sampler2D _HexTexture;
+
 
 					float2 voronoihash52( float2 p )
 					{
@@ -4044,12 +4030,9 @@ Shader "BarrierSurface"
 				float temp_output_129_0 = ( ( 1.0 - smoothstepResult56 ) * smoothstepResult56 );
 				float clampResult135 = clamp( ( temp_output_129_0 * temp_output_129_0 ) , 0.0 , 1.0 );
 				float temp_output_132_0 = (0.0 + (clampResult135 - 0.0) * (2.0 - 0.0) / (0.15 - 0.0));
-				float2 break19_g6 = ( IN.ase_texcoord.xy * _HexagonTiling );
-				float temp_output_20_0_g6 = ( break19_g6.x * 1.5 );
-				float2 appendResult14_g6 = (float2(temp_output_20_0_g6 , ( break19_g6.y + ( ( floor( temp_output_20_0_g6 ) % 2.0 ) * 0.5 ) )));
-				float2 break12_g6 = abs( ( ( appendResult14_g6 % float2( 1,1 ) ) - float2( 0.5,0.5 ) ) );
-				float smoothstepResult1_g6 = smoothstep( 0.0 , 0.3 , ( abs( ( max( ( ( break12_g6.x * 1.5 ) + break12_g6.y ) , ( break12_g6.y * 2.0 ) ) - 1.0 ) ) * 2.0 ));
-				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * smoothstepResult1_g6 ) );
+				float2 texCoord137 = IN.ase_texcoord.xy * _HexagonTiling1 + float2( 0,0 );
+				float2 appendResult138 = (float2(texCoord137.y , texCoord137.x));
+				float temp_output_59_0 = saturate( ( ( ( smoothstepResult84 * temp_output_132_0 ) + temp_output_132_0 ) * (1.0 + (IN.ase_texcoord1.xyz.y - 0.0) * (0.0 - 1.0) / (1.0 - 0.0)) * (0.2 + (tex2D( _HexTexture, appendResult138 ).r - 0.0) * (2.0 - 0.2) / (0.5 - 0.0)) ) );
 				
 
 				surfaceDescription.Alpha = ( ( _Color.a * temp_output_59_0 ) * _Alpha );
@@ -4108,16 +4091,19 @@ Node;AmplifyShaderEditor.SimpleMultiplyOpNode;90;-576,272;Inherit;False;2;2;0;FL
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;129;448,560;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.DynamicAppendNode;82;-368,160;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;133;640,560;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector2Node;136;-64,1216;Inherit;False;Property;_HexagonTiling1;HexagonTiling;4;0;Create;True;0;0;0;False;0;False;10,0.3;50.325,1;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
 Node;AmplifyShaderEditor.VoronoiNode;52;-160,160;Inherit;True;0;1;1;0;2;False;1;False;False;False;4;0;FLOAT2;0,0;False;1;FLOAT;1;False;2;FLOAT;3.24;False;3;FLOAT;0;False;3;FLOAT;0;FLOAT2;1;FLOAT2;2
 Node;AmplifyShaderEditor.ClampOpNode;135;608,448;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;137;160,1152;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SmoothstepOpNode;84;320,192;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0.09;False;2;FLOAT;0.39;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TFHCRemapNode;132;864,560;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0.15;False;3;FLOAT;0;False;4;FLOAT;2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector2Node;102;752,864;Inherit;False;Property;_HexagonTiling;HexagonTiling;4;0;Create;True;0;0;0;False;0;False;10,0.3;0,0;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.DynamicAppendNode;138;400,1168;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.PosVertexDataNode;61;112,832;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;97;688,352;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;99;944,864;Inherit;False;Hex Lattice;-1;;6;56d977fb137832a498dced8436cf6708;0;3;3;FLOAT2;10,0.3;False;2;FLOAT;1;False;4;FLOAT;0.3;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;139;592,1008;Inherit;True;Property;_HexTexture;HexTexture;11;0;Create;True;0;0;0;False;0;False;-1;b92bef6115b1a5248ba6dd158dfea8b0;b92bef6115b1a5248ba6dd158dfea8b0;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TFHCRemapNode;64;368,896;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;1;False;4;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;134;1040,416;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;140;912,1008;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0.5;False;3;FLOAT;0.2;False;4;FLOAT;2;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;91;1184,672;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SaturateNode;59;1376,672;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ColorNode;107;1312,480;Inherit;False;Property;_Color;Color;5;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
@@ -4165,17 +4151,21 @@ WireConnection;133;0;129;0
 WireConnection;133;1;129;0
 WireConnection;52;0;82;0
 WireConnection;135;0;133;0
+WireConnection;137;0;136;0
 WireConnection;84;0;52;0
 WireConnection;132;0;135;0
+WireConnection;138;0;137;2
+WireConnection;138;1;137;1
 WireConnection;97;0;84;0
 WireConnection;97;1;132;0
-WireConnection;99;3;102;0
+WireConnection;139;1;138;0
 WireConnection;64;0;61;2
 WireConnection;134;0;97;0
 WireConnection;134;1;132;0
+WireConnection;140;0;139;1
 WireConnection;91;0;134;0
 WireConnection;91;1;64;0
-WireConnection;91;2;99;0
+WireConnection;91;2;140;0
 WireConnection;59;0;91;0
 WireConnection;111;0;107;4
 WireConnection;111;1;59;0
@@ -4192,4 +4182,4 @@ WireConnection;1;4;113;0
 WireConnection;1;5;114;0
 WireConnection;1;6;116;0
 ASEEND*/
-//CHKSM=611F6BA1C0C7810B7E20DF699A682858B274860D
+//CHKSM=04FC6CD46C4CD9BDA39F051021028DE49837FE60
