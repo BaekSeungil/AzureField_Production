@@ -8,6 +8,9 @@ public class UI_InputManager : StaticSerializedMonoBehaviour<UI_InputManager>
     private MainPlayerInputActions ui_input;
     public MainPlayerInputActions UI_Input { get { return ui_input; } }
 
+#if UNITY_EDITOR
+    [ReadOnly] public bool debug_ui_input_enabled;
+#endif
 
     protected override void Awake()
     {

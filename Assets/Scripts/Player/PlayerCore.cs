@@ -165,6 +165,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private bool availableForDrift = false;
     public bool AvailableForDrift {  get { return availableForDrift; } }
 
+    /// <summary>
+    /// 조각배를 사용할 수 있는 상황인지 확인합니다.
+    /// </summary>
+    [SerializeField] private bool availableForSailboat = true;
+    public bool AvailableForSailboat { get { return availableForSailboat; } }
+    public void SetAvailableForSailboat(bool value) { availableForSailboat = value; }
+
     private bool sprinting = false;
     /// <summary>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
@@ -201,6 +208,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             else
             {
                 if (currentMovement_hidden.GetType() == value.GetType()) return;
+                if (value.GetType() == typeof(Movement_Sailboat))
+                    if (!availableForSailboat) return;
+
                 currentMovement_hidden.OnMovementExit(this);
                 currentMovement_hidden = value;
                 currentMovement_hidden.OnMovementEnter(this);
@@ -686,11 +696,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             grounding = true;
 
         }
-
-        //  Legacy Raycast groundhit
-        //  RaycastHit groundHit;
-        //  bool groundCasted = Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
-        //    && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f;
 
         if (grounding)
         {
@@ -1701,6 +1706,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         handRig.weight = 0.0f;
         holdObjectRig.weight = 0.0f;
 
+    }
+
+    /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다.
+    /// </summary>
+    public void SetMovementState(PlayerMovementState state)
+    {
+        if (state == PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
+    }
+
+    /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다. (인덱스)
+    /// </summary>
+    /// <param name="state"></param>
+    public void SetMovementState(int state)
+    {
+        if (state == (int)PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == (int)PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == (int)PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
     }
 
     /// <summary>
