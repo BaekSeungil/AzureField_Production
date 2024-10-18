@@ -7,6 +7,10 @@ using Unity.Entities.UniversalDelegates;
 using UnityEditor;
 using UnityEngine;
 
+
+/// <summary>
+/// 가변적인 수위 오브젝트에 적용되는 스크립트입니다.
+/// </summary>
 [RequireComponent(typeof(StudioEventEmitter))]
 public class ElevativeWater : MonoBehaviour
 {
@@ -39,6 +43,10 @@ public class ElevativeWater : MonoBehaviour
         waterTF.localScale = new Vector3(waterTF.localScale.x, waterLevelOptions[0].height , waterTF.localScale.z);
     }
 
+    /// <summary>
+    /// 수면 높이를 조절합니다.
+    /// </summary>
+    /// <param name="waterLevel"> 높이 </param>
     public void SetWaterlevel(float waterLevel)
     {
         if (transition != null) return;
@@ -47,6 +55,11 @@ public class ElevativeWater : MonoBehaviour
         return;
     }
 
+    /// <summary>
+    /// 특정한 시간동안 수면 높이를 조절합니다.
+    /// </summary>
+    /// <param name="waterLevel"> 높이 </param>
+    /// <param name="time"> 시간 </param>
     public void SetWaterlevel(float waterLevel, float time)
     {
         if (transition != null) return;
@@ -55,6 +68,10 @@ public class ElevativeWater : MonoBehaviour
         return;
     }
 
+    /// <summary>
+    /// waterLevelOptions에서 해당 인덱스의 해수면 높이로 맞춥니다.
+    /// </summary>
+    /// <param name="index"></param>
     public void SetWaterlevel(int index)
     {
         if (transition != null) return;
@@ -64,6 +81,9 @@ public class ElevativeWater : MonoBehaviour
         return;
     }
 
+    /// <summary>
+    /// 현재 인덱스에서 다음 인덱스로 수면을 조절합니다.
+    /// </summary>
     public void SetWaterlevelAuto()
     {
         if (transition != null) return;
