@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SpawnBird : MonoBehaviour
 {
-    [SerializeField,LabelText("새 오브젝트 배치")] public GameObject[] FishgameObjects;
+    [SerializeField,LabelText("새 오브젝트 배치")] public GameObject[] BirdgameObjects;
     [SerializeField, LabelText("스폰 간격(초)")] public float spawnInterval = 2f;
     [SerializeField,LabelText("오브젝트 수")]private int DestroyCount;
     public int BirdCount = 0;
@@ -28,13 +28,13 @@ public class SpawnBird : MonoBehaviour
 
         if(DestroyCount == BirdCount)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
     public void SpawnFishgameObject()
     {
-        foreach (var fish in FishgameObjects)
+        foreach (var fish in BirdgameObjects)
         {
             if(!fish.activeInHierarchy)
             {
