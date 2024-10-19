@@ -1071,25 +1071,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
 
             Vector3 lookTransformedVector;
-            //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
 
-            //if (input.x != 0)
-            //{
-            //    if (player.boosterActive)
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
-            //    }
-            //    if (player.DriftActive)
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
-            //    }
-            //    else
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-            //    }
-            //}
-            //else
-            //{
             if (player.boosterActive)
             {
                 lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
@@ -1107,11 +1089,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
-
         
         public override void OnUpdate(PlayerCore player)
         {
-
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
                 //player.driftActive = true;
@@ -1209,12 +1189,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f) / 3f * player.sailboatByouancy, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                //if (player.boosterActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                //else if (player.driftActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
-                //else
-                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
 
                 lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
@@ -1228,12 +1202,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                //if (player.boosterActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                //else if (player.driftActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
-                //else
-                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
                 lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
