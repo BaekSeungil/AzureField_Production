@@ -1,10 +1,9 @@
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class Interactable_LaserWheel : SerializedMonoBehaviour
@@ -13,7 +12,11 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     [SerializeField] private AnimationCurve rotateCurve;
     [SerializeField] private float rotateTime = 1.0f;
     [SerializeField] private float laserMaxLength;
+    [SerializeField,MinMaxSlider(0f,5f)] private Vector2 flareFlikerRange;
+    [SerializeField] private float flareFlikerSpeed = 1f;
     [SerializeField, FoldoutGroup("ChildReference")] private Transform laserStartPoint;
+    [SerializeField, FoldoutGroup("ChildReference")] private LensFlareComponentSRP flare;
+
 
     Coroutine rotateProgress = null;
     int currentIndex = 0;
@@ -23,6 +26,14 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     {
         Array.Sort(rotationAngles);
         initialForward = transform.forward;
+    }
+
+    private void Update()
+    {
+        if(flare != null)
+        {
+            flare.intensity = Mathf.Lerp(flareFlikerRange.x,flareFlikerRange.y,Mathf.PerlinNoise1D(Time.time * flareFlikerSpeed));
+        }
     }
 
     [HideInEditorMode(),Button()]
