@@ -165,6 +165,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     [SerializeField] private bool availableForDrift = false;
     public bool AvailableForDrift {  get { return availableForDrift; } }
 
+    /// <summary>
+    /// 조각배를 사용할 수 있는 상황인지 확인합니다.
+    /// </summary>
+    [SerializeField] private bool availableForSailboat = true;
+    public bool AvailableForSailboat { get { return availableForSailboat; } }
+    public void SetAvailableForSailboat(bool value) { availableForSailboat = value; }
+
     private bool sprinting = false;
     /// <summary>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
@@ -201,6 +208,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             else
             {
                 if (currentMovement_hidden.GetType() == value.GetType()) return;
+                if (value.GetType() == typeof(Movement_Sailboat))
+                    if (!availableForSailboat) return;
+
                 currentMovement_hidden.OnMovementExit(this);
                 currentMovement_hidden = value;
                 currentMovement_hidden.OnMovementEnter(this);
@@ -679,18 +689,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             // get nearest groundhit from sweeptest
             groundHits_notFiltered.RemoveAll((RaycastHit h) => (1 << h.collider.gameObject.layer & groundIgnore) == 1);
             Vector3 groundNormal_nonDamped = groundHits_notFiltered.ToList()[0].normal;
-            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.5f);
+            groundNormal = Vector3.Lerp(groundNormal, groundNormal_nonDamped, 0.25f);
 
             if (!grounding) OnGroundingEnter();
 
             grounding = true;
 
         }
-
-        //  Legacy Raycast groundhit
-        //  RaycastHit groundHit;
-        //  bool groundCasted = Physics.Raycast(transform.position + Vector3.up * bottomColider.radius, -groundNormal, out groundHit, bottomColider.radius + groundCastDistance, ~groundIgnore)
-        //    && Vector3.Dot(groundHit.normal, Vector3.up) > maxClimbSlope / 90f;
 
         if (grounding)
         {
@@ -916,7 +921,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 //forward velocity
                 Vector3 lookTransformedVector = player.GetLookMoveVector(player.input.Player.Move.ReadValue<Vector2>(), Vector3.up);
                 Vector3 slopedMoveVector = Vector3.ProjectOnPlane(lookTransformedVector, player.groundNormal).normalized;
-                player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
+                //player.slopeResistence = 1f - Mathf.InverseLerp(player.slopeEffect.x / 90f, player.slopeEffect.y / 90f,Vector3.Dot(slopedMoveVector, Vector3.up));
 
                 float adjuestedScale = (player.sprinting && player.grounding) ? player.sprintSpeedMult : 1.0f;
 
@@ -1066,25 +1071,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         {
 
             Vector3 lookTransformedVector;
-            //lookTransformedVector = Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, input.y));
 
-            //if (input.x != 0)
-            //{
-            //    if (player.boosterActive)
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f,1.0f);
-            //    }
-            //    if (player.DriftActive)
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(driftDirection.x * player.FinalSteering * player.driftSteer, 0f, Mathf.Clamp(input.y,0.5f,1.0f));
-            //    }
-            //    else
-            //    {
-            //        lookTransformedVector = Quaternion.LookRotation(player.transform.forward, up) * new Vector3(input.x * player.FinalSteering, 0f, input.y);
-            //    }
-            //}
-            //else
-            //{
             if (player.boosterActive)
             {
                 lookTransformedVector = Vector3.RotateTowards(player.transform.forward, Camera.main.transform.TransformDirection(new Vector3(input.x, 0f, 1.0f)), player.FinalSteering, 1.0f);
@@ -1102,11 +1089,9 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             lookTransformedVector = Vector3.ProjectOnPlane(lookTransformedVector, up);
             return lookTransformedVector;
         }
-
         
         public override void OnUpdate(PlayerCore player)
         {
-
             if (player.input.Player.SailboatDrift.WasPressedThisFrame() && player.sailboat.SubmergeRate < 5.0f &&player.input.Player.Move.ReadValue<Vector2>().x != 0)
             {
                 //player.driftActive = true;
@@ -1204,12 +1189,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.up * -Mathf.Clamp(sailboat.SubmergeRate, -5.0f, 0.0f) / 3f * player.sailboatByouancy, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                //if (player.boosterActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                //else if (player.driftActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y,0.5f,1.0f)), Vector3.up);
-                //else
-                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
 
                 lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
@@ -1223,12 +1202,6 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
                 player.rBody.AddForce(Vector3.ProjectOnPlane(sailboat.SurfacePlane.normal, Vector3.up) * player.sailboatSlopeInfluenceForce, ForceMode.Acceleration);
 
                 Vector3 lookTransformedVector;
-                //if (player.boosterActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, 1f), Vector3.up);
-                //else if (player.driftActive)
-                //    lookTransformedVector = player.GetLookMoveVector(new Vector2(moveInput.x, Mathf.Clamp(moveInput.y, 0.5f, 1.0f)), Vector3.up);
-                //else
-                //    lookTransformedVector = player.GetLookMoveVector(moveInput, Vector3.up);
                 lookTransformedVector = GetSailboatHeadingVector(player, moveInput, player.sailboat.SurfacePlane.normal);
 
                 player.rBody.AddForce(lookTransformedVector * player.FinalSailboatAcceleration * ns_boost, ForceMode.Acceleration);
@@ -1701,6 +1674,27 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         handRig.weight = 0.0f;
         holdObjectRig.weight = 0.0f;
 
+    }
+
+    /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다.
+    /// </summary>
+    public void SetMovementState(PlayerMovementState state)
+    {
+        if (state == PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
+    }
+
+    /// <summary>
+    /// 현재 플레이어 Movestate를 즉시 바꿉니다. (인덱스)
+    /// </summary>
+    /// <param name="state"></param>
+    public void SetMovementState(int state)
+    {
+        if (state == (int)PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+        else if (state == (int)PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+        else if (state == (int)PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
     }
 
     /// <summary>

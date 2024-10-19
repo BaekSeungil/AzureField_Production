@@ -74,7 +74,7 @@ public class RandomFlyObj : MonoBehaviour
         if (PlayerCore.Instance != null)
         {
             Gizmos.color = GizmoColor;
-            Gizmos.DrawWireSphere(Player.position, spawnRadius);  // 플레이어 위치 기준으로 원형 기즈모 그리기
+            Gizmos.DrawWireSphere(PlayerCore.Instance.transform.position, spawnRadius);  // 플레이어 위치 기준으로 원형 기즈모 그리기
         }
     }
 }
