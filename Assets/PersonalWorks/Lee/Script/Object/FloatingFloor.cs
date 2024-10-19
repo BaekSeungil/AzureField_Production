@@ -18,17 +18,12 @@ public class FloatingFloor : MonoBehaviour
     [SerializeField,LabelText("밀어내는 힘의 크기")] private float pushForce = 10f;
 
     [SerializeField,LabelText("충돌시 하강량"),Tooltip("플레이어와 충돌시 얼마나 하강하는 힘의 크기")]
-    private float SickPower = 0.2f;
-    [SerializeField,LabelText("하강속도")] private float SickSpeed = 2f;
-
-    [SerializeField, LabelText("원래 위치로 돌아가는 시간")] private float returnDuration = 1.5f;
+    private float SickPower = 4f;
 
     private Vector3 startPos;  
     private Vector3 targetPos;
-    private bool isSinking = false;
-    private bool returningToStart = false;
-     private bool isFloatingEnabled = true;
-     private Coroutine returnCoroutine;
+    private bool isSinking = true;
+    private bool isReturning = false;
     private void Start()
     {
         startPos = transform.position;
@@ -37,12 +32,30 @@ public class FloatingFloor : MonoBehaviour
 
     private void Update()
     {
-        if (!isSinking && returningToStart == false && isFloatingEnabled)
+       if (isSinking)
         {
+            // 부유 상태일 때 상하 움직임
             float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatHeight;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
+        else if (!isSinking && !isReturning)
+        {
+            // 플레이어 충돌 시 하강
+            targetPos = new Vector3(startPos.x, startPos.y - SickPower, startPos.z);
+            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * floatSpeed);
+        }
+        else if (isReturning)
+        {
+            // 플레이어가 떠난 후 원래 위치로 돌아감
+            transform.position = Vector3.Lerp(transform.position, startPos, Time.deltaTime * floatSpeed);
 
+            // 원래 위치에 도달하면 부유 상태로 돌아감
+            if (Vector3.Distance(transform.position, startPos) < 0.01f)
+            {
+                isReturning = false;
+                isSinking = true;
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision other) 
@@ -55,17 +68,9 @@ public class FloatingFloor : MonoBehaviour
         //     GetComponent<Rigidbody>().AddForce(pushDirection * pushForce, ForceMode.Impulse);
         // }
 
-        if (other.gameObject.layer == 6)
+        if(other.gameObject.layer == 6)
         {
-            isSinking = true;
-            targetPos = new Vector3(startPos.x, startPos.y - SickPower, startPos.z);
-
-            if (returnCoroutine != null)
-            {
-                StopCoroutine(returnCoroutine); // 이미 진행 중인 복귀 코루틴을 중단
-            }
-
-            isFloatingEnabled = false;  // 부양 기능 비활성화
+            isSinking = false;
         }
     }
 
@@ -73,29 +78,9 @@ public class FloatingFloor : MonoBehaviour
     {
         if(other.gameObject.layer == 6)
         {
-            isSinking = false;
-            returningToStart = true;
-            returnCoroutine = StartCoroutine(ReturnToStartPosition());
+          isReturning = true;
         }
     }
-
-    private IEnumerator ReturnToStartPosition()
-    {
-        Vector3 initialPos = transform.position;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < returnDuration)
-        {
-            transform.position = Vector3.Lerp(initialPos, startPos, Mathf.SmoothStep(0f, 1f, elapsedTime / returnDuration));
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = startPos;
-        returningToStart = false;
-        isFloatingEnabled = true;
-    }
-
 
     private void OnDrawGizmos()
     {
