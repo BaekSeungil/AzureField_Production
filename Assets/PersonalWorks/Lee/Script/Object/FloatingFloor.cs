@@ -17,17 +17,14 @@ public class FloatingFloor : MonoBehaviour
 
     [SerializeField,LabelText("밀어내는 힘의 크기")] private float pushForce = 10f;
 
-    [SerializeField,LabelText("충돌시 하강량"),Tooltip("플레이어와 충돌시 얼마나 하강하는 힘의 크기")]
-    private float SickPower = 4f;
 
     private Vector3 startPos;  
-    private Vector3 targetPos;
+    private float targetY;
     private bool isSinking = true;
     private bool isReturning = false;
     private void Start()
     {
         startPos = transform.position;
-        targetPos = startPos;
     }
 
     private void Update()
@@ -38,19 +35,22 @@ public class FloatingFloor : MonoBehaviour
             float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatHeight;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
-        else if (!isSinking && !isReturning)
+        else if (!isReturning)
         {
             // 플레이어 충돌 시 하강
-            targetPos = new Vector3(startPos.x, startPos.y - SickPower, startPos.z);
-            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * floatSpeed);
+            targetY = startPos.y - floatHeight;  // 하강 목표 Y축 설정
+            transform.position = Vector3.MoveTowards(
+            transform.position, new Vector3(transform.position.x, targetY, transform.position.z), 
+            Time.deltaTime * floatSpeed);
         }
         else if (isReturning)
         {
             // 플레이어가 떠난 후 원래 위치로 돌아감
-            transform.position = Vector3.Lerp(transform.position, startPos, Time.deltaTime * floatSpeed);
+            transform.position = Vector3.MoveTowards(transform.position, 
+            new Vector3(transform.position.x, startPos.y, transform.position.z), Time.deltaTime * floatSpeed);
 
             // 원래 위치에 도달하면 부유 상태로 돌아감
-            if (Vector3.Distance(transform.position, startPos) < 0.01f)
+            if (Mathf.Abs(transform.position.y - startPos.y) < 0.01f)
             {
                 isReturning = false;
                 isSinking = true;
@@ -68,6 +68,14 @@ public class FloatingFloor : MonoBehaviour
         //     GetComponent<Rigidbody>().AddForce(pushDirection * pushForce, ForceMode.Impulse);
         // }
 
+        if(other.gameObject.layer == 6)
+        {
+            isSinking = false;
+        }
+    }
+
+    private void OnCollisionStay(Collision other) 
+    {
         if(other.gameObject.layer == 6)
         {
             isSinking = false;
