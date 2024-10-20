@@ -46,22 +46,25 @@ public class RandomFlyObj : MonoBehaviour
 
     void TrySpawnObject()
     {
-        if(BoolSpawnbird)
+       if (BoolSpawnbird)
         {   
             // 스폰 확률
             if (Random.Range(0f, 1f) < spawnRate)
             {
-                // 플레이어를 기준으로 무작위 위치 생성
-                Vector3 spawnPosition = PlayerCore.Instance.transform.position + Random.insideUnitSphere * spawnRadius;
+                // 배열의 모든 오브젝트를 순회하며 동시에 스폰
+                foreach (GameObject obj in ObjectToSpawn)
+                {
+                    // 플레이어를 기준으로 무작위 위치 생성
+                    Vector3 spawnPosition = PlayerCore.Instance.transform.position + Random.insideUnitSphere * spawnRadius;
 
-                // Y축을 플레이어보다 heightOffset만큼 더 높은 위치로 설정
-                spawnPosition.y = PlayerCore.Instance.transform.position.y + heightOffset;
+                    // Y축을 플레이어보다 heightOffset만큼 더 높은 위치로 설정
+                    spawnPosition.y = PlayerCore.Instance.transform.position.y + heightOffset;
 
-                // 오브젝트 스폰
-                Instantiate(ObjectToSpawn[Random.Range(0, ObjectToSpawn.Length)], spawnPosition, Quaternion.identity);
-                BoolSpawnbird = false;
+                    // 오브젝트 스폰
+                    Instantiate(obj, spawnPosition, Quaternion.identity);
+                }
+                BoolSpawnbird = false;  // 스폰 후 스폰 중지 (원한다면 이 부분을 수정 가능)
             }
-
         }
     }
 
