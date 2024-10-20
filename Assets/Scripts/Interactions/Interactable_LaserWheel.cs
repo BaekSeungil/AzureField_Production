@@ -8,11 +8,11 @@ using UnityEngine.UIElements;
 
 public class Interactable_LaserWheel : SerializedMonoBehaviour
 {
-    [SerializeField,Range(0,360)] private float[] rotationAngles;
-    [SerializeField] private AnimationCurve rotateCurve;
-    [SerializeField] private float rotateTime = 1.0f;
-    [SerializeField] private float laserMaxLength;
-    [SerializeField] private LayerMask laserCollide;
+    [SerializeField,Range(0,360),LabelText("정지 각도")] private float[] rotationAngles;
+    [SerializeField, LabelText("회전 커브")] private AnimationCurve rotateCurve;
+    [SerializeField, LabelText("회전 시간")] private float rotateTime = 1.0f;
+    [SerializeField, LabelText("최대 레이저 길이")] private float laserMaxLength;
+    [SerializeField, Title("")] private LayerMask laserCollide;
     [SerializeField,MinMaxSlider(0f,5f)] private Vector2 flareFlikerRange;
     [SerializeField] private float flareFlikerSpeed = 1f;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject laserObject;
