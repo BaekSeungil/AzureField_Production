@@ -12,11 +12,16 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     [SerializeField] private AnimationCurve rotateCurve;
     [SerializeField] private float rotateTime = 1.0f;
     [SerializeField] private float laserMaxLength;
+    [SerializeField] private LayerMask laserCollide;
     [SerializeField,MinMaxSlider(0f,5f)] private Vector2 flareFlikerRange;
     [SerializeField] private float flareFlikerSpeed = 1f;
+    [SerializeField, FoldoutGroup("ChildReference")] private GameObject laserObject;
     [SerializeField, FoldoutGroup("ChildReference")] private Transform laserStartPoint;
+    [SerializeField, FoldoutGroup("ChildReference")] private GameObject laserRay;
     [SerializeField, FoldoutGroup("ChildReference")] private LensFlareComponentSRP flare;
+    [SerializeField, FoldoutGroup("ChildReference")] private GameObject endParticle;
 
+    ParticleSystem endParticlePS;
 
     Coroutine rotateProgress = null;
     int currentIndex = 0;
@@ -28,11 +33,33 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         initialForward = transform.forward;
     }
 
+    Vector3 debug_hitpoint;
+
     private void Update()
     {
-        if(flare != null)
+        debug_hitpoint = Vector3.zero;
+
+        if(laserObject.activeInHierarchy)
         {
             flare.intensity = Mathf.Lerp(flareFlikerRange.x,flareFlikerRange.y,Mathf.PerlinNoise1D(Time.time * flareFlikerSpeed));
+
+            Ray ray = new Ray(laserStartPoint.position, laserStartPoint.forward);
+            RaycastHit[] rhit = Physics.RaycastAll(ray,laserMaxLength,laserCollide,QueryTriggerInteraction.Ignore);
+
+            Vector3 laserScale = laserRay.transform.localScale;
+            if (rhit.Length != 0)
+            {
+                debug_hitpoint = rhit[0].point;
+                float laserLength = Vector3.Distance(rhit[0].point, laserStartPoint.position);
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength);
+                endParticle.SetActive(true);
+                endParticle.transform.localPosition = Vector3.forward * laserLength;
+            }
+            else
+            {
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserMaxLength);
+                endParticle.SetActive(false);
+            }
         }
     }
 
@@ -40,6 +67,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     public void RotateWheel()
     {
         if (rotateProgress != null) return;
+        if (!laserObject.activeInHierarchy) return;
 
         int nextIndex = currentIndex;
 
@@ -86,6 +114,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
             }
         }
 
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(debug_hitpoint, 0.1f);
 
     }
 
