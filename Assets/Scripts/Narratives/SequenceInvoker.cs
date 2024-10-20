@@ -34,6 +34,8 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
     [SerializeField,ReadOnly()] private Queue<Sequence_Base> sequenceQueue;
     private CinemachineVirtualCameraBase sequenceVirtualCamera;
 
+    public bool isPlayerFixedBySequence = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -141,6 +143,8 @@ public class SequenceInvoker : StaticSerializedMonoBehaviour<SequenceInvoker>
         if (dialogue.DialogueOpened) { yield return dialogue.StartCoroutine(dialogue.Cor_CloseDialogue()); }
 
         yield return null;
+
+        if (isPlayerFixedBySequence) player.Rigidbody.isKinematic = false;
         EndSequenceCamera();
         playmenu.EnableInput();
         player.EnableControls();

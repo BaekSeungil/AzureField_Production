@@ -7,6 +7,10 @@ using Unity.Entities.UniversalDelegates;
 using UnityEditor;
 using UnityEngine;
 
+
+/// <summary>
+/// 가변적인 수위 오브젝트에 적용되는 스크립트입니다.
+/// </summary>
 [RequireComponent(typeof(StudioEventEmitter))]
 public class ElevativeWater : MonoBehaviour
 {
@@ -34,6 +38,15 @@ public class ElevativeWater : MonoBehaviour
         sound = GetComponent<StudioEventEmitter>();
     }
 
+    private void Start()
+    {
+        waterTF.localScale = new Vector3(waterTF.localScale.x, waterLevelOptions[0].height , waterTF.localScale.z);
+    }
+
+    /// <summary>
+    /// 수면 높이를 조절합니다.
+    /// </summary>
+    /// <param name="waterLevel"> 높이 </param>
     public void SetWaterlevel(float waterLevel)
     {
         if (transition != null) return;
@@ -42,6 +55,11 @@ public class ElevativeWater : MonoBehaviour
         return;
     }
 
+    /// <summary>
+    /// 특정한 시간동안 수면 높이를 조절합니다.
+    /// </summary>
+    /// <param name="waterLevel"> 높이 </param>
+    /// <param name="time"> 시간 </param>
     public void SetWaterlevel(float waterLevel, float time)
     {
         if (transition != null) return;
@@ -50,15 +68,22 @@ public class ElevativeWater : MonoBehaviour
         return;
     }
 
+    /// <summary>
+    /// waterLevelOptions에서 해당 인덱스의 해수면 높이로 맞춥니다.
+    /// </summary>
+    /// <param name="index"></param>
     public void SetWaterlevel(int index)
     {
         if (transition != null) return;
 
-        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index].height,1.0f));
+        transition = StartCoroutine(Cor_SetWaterlevel(waterLevelOptions[index].height,waterLevelOptions[index].time));
         currentindex = index;
         return;
     }
 
+    /// <summary>
+    /// 현재 인덱스에서 다음 인덱스로 수면을 조절합니다.
+    /// </summary>
     public void SetWaterlevelAuto()
     {
         if (transition != null) return;
@@ -104,7 +129,9 @@ public class ElevativeWater : MonoBehaviour
                 if (i != 0) DrawArrow.ForGizmo(transform.position + Vector3.up*waterLevelOptions[i - 1].height + Vector3.right*(i-2)*0.2f, Vector3.up * (waterLevelOptions[i].height - waterLevelOptions[i - 1].height));
 
                 Gizmos.DrawWireCube(transform.position + Vector3.up * waterLevelOptions[i].height, new Vector3(2f, 0f, 2f));
+#if UNITY_EDITOR
                 Handles.Label(transform.position + Vector3.up * waterLevelOptions[i].height + Vector3.right * -1f, i.ToString() + "번 수위 : " + waterLevelOptions[i].height + "M",labelStyle);
+#endif
             }
             int last = waterLevelOptions.Length-1;
             Gizmos.color = Color.magenta;

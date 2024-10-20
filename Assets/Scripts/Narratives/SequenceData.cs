@@ -3,6 +3,7 @@ using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Playables;
@@ -120,6 +121,24 @@ public class Sequence_Timeline : Sequence_Base
         yield return new WaitUntil(() => playable.state != PlayState.Playing);
     }
 }
+
+/// <summary>
+/// Pause상태인 현재의 타임라인을 다시 재생합니다.
+/// </summary>
+[System.Serializable]
+public class Sequence_ResumeTimeline : Sequence_Base
+{
+    [InfoBox("Pause상태인 현재의 타임라인을 다시 재생합니다.", InfoMessageType = InfoMessageType.None)]
+    [HideLabel()]public string fakePorperty;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        PlayableDirector playable = invoker.Playable;
+        playable.Resume();
+        yield return new WaitUntil(() => playable.state != PlayState.Playing);
+    }
+}
+
 
 /// <summary>
 /// 조개를 amount 만큼 지급합니다.
@@ -344,7 +363,7 @@ public class Sequence_DisableVCam : Sequence_Base
 
 public class Sequence_Animation : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 오브젝트의 애니메이터를 재생합니다.")]
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에서 해당 state를 재생합니다.")]
     public string objectName;
     public string stateName;
 
@@ -364,6 +383,28 @@ public class Sequence_Animation : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_AnimationEscape : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에 \"Escape\" 트리거를 발동시킵니다. 일반적으로 시퀀스에서 재생한 루프 애니메이션을 탈출하는데 쓰입니다.")]
+    public string objectName;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Animator[] anims = GameObject.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Animator anim in anims)
+        {
+            if (anim.name == objectName)
+            {
+                anim.SetTrigger("Escape");
+                yield break;
+            }
+        }
+
+        Debug.Log(objectName + " 이름을 가진 Animator 오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
 }
 
 public class Sequence_PlaySound : Sequence_Base
@@ -485,4 +526,140 @@ public class Sequence_StopMusic : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_ImageCutscene : Sequence_Base
+{
+    [LabelText("(선택) 배경음악")] public EventReference music;
+    [LabelText("")] public ImgCutsceneSubsequence_Base[] subsequences;
+
+    public class ImgCutsceneSubsequence_Base
+    {
+        [LabelText("암전효과")]public bool blackout;
+        [LabelText("이미지")] public Sprite sprite;
+    }
+
+    public class ImgCutsceneSubsequence_Short:ImgCutsceneSubsequence_Base
+    {
+        //[LabelText("대기 시간")] public float waitTime;
+        [LabelText("텍스트")] public LocalizedString[] context;
+        //[LabelText("(선택)효과음")] public EventReference sound;
+    }
+
+    public class ImgCutsceneSubsequence_Long:ImgCutsceneSubsequence_Base
+    {
+        public class LongCutsceneElement
+        {
+            public float scrollPoint;
+            public float scrollTime;
+            public LocalizedString[] context;
+        }
+
+        public LongCutsceneElement[] elements;
+    }
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return null;
+        yield return UI_ImageCutscene.Instance.StartCutsceneProgress(subsequences);
+    }
+
+}
+
+public class Sequence_FixPlayerPosition : Sequence_Base
+{
+    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치에 플레이어가 이동되고 고정됩니다.")]
+    //public string fixPlayerTo_Transform;
+    [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
+    [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (invoker.isPlayerFixedBySequence) yield break;
+
+        invoker.isPlayerFixedBySequence = true;
+        if(hasVector)
+        {
+            PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+        }
+
+        if(PlayerCore.IsInstanceValid)
+        {
+            PlayerCore.Instance.Rigidbody.isKinematic = true;
+        }
+        yield return null;
+    }
+}
+
+public class Sequence_UnfixPlayerPosition : Sequence_Base
+{
+    [InfoBox("FixPlayerPosition에 의해 고정된 플레이어를 해제하고 물리를 다시 활성화합니다.")]
+    [HideLabel()]public string fakeData;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.isPlayerFixedBySequence = false;
+
+        if(PlayerCore.IsInstanceValid)
+        {
+            PlayerCore.Instance.Rigidbody.isKinematic = false;
+        }
+
+        yield return null;
+    }
+}
+
+public class Sequence_Blackout : Sequence_Base
+{
+    public enum FadeMode
+    {
+        FadeOut,
+        FadeIn
+    }
+
+    [InfoBox("페이드 아웃/페이드 인을 합니다.")]
+    [LabelText("모드")] public FadeMode fademode;
+    [LabelText("시간")] public float duration = 1.0f;
+    [LabelText("페이드 까지 기다림")] public bool waitWhileFade;
+    [LabelText("(선택) 애니메이션 커브")] public AnimationCurve curve;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        UI_Blackout.Instance.StopAllCoroutines();
+
+        if (waitWhileFade)
+        {
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration, curve));
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration, curve));
+            }
+        }
+        else
+        {
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeOut(duration);
+                else
+                    UI_Blackout.Instance.FadeOut(duration,curve);
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeIn(duration);
+                else
+                    UI_Blackout.Instance.FadeIn(duration, curve);
+            }
+        }
+    }
 }

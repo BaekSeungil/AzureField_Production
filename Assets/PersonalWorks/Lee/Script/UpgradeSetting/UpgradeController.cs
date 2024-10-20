@@ -219,9 +219,9 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeJump()
     {
         BoatWindow.SetActive(true);
-        Jump_ICON.SetActive(true);
-        Duration_ICON.SetActive(false);
-        Booster_ICON.SetActive(false);
+        //Jump_ICON.SetActive(true);
+        //Duration_ICON.SetActive(false);
+        //Booster_ICON.SetActive(false);
         UpTypeText.text = TXT_Jump.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatJumpType;
     }
@@ -231,9 +231,9 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeboosterDuration()
     {   
         BoatWindow.SetActive(true);
-        Duration_ICON.SetActive(true);
-        Booster_ICON.SetActive(false);
-        Jump_ICON.SetActive(false);
+        //Duration_ICON.SetActive(true);
+        //Booster_ICON.SetActive(false);
+        //Jump_ICON.SetActive(false);
         UpTypeText.text = TXT_duration.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterDuration;
 
@@ -242,9 +242,9 @@ public class UpgradeController : MonoBehaviour
     public void ButtonTypeboosterMult()
     {
         BoatWindow.SetActive(true);
-        Booster_ICON.SetActive(true);
-        Jump_ICON.SetActive(false);
-        Duration_ICON.SetActive(false);
+        //Booster_ICON.SetActive(true);
+        //Jump_ICON.SetActive(false);
+        //Duration_ICON.SetActive(false);
         UpTypeText.text = TXT_Booster.GetLocalizedString();
         boatUpgradeType = BoatUpgradeType.PlusBoatboosterMult;
     }

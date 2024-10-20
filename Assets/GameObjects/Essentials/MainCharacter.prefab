@@ -1276,7 +1276,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2266217595498944705}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 934109a5c88a4454abfd2196384b87af, type: 3}
   m_Name: 
@@ -1589,7 +1589,7 @@ MonoBehaviour:
   moveSpeed: 7
   sprintSpeedMult: 2
   swimSpeed: 5
-  jumpPower: 10
+  jumpPower: 6
   holdingMoveSpeedMult: 0.7
   horizontalDrag: 0.182
   slopeEffect: {x: 45, y: 70}
@@ -1895,7 +1895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1360b56b4adceb4aa57469051c473a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Spawn: {fileID: 0}
+  SpawnPoint: {x: 0, y: 0, z: 0}
   EtherWave: {fileID: 7762785597541677280, guid: 03d28342ae035554a935fc4110c9b4a2,
     type: 3}
   detectionRadius: 3
@@ -2461,8 +2461,8 @@ MonoBehaviour:
         transform: {fileID: 0}
         weight: 0
     m_Offset: {x: 0, y: 0, z: 0}
-    m_MinLimit: -30
-    m_MaxLimit: 30
+    m_MinLimit: -45
+    m_MaxLimit: 45
     m_AimAxis: 2
     m_UpAxis: 0
     m_WorldUpType: 2
@@ -3541,7 +3541,7 @@ GameObject:
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &754690580232934602
 Transform:
   m_ObjectHideFlags: 0
@@ -14666,7 +14666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 0.245
+  m_Weight: 1
   m_Effectors: []
 --- !u!1 &7671315334072555368
 GameObject:

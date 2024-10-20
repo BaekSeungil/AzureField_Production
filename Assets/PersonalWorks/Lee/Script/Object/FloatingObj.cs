@@ -1,12 +1,17 @@
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class FloatingObj : MonoBehaviour
 {
+/// <summary>
+/// 현재 사용 안하는 스크립트
+/// </summary>
+
+
+
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
     //[SerializeField,LabelText("움직이는 거리")] private float MoveDistance;
