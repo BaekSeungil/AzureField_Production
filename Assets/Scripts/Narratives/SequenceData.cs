@@ -676,3 +676,33 @@ public class Sequence_Blackout : Sequence_Base
         }
     }
 }
+
+
+public class Sequence_ShowTutorial : Sequence_Base
+{
+    public string tutorialKey;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!UI_Tutorials.IsInstanceValid) yield break;
+
+        UI_Tutorials.Instance.OpenTutorial(tutorialKey);
+
+        yield return null;
+    }
+}
+
+public class Sequence_ChangePlayerState : Sequence_Base
+{
+    public PlayerMovementState state;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!PlayerCore.IsInstanceValid) yield break;
+
+        PlayerCore.Instance.SetMovementState(state);
+        yield return null;
+    }
+
+
+}
