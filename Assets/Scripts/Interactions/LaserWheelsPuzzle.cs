@@ -21,6 +21,7 @@ public class LaserWheelsPuzzle : MonoBehaviour
     public void LaserWheelRotated()
     {
         bool result = true;
+
         foreach (Interactable_LaserWheel wheel in assignedLaserWheels)
         {
             if(!wheel.IsDesired)
