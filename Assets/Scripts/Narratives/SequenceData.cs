@@ -490,6 +490,19 @@ public class Sequence_StorylineProgress : Sequence_Base
     }
 }
 
+public class Sequence_StartNewStoryline : Sequence_Base
+{
+    [InfoBox("새로운 스토리라인을 시작합니다.")]
+
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.StartNewStoryline(storyline);
+        yield return null;
+    }
+}
+
 public class Sequence_AZFLangDialogue : Sequence_Base
 {
     [InfoBox("AZFLang폰트, 고대어를 출력하는 대사창을 띄웁니다. 영문을 입력하세요"),TextArea()]

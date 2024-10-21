@@ -12,7 +12,7 @@ public class UI_Objective : StaticSerializedMonoBehaviour<UI_Objective>
 
     private void Start()
     {
-        visualGroup.SetActive(false);
+        //visualGroup.SetActive(false);
     }
 
     public void OpenObjective()
