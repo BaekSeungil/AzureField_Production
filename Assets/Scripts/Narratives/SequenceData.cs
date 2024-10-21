@@ -490,6 +490,19 @@ public class Sequence_StorylineProgress : Sequence_Base
     }
 }
 
+public class Sequence_StartNewStoryline : Sequence_Base
+{
+    [InfoBox("새로운 스토리라인을 시작합니다.")]
+
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.StartNewStoryline(storyline);
+        yield return null;
+    }
+}
+
 public class Sequence_AZFLangDialogue : Sequence_Base
 {
     [InfoBox("AZFLang폰트, 고대어를 출력하는 대사창을 띄웁니다. 영문을 입력하세요"),TextArea()]
@@ -662,4 +675,34 @@ public class Sequence_Blackout : Sequence_Base
             }
         }
     }
+}
+
+
+public class Sequence_ShowTutorial : Sequence_Base
+{
+    public string tutorialKey;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!UI_Tutorials.IsInstanceValid) yield break;
+
+        UI_Tutorials.Instance.OpenTutorial(tutorialKey);
+
+        yield return null;
+    }
+}
+
+public class Sequence_ChangePlayerState : Sequence_Base
+{
+    public PlayerMovementState state;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!PlayerCore.IsInstanceValid) yield break;
+
+        PlayerCore.Instance.SetMovementState(state);
+        yield return null;
+    }
+
+
 }

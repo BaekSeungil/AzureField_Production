@@ -230,6 +230,13 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             else if (CurrentMovement.GetType() == typeof(Movement_Sailboat)) return PlayerMovementState.Sailboat;
             else return PlayerMovementState.None;
         }
+
+        set
+        {
+            if (value == PlayerMovementState.Ground) CurrentMovement = new Movement_Ground();
+            else if (value == PlayerMovementState.Swimming) CurrentMovement = new Movement_Swimming();
+            else if (value == PlayerMovementState.Sailboat) CurrentMovement = new Movement_Sailboat();
+        }
     }
 
     #region ================ PlayerAbilityAttributes ================
