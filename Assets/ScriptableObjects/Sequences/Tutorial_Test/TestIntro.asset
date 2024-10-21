@@ -28,7 +28,7 @@ MonoBehaviour:
       Data: 0|Sequence_Base[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 12
+      Data: 15
     - Name: 
       Entry: 7
       Data: 1|Sequence_FixPlayerPosition, Assembly-CSharp
@@ -588,7 +588,7 @@ MonoBehaviour:
       Data: MainCharacter
     - Name: stateName
       Entry: 1
-      Data: Swimming_Idle_Loop
+      Data: Intro_Float
     - Name: 
       Entry: 8
       Data: 
@@ -618,7 +618,7 @@ MonoBehaviour:
       Data: 32|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 5
+      Data: 2
     - Name: 
       Entry: 7
       Data: 33|DialogueData, Assembly-CSharp
@@ -816,103 +816,53 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
-      Entry: 7
-      Data: 43|DialogueData, Assembly-CSharp
-    - Name: speecher
-      Entry: 7
-      Data: 44|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:aa4d0ba3010f5f4499964694e63667e2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 5248209350657
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 45|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: context
-      Entry: 7
-      Data: 46|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:6faf168416139814fb59ed56f467cdf8
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 82188038616076289
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
+    - Name: CloseDialogueAfterFinish
       Entry: 5
-      Data: false
-    - Name: m_LocalVariables
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 7
-      Data: 47|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
+      Data: 43|Sequence_DisableVCam, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Virtual Camera_Intro2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 44|Sequence_AnimationEscape, Assembly-CSharp
+    - Name: objectName
+      Entry: 1
+      Data: MainCharacter
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 45|Sequence_Timeline, Assembly-CSharp
+    - Name: timeline
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 46|Sequence_Dialogue, Assembly-CSharp
+    - Name: dialogues
+      Entry: 7
+      Data: 47|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 3
     - Name: 
       Entry: 7
       Data: 48|DialogueData, Assembly-CSharp
@@ -979,7 +929,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 82188038616076290
+      Data: 82188038616076289
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1077,7 +1027,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 82188038616076291
+      Data: 82188038616076290
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1110,6 +1060,104 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 58|DialogueData, Assembly-CSharp
+    - Name: speecher
+      Entry: 7
+      Data: 59|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa4d0ba3010f5f4499964694e63667e2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5248209350657
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 60|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: context
+      Entry: 7
+      Data: 61|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:6faf168416139814fb59ed56f467cdf8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 82188038616076291
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 62|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -1123,7 +1171,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 58|Sequence_ToggleIsmael, Assembly-CSharp
+      Data: 63|Sequence_ToggleIsmael, Assembly-CSharp
     - Name: value
       Entry: 5
       Data: false
@@ -1132,28 +1180,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 59|Sequence_DisableVCam, Assembly-CSharp
+      Data: 64|Sequence_DisableVCam, Assembly-CSharp
     - Name: name
       Entry: 1
-      Data: Virtual Camera_Intro2
+      Data: Virtual Camera_Intro5
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 60|Sequence_AnimationEscape, Assembly-CSharp
-    - Name: objectName
+      Data: 65|Sequence_StorylineProgress, Assembly-CSharp
+    - Name: storyline
       Entry: 1
-      Data: MainCharacter
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 61|Sequence_Timeline, Assembly-CSharp
-    - Name: timeline
-      Entry: 10
-      Data: 1
+      Data: MAIN_TUTORIAL,1
     - Name: 
       Entry: 8
       Data: 
