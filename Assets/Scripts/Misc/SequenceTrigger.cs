@@ -17,8 +17,8 @@ public class SequenceTrigger : SerializedMonoBehaviour
 
         if (other.attachedRigidbody.CompareTag("Player"))
         {
-            if(eventToInvoke != null) { eventToInvoke.Invoke(); }
-            SequenceInvoker.Instance.StartSequence(sequenceBundle.SequenceBundles);
+            if (eventToInvoke != null) { eventToInvoke.Invoke(); }
+            if (sequenceBundle != null) SequenceInvoker.Instance.StartSequence(sequenceBundle.SequenceBundles);
             if (disableAfterTriggered) gameObject.SetActive(false);
         }
     }
