@@ -17,7 +17,7 @@ public enum PlaymenuType // 플레이메뉴 타입
     Sailboat,
     Worldmap,
     Settings,
-    ControlHelp
+    Controll
 }
 
 public class UI_PlaymenuBehavior : StaticSerializedMonoBehaviour<UI_PlaymenuBehavior>
