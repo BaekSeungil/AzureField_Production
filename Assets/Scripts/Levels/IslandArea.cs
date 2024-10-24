@@ -171,8 +171,11 @@ public class IslandArea : MonoBehaviour
         {
             if (!regionEnterIgnore)
             {
-                regionEnter.OnRegionEnter(islandName.GetLocalizedString());
-                RuntimeManager.PlayOneShot(sound_Enter);
+                if (islandName != null)
+                {
+                    regionEnter.OnRegionEnter(islandName.GetLocalizedString());
+                    RuntimeManager.PlayOneShot(sound_Enter);
+                }
             }
             else
                 regionEnterIgnore = false;

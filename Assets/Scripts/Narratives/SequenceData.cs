@@ -704,5 +704,22 @@ public class Sequence_ChangePlayerState : Sequence_Base
         yield return null;
     }
 
+}
 
+public class Sequence_ChangeWeatherProfile : Sequence_Base
+{
+    [InfoBox("날씨 프로필 파일 정보대로 날씨를 바꿉니다.")]
+    [LabelText("날씨 프로필 파일")] public AzfAtmosProfile profile;
+    [LabelText("전환 시간")] public float transitionTime = 5.0f;
+    [LabelText("전환 까지 시퀀스 대기")] public bool waitForTransitionEnd = false;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        AtmosphereManager.ChangeAtmosphere(profile, transitionTime);
+        
+        if(waitForTransitionEnd) yield return new WaitForSeconds(transitionTime);
+        
+        yield return null;
+        
+    }
 }
