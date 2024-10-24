@@ -38,7 +38,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     }
 
     public delegate void ONLaserWheelRotated();
-    public ONLaserWheelRotated OnLaserWheelRotated;
+    [HideInInspector] public ONLaserWheelRotated OnLaserWheelRotated;
 
     private bool isEnabled = true;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
