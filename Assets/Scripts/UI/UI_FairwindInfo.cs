@@ -46,6 +46,8 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     private GameObject AlertProcess;
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
+
+    private FairwindChallengeInstance challengeInstance;
     private void Start()
     {
         visualGroup.SetActive(false);
@@ -56,12 +58,21 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         fairwindCountdown_frac.text = "00";
         alertCountdown_integer.text = "00";
         alertCountdown_frac.text = "00";
-        SliderValue(0);
+
+        //슬라이더 초기화
+        foreach (Slider slider in SetProcessSlider)
+        {
+            if (slider != null)
+            {
+                slider.value = slider.minValue; 
+            }
+        }
+        
     }
 
     private void Update()
     {
-
+        UpdateSlider();
     }
 
     public void ToggleFairwindUI(bool value)
@@ -82,7 +93,15 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     public void ToggleAlertUI(bool value)
     {
         if(value != alertObject.activeInHierarchy)
+        {
             alertObject.SetActive(value);
+            AlertProcess.SetActive(value);
+            FairProcess.SetActive(false);
+        }
+        else
+        {
+            FairProcess.SetActive(true);
+        }
     }
 
     public void SetFairwindCountdown(float time)
@@ -135,14 +154,33 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         {
             if (slider != null)
             {
-                slider.value = Mathf.Clamp(value, slider.minValue, slider.maxValue);
+                // 설정한 값이 슬라이더의 범위 내에 있는지 확인하고 업데이트합니다.
+                float clampedValue = Mathf.Clamp(value, slider.minValue, slider.maxValue);
+                slider.value = clampedValue;
+                
             }
         }
     }
 
+/// <summary>
+/// 순풍의 도전 시작지점과 도착지점에서 값을 받아온 뒤
+/// 슬라이드에 반영
+/// </summary>
     private void UpdateSlider()
     {
-        
+        if (challengeInstance != null && challengeInstance.RouteSpline != null)
+        {
+            float t = 0; 
+            Vector3 nearestPoint;
+
+            float distanceFromStart = challengeInstance.GetDistanceFromSpline(
+                challengeInstance.RouteSpline, 
+                PlayerCore.Instance.transform.position, 
+                out nearestPoint, 
+                out t
+            );
+            SliderValue(t);
+        }
     }
 
 }

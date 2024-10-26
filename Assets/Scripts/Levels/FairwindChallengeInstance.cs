@@ -92,6 +92,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <param name="WorldPosition"> true = 월드좌표계, false = 로컬좌표계 </param>
     public void GetRoutePositions(out Vector3[] positionList, bool WorldPosition = true)
     {
+
         var bezierKnots = route.Spline.Knots.ToArray();
         positionList = new Vector3[bezierKnots.Length];
 
@@ -196,7 +197,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t,2,1);
         pointOnSpline = new Vector3(p.x, p.y, p.z);
         pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
-
         return distance;
     }
 
