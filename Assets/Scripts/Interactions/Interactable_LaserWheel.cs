@@ -38,7 +38,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     }
 
     public delegate void ONLaserWheelRotated();
-    public ONLaserWheelRotated OnLaserWheelRotated;
+    [HideInInspector] public ONLaserWheelRotated OnLaserWheelRotated;
 
     private bool isEnabled = true;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
@@ -75,6 +75,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
             Vector3 laserScale = laserRay.transform.localScale;
             if (rhit.Length != 0)
             {
+                rhit = rhit.OrderBy(i => i.distance).ToArray();
+
                 debug_hitpoint = rhit[0].point;
                 float laserLength = Vector3.Distance(rhit[0].point, laserStartPoint.position);
                 laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength);
