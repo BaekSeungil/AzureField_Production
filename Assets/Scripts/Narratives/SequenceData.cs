@@ -581,19 +581,18 @@ public class Sequence_ImageCutscene : Sequence_Base
 
 public class Sequence_FixPlayerPosition : Sequence_Base
 {
-    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치에 플레이어가 이동되고 고정됩니다.")]
-    //public string fixPlayerTo_Transform;
+    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치/회전에 플레이어가 이동되고 고정됩니다.")]
     [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
     [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
+    [LabelText("플레이어 회전"), ShowIf("hasVector")] public Vector3 rotatePlayerTo_Absolute;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if (invoker.isPlayerFixedBySequence) yield break;
-
         invoker.isPlayerFixedBySequence = true;
         if(hasVector)
         {
             PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+            PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
         }
 
         if(PlayerCore.IsInstanceValid)

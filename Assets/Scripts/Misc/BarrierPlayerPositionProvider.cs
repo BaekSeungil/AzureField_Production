@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class BarrierPlayerPositionProvider : MonoBehaviour
+public class BarrierPlayerPositionProvider : SerializedMonoBehaviour
 {
     private MeshRenderer meshRenderer;
     [SerializeField] private Transform splineTrackObject;
