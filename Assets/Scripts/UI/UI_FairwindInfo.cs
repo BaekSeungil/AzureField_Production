@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.UI;
 
 public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 {
@@ -39,16 +40,28 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private TextMeshProUGUI additinalTime_text;
 
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject FairProcess;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject AlertProcess;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private Slider[] SetProcessSlider;
     private void Start()
     {
         visualGroup.SetActive(false);
         successUI.SetActive(false);
         failedUI.SetActive(false);
-
+        
         fairwindCountdown_integer.text = "00";
         fairwindCountdown_frac.text = "00";
         alertCountdown_integer.text = "00";
         alertCountdown_frac.text = "00";
+        SliderValue(0);
+    }
+
+    private void Update()
+    {
+
     }
 
     public void ToggleFairwindUI(bool value)
@@ -115,4 +128,21 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         additinalTime.SetActive(true);
         additinalTime_text.text = "+ " + ((int)time).ToString();
     }
+
+    public void SliderValue(float value)
+    {
+        foreach (Slider slider in SetProcessSlider)
+        {
+            if (slider != null)
+            {
+                slider.value = Mathf.Clamp(value, slider.minValue, slider.maxValue);
+            }
+        }
+    }
+
+    private void UpdateSlider()
+    {
+        
+    }
+
 }
