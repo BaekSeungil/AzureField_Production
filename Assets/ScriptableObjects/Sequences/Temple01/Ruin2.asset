@@ -15,7 +15,8 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: cded29acd26212941b4326d54fe3acde, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -29,28 +30,64 @@ MonoBehaviour:
       Data: 9
     - Name: 
       Entry: 7
-      Data: 1|Sequence_EnableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera1
+      Data: 1|Sequence_Blackout, Assembly-CSharp
+    - Name: fademode
+      Entry: 3
+      Data: 0
+    - Name: duration
+      Entry: 4
+      Data: 1
+    - Name: waitWhileFade
+      Entry: 5
+      Data: true
+    - Name: curve
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 2|Sequence_Dialogue, Assembly-CSharp
+      Data: 2|Sequence_Blackout, Assembly-CSharp
+    - Name: fademode
+      Entry: 3
+      Data: 1
+    - Name: duration
+      Entry: 4
+      Data: 1
+    - Name: waitWhileFade
+      Entry: 5
+      Data: true
+    - Name: curve
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 3|Sequence_Timeline, Assembly-CSharp
+    - Name: timeline
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 4|Sequence_Dialogue, Assembly-CSharp
     - Name: dialogues
       Entry: 7
-      Data: 3|DialogueData[], Assembly-CSharp
+      Data: 5|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 4|DialogueData, Assembly-CSharp
+      Data: 6|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 5|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 7|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -80,7 +117,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 6|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 8|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -96,7 +133,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 7|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 9|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -126,7 +163,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 10|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -157,37 +194,28 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|Sequence_DisableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera1
+      Data: 11|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 10|Sequence_EnableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 11|Sequence_Dialogue, Assembly-CSharp
+      Data: 12|Sequence_Dialogue, Assembly-CSharp
     - Name: dialogues
       Entry: 7
-      Data: 12|DialogueData[], Assembly-CSharp
+      Data: 13|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 13|DialogueData, Assembly-CSharp
+      Data: 14|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 14|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -217,7 +245,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 15|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -233,7 +261,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 16|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 17|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -263,7 +291,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 18|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -294,19 +322,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 18|Sequence_DisableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera2
-    - Name: 
-      Entry: 8
+      Data: 19|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
+      Entry: 6
       Data: 
-    - Name: 
-      Entry: 7
-      Data: 19|Sequence_EnableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera3
     - Name: 
       Entry: 8
       Data: 
@@ -431,10 +450,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 27|Sequence_DisableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera3
+      Data: 27|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
