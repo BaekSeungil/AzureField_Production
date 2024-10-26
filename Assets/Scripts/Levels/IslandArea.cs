@@ -171,7 +171,7 @@ public class IslandArea : MonoBehaviour
         {
             if (!regionEnterIgnore)
             {
-                if (islandName != null)
+                if (!islandName.IsEmpty)
                 {
                     regionEnter.OnRegionEnter(islandName.GetLocalizedString());
                     RuntimeManager.PlayOneShot(sound_Enter);
@@ -188,7 +188,13 @@ public class IslandArea : MonoBehaviour
     private bool EnterUIFilter()
     {
         if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
-        if (enterTimer > enterInterval) { Debug.Log("Island Enter : " + IslandName.GetLocalizedString()); enterTimer = 0f; return true; }
+        if (enterTimer > enterInterval)
+        {
+            if (!IslandName.IsEmpty)
+                Debug.Log("Island Enter : " + IslandName.GetLocalizedString());
+            enterTimer = 0f;
+            return true;
+        }
         else return false;
     }
 
