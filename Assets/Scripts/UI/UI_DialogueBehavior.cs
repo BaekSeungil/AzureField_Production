@@ -17,6 +17,7 @@ public class DialogueData
 {
     public LocalizedString speecher;        // 대사창에서 말하는 사람 이름
     public LocalizedString context;         // 대사창에서 내용
+    public EventReference audio;            // 소리
 }
 
 public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBehavior>
@@ -42,12 +43,14 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
     [Title("References")]
     [SerializeField] private GameObject answerSinglePrefab;
     [SerializeField] private GameObject visualGroup;
+    [SerializeField] private GameObject speecherObject;
     [SerializeField] private TextMeshProUGUI speecher;
     [SerializeField] private TextMeshProUGUI context;
     [SerializeField] private GameObject inputWaitObject;
     [SerializeField] private Transform answerStartPosition;
     [SerializeField] private DOTweenAnimation visualGroupAnim;
     [SerializeField] private DOTweenAnimation dialogueAnswerAnimation;
+    [SerializeField] private StudioEventEmitter dialogueAudioEmmiter;
 
     private MainPlayerInputActions input;
     public MainPlayerInputActions Input { get { return input; } }
@@ -109,11 +112,25 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
             inputWaitObject.SetActive(false);
             dialogueProceed = false;
 
+            if(!dialogues[i].audio.IsNull)
+            {
+                dialogueAudioEmmiter.Stop();
+                dialogueAudioEmmiter.ChangeEvent(dialogues[i].audio);
+                dialogueAudioEmmiter.Play();
+            }
+
             string localized_speecher = dialogues[i].speecher.GetLocalizedString();
             string localized_context = dialogues[i].context.GetLocalizedString();
 
-            if (localized_speecher == string.Empty) speecher.text = string.Empty;
-            else speecher.text = localized_speecher;
+            if (localized_speecher == string.Empty)
+            {
+                speecherObject.SetActive(false);
+            }
+            else
+            {
+                speecherObject.SetActive(true);
+                speecher.text = localized_speecher;
+            }
 
             string ctx = localized_context;
 
@@ -281,6 +298,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
 
     private void ClearDialogue()
     {
+        speecherObject.SetActive(true);
         speecher.text = string.Empty;
         context.text = string.Empty;
     }

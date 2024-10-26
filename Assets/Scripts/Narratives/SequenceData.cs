@@ -584,7 +584,8 @@ public class Sequence_FixPlayerPosition : Sequence_Base
     [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치/회전에 플레이어가 이동되고 고정됩니다.")]
     [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
     [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
-    [LabelText("플레이어 회전"), ShowIf("hasVector")] public Vector3 rotatePlayerTo_Absolute;
+    [LabelText("플레이어 회전 설정 여부")] public bool hasRotation;
+    [LabelText("플레이어 회전"), ShowIf("hasRotation")] public Vector3 rotatePlayerTo_Absolute;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
@@ -592,6 +593,9 @@ public class Sequence_FixPlayerPosition : Sequence_Base
         if(hasVector)
         {
             PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+        }
+        if(hasRotation)
+        {
             PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
         }
 

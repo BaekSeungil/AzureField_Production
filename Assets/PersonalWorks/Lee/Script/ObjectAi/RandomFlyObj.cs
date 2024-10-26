@@ -6,7 +6,7 @@ using UnityEngine;
 public class RandomFlyObj : MonoBehaviour
 {
     [LabelText("스폰할 오브젝트 선택")] public GameObject[] ObjectToSpawn;  // 스폰할 오브젝트
-    public Transform Player;  // 플레이어 Transform
+    //public Transform Player;  // 플레이어 Transform
     private float spawnRadius = 45f;  // 스폰 범위 반경
     [SerializeField,LabelText("스폰확률")]private float spawnRate = 0.6f;  // 스폰 확률 (0~1, 예: 0.01f는 1% 확률)
     [SerializeField,LabelText("스폰간격")]private float spawnInterval = 120f;  // 스폰 간격 (초)
