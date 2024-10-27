@@ -581,19 +581,18 @@ public class Sequence_ImageCutscene : Sequence_Base
 
 public class Sequence_FixPlayerPosition : Sequence_Base
 {
-    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치에 플레이어가 이동되고 고정됩니다.")]
-    //public string fixPlayerTo_Transform;
+    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치/회전에 플레이어가 이동되고 고정됩니다.")]
     [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
     [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
+    [LabelText("플레이어 회전"), ShowIf("hasVector")] public Vector3 rotatePlayerTo_Absolute;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if (invoker.isPlayerFixedBySequence) yield break;
-
         invoker.isPlayerFixedBySequence = true;
         if(hasVector)
         {
             PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+            PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
         }
 
         if(PlayerCore.IsInstanceValid)
@@ -704,5 +703,22 @@ public class Sequence_ChangePlayerState : Sequence_Base
         yield return null;
     }
 
+}
 
+public class Sequence_ChangeWeatherProfile : Sequence_Base
+{
+    [InfoBox("날씨 프로필 파일 정보대로 날씨를 바꿉니다.")]
+    [LabelText("날씨 프로필 파일")] public AzfAtmosProfile profile;
+    [LabelText("전환 시간")] public float transitionTime = 5.0f;
+    [LabelText("전환 까지 시퀀스 대기")] public bool waitForTransitionEnd = false;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        AtmosphereManager.ChangeAtmosphere(profile, transitionTime);
+        
+        if(waitForTransitionEnd) yield return new WaitForSeconds(transitionTime);
+        
+        yield return null;
+        
+    }
 }
