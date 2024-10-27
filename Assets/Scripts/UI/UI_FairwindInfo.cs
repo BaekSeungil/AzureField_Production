@@ -50,6 +50,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
 
      FairwindChallengeInstance challengeInstance;
      bool SetChalleng = false;
+     private float Progress;
     private void Start()
     {
         visualGroup.SetActive(false);
@@ -61,19 +62,17 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         alertCountdown_integer.text = "00";
         alertCountdown_frac.text = "00";
 
-        challengeInstance = FindObjectOfType<FairwindChallengeInstance>();
-        if (challengeInstance == null)
-        {
-            Debug.LogError("ChallengeInstance가 null입니다. 확인이 필요합니다.");
-        }
-
         foreach (var slider in SetProcessSlider)
         {
             if (slider != null)
                 Debug.Log("슬라이더 초기화됨: " + slider.gameObject.name);
             else
+            {
                 Debug.Log("슬라이더가 null입니다.");
+            }
         }
+
+    
     }
 
     public void ToggleFairwindUI(bool value)
@@ -162,8 +161,8 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         {
             if (slider != null)
             {
-                slider.value = Mathf.Clamp(progress, float.MinValue, float.MaxValue);
-                //Debug.Log("슬라이더" + slider.value);
+                slider.value = Mathf.Clamp(progress, 0f, 1f);
+                Debug.Log("슬라이더" + slider.value);
             }
         }
     }
