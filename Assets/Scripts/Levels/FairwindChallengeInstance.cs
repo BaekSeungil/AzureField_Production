@@ -95,7 +95,6 @@ public class FairwindChallengeInstance : MonoBehaviour
 
         var bezierKnots = route.Spline.Knots.ToArray();
         positionList = new Vector3[bezierKnots.Length];
-
         for (int i = 0; i < bezierKnots.Length; i++)
         {
             if (WorldPosition)
@@ -397,6 +396,8 @@ public class FairwindChallengeInstance : MonoBehaviour
         return Vector2.Distance(projectedPlayerPositon, new Vector2(target.x, target.z));
     }
 
+    
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
@@ -444,4 +445,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
     }
 #endif
+   
 }
+
