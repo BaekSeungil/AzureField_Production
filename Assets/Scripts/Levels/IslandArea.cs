@@ -40,7 +40,7 @@ public class IslandArea : MonoBehaviour
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
-    bool regionEnterIgnore = true;
+    [SerializeField] bool ignoreEnterAtFirst = false;
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -169,7 +169,7 @@ public class IslandArea : MonoBehaviour
         UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
         {
-            if (!regionEnterIgnore)
+            if (!ignoreEnterAtFirst)
             {
                 if (!islandName.IsEmpty)
                 {
@@ -178,7 +178,7 @@ public class IslandArea : MonoBehaviour
                 }
             }
             else
-                regionEnterIgnore = false;
+                ignoreEnterAtFirst = false;
 
             if (spawnTransform != null)
                 AreaControl.RecentLandRecord(islandID, spawnTransform.position);
