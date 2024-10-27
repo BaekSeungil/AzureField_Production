@@ -79,13 +79,13 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
 
                 debug_hitpoint = rhit[0].point;
                 float laserLength = Vector3.Distance(rhit[0].point, laserStartPoint.position);
-                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength);
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength/transform.localScale.z);
                 endParticle.SetActive(true);
-                endParticle.transform.localPosition = Vector3.forward * laserLength;
+                endParticle.transform.localPosition = Vector3.forward * laserLength / transform.localScale.z;
             }
             else
             {
-                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserMaxLength);
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserMaxLength/transform.localScale.z);
                 endParticle.SetActive(false);
             }
         }
