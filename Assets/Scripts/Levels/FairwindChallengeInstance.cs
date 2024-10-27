@@ -1,5 +1,6 @@
 using FMODUnity;
 using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,9 @@ public class FairwindChallengeInstance : MonoBehaviour
     private float distanceAllowenceTime = 5;
     private bool musicEnabled = false;
 
+    private float fairwindTotalDistance;  // 스플라인의 총 거리
+    private float playerDistance; // 플레이어의 현재 위치
+
     /// <summary>
     /// 경로의 스플라인 데이터를 가져옵니다.
     /// </summary>
@@ -76,6 +80,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private Vector3 startKnotPosition;
     private Vector3 endKnotPosition;
 
+
     // challenge Info
     private float timer_playCountdown = -1f;
     private float timer_routeCountdown = 0f;
@@ -84,6 +89,24 @@ public class FairwindChallengeInstance : MonoBehaviour
     private Vector3 nearestFromPlayer;
 
     private bool isChallengeDone = false;
+
+
+
+
+ 
+
+    /// <summary>
+    /// 스플라인의 총거리를 계산
+    /// </summary>
+    private void KnotTotalDistance()
+    {
+        for (int i = 0; i < routeKnotList.Length - 1; i++)
+        {
+            fairwindTotalDistance += Vector3.Distance(routeKnotList[i], routeKnotList[i + 1]);
+            Debug.Log("거리 저장" + fairwindTotalDistance);
+        }
+
+    }
 
     /// <summary>
     /// 해당 순풍의 도전의 스플라인의 연결지점들을 가져옵니다.
@@ -199,6 +222,39 @@ public class FairwindChallengeInstance : MonoBehaviour
         return distance;
     }
 
+/// <summary>
+/// 플레이어의 스플라인에 따라 위치를 저장
+/// </summary>
+/// <param name="spline"></param>
+/// <param name="position"></param>
+/// <param name="t"></param>
+/// <returns></returns>
+    private float GetDistancePlayer(Vector3 position)
+    {
+        float calculatedDistance = 0f;
+        float minDistance = float.MaxValue;
+        int closestKnotIndex = 0;
+
+        // 플레이어 위치와 가장 가까운 노드를 찾습니다.
+        for (int i = 0; i < routeKnotList.Length; i++)
+        {
+            float distance = Vector3.Distance(PlayerCore.Instance.transform.position,
+             routeKnotList[i]);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestKnotIndex = i;
+            }
+        }
+
+        for (int i = closestKnotIndex; i < routeKnotList.Length - 1; i++)
+        {
+            calculatedDistance += Vector3.Distance(routeKnotList[i], 
+            routeKnotList[i]);
+        }
+
+        return calculatedDistance;
+    }
 
     private void OnChallengeActivated()
     {
@@ -316,7 +372,8 @@ public class FairwindChallengeInstance : MonoBehaviour
             {
                 endKnotPosition = routeKnotList[routeKnotList.Length-1];
             }
-        }
+            KnotTotalDistance();
+        }   
 
         lightPilarObject.SetActive(true);
         var knot = routeKnotList[activeKnotIndex];
@@ -387,6 +444,10 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
         }
+
+        Vector3 playerPosition = PlayerCore.Instance.transform.position;
+        playerDistance = GetDistancePlayer(playerPosition);
+        UpdateProssBar();
     }
 
     private float GetProjectedDistanceFromPlayer(Vector3 target)
@@ -396,7 +457,11 @@ public class FairwindChallengeInstance : MonoBehaviour
         return Vector2.Distance(projectedPlayerPositon, new Vector2(target.x, target.z));
     }
 
-    
+    private void UpdateProssBar()
+    {
+        float progress = 10f *(playerDistance / fairwindTotalDistance);
+       UI_FairwindInfo.Instance.UpdateSlider(progress);
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
