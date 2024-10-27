@@ -1,3 +1,4 @@
+using FMODUnity;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -29,6 +30,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject laserRay;
     [SerializeField, FoldoutGroup("ChildReference")] private LensFlareComponentSRP flare;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject endParticle;
+    [SerializeField, FoldoutGroup("ChildReference")] private StudioEventEmitter spinSound;
 
     int currentIndex = 0;
 
@@ -97,6 +99,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         if (rotateProgress != null) return;
         if (!laserObject.activeInHierarchy) return;
         if (!isEnabled) return;
+
+        spinSound.Play();
 
         int nextIndex = currentIndex;
 
