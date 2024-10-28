@@ -58591,7 +58591,7 @@ MonoBehaviour:
   checkpointBonusTime: 10
   rewardItems:
   - {fileID: 11400000, guid: 647c375a9b748a0489570ec7bd805c2f, type: 2}
-  sequenceOnFinish: {fileID: 0}
+  sequenceOnFinish: {fileID: 11400000, guid: de2983f88f010c14eb1687bca8e96eda, type: 2}
   musicOnPlay:
     Guid:
       Data1: 1709095649
@@ -58642,6 +58642,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: StorylineManager, Assembly-CSharp
+        m_MethodName: AbortActiveStoryline
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
