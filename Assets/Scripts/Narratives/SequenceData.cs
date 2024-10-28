@@ -116,9 +116,20 @@ public class Sequence_Timeline : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
+        if (PlayerCore.IsInstanceValid)
+        {
+            PlayerCore.Instance.Rigidbody.isKinematic = true;
+        }
+
         PlayableDirector playable = invoker.Playable;
         playable.Play(timeline);
         yield return new WaitUntil(() => playable.state != PlayState.Playing);
+
+        if (PlayerCore.IsInstanceValid)
+        {
+            if (!invoker.isPlayerFixedBySequence)
+                PlayerCore.Instance.Rigidbody.isKinematic = false;
+        }
     }
 }
 

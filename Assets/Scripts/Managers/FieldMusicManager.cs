@@ -102,7 +102,9 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
         sound.EventInstance.setVolume(0f);
         yield return new WaitForSeconds(waitTime);
 
+#if UNITY_EDITOR
         Debug.Log("MusicPlayed : " + music.Path);
+#endif
 
         sound.Stop();
         sound.ChangeEvent(music);

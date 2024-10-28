@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
@@ -48,6 +49,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
     [SerializeField] private TextMeshProUGUI context;
     [SerializeField] private GameObject inputWaitObject;
     [SerializeField] private Transform answerStartPosition;
+    [SerializeField] private Animator dialogueAnim;
     [SerializeField] private DOTweenAnimation visualGroupAnim;
     [SerializeField] private DOTweenAnimation dialogueAnswerAnimation;
     [SerializeField] private StudioEventEmitter dialogueAudioEmmiter;
@@ -158,6 +160,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
         if (dialogueOpened) yield break;
 
         RuntimeManager.PlayOneShot(sound_open);
+        dialogueAnim.Play("Open");
 
         visualGroupAnim.DORestartById("DialogueFadein");
         Tween openTw = visualGroupAnim.GetTweens()[0];

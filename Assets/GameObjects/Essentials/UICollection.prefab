@@ -6833,7 +6833,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &535340511293079596
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7890,7 +7890,6 @@ GameObject:
   - component: {fileID: 5014317890395932866}
   - component: {fileID: 7696768884751274991}
   - component: {fileID: 864112618117255676}
-  - component: {fileID: 8764591062949371794}
   - component: {fileID: 1658031712147696270}
   m_Layer: 5
   m_Name: ImageCutscene
@@ -7965,23 +7964,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &8764591062949371794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2474161706976494178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 32767
 --- !u!114 &1658031712147696270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15560,7 +15542,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8762191461460331922
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16329,13 +16311,8 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 3713823730953149745, guid: 78fd22a2dc3b35d458c6521d14c8d6b3, type: 3}
-    - {fileID: 6670306376363904807, guid: 5532a6420615d534a87935ff2336442c, type: 3}
-    - {fileID: 3713823730953149745, guid: 26235c3d978b7414bbdc6165ef3732ce, type: 3}
-    - {fileID: 3713823730953149745, guid: 364b493899bc02a4b8236d8aa5f9fd72, type: 3}
-    - {fileID: 3713823730953149745, guid: 5377195cac95f414986abfefbbf90668, type: 3}
-    - {fileID: 3713823730953149745, guid: b15e1958e2925b941864f8fcc19f564b, type: 3}
-    - {fileID: 3713823730953149745, guid: 85db364ce3d5bf742a16160afe483566, type: 3}
+    - {fileID: 2522236980684599082, guid: 1122bf81303bd2443a84deaf88aa2e28, type: 3}
+    - {fileID: 1146745594377588256, guid: 3d448bcbfe8a42448bf65004ffdd945b, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -16354,13 +16331,13 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 7
+      Data: 2
     - Name: 
       Entry: 7
       Data: 
     - Name: $k
       Entry: 1
-      Data: Lookaround
+      Data: SailboatMove
     - Name: $v
       Entry: 7
       Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
@@ -16381,118 +16358,13 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: MoveKey
+      Data: GroundMove
     - Name: $v
       Entry: 7
       Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
     - Name: keyboardPrefab
       Entry: 10
       Data: 1
-    - Name: gamepadPrefab
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: SailboatEnable
-    - Name: $v
-      Entry: 7
-      Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
-    - Name: keyboardPrefab
-      Entry: 10
-      Data: 2
-    - Name: gamepadPrefab
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: SailboatBooster
-    - Name: $v
-      Entry: 7
-      Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
-    - Name: keyboardPrefab
-      Entry: 10
-      Data: 3
-    - Name: gamepadPrefab
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: SailboatLeapup
-    - Name: $v
-      Entry: 7
-      Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
-    - Name: keyboardPrefab
-      Entry: 10
-      Data: 4
-    - Name: gamepadPrefab
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: Menu
-    - Name: $v
-      Entry: 7
-      Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
-    - Name: keyboardPrefab
-      Entry: 10
-      Data: 5
-    - Name: gamepadPrefab
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: SailboatTilt
-    - Name: $v
-      Entry: 7
-      Data: UI_Tutorials+TutorialCollective, Assembly-CSharp
-    - Name: keyboardPrefab
-      Entry: 10
-      Data: 6
     - Name: gamepadPrefab
       Entry: 6
       Data: 
@@ -16955,7 +16827,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   textInterval: 0.03
-  answerSpawnSpace: 70
+  answerSpawnSpace: 80
   sound_open:
     Guid:
       Data1: -1881287024
@@ -16999,6 +16871,7 @@ MonoBehaviour:
   context: {fileID: 3593770578540738403}
   inputWaitObject: {fileID: 6782287069358908592}
   answerStartPosition: {fileID: 3992363260365124405}
+  dialogueAnim: {fileID: 2296737124007513589}
   visualGroupAnim: {fileID: 4848041818271295813}
   dialogueAnswerAnimation: {fileID: 6422908609341152541}
   dialogueAudioEmmiter: {fileID: 5363363496319303823}
@@ -17360,9 +17233,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'R
-
-'
+  m_text: E
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e892a55a013575441a9370e0f43ce6c8, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: c0b636fac5c75614db448efb2939ecda, type: 2}
@@ -24039,7 +23910,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9217496569051970315
 RectTransform:
   m_ObjectHideFlags: 0
