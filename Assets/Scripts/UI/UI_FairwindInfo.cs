@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
@@ -47,7 +48,9 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
 
-    private FairwindChallengeInstance challengeInstance;
+     FairwindChallengeInstance challengeInstance;
+     bool SetChalleng = false;
+     private float Progress;
     private void Start()
     {
         visualGroup.SetActive(false);
@@ -59,20 +62,17 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         alertCountdown_integer.text = "00";
         alertCountdown_frac.text = "00";
 
-        //슬라이더 초기화
-        foreach (Slider slider in SetProcessSlider)
+        foreach (var slider in SetProcessSlider)
         {
             if (slider != null)
+                Debug.Log("슬라이더 초기화됨: " + slider.gameObject.name);
+            else
             {
-                slider.value = slider.minValue; 
+                Debug.Log("슬라이더가 null입니다.");
             }
         }
-        
-    }
 
-    private void Update()
-    {
-        UpdateSlider();
+    
     }
 
     public void ToggleFairwindUI(bool value)
@@ -80,6 +80,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         if (value == true)
         {
             visualGroup.SetActive(true);
+            SetChalleng = true;
         }
         else
         {
@@ -125,6 +126,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         ToggleAlertUI(false);       
         successUI.SetActive(true);
         successUI_text.text = message_succeed.GetLocalizedString();
+        SetChalleng = false;
     }
 
     public void OnFairwindTimeoutFailed()
@@ -132,6 +134,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         ToggleAlertUI(false);
         failedUI.SetActive(true);
         failedUI_text.text = message_failTimeout.GetLocalizedString();
+        SetChalleng = false;
     }
 
     public void OnFairwindRouteoutFailed()
@@ -148,39 +151,19 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         additinalTime_text.text = "+ " + ((int)time).ToString();
     }
 
-    public void SliderValue(float value)
-    {
-        foreach (Slider slider in SetProcessSlider)
-        {
-            if (slider != null)
-            {
-                // 설정한 값이 슬라이더의 범위 내에 있는지 확인하고 업데이트합니다.
-                float clampedValue = Mathf.Clamp(value, slider.minValue, slider.maxValue);
-                slider.value = clampedValue;
-                
-            }
-        }
-    }
-
 /// <summary>
 /// 순풍의 도전 시작지점과 도착지점에서 값을 받아온 뒤
 /// 슬라이드에 반영
 /// </summary>
-    private void UpdateSlider()
-    {
-        if (challengeInstance != null && challengeInstance.RouteSpline != null)
+    public void UpdateSlider(float progress)
+    {   
+        foreach(Slider slider in SetProcessSlider)
         {
-            float t = 0; 
-            Vector3 nearestPoint;
-
-            float distanceFromStart = challengeInstance.GetDistanceFromSpline(
-                challengeInstance.RouteSpline, 
-                PlayerCore.Instance.transform.position, 
-                out nearestPoint, 
-                out t
-            );
-            SliderValue(t);
+            if (slider != null)
+            {
+                slider.value = Mathf.Clamp(progress, 0f, 1f);
+                Debug.Log("슬라이더" + slider.value);
+            }
         }
     }
-
 }

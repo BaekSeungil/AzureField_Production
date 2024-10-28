@@ -1,5 +1,6 @@
 using FMODUnity;
 using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private Vector3 startKnotPosition;
     private Vector3 endKnotPosition;
 
+
     // challenge Info
     private float timer_playCountdown = -1f;
     private float timer_routeCountdown = 0f;
@@ -84,6 +86,12 @@ public class FairwindChallengeInstance : MonoBehaviour
     private Vector3 nearestFromPlayer;
 
     private bool isChallengeDone = false;
+
+
+
+
+ 
+
 
     /// <summary>
     /// 해당 순풍의 도전의 스플라인의 연결지점들을 가져옵니다.
@@ -199,7 +207,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         return distance;
     }
 
-
     private void OnChallengeActivated()
     {
         if (FairwindProgress != null) return;
@@ -225,7 +232,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     IEnumerator Cor_FairwindMainProgress()
     {
         FMODUnity.RuntimeManager.PlayOneShot(sound_Start);
-        for (int i = 0; i < routeKnotList.Length - 1; i++)
+        for (int i = 0; i < routeKnotList.Length-1; i++)
         {
             activeKnotIndex++;
 
@@ -236,10 +243,16 @@ public class FairwindChallengeInstance : MonoBehaviour
 
             yield return StartCoroutine(Cor_ChangeDestination(prevF, nextF));
             yield return new WaitUntil(() => (GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
-
+            
             if (checkpointBonus) AddTimerToActiveChallenge(checkpointBonusTime);
 
             FMODUnity.RuntimeManager.PlayOneShot(sound_Checkpoint);
+
+            if (activeKnotIndex == routeKnotList.Length - 1)
+            {
+                // 슬라이더 값을 1 증가시키는 메서드 호출
+                activeKnotIndex++;;
+            }
         }
         FMODUnity.RuntimeManager.PlayOneShot(sound_Finish);
         lightPilarObject.SetActive(false);
@@ -316,7 +329,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             {
                 endKnotPosition = routeKnotList[routeKnotList.Length-1];
             }
-        }
+        }   
 
         lightPilarObject.SetActive(true);
         var knot = routeKnotList[activeKnotIndex];
@@ -387,6 +400,8 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
         }
+
+        UpdateProssBar();
     }
 
     private float GetProjectedDistanceFromPlayer(Vector3 target)
@@ -396,7 +411,16 @@ public class FairwindChallengeInstance : MonoBehaviour
         return Vector2.Distance(projectedPlayerPositon, new Vector2(target.x, target.z));
     }
 
-    
+    public void UpdateProssBar()
+    {
+        // 슬라이더 업데이트
+        if (currentState != ChallengeState.Active || routeKnotList == null || routeKnotList.Length == 0) return;
+
+        // 현재 노드 인덱스와 총 노드 수를 사용하여 진행률을 계산
+        float progress = (float)activeKnotIndex / routeKnotList.Length;
+
+        UI_FairwindInfo.Instance.UpdateSlider(progress);
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
