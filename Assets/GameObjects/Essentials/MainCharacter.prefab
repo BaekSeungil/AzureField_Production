@@ -130,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 647024030046943862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.05, z: 0}
+  m_LocalPosition: {x: 0, y: -0.016, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1477,7 +1477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2930847644886406987
 Transform:
   m_ObjectHideFlags: 0
@@ -1527,6 +1527,7 @@ GameObject:
   - component: {fileID: 6957682740961274984}
   - component: {fileID: 3492324292172700776}
   - component: {fileID: 1159547495870197077}
+  - component: {fileID: 5254034212134816993}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Player
@@ -1906,6 +1907,27 @@ MonoBehaviour:
   OnSpawn: 0
   IsCreat: 0
   EtherCount: 0
+--- !u!95 &5254034212134816993
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3285113050476737701}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3323590569851705261
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,7 +1953,7 @@ Transform:
   m_GameObject: {fileID: 3323590569851705261}
   serializedVersion: 2
   m_LocalRotation: {x: -0.6441014, y: -0.5187447, z: -0.36290666, w: -0.42934373}
-  m_LocalPosition: {x: 0.035, y: -0.014421973, z: 0.277}
+  m_LocalPosition: {x: 0.035, y: 0.017, z: 0.277}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2125,7 +2147,7 @@ Transform:
   m_GameObject: {fileID: 3481135830841591949}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5870044, y: -0.6699975, z: -0.44210884, w: -0.10520942}
-  m_LocalPosition: {x: -0.051, y: -0.004, z: -0.246}
+  m_LocalPosition: {x: -0.051, y: 0.02742993, z: -0.246}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3342,39 +3364,39 @@ MonoBehaviour:
   serializeData2:
     selectionData:
       positions:
-      - x: 0.13028336
-        y: 0.7446482
-        z: 0.06241989
-      - x: 0.13107681
-        y: 0.7117512
-        z: -0.007214546
-      - x: 0.12852478
-        y: 0.7171681
-        z: -0.008826256
-      - x: 0.14455032
-        y: 0.6915934
-        z: -0.002796173
-      - x: 0.1422348
-        y: 0.700346
-        z: -0.004006386
-      - x: 0.108112335
-        y: 0.72300076
-        z: -0.07845783
-      - x: -0.13380814
-        y: 0.7373712
-        z: 0.03484726
-      - x: -0.118198395
-        y: 0.7250769
-        z: -0.043154716
+      - x: 0.13027954
+        y: 0.7446594
+        z: 0.062408447
+      - x: 0.131073
+        y: 0.7117615
+        z: -0.007232666
+      - x: 0.12854004
+        y: 0.7171631
+        z: -0.00881958
+      - x: 0.14456177
+        y: 0.69158936
+        z: -0.002822876
+      - x: 0.14224243
+        y: 0.7003479
+        z: -0.0040283203
+      - x: 0.10809326
+        y: 0.72299194
+        z: -0.07849121
+      - x: -0.13378906
+        y: 0.7373657
+        z: 0.034835815
+      - x: -0.1182251
+        y: 0.72506714
+        z: -0.043136597
       - x: -0.10043335
-        y: 0.7612796
-        z: -0.0025835037
-      - x: -0.14651108
-        y: 0.6978066
-        z: -0.0033006668
-      - x: -0.19465637
-        y: 0.63148737
-        z: -0.004050255
+        y: 0.7612915
+        z: -0.0025939941
+      - x: -0.1465149
+        y: 0.69781494
+        z: -0.0033111572
+      - x: -0.19467163
+        y: 0.63150024
+        z: -0.004043579
       attributes:
       - Value: 1
       - Value: 2
@@ -3387,7 +3409,7 @@ MonoBehaviour:
       - Value: 2
       - Value: 2
       - Value: 2
-      maxConnectionDistance: 0.14424527
+      maxConnectionDistance: 0.14427204
       userEdit: 0
     preBuildData:
       enabled: 0
@@ -17822,6 +17844,11 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 5b25eb404143f854dbae783f99a8470a, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 1f061b33e9d79f7498d626a8004b954f,
+        type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 1f061b33e9d79f7498d626a8004b954f,
         type: 3}
       propertyPath: m_ApplyRootMotion
