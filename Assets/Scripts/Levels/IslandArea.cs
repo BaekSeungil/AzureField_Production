@@ -40,7 +40,7 @@ public class IslandArea : MonoBehaviour
 
     private bool playerEnterFlag = false;
     private Transform playerPosition;
-    bool regionEnterIgnore = true;
+    [SerializeField] bool ignoreEnterAtFirst = false;
 
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -169,16 +169,16 @@ public class IslandArea : MonoBehaviour
         UI_RegionEnter regionEnter = UI_RegionEnter.Instance;
         if (regionEnter != null)
         {
-            if (!regionEnterIgnore)
+            if (!ignoreEnterAtFirst)
             {
-                if (islandName != null)
+                if (!islandName.IsEmpty)
                 {
                     regionEnter.OnRegionEnter(islandName.GetLocalizedString());
                     RuntimeManager.PlayOneShot(sound_Enter);
                 }
             }
             else
-                regionEnterIgnore = false;
+                ignoreEnterAtFirst = false;
 
             if (spawnTransform != null)
                 AreaControl.RecentLandRecord(islandID, spawnTransform.position);
@@ -188,7 +188,13 @@ public class IslandArea : MonoBehaviour
     private bool EnterUIFilter()
     {
         if (FairwindChallengeInstance.IsActiveChallengeExists) return false;
-        if (enterTimer > enterInterval) { Debug.Log("Island Enter : " + IslandName.GetLocalizedString()); enterTimer = 0f; return true; }
+        if (enterTimer > enterInterval)
+        {
+            if (!IslandName.IsEmpty)
+                Debug.Log("Island Enter : " + IslandName.GetLocalizedString());
+            enterTimer = 0f;
+            return true;
+        }
         else return false;
     }
 
