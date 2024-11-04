@@ -556,6 +556,14 @@ public class Sequence_ImageCutscene : Sequence_Base
     {
         //[LabelText("대기 시간")] public float waitTime;
         [LabelText("텍스트")] public LocalizedString[] context;
+        /// <summary>
+        /// 변수 타입: EventReference
+        /// 변수 명: CurrentAudioClips
+        /// 작업자: 성지훈
+        /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+        /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+        /// </summary>
+        [LabelText("음원")] public EventReference[] narration;
         //[LabelText("(선택)효과음")] public EventReference sound;
     }
 
@@ -566,6 +574,14 @@ public class Sequence_ImageCutscene : Sequence_Base
             public float scrollPoint;
             public float scrollTime;
             public LocalizedString[] context;
+            /// <summary>
+            /// 변수 타입: EventReference
+            /// 변수 명: CurrentAudioClips
+            /// 작업자: 성지훈
+            /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+            /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+            /// </summary>
+            [LabelText("음원")] public EventReference[] narration;
         }
 
         public LongCutsceneElement[] elements;
@@ -581,22 +597,43 @@ public class Sequence_ImageCutscene : Sequence_Base
 
 public class Sequence_FixPlayerPosition : Sequence_Base
 {
-    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치에 플레이어가 이동되고 고정됩니다.")]
-    //public string fixPlayerTo_Transform;
+    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치/회전에 플레이어가 이동되고 고정됩니다.")]
+    [LabelText("해당 오브젝트 위치로 설정")] public bool hasTransform;
+    [LabelText("오브젝트 이름"), ShowIf("hasTransform")] public string transformName;
     [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
     [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
+    [LabelText("플레이어 회전 설정 여부")] public bool hasRotation;
+    [LabelText("플레이어 회전"), ShowIf("hasRotation")] public Vector3 rotatePlayerTo_Absolute;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if (invoker.isPlayerFixedBySequence) yield break;
-
         invoker.isPlayerFixedBySequence = true;
-        if(hasVector)
+
+        if (hasTransform)
         {
-            PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+            Transform target = GameObject.Find(transformName).transform;
+
+            if (target == null)
+            {
+                Debug.LogError(target + " : 오브젝트를 찾을 수 없었습니다.");
+            }
+            else
+            {
+                PlayerCore.Instance.transform.position = target.position;
+                PlayerCore.Instance.transform.localRotation = target.localRotation;
+            }
+        }
+        else
+        {
+            if (hasVector)
+                PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+
+            if (hasRotation)
+                PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
         }
 
-        if(PlayerCore.IsInstanceValid)
+
+        if (PlayerCore.IsInstanceValid)
         {
             PlayerCore.Instance.Rigidbody.isKinematic = true;
         }

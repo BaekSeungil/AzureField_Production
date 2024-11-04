@@ -1,3 +1,4 @@
+using FMODUnity;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -29,6 +30,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject laserRay;
     [SerializeField, FoldoutGroup("ChildReference")] private LensFlareComponentSRP flare;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject endParticle;
+    [SerializeField, FoldoutGroup("ChildReference")] private StudioEventEmitter spinSound;
 
     int currentIndex = 0;
 
@@ -75,15 +77,17 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
             Vector3 laserScale = laserRay.transform.localScale;
             if (rhit.Length != 0)
             {
+                rhit = rhit.OrderBy(i => i.distance).ToArray();
+
                 debug_hitpoint = rhit[0].point;
                 float laserLength = Vector3.Distance(rhit[0].point, laserStartPoint.position);
-                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength);
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength/transform.localScale.z);
                 endParticle.SetActive(true);
-                endParticle.transform.localPosition = Vector3.forward * laserLength;
+                endParticle.transform.localPosition = Vector3.forward * laserLength / transform.localScale.z;
             }
             else
             {
-                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserMaxLength);
+                laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserMaxLength/transform.localScale.z);
                 endParticle.SetActive(false);
             }
         }
@@ -95,6 +99,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         if (rotateProgress != null) return;
         if (!laserObject.activeInHierarchy) return;
         if (!isEnabled) return;
+
+        spinSound.Play();
 
         int nextIndex = currentIndex;
 
