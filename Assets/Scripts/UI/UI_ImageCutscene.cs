@@ -63,6 +63,16 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         sound = GetComponent<StudioEventEmitter>();
     }
 
+    private void Update()
+    {
+        if(UI_InputManager.Instance.UI_Input.UI.Skip.IsPressed())
+        {
+            skipFlag = true;
+        }
+    }
+
+    bool skipFlag = false;
+
     public IEnumerator StartCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Base[] subsequences)
     {
         visualGroup.SetActive(true);
@@ -71,6 +81,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         fixedImageObject.SetActive(false);
         textObject.SetActive(true);
 
+        skipFlag = false;
 
         for (int i = 0; i < subsequences.Length; i++)
         {
@@ -84,7 +95,11 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             {
                 yield return StartCoroutine(Cor_LongImageCutsceneProgress(subsequences[i] as Sequence_ImageCutscene.ImgCutsceneSubsequence_Long));
             }
+
+            if (skipFlag) break;
         }
+
+        skipFlag = false;
         yield return Cor_EndCutsceneProgress();
     }
 
@@ -115,6 +130,8 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
         for (int textIndex = 0; textIndex < subsequence.context.Length; textIndex++)
         {
+            if (skipFlag) yield break;
+
             textObject.SetActive(false);
             textObject.SetActive(true);
             #region 코드 설명
@@ -193,6 +210,8 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
             for (int textIndex = 0; textIndex < current.context.Length; textIndex++)
             {
+                if (skipFlag) yield break;
+
                 textObject.SetActive(false);
                 textObject.SetActive(true);
 
