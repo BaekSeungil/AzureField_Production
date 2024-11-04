@@ -682,6 +682,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""60d20267-6981-4167-bac9-f3d267bc75e8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1212,6 +1221,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SecondaryNav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6eda3da5-134b-4d8e-9473-b1198f7c79fc"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1311,6 +1331,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_SimpleHelp = m_UI.FindAction("SimpleHelp", throwIfNotFound: true);
         m_UI_MapToggle = m_UI.FindAction("MapToggle", throwIfNotFound: true);
         m_UI_SecondaryNav = m_UI.FindAction("SecondaryNav", throwIfNotFound: true);
+        m_UI_Skip = m_UI.FindAction("Skip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1529,6 +1550,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_SimpleHelp;
     private readonly InputAction m_UI_MapToggle;
     private readonly InputAction m_UI_SecondaryNav;
+    private readonly InputAction m_UI_Skip;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1548,6 +1570,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @SimpleHelp => m_Wrapper.m_UI_SimpleHelp;
         public InputAction @MapToggle => m_Wrapper.m_UI_MapToggle;
         public InputAction @SecondaryNav => m_Wrapper.m_UI_SecondaryNav;
+        public InputAction @Skip => m_Wrapper.m_UI_Skip;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1602,6 +1625,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SecondaryNav.started += instance.OnSecondaryNav;
             @SecondaryNav.performed += instance.OnSecondaryNav;
             @SecondaryNav.canceled += instance.OnSecondaryNav;
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1651,6 +1677,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SecondaryNav.started -= instance.OnSecondaryNav;
             @SecondaryNav.performed -= instance.OnSecondaryNav;
             @SecondaryNav.canceled -= instance.OnSecondaryNav;
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1746,5 +1775,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnSimpleHelp(InputAction.CallbackContext context);
         void OnMapToggle(InputAction.CallbackContext context);
         void OnSecondaryNav(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
 }
