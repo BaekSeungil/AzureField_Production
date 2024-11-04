@@ -556,6 +556,14 @@ public class Sequence_ImageCutscene : Sequence_Base
     {
         //[LabelText("대기 시간")] public float waitTime;
         [LabelText("텍스트")] public LocalizedString[] context;
+        /// <summary>
+        /// 변수 타입: EventReference
+        /// 변수 명: CurrentAudioClips
+        /// 작업자: 성지훈
+        /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+        /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+        /// </summary>
+        [LabelText("음원")] public EventReference[] narration;
         //[LabelText("(선택)효과음")] public EventReference sound;
     }
 
@@ -566,6 +574,14 @@ public class Sequence_ImageCutscene : Sequence_Base
             public float scrollPoint;
             public float scrollTime;
             public LocalizedString[] context;
+            /// <summary>
+            /// 변수 타입: EventReference
+            /// 변수 명: CurrentAudioClips
+            /// 작업자: 성지훈
+            /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+            /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+            /// </summary>
+            [LabelText("음원")] public EventReference[] narration;
         }
 
         public LongCutsceneElement[] elements;
