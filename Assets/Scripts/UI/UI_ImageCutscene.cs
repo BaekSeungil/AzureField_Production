@@ -13,6 +13,17 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     [SerializeField] EventReference progressSound;
     [SerializeField] private AnimationCurve transitionCurve;
 
+    /// <summary>
+    /// 변수 타입: StudioEventEmitter
+    /// 변수 명: sound
+    /// 작업자: 성지훈
+    /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+    /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+    /// </summary>
+    [SerializeField] private StudioEventEmitter sound;
+
+
+
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject visualGroup;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject fixedImageObject;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject longImageObject;
@@ -42,7 +53,25 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         textMesh.text = string.Empty;
 
         visualGroup.SetActive(false);
+        /// <summary>
+        /// 변수 타입: StudioEventEmitter
+        /// 변수 명: sound
+        /// 작업자: 성지훈
+        /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+        /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+        /// </summary>
+        sound = GetComponent<StudioEventEmitter>();
     }
+
+    private void Update()
+    {
+        if(UI_InputManager.Instance.UI_Input.UI.Skip.IsPressed())
+        {
+            skipFlag = true;
+        }
+    }
+
+    bool skipFlag = false;
 
     public IEnumerator StartCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Base[] subsequences)
     {
@@ -52,6 +81,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         fixedImageObject.SetActive(false);
         textObject.SetActive(true);
 
+        skipFlag = false;
 
         for (int i = 0; i < subsequences.Length; i++)
         {
@@ -65,7 +95,11 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             {
                 yield return StartCoroutine(Cor_LongImageCutsceneProgress(subsequences[i] as Sequence_ImageCutscene.ImgCutsceneSubsequence_Long));
             }
+
+            if (skipFlag) break;
         }
+
+        skipFlag = false;
         yield return Cor_EndCutsceneProgress();
     }
 
@@ -96,12 +130,34 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
         for (int textIndex = 0; textIndex < subsequence.context.Length; textIndex++)
         {
+            if (skipFlag) yield break;
+
             textObject.SetActive(false);
             textObject.SetActive(true);
+            #region 코드 설명
+            /// <summary>
+            /// 작업자: 성지훈
+            /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+            /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+            /// </summary>
+            #endregion
+            if (subsequence.narration.Length > 0)
+                sound.ChangeEvent(subsequence.narration[textIndex]);
+            sound.Play();
+
 
             textMesh.text = subsequence.context[textIndex].GetLocalizedString();
             yield return new WaitForSeconds(0.2f);
             yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
+
+            #region 코드 설명
+            /// <summary>
+            /// 작업자: 성지훈
+            /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+            /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+            /// </summary>
+            #endregion
+            sound.Stop();
         }
 
         fixedAnimator.Play("OUT");
@@ -154,12 +210,32 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
             for (int textIndex = 0; textIndex < current.context.Length; textIndex++)
             {
+                if (skipFlag) yield break;
+
                 textObject.SetActive(false);
                 textObject.SetActive(true);
 
+                #region 코드 설명
+                /// <summary>
+                /// 작업자: 성지훈
+                /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+                /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+                /// </summary>
+                #endregion
+                if (current.narration.Length > 0)
+                    sound.ChangeEvent(current.narration[textIndex]);
+                sound.Play();
                 textMesh.text = current.context[textIndex].GetLocalizedString();
                 yield return new WaitForSeconds(0.2f);
                 yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
+                #region 코드 설명
+                /// <summary>
+                /// 작업자: 성지훈
+                /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+                /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+                /// </summary>
+                #endregion
+                sound.Stop();
             }
             prevPoint = -current.scrollPoint;
 
