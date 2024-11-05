@@ -34,11 +34,11 @@ public class SpawnBird : MonoBehaviour
 
     public void SpawnFishgameObject()
     {
-        foreach (var fish in BirdgameObjects)
+        foreach (var bird in BirdgameObjects)
         {
-            if(!fish.activeInHierarchy)
+            if(!bird.activeInHierarchy)
             {
-                fish.SetActive(true);
+                bird.SetActive(true);
                 break;
             }
         }
