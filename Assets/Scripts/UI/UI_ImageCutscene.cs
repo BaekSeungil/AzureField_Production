@@ -22,19 +22,21 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
     /// </summary>
     [SerializeField] private StudioEventEmitter sound;
 
-
-
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject visualGroup;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject fixedImageObject;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject longImageObject;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject blackoutCover;
     [SerializeField, FoldoutGroup("ChildReference")] private GameObject textObject;
 
+    [SerializeField, FoldoutGroup("ChildReference")] private RectTransform skipProgressBar;
+
     Image fixedImage;
     Image longImage;
     TextMeshProUGUI textMesh;
     Animator fixedAnimator;
     Animator longAnimator;
+
+    private float skipProgress = 0f;
 
     protected override void Awake()
     {
@@ -60,14 +62,31 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
         /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
         /// </summary>
-        sound = GetComponent<StudioEventEmitter>();
     }
+
+    private float skipWaitTime = 1f;
 
     private void Update()
     {
-        if(UI_InputManager.Instance.UI_Input.UI.Skip.IsPressed())
+        if (UI_InputManager.Instance.UI_Input.UI.Skip.IsPressed())
         {
-            skipFlag = true;
+            if (skipProgress < skipWaitTime)
+            {
+                skipProgress += Time.deltaTime;
+                skipProgressBar.localScale = new Vector3(skipProgress, 1f, 1f);
+            }
+            else
+            {
+                skipProgress = 1f;
+                skipProgressBar.localScale = new Vector3(1f, 1f, 1f);
+                skipFlag = true;
+            }
+        }
+        else
+        {
+            skipProgress = 0f;
+            skipProgressBar.localScale = new Vector3(0f, 1f, 1f);
+            skipFlag = false;
         }
     }
 
@@ -134,6 +153,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
             textObject.SetActive(false);
             textObject.SetActive(true);
+
             #region 코드 설명
             /// <summary>
             /// 작업자: 성지훈
@@ -148,7 +168,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
             textMesh.text = subsequence.context[textIndex].GetLocalizedString();
             yield return new WaitForSeconds(0.2f);
-            yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
+            yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed() || skipFlag);
 
             #region 코드 설명
             /// <summary>
@@ -227,7 +247,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
                 sound.Play();
                 textMesh.text = current.context[textIndex].GetLocalizedString();
                 yield return new WaitForSeconds(0.2f);
-                yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed());
+                yield return new WaitUntil(() => UI_InputManager.Instance.UI_Input.UI.Positive.IsPressed() || skipFlag);
                 #region 코드 설명
                 /// <summary>
                 /// 작업자: 성지훈
