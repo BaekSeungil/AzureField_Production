@@ -6,6 +6,7 @@ using FMODUnity;
 using UnityEngine.UI;
 using UnityEngine.Localization.SmartFormat.Utilities;
 using UnityEngine.EventSystems;
+using UnityEditor.ShaderGraph.Internal;
 
 public class SoundOpton : MonoBehaviour
 {
@@ -14,12 +15,14 @@ public class SoundOpton : MonoBehaviour
     [SerializeField] private Slider AmbientSlider;
     [SerializeField] private Slider UISlider;
     [SerializeField] private Slider MusicSlider;
+    [SerializeField] private Slider VoiceSlider;
 
     Bus Music;
     Bus SFX;
     Bus Ambient;
     Bus UI;
     Bus Master;
+    Bus Voice;
 
     private void Awake()
     {
@@ -28,6 +31,7 @@ public class SoundOpton : MonoBehaviour
         Ambient = FMODUnity.RuntimeManager.GetBus("bus:/Master/Ambient");
         UI = FMODUnity.RuntimeManager.GetBus("bus:/Master/UI");
         SFX = FMODUnity.RuntimeManager.GetBus("bus:/Master/SFX");
+        Voice = FMODUnity.RuntimeManager.GetBus("bus:/Master/Voice");
     }
 
     private void OnEnable()
@@ -48,6 +52,9 @@ public class SoundOpton : MonoBehaviour
 
         SFX.getVolume(out f);
         SFXSlider.value = f;
+
+        Voice.getVolume(out f);
+        VoiceSlider.value = f;
     }
 
     public void SetMaster(float value)
@@ -78,5 +85,11 @@ public class SoundOpton : MonoBehaviour
     {
         Music.setVolume(value);
         PlayerPrefs.SetFloat("music_volume", value);
+    }
+
+    public void SetVoice(float value)
+    {
+        Voice.setVolume(value);
+        PlayerPrefs.SetFloat("voice_volume", value);
     }
 }
