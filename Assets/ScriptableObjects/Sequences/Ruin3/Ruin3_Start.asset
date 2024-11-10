@@ -16,7 +16,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 0008273074316854f9dc47cb6dcb8d20, type: 2}
+    - {fileID: 11400000, guid: 8c65a7555678b37468b11c8e5c0f6213, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -27,7 +27,7 @@ MonoBehaviour:
       Data: 0|Sequence_Base[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 9
+      Data: 14
     - Name: 
       Entry: 7
       Data: 1|Sequence_Blackout, Assembly-CSharp
@@ -36,7 +36,7 @@ MonoBehaviour:
       Data: 1
     - Name: duration
       Entry: 4
-      Data: 2
+      Data: 3
     - Name: waitWhileFade
       Entry: 5
       Data: false
@@ -135,7 +135,64 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 4|Sequence_Timeline, Assembly-CSharp
+      Data: 4|Sequence_FixPlayerPosition, Assembly-CSharp
+    - Name: hasTransform
+      Entry: 5
+      Data: true
+    - Name: transformName
+      Entry: 1
+      Data: Cube_TEST_FIX_01
+    - Name: hasVector
+      Entry: 5
+      Data: false
+    - Name: fixPlayerTo_Absolute
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -307
+    - Name: 
+      Entry: 4
+      Data: 362
+    - Name: 
+      Entry: 4
+      Data: -193
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: hasRotation
+      Entry: 5
+      Data: true
+    - Name: rotatePlayerTo_Absolute
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 5|Sequence_ChangePlayerState, Assembly-CSharp
+    - Name: state
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 6|Sequence_Timeline, Assembly-CSharp
     - Name: timeline
       Entry: 10
       Data: 0
@@ -144,19 +201,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 5|Sequence_Dialogue, Assembly-CSharp
+      Data: 7|Sequence_Dialogue, Assembly-CSharp
     - Name: dialogues
       Entry: 7
-      Data: 6|DialogueData[], Assembly-CSharp
+      Data: 8|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
       Data: 4
     - Name: 
       Entry: 7
-      Data: 7|DialogueData, Assembly-CSharp
+      Data: 9|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 8|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 10|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -186,7 +243,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 11|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -202,7 +259,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 10|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 12|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -232,7 +289,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 13|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -278,10 +335,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 12|DialogueData, Assembly-CSharp
+      Data: 14|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 13|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -311,7 +368,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -327,7 +384,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 17|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -357,7 +414,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 18|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -403,10 +460,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|DialogueData, Assembly-CSharp
+      Data: 19|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 18|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 20|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -436,7 +493,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 19|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 21|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -452,7 +509,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 20|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 22|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -482,7 +539,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 23|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -528,10 +585,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 22|DialogueData, Assembly-CSharp
+      Data: 24|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 23|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 25|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -561,7 +618,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 24|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 26|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -577,7 +634,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 25|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 27|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -607,7 +664,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 26|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 28|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -665,7 +722,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 27|Sequence_ResumeTimeline, Assembly-CSharp
+      Data: 29|Sequence_ResumeTimeline, Assembly-CSharp
     - Name: fakePorperty
       Entry: 6
       Data: 
@@ -674,19 +731,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 28|Sequence_Dialogue, Assembly-CSharp
+      Data: 30|Sequence_Dialogue, Assembly-CSharp
     - Name: dialogues
       Entry: 7
-      Data: 29|DialogueData[], Assembly-CSharp
+      Data: 31|DialogueData[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 6
+      Data: 4
     - Name: 
       Entry: 7
-      Data: 30|DialogueData, Assembly-CSharp
+      Data: 32|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 31|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 33|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -716,7 +773,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 32|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 34|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -732,7 +789,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 33|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 35|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -762,7 +819,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 34|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 36|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -808,10 +865,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 35|DialogueData, Assembly-CSharp
+      Data: 37|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 36|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 38|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -841,7 +898,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 37|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 39|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -857,7 +914,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 38|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 40|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -887,7 +944,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 39|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 41|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -933,10 +990,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 40|DialogueData, Assembly-CSharp
+      Data: 42|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 41|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 43|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -966,7 +1023,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 42|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 44|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -982,7 +1039,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 43|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 45|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1012,7 +1069,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 44|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 46|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1058,10 +1115,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 45|DialogueData, Assembly-CSharp
+      Data: 47|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 46|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 48|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1091,7 +1148,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 47|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 49|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1107,7 +1164,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 48|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 50|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1137,7 +1194,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 49|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 51|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1182,130 +1239,35 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
-      Entry: 7
-      Data: 50|DialogueData, Assembly-CSharp
-    - Name: speecher
-      Entry: 7
-      Data: 51|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:aa4d0ba3010f5f4499964694e63667e2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 5248209350657
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 52|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: context
-      Entry: 7
-      Data: 53|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:3a715556fda27954a99eef4a69db4cc8
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 88379133704228871
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
+    - Name: CloseDialogueAfterFinish
       Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 54|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
-      Entry: 8
-      Data: 
-    - Name: audio
       Entry: 7
-      Data: FMODUnity.EventReference, FMODUnity
-    - Name: Guid
-      Entry: 7
-      Data: FMOD.GUID, FMODUnity
-    - Name: Data1
-      Entry: 3
-      Data: 0
-    - Name: Data2
-      Entry: 3
-      Data: 0
-    - Name: Data3
-      Entry: 3
-      Data: 0
-    - Name: Data4
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Path
+      Data: 52|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
       Entry: 6
       Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
-      Entry: 8
-      Data: 
+      Entry: 7
+      Data: 53|Sequence_Dialogue, Assembly-CSharp
+    - Name: dialogues
+      Entry: 7
+      Data: 54|DialogueData[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 2
     - Name: 
       Entry: 7
       Data: 55|DialogueData, Assembly-CSharp
@@ -1372,7 +1334,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 88379133704228872
+      Data: 88379133704228871
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1432,41 +1394,11 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: CloseDialogueAfterFinish
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
       Entry: 7
-      Data: 60|Sequence_ResumeTimeline, Assembly-CSharp
-    - Name: fakePorperty
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 61|Sequence_Dialogue, Assembly-CSharp
-    - Name: dialogues
-      Entry: 7
-      Data: 62|DialogueData[], Assembly-CSharp
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 63|DialogueData, Assembly-CSharp
+      Data: 60|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 64|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 61|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1496,7 +1428,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 65|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 62|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1512,7 +1444,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 66|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 63|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1527,7 +1459,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 93740946958700544
+      Data: 88379133704228872
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1542,7 +1474,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 67|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 64|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1586,6 +1518,36 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: CloseDialogueAfterFinish
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 65|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 66|Sequence_Dialogue, Assembly-CSharp
+    - Name: dialogues
+      Entry: 7
+      Data: 67|DialogueData[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 2
     - Name: 
       Entry: 7
       Data: 68|DialogueData, Assembly-CSharp
@@ -1652,7 +1614,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 93740946975477760
+      Data: 93740946958700544
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1712,41 +1674,11 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: CloseDialogueAfterFinish
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
       Entry: 7
-      Data: 73|Sequence_ResumeTimeline, Assembly-CSharp
-    - Name: fakePorperty
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 74|Sequence_Dialogue, Assembly-CSharp
-    - Name: dialogues
-      Entry: 7
-      Data: 75|DialogueData[], Assembly-CSharp
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 76|DialogueData, Assembly-CSharp
+      Data: 73|DialogueData, Assembly-CSharp
     - Name: speecher
       Entry: 7
-      Data: 77|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 74|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1761,7 +1693,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 5248209350656
+      Data: 5248209350657
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1776,7 +1708,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 78|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 75|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1792,7 +1724,7 @@ MonoBehaviour:
       Data: 
     - Name: context
       Entry: 7
-      Data: 79|UnityEngine.Localization.LocalizedString, Unity.Localization
+      Data: 76|UnityEngine.Localization.LocalizedString, Unity.Localization
     - Name: m_TableReference
       Entry: 7
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
@@ -1807,7 +1739,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 93740946975477761
+      Data: 93740946975477760
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1822,7 +1754,7 @@ MonoBehaviour:
       Data: false
     - Name: m_LocalVariables
       Entry: 7
-      Data: 80|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+      Data: 77|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
         Unity.Localization]], mscorlib
     - Name: 
       Entry: 12
@@ -1867,6 +1799,36 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: CloseDialogueAfterFinish
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 78|Sequence_ResumeTimeline, Assembly-CSharp
+    - Name: fakePorperty
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 79|Sequence_Dialogue, Assembly-CSharp
+    - Name: dialogues
+      Entry: 7
+      Data: 80|DialogueData[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 3
+    - Name: 
       Entry: 7
       Data: 81|DialogueData, Assembly-CSharp
     - Name: speecher
@@ -1886,7 +1848,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 5248209350657
+      Data: 5248209350656
     - Name: m_Key
       Entry: 1
       Data: 
@@ -1932,7 +1894,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 93740946975477762
+      Data: 93740946975477761
     - Name: m_Key
       Entry: 1
       Data: 
@@ -2057,7 +2019,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 93740946975477763
+      Data: 93740946975477762
     - Name: m_Key
       Entry: 1
       Data: 
@@ -2117,6 +2079,131 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 91|DialogueData, Assembly-CSharp
+    - Name: speecher
+      Entry: 7
+      Data: 92|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa4d0ba3010f5f4499964694e63667e2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5248209350657
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 93|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: context
+      Entry: 7
+      Data: 94|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3a715556fda27954a99eef4a69db4cc8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 93740946975477763
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 95|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: audio
+      Entry: 7
+      Data: FMODUnity.EventReference, FMODUnity
+    - Name: Guid
+      Entry: 7
+      Data: FMOD.GUID, FMODUnity
+    - Name: Data1
+      Entry: 3
+      Data: 0
+    - Name: Data2
+      Entry: 3
+      Data: 0
+    - Name: Data3
+      Entry: 3
+      Data: 0
+    - Name: Data4
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Path
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -2125,6 +2212,15 @@ MonoBehaviour:
     - Name: CloseDialogueAfterFinish
       Entry: 5
       Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 96|Sequence_UnfixPlayerPosition, Assembly-CSharp
+    - Name: fakeData
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
