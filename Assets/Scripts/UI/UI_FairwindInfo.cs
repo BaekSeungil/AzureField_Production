@@ -48,7 +48,10 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
 
-     FairwindChallengeInstance challengeInstance;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject ProcessIcon;
+
+    private List<GameObject> nodeIcons = new List<GameObject>();
      bool SetChalleng = false;
      private float Progress;
     private void Start()
@@ -72,7 +75,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             }
         }
 
-    
     }
 
     public void ToggleFairwindUI(bool value)
@@ -163,6 +165,26 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             {
                 slider.value = Mathf.Clamp(progress, 0f, 1f);
                 Debug.Log("슬라이더" + slider.value);
+            }
+
+        }
+
+        UpdateNodeIcons(progress);
+    }
+
+    private void UpdateNodeIcons(float progress)
+    {
+        int completedIcons = Mathf.FloorToInt(progress * nodeIcons.Count);  // 진행된 아이콘의 수 계산
+
+        for (int i = 0; i < nodeIcons.Count; i++)
+        {
+            if (i < completedIcons)
+            {
+                nodeIcons[i].SetActive(false);  // 활성화된 아이콘
+            }
+            else
+            {
+                nodeIcons[i].SetActive(true);  // 비활성화된 아이콘
             }
         }
     }
