@@ -48,7 +48,10 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
 
-     FairwindChallengeInstance challengeInstance;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject ProcessIcon;
+
+    private List<GameObject> nodeIcons = new List<GameObject>();
      bool SetChalleng = false;
      private float Progress;
     private void Start()
@@ -72,7 +75,7 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             }
         }
 
-    
+        InitializeNodeIcons();
     }
 
     public void ToggleFairwindUI(bool value)
@@ -163,6 +166,68 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             {
                 slider.value = Mathf.Clamp(progress, 0f, 1f);
                 Debug.Log("슬라이더" + slider.value);
+            }
+
+
+            if (slider != null && ProcessIcon != null)
+            {
+                // 슬라이더 범위를 기준으로 ProcessIcon 위치 설정
+                RectTransform sliderRectTransform = slider.GetComponent<RectTransform>();
+                RectTransform iconRectTransform = ProcessIcon.GetComponent<RectTransform>();
+
+                float minX = sliderRectTransform.rect.xMin;
+                float maxX = sliderRectTransform.rect.xMax;
+                float iconPositionX = Mathf.Lerp(minX, maxX, progress);
+
+                iconRectTransform.anchoredPosition = new Vector2(iconPositionX, iconRectTransform.anchoredPosition.y);
+            }   
+
+        }
+
+        
+    }
+
+    /// <summary>
+    /// 노드 위치에 맞춰 슬라이더에 아이콘을 미리 배치
+    /// </summary>
+    private void InitializeNodeIcons()
+    {
+         // 기존 노드 아이콘 삭제
+        foreach (var icon in nodeIcons)
+        {
+            if (icon != null) Destroy(icon);
+        }
+        nodeIcons.Clear();
+
+        var activeChallenge = FairwindChallengeInstance.ActiveChallenge;
+        if (activeChallenge == null) return;
+
+        // 노드 위치 정보 가져오기
+        Vector3[] nodePositions = activeChallenge.GetRouteNodePositions();
+        int totalNodes = nodePositions.Length;
+
+        foreach (var slider in SetProcessSlider)
+        {
+            if (slider == null) continue;
+
+            RectTransform sliderRectTransform = slider.GetComponent<RectTransform>();
+
+            for (int i = 0; i < totalNodes; i++)
+            {
+                // 슬라이더 진행도 값으로 변환
+                float nodeProgress = (float)i / (totalNodes - 1);
+
+                // 아이콘 생성 및 슬라이더의 특정 위치에 배치
+                GameObject nodeIcon = Instantiate(ProcessIcon, slider.transform);
+                RectTransform iconRectTransform = nodeIcon.GetComponent<RectTransform>();
+
+                // 슬라이더의 x 축 범위에 따라 아이콘 위치 설정
+                float minX = sliderRectTransform.rect.xMin;
+                float maxX = sliderRectTransform.rect.xMax;
+                float iconPositionX = Mathf.Lerp(minX, maxX, nodeProgress);
+                iconRectTransform.anchoredPosition = new Vector2(iconPositionX, iconRectTransform.anchoredPosition.y);
+
+                nodeIcons.Add(nodeIcon);
             }
         }
     }

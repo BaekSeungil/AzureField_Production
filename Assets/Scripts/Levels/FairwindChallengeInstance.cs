@@ -112,6 +112,15 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
     }
 
+    public Vector3[] GetRouteNodePositions()
+    {
+        if (routeKnotList == null || routeKnotList.Length == 0)
+        {
+            GetRoutePositions(out routeKnotList);
+        }
+        return routeKnotList;
+    }
+
     Coroutine FairwindProgress;
 
     /// <summary>
