@@ -18,13 +18,18 @@ public class UI_IntroCanvas : StaticSerializedMonoBehaviour<UI_IntroCanvas>
          base.Awake();
     }
 
-    private void Start()
+    private void Update()
     {
-
+        if (UI_InputManager.Instance.UI_Input.UI.Skip.IsPressed())
+            breakOut = true;
     }
+
+    bool breakOut = false;
 
     public IEnumerator Cor_PrintText(LocalizedString[] texts, float interval)
     {
+        breakOut = false;
+
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1.0f);
 
@@ -39,10 +44,17 @@ public class UI_IntroCanvas : StaticSerializedMonoBehaviour<UI_IntroCanvas>
             textmesh.text = texts[i].GetLocalizedString();
             yield return new WaitForSeconds(interval);
             anim.DORestart();
-            yield return tw.WaitForCompletion();
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(0.1f);
+
+            if (breakOut)
+            {
+                textmesh.text = texts[texts.Length].GetLocalizedString();
+                anim.DORestart();
+                break;
+            }
         }
 
+        breakOut = false;
         DOTweenAnimation groupAnim = visualGroupObject.GetComponent<DOTweenAnimation>();
         Tween groupTw = groupAnim.tween;
         groupAnim.DORestartById("Fadeout");
