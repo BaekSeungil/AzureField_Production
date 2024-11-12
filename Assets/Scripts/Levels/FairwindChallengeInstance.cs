@@ -420,6 +420,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         float progress = (float)activeKnotIndex / routeKnotList.Length;
 
         UI_FairwindInfo.Instance.UpdateSlider(progress);
+        UI_FairwindInfo.Instance.UpdateIcon(routeKnotList.Length);
     }
 
 #if UNITY_EDITOR

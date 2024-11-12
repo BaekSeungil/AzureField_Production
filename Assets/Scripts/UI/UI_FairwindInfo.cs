@@ -170,4 +170,9 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
         }
     }
 
+    public void UpdateIcon(float progress)
+    {
+
+    }
+
 }
