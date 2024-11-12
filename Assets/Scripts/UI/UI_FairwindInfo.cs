@@ -168,24 +168,11 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             }
 
         }
-
-        UpdateNodeIcons(progress);
     }
 
-    private void UpdateNodeIcons(float progress)
+    public void UpdateIcon(float progress)
     {
-        int completedIcons = Mathf.FloorToInt(progress * nodeIcons.Count);  // 진행된 아이콘의 수 계산
 
-        for (int i = 0; i < nodeIcons.Count; i++)
-        {
-            if (i < completedIcons)
-            {
-                nodeIcons[i].SetActive(false);  // 활성화된 아이콘
-            }
-            else
-            {
-                nodeIcons[i].SetActive(true);  // 비활성화된 아이콘
-            }
-        }
     }
+
 }
