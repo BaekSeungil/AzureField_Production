@@ -48,7 +48,10 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
 
-     FairwindChallengeInstance challengeInstance;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject ProcessIcon;
+
+    private List<GameObject> nodeIcons = new List<GameObject>();
      bool SetChalleng = false;
      private float Progress;
     private void Start()
@@ -72,7 +75,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             }
         }
 
-    
     }
 
     public void ToggleFairwindUI(bool value)
@@ -164,6 +166,13 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
                 slider.value = Mathf.Clamp(progress, 0f, 1f);
                 Debug.Log("슬라이더" + slider.value);
             }
+
         }
     }
+
+    public void UpdateIcon(float progress)
+    {
+
+    }
+
 }

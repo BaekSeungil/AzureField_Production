@@ -258,17 +258,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3ea4d645-4504-4529-b061-ab81934c3752"",
-                    ""path"": ""<Joystick>/stick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c1f7a91b-d0fd-4a62-997e-7fb9b69bf235"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -1259,40 +1248,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             ""devices"": [
                 {
                     ""devicePath"": ""<Gamepad>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Touch"",
-            ""bindingGroup"": ""Touch"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<Touchscreen>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Joystick"",
-            ""bindingGroup"": ""Joystick"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<Joystick>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""XR"",
-            ""bindingGroup"": ""XR"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<XRController>"",
-                    ""isOptional"": false,
+                    ""isOptional"": true,
                     ""isOR"": false
                 }
             ]
@@ -1713,33 +1669,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         {
             if (m_GamepadSchemeIndex == -1) m_GamepadSchemeIndex = asset.FindControlSchemeIndex("Gamepad");
             return asset.controlSchemes[m_GamepadSchemeIndex];
-        }
-    }
-    private int m_TouchSchemeIndex = -1;
-    public InputControlScheme TouchScheme
-    {
-        get
-        {
-            if (m_TouchSchemeIndex == -1) m_TouchSchemeIndex = asset.FindControlSchemeIndex("Touch");
-            return asset.controlSchemes[m_TouchSchemeIndex];
-        }
-    }
-    private int m_JoystickSchemeIndex = -1;
-    public InputControlScheme JoystickScheme
-    {
-        get
-        {
-            if (m_JoystickSchemeIndex == -1) m_JoystickSchemeIndex = asset.FindControlSchemeIndex("Joystick");
-            return asset.controlSchemes[m_JoystickSchemeIndex];
-        }
-    }
-    private int m_XRSchemeIndex = -1;
-    public InputControlScheme XRScheme
-    {
-        get
-        {
-            if (m_XRSchemeIndex == -1) m_XRSchemeIndex = asset.FindControlSchemeIndex("XR");
-            return asset.controlSchemes[m_XRSchemeIndex];
         }
     }
     public interface IPlayerActions
