@@ -258,17 +258,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3ea4d645-4504-4529-b061-ab81934c3752"",
-                    ""path"": ""<Joystick>/stick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c1f7a91b-d0fd-4a62-997e-7fb9b69bf235"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -679,6 +668,15 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""type"": ""PassThrough"",
                     ""id"": ""fa551193-4cf6-4011-ab50-008213a317fb"",
                     ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""60d20267-6981-4167-bac9-f3d267bc75e8"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1212,6 +1210,17 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SecondaryNav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6eda3da5-134b-4d8e-9473-b1198f7c79fc"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1239,40 +1248,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             ""devices"": [
                 {
                     ""devicePath"": ""<Gamepad>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Touch"",
-            ""bindingGroup"": ""Touch"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<Touchscreen>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Joystick"",
-            ""bindingGroup"": ""Joystick"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<Joystick>"",
-                    ""isOptional"": false,
-                    ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""XR"",
-            ""bindingGroup"": ""XR"",
-            ""devices"": [
-                {
-                    ""devicePath"": ""<XRController>"",
-                    ""isOptional"": false,
+                    ""isOptional"": true,
                     ""isOR"": false
                 }
             ]
@@ -1311,6 +1287,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         m_UI_SimpleHelp = m_UI.FindAction("SimpleHelp", throwIfNotFound: true);
         m_UI_MapToggle = m_UI.FindAction("MapToggle", throwIfNotFound: true);
         m_UI_SecondaryNav = m_UI.FindAction("SecondaryNav", throwIfNotFound: true);
+        m_UI_Skip = m_UI.FindAction("Skip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1529,6 +1506,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_UI_SimpleHelp;
     private readonly InputAction m_UI_MapToggle;
     private readonly InputAction m_UI_SecondaryNav;
+    private readonly InputAction m_UI_Skip;
     public struct UIActions
     {
         private @MainPlayerInputActions m_Wrapper;
@@ -1548,6 +1526,7 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         public InputAction @SimpleHelp => m_Wrapper.m_UI_SimpleHelp;
         public InputAction @MapToggle => m_Wrapper.m_UI_MapToggle;
         public InputAction @SecondaryNav => m_Wrapper.m_UI_SecondaryNav;
+        public InputAction @Skip => m_Wrapper.m_UI_Skip;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1602,6 +1581,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SecondaryNav.started += instance.OnSecondaryNav;
             @SecondaryNav.performed += instance.OnSecondaryNav;
             @SecondaryNav.canceled += instance.OnSecondaryNav;
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1651,6 +1633,9 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             @SecondaryNav.started -= instance.OnSecondaryNav;
             @SecondaryNav.performed -= instance.OnSecondaryNav;
             @SecondaryNav.canceled -= instance.OnSecondaryNav;
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1686,33 +1671,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
             return asset.controlSchemes[m_GamepadSchemeIndex];
         }
     }
-    private int m_TouchSchemeIndex = -1;
-    public InputControlScheme TouchScheme
-    {
-        get
-        {
-            if (m_TouchSchemeIndex == -1) m_TouchSchemeIndex = asset.FindControlSchemeIndex("Touch");
-            return asset.controlSchemes[m_TouchSchemeIndex];
-        }
-    }
-    private int m_JoystickSchemeIndex = -1;
-    public InputControlScheme JoystickScheme
-    {
-        get
-        {
-            if (m_JoystickSchemeIndex == -1) m_JoystickSchemeIndex = asset.FindControlSchemeIndex("Joystick");
-            return asset.controlSchemes[m_JoystickSchemeIndex];
-        }
-    }
-    private int m_XRSchemeIndex = -1;
-    public InputControlScheme XRScheme
-    {
-        get
-        {
-            if (m_XRSchemeIndex == -1) m_XRSchemeIndex = asset.FindControlSchemeIndex("XR");
-            return asset.controlSchemes[m_XRSchemeIndex];
-        }
-    }
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -1746,5 +1704,6 @@ public partial class @MainPlayerInputActions: IInputActionCollection2, IDisposab
         void OnSimpleHelp(InputAction.CallbackContext context);
         void OnMapToggle(InputAction.CallbackContext context);
         void OnSecondaryNav(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
 }

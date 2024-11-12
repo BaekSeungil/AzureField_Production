@@ -48,7 +48,10 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
     [SerializeField, Required, FoldoutGroup("ChildReferences")]
     private Slider[] SetProcessSlider;
 
-     FairwindChallengeInstance challengeInstance;
+    [SerializeField, Required, FoldoutGroup("ChildReferences")]
+    private GameObject ProcessIcon;
+
+    private List<GameObject> nodeIcons = new List<GameObject>();
      bool SetChalleng = false;
      private float Progress;
     private void Start()
@@ -72,7 +75,6 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             }
         }
 
-    
     }
 
     public void ToggleFairwindUI(bool value)
@@ -162,8 +164,54 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
             if (slider != null)
             {
                 slider.value = Mathf.Clamp(progress, 0f, 1f);
-                Debug.Log("슬라이더" + slider.value);
             }
+
         }
     }
+
+    public void UpdateIcon(float totalNodes, float progress)
+    {
+        // 기존 아이콘 초기화
+        foreach (GameObject icon in nodeIcons)
+        {
+            Destroy(icon);
+        }
+        nodeIcons.Clear();
+
+        // 각 슬라이더마다 아이콘을 생성
+        foreach (Slider slider in SetProcessSlider)
+        {
+            if (slider != null)
+            {
+                RectTransform sliderRect = slider.GetComponent<RectTransform>();
+                float sliderWidth = sliderRect.sizeDelta.x;
+
+                // 노드 개수에 따라 아이콘 위치 설정
+                for (int i = 0; i <= totalNodes;)
+                {
+                    float nodeProgress = (float)i / (totalNodes); // 0부터 1까지 균등하게 분배
+                    float iconPositionX = nodeProgress * sliderWidth;
+
+                    // 아이콘 생성
+                    GameObject newIcon = Instantiate(ProcessIcon, slider.transform);
+                    // 아이콘의 위치 설정
+                    RectTransform iconTransform = newIcon.GetComponent<RectTransform>();
+                    iconTransform.anchoredPosition = new Vector2(iconPositionX, 0); // X 좌표로만 위치 설정
+
+                    if (nodeProgress == progress) // 진행도와 정확히 같으면 비활성화
+                    {
+                        newIcon.SetActive(false);
+                    }
+                    else if (nodeProgress <= progress)  // 진행된 부분은 아이콘을 활성화
+                    {
+                        newIcon.SetActive(true);
+                    }
+                    // 생성한 아이콘을 리스트에 추가하여 관리
+                    nodeIcons.Add(newIcon);
+                }
+            }
+        
+        }
+    }
+
 }
