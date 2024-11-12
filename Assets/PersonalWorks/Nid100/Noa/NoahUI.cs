@@ -39,6 +39,7 @@ public class NoahUI : MonoBehaviour
     [SerializeField, LabelText("업글 전 수치")] private TMP_Text beforeValueText;     // 업그레이드 전 수치 텍스트
     [SerializeField, LabelText("업글 후 수치")] private TMP_Text afterValueText;      // 업그레이드 후 수치 텍스트
 
+    [SerializeField, LabelText("필요 아이템 아이콘")] private GameObject itemIcon;      // 이동속도 아이콘
     [SerializeField, LabelText("이동속도 아이콘")] private GameObject speedIcon;      // 이동속도 아이콘
     [SerializeField, LabelText("점프 아이콘")] private GameObject jumpIcon;           // 점프 아이콘
     [SerializeField, LabelText("에테르 아이콘")] private GameObject etherIcon;         // 에테르 아이콘
