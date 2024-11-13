@@ -15,6 +15,7 @@ public class NoaInteract : Interactable_Base
     [SerializeField, LabelText("상호작용 시 이벤트")] protected UnityEvent eventsOnStartInteract;    // Interact 됐을 때 호출되는 UnityEvent입니다
     [SerializeField, LabelText("시작할 시퀀스")] private SequenceBundleAsset sequenceAsset;     // Interact 됐을 때 시작하는 시퀀스 입니다.
     [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField, LabelText("노아 UI")] private GameObject noahUI;
 
     public override void Interact()
     {
@@ -36,5 +37,14 @@ public class NoaInteract : Interactable_Base
         if (interestPlayer) FindObjectOfType<PlayerCore>().SetInterestPoint(interestPoint);
         if (disableAfterInteracted) { this.enabled = false; GetComponent<Collider>().enabled = false; }
 
+    }
+
+    public void NoahUIOn()
+    {
+        noahUI.SetActive(true);
+    }
+    public void NoahUIOff()
+    {
+        noahUI.SetActive(false);
     }
 }

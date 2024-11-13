@@ -178,6 +178,7 @@ public class UI_DialogueBehavior : StaticSerializedMonoBehaviour<UI_DialogueBeha
         if (!dialogueOpened) yield break;
 
         RuntimeManager.PlayOneShot(sound_close);
+        dialogueAudioEmmiter.Stop();
         dialogueOpened = false;
         visualGroupAnim.DORestartById("DialogueFadeout");
         Tween closeTw = visualGroupAnim.GetTweens()[1];
