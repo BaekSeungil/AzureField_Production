@@ -93,10 +93,27 @@ public class NoahUI : MonoBehaviour
     // 현재 보유한 아이템 수를 업데이트
     private void UpdateItemCount()
     {
+        // 현재 소지하고 있는 아이템 수를 가져옴
         currentItemCount = PlayerInventoryContainer.Instance.InventoryData.ContainsKey(requiredItem) ?
             PlayerInventoryContainer.Instance.InventoryData[requiredItem] : 0;
 
-        currentItemText.text = currentItemCount.ToString();  // UI에 아이템 수 표시
+        // 필요한 아이템 수 설정
+        requiredItemCount = baseItemCost + (itemCostIncrement * GetUpgradeCount(currentUpgradeType));
+
+        // "소지아이템수/업그레이드에필요한아이템수" 형식으로 UI에 표시
+        currentItemText.text = $"{currentItemCount}/{requiredItemCount}";
+    }
+
+    // 현재 업그레이드 횟수를 가져오는 헬퍼 메서드
+    private int GetUpgradeCount(PlayerUpgradeType type)
+    {
+        return type switch
+        {
+            PlayerUpgradeType.JumpPower => jumpLimit.CurrentCount,
+            PlayerUpgradeType.MoveSpeed => speedLimit.CurrentCount,
+            PlayerUpgradeType.EtherTime => etherLimit.CurrentCount,
+            _ => 0
+        };
     }
 
     // 업그레이드 UI를 업데이트
