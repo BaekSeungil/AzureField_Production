@@ -93,6 +93,9 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 조각상이 각도 세팅 배열 순서로 회전합니다.
+    /// </summary>
     [HideInEditorMode(),Button()]
     public void RotateWheel()
     {
