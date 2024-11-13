@@ -760,3 +760,19 @@ public class Sequence_ChangeWeatherProfile : Sequence_Base
         
     }
 }
+
+public class Sequence_MovePlayerTo : Sequence_Base
+{
+    [InfoBox("플레이어를 해당 위치까지 힘에 따라 움직이게 만듭니다.")]
+    [LabelText("위치")] public Vector3 position;
+    [LabelText("힘")] public float force;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!PlayerCore.IsInstanceValid) yield break;
+
+        Debug.Log("playerValid");
+
+        yield return PlayerCore.Instance.StartCoroutine(PlayerCore.Instance.MovePlayerContrainedSequence(position, force));
+    }
+}
