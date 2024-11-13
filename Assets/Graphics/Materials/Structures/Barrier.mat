@@ -24,8 +24,10 @@ Material:
   m_Shader: {fileID: 4800000, guid: f35b19b7581a47c40942b4b18d024e91, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ValidKeywords:
+  - _RECEIVE_SHADOWS_OFF
+  m_InvalidKeywords:
+  - _RECEIVESHADOWS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -58,6 +60,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HexTexture:
+        m_Texture: {fileID: 2800000, guid: b92bef6115b1a5248ba6dd158dfea8b0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -94,7 +100,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Alpha: 0.502
+    - _Alpha: 0.521
     - _AlphaClip: 0
     - _AlphaCutoff: 0.5
     - _AlphaToMask: 0
@@ -122,7 +128,7 @@ Material:
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 5
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
     - _ScrollSpeed: 0.1
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
@@ -130,16 +136,16 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _VisibleMax: 15
-    - _VisibleMin: 2
+    - _VisibleMax: 40
+    - _VisibleMin: 3
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 0.20881324, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.20881319, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Emmision: {r: 2.9931452, g: 1.0504966, b: 0, a: 1}
-    - _HexagonTiling: {r: 50.325, g: 1, b: 0, a: 0}
+    - _Emmision: {r: 2.9931452, g: 0.4223124, b: 0, a: 1}
+    - _HexagonTiling: {r: 50.325, g: 0.5, b: 0, a: 0}
     - _NoiseTiling: {r: 1, g: 1.29, b: 0, a: 0}
     - _PhasingTiling: {r: 10, g: 1, b: 0, a: 0}
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}

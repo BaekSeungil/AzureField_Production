@@ -1,34 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RingbellSystem : MonoBehaviour
 {
     [SerializeField] private RingbellInteract[] bell;
     [SerializeField] private ObjMove objmove;  // ObjMove 스크립트와 연결된 오브젝트
+    [SerializeField] private UnityEvent eventOnAllActive;
     private int checknum = 0;
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
+    private bool isOnceActived;
 
     // num번의 종이 활성화/비활성화 되면 해당 종과 연동된 종의 활성화/비활성화 
     public void connectionBellActive(int num)
     {
         // num번 종의 onoff 값을 토글
-        bell[num].onoff = !bell[num].onoff;
+        //bell[num].onoff = !bell[num].onoff;
 
         // num번 종과 연동된 종들의 onoff 값을 토글
         for (int i = 0; i < bell[num].connectionNumber.Length; i++)
         {
             int connectedBellIndex = bell[num].connectionNumber[i];
             bell[connectedBellIndex].onoff = !bell[connectedBellIndex].onoff;
+            bell[connectedBellIndex].UpdateStoneMaterial();
         }
 
         // 모든 종의 onoff 상태를 확인
@@ -53,6 +48,12 @@ public class RingbellSystem : MonoBehaviour
         if (allBellsActive)
         {
             objmove.moveOnoff = true;
+
+            if(!isOnceActived) // 등록된 이벤트 발동
+            {
+                isOnceActived = true;
+                eventOnAllActive.Invoke();
+            }
         }
         else
         {

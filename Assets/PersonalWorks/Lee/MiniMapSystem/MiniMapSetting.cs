@@ -34,6 +34,11 @@ public class MiniMapSetting : StaticSerializedMonoBehaviour<MiniMapSetting>
         input.UI.MapToggle.performed -= ToggleMap;
     }
 
+    private void Start()
+    {
+        Outmap();
+    }
+
     private void Update()
     {
         if (PlayerCore.IsInstanceValid)

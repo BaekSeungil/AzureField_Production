@@ -13,17 +13,21 @@ public class Flyingbird : MonoBehaviour
     
     RandomFlyObj randomFlyObj;
     SpawnBird spawnBird;
-    private Vector3 initialPosition;
     private float startTime;
     private Animator animator;
+    private Vector3 startPosition; 
+    private Vector3 targetPosition;
+    private Vector3 fixedForward;
 
     void Start()
     {
-        initialPosition = transform.position;
+        startPosition = transform.position;
+        fixedForward =  PlayerCore.Instance.transform.forward;
         startTime = Time.time;
         randomFlyObj = FindObjectOfType<RandomFlyObj>();
         spawnBird = FindObjectOfType<SpawnBird>();
         animator = GetComponent<Animator>();
+        //BirdObject = GetComponent<GameObject>();
         animator.SetFloat("AniSpeed", AniSpeed);
     }
 
@@ -39,13 +43,18 @@ public class Flyingbird : MonoBehaviour
         // 이동하는 방향은 오브젝트의 전방 (Z축 방향)
         transform.Translate(Vector3.forward * Speed * Time.deltaTime);
 
+        targetPosition = startPosition + fixedForward.normalized * FinalLine;
+
+        Quaternion rotation = Quaternion.LookRotation(fixedForward);
+        transform.rotation = rotation;
+
         // 오브젝트가 FinalLine을 넘으면 특정 동작 수행
-        if (Vector3.Distance(initialPosition, transform.position) >= FinalLine)
+        if (Vector3.Distance( startPosition, transform.position) >= FinalLine)
         {
             // 오브젝트를 파괴하거나 다른 동작을 수행
             randomFlyObj.BoolSpawnbird = true;
             spawnBird.BirdCount++;
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }
