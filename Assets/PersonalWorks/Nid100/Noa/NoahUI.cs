@@ -62,6 +62,8 @@ public class NoahUI : MonoBehaviour
     [SerializeField, LabelText("점프 업글 텍스트")] private LocalizedString jumpUpgradeText;
     [SerializeField, LabelText("에테르 업글 텍스트")] private LocalizedString etherUpgradeText;
 
+
+
     private int currentItemCount;      // 현재 보유한 아이템 수
     private int requiredItemCount;     // 업그레이드에 필요한 아이템 수
 
@@ -148,6 +150,8 @@ public class NoahUI : MonoBehaviour
         ApplyUpgrade();  // 업그레이드 적용
         requiredItemCount += itemCostIncrement;  // 업그레이드할 때마다 필요한 아이템 수 증가
     }
+
+    
 
     // 업그레이드 적용 함수
     private void ApplyUpgrade()
@@ -256,5 +260,20 @@ public class NoahUI : MonoBehaviour
     public void CloseUpgradeWindow()
     {
         upgradeWindow.SetActive(false);
+    }
+
+    public void SetJumpPowerUpgrade()
+    {
+        SetUpgradeType(PlayerUpgradeType.JumpPower);
+    }
+
+    public void SetMoveSpeedUpgrade()
+    {
+        SetUpgradeType(PlayerUpgradeType.MoveSpeed);
+    }
+
+    public void SetEtherTimeUpgrade()
+    {
+        SetUpgradeType(PlayerUpgradeType.EtherTime);
     }
 }
