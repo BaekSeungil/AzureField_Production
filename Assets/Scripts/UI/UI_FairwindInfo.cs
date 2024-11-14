@@ -187,28 +187,27 @@ public class UI_FairwindInfo : StaticSerializedMonoBehaviour<UI_FairwindInfo>
                 float sliderWidth = sliderRect.sizeDelta.x;
 
                 // 노드 개수에 따라 아이콘 위치 설정
-                for (int i = 0; i <= totalNodes;)
+                for (int i = 0; i <= totalNodes-1; i++)
                 {
-                    float nodeProgress = (float)i / (totalNodes); // 0부터 1까지 균등하게 분배
-                    float iconPositionX = nodeProgress * sliderWidth;
+                    float nodeProgress = (int)i / (float)totalNodes; // 0부터 1까지 균등하게 분배
+                    float iconXPosition = sliderWidth * nodeProgress;
 
                     // 아이콘 생성
                     GameObject newIcon = Instantiate(ProcessIcon, slider.transform);
                     // 아이콘의 위치 설정
-                    RectTransform iconTransform = newIcon.GetComponent<RectTransform>();
-                    iconTransform.anchoredPosition = new Vector2(iconPositionX, 0); // X 좌표로만 위치 설정
+                     RectTransform iconTransform = newIcon.GetComponent<RectTransform>();
+                    iconTransform.anchoredPosition = new Vector2(iconXPosition, 0);
+                    newIcon.SetActive(nodeProgress > progress); // 진행전 아이콘 활성화
 
-                    if (nodeProgress == progress) // 진행도와 정확히 같으면 비활성화
+                    if (nodeProgress < progress)  // 진행된 부분은 아이콘을 비활성화
                     {
                         newIcon.SetActive(false);
                     }
-                    else if (nodeProgress <= progress)  // 진행된 부분은 아이콘을 활성화
-                    {
-                        newIcon.SetActive(true);
-                    }
+                    
                     // 생성한 아이콘을 리스트에 추가하여 관리
                     nodeIcons.Add(newIcon);
                 }
+                
             }
         
         }
