@@ -90,7 +90,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         }
     }
 
-    bool skipFlag = false;
+    [SerializeField,Sirenix.OdinInspector.ReadOnly] private bool skipFlag = false;
 
     public IEnumerator StartCutsceneProgress(Sequence_ImageCutscene.ImgCutsceneSubsequence_Base[] subsequences)
     {
