@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Animations.Rigging;
 using FMODUnity;
 using Cinemachine.Utility;
+using DG.Tweening;
 using JetBrains.Annotations;
 using System.Linq;
 
@@ -177,6 +178,32 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// // 현재 플레이어가 땅을 딛고 있는지 확인합니다.
     /// </summary>
     public bool Grounding { get { return grounding; } }
+
+    public IEnumerator MovePlayerContrainedSequence(Vector3 target, float speed)
+    {
+        Vector3 toward = Vector3.zero;
+        float stuckTimer = 0f;
+
+        while (Vector3.Distance(new Vector3(transform.position.x, 0f, transform.position.z),
+                   new Vector3(target.x, 0f, target.z)) > 1f)
+        {
+            if (rBody.velocity.magnitude < 0.1f)
+            {
+                stuckTimer += Time.fixedDeltaTime;
+                if (stuckTimer > 3.0f) break;
+            }
+            else
+            {
+                stuckTimer = 0f;
+            }
+
+            toward = (new Vector3(target.x, 0f, target.z) - new Vector3(transform.position.x, 0f, transform.position.z)).normalized;
+
+            rBody.AddForce(toward.normalized * speed,ForceMode.Acceleration);
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
 
     private float initialRigidbodyDrag = 0f;
 
