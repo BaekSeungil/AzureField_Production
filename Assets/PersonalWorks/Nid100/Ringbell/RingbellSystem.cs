@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class RingbellSystem : MonoBehaviour
     [SerializeField] private RingbellInteract[] bell;
     [SerializeField] private ObjMove objmove;  // ObjMove 스크립트와 연결된 오브젝트
     [SerializeField] private UnityEvent eventOnAllActive;
+    [SerializeField, LabelText("시작할 시퀀스")] private SequenceBundleAsset sequenceAsset;
     private int checknum = 0;
 
     private bool isOnceActived;
@@ -51,6 +53,7 @@ public class RingbellSystem : MonoBehaviour
 
             if(!isOnceActived) // 등록된 이벤트 발동
             {
+                SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
                 isOnceActived = true;
                 eventOnAllActive.Invoke();
             }
