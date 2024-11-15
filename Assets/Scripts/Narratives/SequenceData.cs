@@ -789,3 +789,11 @@ public class Sequence_ChangeOceanProfile : Sequence_Base
         yield return null;
     }
 }
+
+public class Sequence_StartEndingPlayable : Sequence_Base
+{
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return UI_EndingCutscene.Instance.StartCoroutine(UI_EndingCutscene.Instance.Cor_PlayEndingCutscene());
+    }
+}
