@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -220,6 +220,13 @@ namespace FMODUnity
             {
                 PlayInstance();
             }
+        }
+
+        public void ChangeEvent(EventReference newEvent,FMOD.Studio.STOP_MODE stopmode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
+        {
+            EventReference = newEvent;
+            instance.stop(stopmode);
+            Lookup();
         }
 
         private void PlayInstance()

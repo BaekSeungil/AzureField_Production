@@ -15,6 +15,7 @@ MonoBehaviour:
   m_SharedTableData: {fileID: 11400000, guid: 8098cd019dcf68f42a498d18c127a378, type: 2}
   m_Tables:
   - {fileID: 11400000, guid: 0a404b8b04b135348acbc5ea8a021898, type: 2}
+  - {fileID: 11400000, guid: c3ba3b2324968ca45b1dbe0c0f1a534a, type: 2}
   m_Extensions:
   - rid: 5057968416735625220
   m_Group: Worlds
@@ -33,6 +34,7 @@ MonoBehaviour:
         m_Columns:
         - rid: 5057968416735625222
         - rid: 5057968416735625223
+        - rid: 6963908743311392772
         m_RemoveMissingPulledKeys: 1
     - rid: 5057968416735625222
       type: {class: KeyColumn, ns: UnityEditor.Localization.Plugins.Google.Columns,
@@ -46,4 +48,12 @@ MonoBehaviour:
         m_Column: B
         m_LocaleIdentifier:
           m_Code: ko
+        m_IncludeComments: 0
+    - rid: 6963908743311392772
+      type: {class: LocaleColumn, ns: UnityEditor.Localization.Plugins.Google.Columns,
+        asm: Unity.Localization.Editor}
+      data:
+        m_Column: C
+        m_LocaleIdentifier:
+          m_Code: en
         m_IncludeComments: 0

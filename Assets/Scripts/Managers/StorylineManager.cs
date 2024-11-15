@@ -62,6 +62,16 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     /// <param name="stroylineID"></param>
     /// <param name="index"></param>
     /// <returns></returns>
+    /// 
+
+    public void StartNewStoryline(string stroylineID)
+    {
+        if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return; }
+
+        StartCoroutine(StartNewStroyline(stroylineID, 0));
+        return;
+    }
+
     public bool StartNewStoryline(string stroylineID, int index = 0)
     {
         if (activeStoryline != null) { Debug.Log("StroylineManager : 이미 실행중인 Stroyline이 있습니다. "); return false; }
@@ -74,7 +84,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
     /// 키, 번호 정보를 입력하여 진행시킬 스토리와 일치하면 스토리라인을 진행시킵니다.
     /// </summary>
     /// <param name="KeyIndexPair"> [키],[번호] 형식의 문자열 </param>
-    public void MakeProgressStroyline(string KeyIndexPair)
+    public void MakeProgressStoryline(string KeyIndexPair)
     {
         string[] parsed = KeyIndexPair.Split(",");
         Debug.Log(" 스토리라인 진행됨 : "+ parsed[0] + " / " + parsed[1]);
@@ -94,6 +104,11 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
         {
             if (currentIndex == index)
                 progress = true;
+            else if(currentIndex < index)
+            {
+                progress = true;
+                currentIndex = index;
+            }
             else
                 Debug.Log("MakeProgressStoryline : 현재 Storyline의 키,번호 값과 입력한 키,번호 값이 다릅니다. 입력 :" + KeyIndexPair +" / 현재 :" +activeStorylineKey+"," + currentIndex);
         }
@@ -150,7 +165,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
                 PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return SequenceInvoker.Instance.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnStart.SequenceBundles);
-                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
             UI_Objective.Instance.OpenObjective(activeStoryline.QuestNameText.GetLocalizedString(), activeStoryline.Objectives[currentIndex].objectiveText.GetLocalizedString());
@@ -182,7 +197,7 @@ public class StorylineManager : StaticSerializedMonoBehaviour<StorylineManager>
 
                 PlayerCore.Instance.DisableControls(); UI_PlaymenuBehavior.Instance.DisableInput();
                 yield return sequence.Cor_RecurciveSequenceChain(activeStoryline.Objectives[currentIndex].sequenceOnFinished.SequenceBundles);
-                PlayerCore.Instance.EnableControlls(); UI_PlaymenuBehavior.Instance.EnableInput();
+                PlayerCore.Instance.EnableControls(); UI_PlaymenuBehavior.Instance.EnableInput();
             }
 
         }

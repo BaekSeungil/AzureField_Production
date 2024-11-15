@@ -22,6 +22,7 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
     [SerializeField, LabelText("중간 정차 시간"), ShowIf("continuous")] private float intermissionTime = 0f;
     [SerializeField, LabelText("충돌 레이어")] private LayerMask obstructLayer;
 
+
     private Rigidbody rBody;
 
     [ShowInInspector, ReadOnly] private bool isMoving = false;
@@ -161,8 +162,8 @@ public class LinearMovingPlatform : SerializedMonoBehaviour
     {
         if (pathway == null || pathway.Length < 2) return;
 
-            pathway[0].position = transform.position;
-            transform.position = pathway[0].position;
+            //pathway[0].position = transform.position;
+            //transform.position = pathway[0].position;
 
             Gizmos.color = Color.yellow;
 

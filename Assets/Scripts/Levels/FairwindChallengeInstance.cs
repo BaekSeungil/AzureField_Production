@@ -1,5 +1,6 @@
 using FMODUnity;
 using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     public float Timelimit { get { return timelimit; } }
     [SerializeField, LabelText("보상 아이템 (선택사항)")] private ItemData[] rewardItems;
     [SerializeField, LabelText("완료시 시퀀스 (선택사항)")] private SequenceBundleAsset sequenceOnFinish;
+    [SerializeField, LabelText("음악 (선택사항)")] private EventReference musicOnPlay;
 
 
     [InfoBox("절대 이벤트에 순풍의 도전 외부에 있는 오브젝트를 참조하지 마세요!", InfoMessageType = InfoMessageType.Info)]
@@ -53,6 +55,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private float triggerDistance = 5;
     private float distanceAllowence = 10;
     private float distanceAllowenceTime = 5;
+    private bool musicEnabled = false;
 
     /// <summary>
     /// 경로의 스플라인 데이터를 가져옵니다.
@@ -74,6 +77,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     private Vector3 startKnotPosition;
     private Vector3 endKnotPosition;
 
+
     // challenge Info
     private float timer_playCountdown = -1f;
     private float timer_routeCountdown = 0f;
@@ -83,6 +87,12 @@ public class FairwindChallengeInstance : MonoBehaviour
 
     private bool isChallengeDone = false;
 
+
+
+
+ 
+
+
     /// <summary>
     /// 해당 순풍의 도전의 스플라인의 연결지점들을 가져옵니다.
     /// </summary>
@@ -90,9 +100,9 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <param name="WorldPosition"> true = 월드좌표계, false = 로컬좌표계 </param>
     public void GetRoutePositions(out Vector3[] positionList, bool WorldPosition = true)
     {
+
         var bezierKnots = route.Spline.Knots.ToArray();
         positionList = new Vector3[bezierKnots.Length];
-
         for (int i = 0; i < bezierKnots.Length; i++)
         {
             if (WorldPosition)
@@ -115,6 +125,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         lightPilarObject.transform.position = new Vector3(startKnotPosition.x, lightPilarObject.transform.position.y, startKnotPosition.z);
         StopAllCoroutines();
         currentState = ChallengeState.Aborted;
+        FieldMusicManager.Instance.StopActiveMusic(3f);
         activeKnotIndex = 0;
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
@@ -139,6 +150,8 @@ public class FairwindChallengeInstance : MonoBehaviour
     public static bool AddTimerToActiveChallenge(float time)
     {
         if (!IsActiveChallengeExists) return false;
+
+        UI_FairwindInfo.Instance.OnAdditionalTime(time);
 
         Debug.Log(ActiveChallenge.name);
 
@@ -184,17 +197,15 @@ public class FairwindChallengeInstance : MonoBehaviour
     /// <param name="pointOnSpline"> Spline으로부터 최단지점에 위치한 지점 </param>
     /// <param name="t"> 0-1 값으로 보간된 지점 </param>
     /// <returns></returns>
-    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t)
+    public float GetDistanceFromSpline(SplineSlice<Spline> spline, Vector3 point, out Vector3 pointOnSpline, out float t,int resolutions = 2, int iterations = 1)
     {
         float3 p;
         point = transform.worldToLocalMatrix.MultiplyPoint3x4(point);
-        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t);
+        float distance = SplineUtility.GetNearestPoint(spline, new float3(point.x, point.y, point.z), out p, out t,2,1);
         pointOnSpline = new Vector3(p.x, p.y, p.z);
         pointOnSpline = transform.localToWorldMatrix.MultiplyPoint3x4(pointOnSpline);
-
         return distance;
     }
-
 
     private void OnChallengeActivated()
     {
@@ -206,6 +217,12 @@ public class FairwindChallengeInstance : MonoBehaviour
         extrude.gameObject.SetActive(true);
         isChallengeDone = false;
 
+        if(!musicOnPlay.IsNull)
+        {
+            musicEnabled = true;
+            FieldMusicManager.Instance.ChangeActiveMusic(musicOnPlay, 3f, 0f);
+        }
+
         FairwindProgress = StartCoroutine(Cor_FairwindMainProgress());
 
         if (OnChallengeStart != null)
@@ -215,7 +232,7 @@ public class FairwindChallengeInstance : MonoBehaviour
     IEnumerator Cor_FairwindMainProgress()
     {
         FMODUnity.RuntimeManager.PlayOneShot(sound_Start);
-        for (int i = 0; i < routeKnotList.Length - 1; i++)
+        for (int i = 0; i < routeKnotList.Length-1; i++)
         {
             activeKnotIndex++;
 
@@ -226,10 +243,16 @@ public class FairwindChallengeInstance : MonoBehaviour
 
             yield return StartCoroutine(Cor_ChangeDestination(prevF, nextF));
             yield return new WaitUntil(() => (GetProjectedDistanceFromPlayer(routeKnotList[activeKnotIndex]) < triggerDistance));
-
+            
             if (checkpointBonus) AddTimerToActiveChallenge(checkpointBonusTime);
 
             FMODUnity.RuntimeManager.PlayOneShot(sound_Checkpoint);
+
+            if (activeKnotIndex == routeKnotList.Length - 1)
+            {
+                // 슬라이더 값을 1 증가시키는 메서드 호출
+                activeKnotIndex++;;
+            }
         }
         FMODUnity.RuntimeManager.PlayOneShot(sound_Finish);
         lightPilarObject.SetActive(false);
@@ -261,6 +284,12 @@ public class FairwindChallengeInstance : MonoBehaviour
         isChallengeDone = true;
         PlayerCore.Instance.DisableIndicator();
         UI_FairwindInfo.Instance.OnFairwindSuccessed();
+
+        FieldMusicManager.Instance.StopActiveMusic(3f);
+
+        AlphaEndingPanel alphaEnding = FindObjectOfType<AlphaEndingPanel>(true);
+        if (alphaEnding != null) alphaEnding.OnClearedFairwind();
+
         if (OnChallengeEnd != null)
             OnChallengeEnd.Invoke();
         currentState = ChallengeState.Closed;
@@ -300,12 +329,14 @@ public class FairwindChallengeInstance : MonoBehaviour
             {
                 endKnotPosition = routeKnotList[routeKnotList.Length-1];
             }
-        }
+        }   
 
         lightPilarObject.SetActive(true);
         var knot = routeKnotList[activeKnotIndex];
         lightPilarObject.transform.position = new Vector3(knot.x, lightPilarObject.transform.position.y, knot.z);
     }
+
+    float abortTimer = 0f;
 
     private void Update()
     {
@@ -327,7 +358,7 @@ public class FairwindChallengeInstance : MonoBehaviour
             }
 
             float t = 0;
-            if (GetDistanceFromSpline(activeSplineSegment,PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
+            if (GetDistanceFromSpline(activeSplineSegment, PlayerCore.Instance.transform.position, out nearestFromPlayer, out t) > distanceAllowence)
             {
                 UI_FairwindInfo.Instance.ToggleAlertUI(true);
                 UI_FairwindInfo.Instance.SetAlertCountdown(timer_routeCountdown);
@@ -351,7 +382,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Standby)
         {
-
             if (GetProjectedDistanceFromPlayer(startKnotPosition) < triggerDistance)
             {
                 currentState = ChallengeState.Active;
@@ -361,13 +391,17 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
         else if (currentState == ChallengeState.Aborted)
         {
-            if (GetProjectedDistanceFromPlayer(startKnotPosition) > triggerDistance)
+            abortTimer += Time.deltaTime;
+
+            if (abortTimer > 4.0f)
             {
+                abortTimer = 0f;
                 currentState = ChallengeState.Standby;
             }
+
         }
 
-
+        UpdateProssBar();
     }
 
     private float GetProjectedDistanceFromPlayer(Vector3 target)
@@ -375,6 +409,18 @@ public class FairwindChallengeInstance : MonoBehaviour
         if (!PlayerCore.IsInstanceValid) { Debug.LogError("플레이어 코어 없음."); return float.NaN; }
         Vector2 projectedPlayerPositon = new Vector2(PlayerCore.Instance.transform.position.x, PlayerCore.Instance.transform.position.z);
         return Vector2.Distance(projectedPlayerPositon, new Vector2(target.x, target.z));
+    }
+
+    public void UpdateProssBar()
+    {
+        // 슬라이더 업데이트
+        if (currentState != ChallengeState.Active || routeKnotList == null || routeKnotList.Length == 0) return;
+
+        // 현재 노드 인덱스와 총 노드 수를 사용하여 진행률을 계산
+        float progress = (float)activeKnotIndex / routeKnotList.Length;
+
+        UI_FairwindInfo.Instance.UpdateSlider(progress);
+        UI_FairwindInfo.Instance.UpdateIcon(routeKnotList.Length,progress);
     }
 
 #if UNITY_EDITOR
@@ -424,4 +470,6 @@ public class FairwindChallengeInstance : MonoBehaviour
         }
     }
 #endif
+   
 }
+

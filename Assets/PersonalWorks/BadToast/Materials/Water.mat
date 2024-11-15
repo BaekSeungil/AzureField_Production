@@ -29,10 +29,11 @@ Material:
   - _TESSELLATION
   - _WORLDSPACEUV_ON
   - _ZCLIP_ON
+  - _ZWRITE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3001
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -60,7 +61,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
-        m_Texture: {fileID: 2800000, guid: e91f048fea6b6b94eb864b2124843ce9, type: 3}
+        m_Texture: {fileID: 2800000, guid: 532b3f8dbf1378c48bb3f68940d76225, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _IntersectionNoise:
@@ -101,14 +102,14 @@ Material:
     - _EdgeFade: 7
     - _EnvironmentReflectionsOn: 0
     - _FlatShadingOn: 0
-    - _FoamBaseAmount: 0.08
-    - _FoamClipping: 0.707
+    - _FoamBaseAmount: 0.069
+    - _FoamClipping: 0.57
     - _FoamDistortion: 1
     - _FoamOn: 1
-    - _FoamSpeed: 0.29
+    - _FoamSpeed: 0.1
     - _FoamSubSpeed: 0
     - _FoamSubTiling: 0.5
-    - _FoamTiling: 0.1999999
+    - _FoamTiling: 0.1
     - _FoamWaveAmount: 1.381
     - _HorizonDistance: 32
     - _IntersectionClipping: 0.5
@@ -179,15 +180,15 @@ Material:
     - _WavesOn: 1
     - _WorldSpaceUV: 1
     - _ZClip: 1
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0, g: 0.14206605, b: 0.6698113, a: 1}
+    - _BaseColor: {r: 0, g: 0.23072195, b: 0.23584908, a: 1}
     - _Direction: {r: 1, g: 1, b: 0, a: 0}
     - _DistanceNormalsFadeDist: {r: 20, g: 500, b: 0, a: 0}
-    - _FoamColor: {r: 1, g: 1, b: 1, a: 0.38039216}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 0.30588236}
     - _HorizonColor: {r: 2.7138803, g: 6.0543814, b: 6.322447, a: 0}
     - _IntersectionColor: {r: 0.5518868, g: 0.81496555, b: 1, a: 1}
-    - _ShallowColor: {r: 0, g: 0.5372548, b: 1, a: 1}
+    - _ShallowColor: {r: 0, g: 0.8867924, b: 0.6492588, a: 1}
     - _WaveDirection: {r: 1, g: 1, b: 1, a: 1}
     - _WaveFadeDistance: {r: 76.39281, g: 303.8639, b: 0, a: 0}
   m_BuildTextureStacks: []

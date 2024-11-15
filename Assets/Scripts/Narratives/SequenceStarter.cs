@@ -7,6 +7,8 @@ public class SequenceStarter : MonoBehaviour
     [SerializeField] private SequenceBundleAsset SequenceToStart;
     [SerializeField] private bool disableAfterInvoked = true;
     [SerializeField] private bool autoStart = false;
+    [SerializeField] private bool skipOnEditor = true;
+    [SerializeField] private SequenceBundleAsset skipSequence;
 
     bool invoked = false;
 
@@ -27,7 +29,14 @@ public class SequenceStarter : MonoBehaviour
 
         if (!SequenceInvoker.IsInstanceValid) return;
 
+#if UNITY_EDITOR
+        if(skipOnEditor)
+            SequenceInvoker.Instance.StartSequence(skipSequence.SequenceBundles);
+        else
+            SequenceInvoker.Instance.StartSequence(SequenceToStart.SequenceBundles);
+#else
         SequenceInvoker.Instance.StartSequence(SequenceToStart.SequenceBundles);
+#endif
         invoked = true;
     }
 }

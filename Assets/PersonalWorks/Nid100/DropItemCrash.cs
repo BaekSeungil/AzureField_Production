@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,8 +6,10 @@ using UnityEngine;
 public class DropItemCrash : MonoBehaviour
 {
     [SerializeField] private GameObject DropItem;
-    [SerializeField] private MeshRenderer DropItemRenderer;
+    //[SerializeField] private MeshRenderer DropItemRenderer;
+    [SerializeField] private ParticleSystem eff;
     [SerializeField] private PlayerCore player;
+    [SerializeField] private EventReference obtainSound;
     [SerializeField] private float addChallengeTime = 0f;                                  // 순풍의 도전 추가시간
     [SerializeField] private float addMoveSpeed = 0f;                               // 추가이동 속도
     [SerializeField] private float addSprintSpeed = 0f;                             // 추가달리기 속도
@@ -20,7 +23,9 @@ public class DropItemCrash : MonoBehaviour
 
     void Start()
     {
+        eff.Play();
         player = PlayerCore.Instance;
+        
     }
 
     void Update()
@@ -33,15 +38,16 @@ public class DropItemCrash : MonoBehaviour
     /// <returns></returns>
     IEnumerator CrashEvent()
     {
+        RuntimeManager.PlayOneShot(obtainSound);
         player.DropItemCrash(addMoveSpeed, addSprintSpeed, addSwimSpeed, addJumpPower, addBoatSpeed);
         FairwindChallengeInstance.AddTimerToActiveChallenge(addChallengeTime);
-        DropItemRenderer.enabled = !DropItemRenderer.enabled;
+        //DropItemRenderer.enabled = !DropItemRenderer.enabled;
 
         yield return new WaitForSeconds(addSpeedTime);
         itemActive = true;
         player.DropItemCrash(-addMoveSpeed, -addSprintSpeed, -addSwimSpeed, -addJumpPower, -addBoatSpeed);
-        DropItemRenderer.enabled = true;
-        DropItem.SetActive(false);
+        //DropItemRenderer.enabled = true;
+        //DropItem.SetActive(false);
 
 
     }
@@ -54,12 +60,23 @@ public class DropItemCrash : MonoBehaviour
             //Debug.Log("아이템 충돌2");
             if (itemActive == true)
             {
-
+                eff.Stop();
                 StartCoroutine(CrashEvent());
                 itemActive = false;
             }
 
         }
+    }
+
+    public void ReStart()
+    {
+        itemActive = true;
+        eff.Play();
+    }
+    public void ReEnd()
+    {
+        itemActive = false;
+        eff.Stop();
     }
 
 }

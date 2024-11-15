@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBehavior>
 {
@@ -19,6 +21,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
 
     [SerializeField] private Vector2 slotDistance;  // 아이템 슬롯 간격
     [SerializeField] private Vector2 offset;        // 아이템 슬롯 오프셋
+    [SerializeField] private Vector2 slotSize;      // 아이템 슬롯 사이즈 
     [SerializeField] private int rowCount;          // 가로줄 숫자
 
     [Title("References")]
@@ -26,12 +29,15 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI noItemText;
+    [SerializeField] private GameObject ItemHighlight;
 
     private MainPlayerInputActions input;
 
     private List<GameObject> instanciatedSlots;
+    private Vector2Int selectedSlot = new Vector2Int(0, 0);
 
     int currentScroll = 0;
+    bool selectedTop = false;
 
     protected override void Awake()
     {
@@ -43,6 +49,8 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     {
         input.Enable();
         input.UI.Navigate.performed += NavigateInventory;
+        input.UI.Negative.performed += MoveToHigher;
+        selectedTop = true;
     }
 
     /// <summary>
@@ -65,13 +73,18 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
         {
             for (int x = 0; x < Mathf.Clamp(itemArray.Length - y*rowCount,0,rowCount); x++)
             {
-                GameObject newSlot = Instantiate(slotPrefab, slotViewport);
-                newSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(slotDistance.x * x + offset.x, slotDistance.y * y + offset.y);
+
+                GameObject newSlot = Instantiate(slotPrefab, slotViewport,false);
+                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = slotSize;
+                rectTransform.anchoredPosition = new Vector2(x * (slotSize.x + slotDistance.x) + offset.x,-y * 
+                (slotSize.y + slotDistance.y) + offset.y);
                 InventorySlotSingle slot = newSlot.GetComponent<InventorySlotSingle>();
                 slot.InitializeSlot(this,itemArray[x + y*rowCount].Key, itemArray[x + y *rowCount].Value);
                 instanciatedSlots.Add(newSlot);
             }
         }
+
     }
 
     /// <summary>
@@ -80,6 +93,7 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     /// <param name="data"></param>
     public void SetMoney(int value)
     {
+        if (moneyText == null) return;
         moneyText.text = value.ToString();
     }
 
@@ -100,28 +114,94 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
 
     public void NavigateInventory(InputAction.CallbackContext context)
     {
-        if(context.ReadValue<Vector2>() == Vector2.up)
+        if (instanciatedSlots.IsNullOrEmpty()) return;
+
+        if (context.ReadValue<Vector2>() == Vector2.up)
         {
             ScrollInventoryUP();
         }
-        else if(context.ReadValue<Vector2>() == Vector2.down)
+        else if (context.ReadValue<Vector2>() == Vector2.down)
         {
             ScrollInventoryDOWN();
-        }               
+        }
+        else if(context.ReadValue<Vector2>() == Vector2.right)
+        {
+            ScrollInventoryRIGHT();
+        }
+        else if(context.ReadValue<Vector2>() == Vector2.left)
+        {
+            ScrollInventoryLEFT();
+        }
+    }
+
+    public void MoveToHigher(InputAction.CallbackContext context) 
+    { 
+        if(selectedTop)
+        {
+            
+        }
     }
 
     public void ScrollInventoryUP()
     {
-        if (currentScroll == 0) return;
+        if (selectedSlot.y == 0)
+        {
+            selectedSlot.y = (int)((instanciatedSlots.Count-1) / rowCount);
+        }
+        else
+        {
+            selectedSlot.y--;
+        }
 
-        currentScroll--;
+        SetHighlight(selectedSlot);
     }
 
     public void ScrollInventoryDOWN()
     {
-        if (currentScroll >= instanciatedSlots.Count / rowCount) return;
+        if(selectedSlot.y >= (int)((instanciatedSlots.Count-1) / rowCount))
+        {
+            selectedSlot.y = 0;
+        }
+        else
+        {
+            selectedSlot.y++;
+        }
 
-        currentScroll++;
+        SetHighlight(selectedSlot);
+    }
+
+    public void ScrollInventoryRIGHT()
+    {
+        if(selectedSlot.x == rowCount-1)
+        {
+            selectedSlot.x = 0;
+        }
+        else
+        {
+            selectedSlot.x++;
+        }
+
+        SetHighlight(selectedSlot);
+    }
+
+    public void ScrollInventoryLEFT()
+    {
+        if (selectedSlot.x == 0)
+        {
+            selectedSlot.x = rowCount - 1;
+        }
+        else
+        {
+            selectedSlot.x--;
+        }
+        SetHighlight(selectedSlot);
+    }
+
+    private void SetHighlight(Vector2Int position)
+    {
+        ItemHighlight.SetActive(false);
+        ItemHighlight.SetActive(true);
+        ItemHighlight.GetComponent<RectTransform>().anchoredPosition = new Vector2(position.x * (slotSize.x + slotDistance.x) + offset.x, -position.y * (slotSize.y + slotDistance.y) + offset.y);
     }
 
     private void Update()
@@ -132,21 +212,27 @@ public class UI_InventoryBehavior : StaticSerializedMonoBehaviour<UI_InventoryBe
     private void OnDisable()
     {
         input.UI.Navigate.performed -= NavigateInventory;
+        input.UI.Cancel.performed -= MoveToHigher;
         input.Disable();
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.green;
+        //    Gizmos.color = Color.green;
 
-        int itemCount = 20;
-        float squareSize = 200;
-        for (int y = 0; y < (int)(itemCount / rowCount); y++)
-        {
-            for (int x = 0; x < rowCount; x++)
-            {
-                Gizmos.DrawWireCube(slotViewport.position + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f) + new Vector3(offset.x,offset.y,0f), squareSize * new Vector3(1,1,0));
-            }
-        }
+        //    int itemCount = 20;
+        //    float squareSize = slotSize.x;
+        //    for (int y = 0; y < (int)(itemCount / rowCount); y++)
+        //    {
+        //        for (int x = 0; x < rowCount; x++)
+        //        {
+        //            Vector3 slotPosition = slotViewport.position
+        //            + new Vector3(slotDistance.x * x, -slotDistance.y * y, 0f)
+        //            + new Vector3(offset.x, offset.y, 0f)
+        //            + new Vector3(slotSize.x * 0.5f, -slotSize.y * 0.5f, 0f);
+        //            Gizmos.DrawWireCube(slotPosition, new Vector3(slotSize.x, slotSize.y, 0));
+        //        }
+        //    }
+        //}
     }
 }

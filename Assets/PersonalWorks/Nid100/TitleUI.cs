@@ -1,39 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class TitleUI : MonoBehaviour
+public class TitleUI : StaticSerializedMonoBehaviour<TitleUI>
 {
-    public string sceneName;
-    public GameObject endPopup;
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
-    public void MoveScene()
-    {
-        SceneManager.LoadScene(sceneName);
-    }
-
-    public void EndBtnPopupOn()
-    {
-        endPopup.SetActive(true);
-    }
-    public void EndBtnPopupOff()
-    {
-        endPopup.SetActive(false);
-    }
-    public void GameEnd()
+    public GameObject firstButton;
+    
+    public void QuitGame()
     {
         Application.Quit();
     }
+
+    public void SelectFirstButton()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstButton);
+    }
+    
 }

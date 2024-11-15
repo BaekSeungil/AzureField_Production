@@ -3,6 +3,7 @@ using DG.Tweening;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Playables;
@@ -91,14 +92,16 @@ public class Sequence_DialogueBranch : Sequence_Base
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
     {
-        if(branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
+        if (branchAnswers.Length != sequenceAssets.Length) { Debug.LogError("branchAnswers와 sequenceAssets의 개수는 같아야 합니다."); yield break; }
 
         int index = 0;
         yield return invoker.Dialogue.StartCoroutine(invoker.Dialogue.Cor_Branch(branchAnswers, (value) => { index = value; }));
 
         Debug.Log(sequenceAssets[index]);
 
-        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+        if (sequenceAssets[index] != null)
+            yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceAssets[index].SequenceBundles));
+
     }
 }
 
@@ -118,6 +121,24 @@ public class Sequence_Timeline : Sequence_Base
         yield return new WaitUntil(() => playable.state != PlayState.Playing);
     }
 }
+
+/// <summary>
+/// Pause상태인 현재의 타임라인을 다시 재생합니다.
+/// </summary>
+[System.Serializable]
+public class Sequence_ResumeTimeline : Sequence_Base
+{
+    [InfoBox("Pause상태인 현재의 타임라인을 다시 재생합니다.", InfoMessageType = InfoMessageType.None)]
+    [HideLabel()]public string fakePorperty;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        PlayableDirector playable = invoker.Playable;
+        playable.Resume();
+        yield return new WaitUntil(() => playable.state != PlayState.Playing);
+    }
+}
+
 
 /// <summary>
 /// 조개를 amount 만큼 지급합니다.
@@ -319,7 +340,7 @@ public class Sequence_EnableVCam : Sequence_Base
 
 public class Sequence_DisableVCam : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 카메라를 활성화합니다.")]
+    [InfoBox("name 이름을 가진 카메라를 끕니다.")]
     public string name;
 
     public override IEnumerator Sequence(SequenceInvoker invoker)
@@ -342,7 +363,7 @@ public class Sequence_DisableVCam : Sequence_Base
 
 public class Sequence_Animation : Sequence_Base
 {
-    [InfoBox("name 이름을 가진 오브젝트의 애니메이터를 재생합니다.")]
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에서 해당 state를 재생합니다.")]
     public string objectName;
     public string stateName;
 
@@ -354,7 +375,6 @@ public class Sequence_Animation : Sequence_Base
             if (anim.name == objectName)
             {
                 anim.Play(stateName);
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
                 yield break;
             }
         }
@@ -363,6 +383,28 @@ public class Sequence_Animation : Sequence_Base
         yield return null;
     }
 
+}
+
+public class Sequence_AnimationEscape : Sequence_Base
+{
+    [InfoBox("name 이름을 가진 오브젝트의 애니메이터에 \"Escape\" 트리거를 발동시킵니다. 일반적으로 시퀀스에서 재생한 루프 애니메이션을 탈출하는데 쓰입니다.")]
+    public string objectName;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        Animator[] anims = GameObject.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Animator anim in anims)
+        {
+            if (anim.name == objectName)
+            {
+                anim.SetTrigger("Escape");
+                yield break;
+            }
+        }
+
+        Debug.Log(objectName + " 이름을 가진 Animator 오브젝트를 찾지 못했습니다.");
+        yield return null;
+    }
 }
 
 public class Sequence_PlaySound : Sequence_Base
@@ -398,7 +440,7 @@ public class Sequence_DotweenAnimation : Sequence_Base
     }
 }
 
-public class Sequence_IntroCanves : Sequence_Base
+public class Sequence_IntroCanvas : Sequence_Base
 {
     public LocalizedString[] texts;
 
@@ -406,5 +448,344 @@ public class Sequence_IntroCanves : Sequence_Base
     {
         UI_IntroCanvas intro = UI_IntroCanvas.Instance;
         yield return intro.StartCoroutine(intro.Cor_PrintText(texts, 3.0f));
+    }
+}
+
+public class Sequence_ToggleIsmael : Sequence_Base
+{
+    [InfoBox("플레이어로부터 이스마엘 파티클을 소환합니다.")]
+    public bool value;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (value)
+            PlayerCore.Instance.EnableIsamel();
+        else
+            PlayerCore.Instance.DisableIsmael();
+
+        yield return new WaitForSeconds(0.5f);
+    }
+}
+
+public class Sequence_PlayOtherSequence : Sequence_Base
+{
+    [InfoBox("다른 시퀀스 에셋 번들을 이어서 재생합니다.")]
+    public SequenceBundleAsset sequenceBundle;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return invoker.StartCoroutine(invoker.Cor_RecurciveSequenceChain(sequenceBundle.SequenceBundles));
+    }
+}
+
+public class Sequence_StorylineProgress : Sequence_Base
+{
+    [InfoBox("스토리라인을 진행시킵니다 [스토리라인이름,번호]")]
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.MakeProgressStoryline(storyline);
+        yield return null;
+    }
+}
+
+public class Sequence_StartNewStoryline : Sequence_Base
+{
+    [InfoBox("새로운 스토리라인을 시작합니다.")]
+
+    public string storyline;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        StorylineManager.Instance.StartNewStoryline(storyline);
+        yield return null;
+    }
+}
+
+public class Sequence_AZFLangDialogue : Sequence_Base
+{
+    [InfoBox("AZFLang폰트, 고대어를 출력하는 대사창을 띄웁니다. 영문을 입력하세요"),TextArea()]
+    public string[] contexts;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return UI_AZFLangDialogue.Instance.StartCoroutine(UI_AZFLangDialogue.Instance.Cor_Dialogue(contexts));
+    }
+}
+
+public class Sequence_PlayMusic : Sequence_Base
+{
+    [InfoBox("새로운 배경음악을 재생합니다.")]
+    public EventReference music;
+    public float fadeTime;
+    public float waitTime;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        FieldMusicManager.Instance.ChangeActiveMusic(music,fadeTime,waitTime);
+        yield return null;
+    }
+}
+
+public class Sequence_StopMusic : Sequence_Base
+{
+    [InfoBox("재생중인 배경음악을 정지합니다.")]
+    public float fadeTime;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        FieldMusicManager.Instance.StopActiveMusic(fadeTime);
+        yield return null;
+    }
+
+}
+
+public class Sequence_ImageCutscene : Sequence_Base
+{
+    [LabelText("(선택) 배경음악")] public EventReference music;
+    [LabelText("")] public ImgCutsceneSubsequence_Base[] subsequences;
+
+    public class ImgCutsceneSubsequence_Base
+    {
+        [LabelText("암전효과")]public bool blackout;
+        [LabelText("이미지")] public Sprite sprite;
+    }
+
+    public class ImgCutsceneSubsequence_Short:ImgCutsceneSubsequence_Base
+    {
+        //[LabelText("대기 시간")] public float waitTime;
+        [LabelText("텍스트")] public LocalizedString[] context;
+        /// <summary>
+        /// 변수 타입: EventReference
+        /// 변수 명: CurrentAudioClips
+        /// 작업자: 성지훈
+        /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+        /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+        /// </summary>
+        [LabelText("음원")] public EventReference[] narration;
+        //[LabelText("(선택)효과음")] public EventReference sound;
+    }
+
+    public class ImgCutsceneSubsequence_Long:ImgCutsceneSubsequence_Base
+    {
+        public class LongCutsceneElement
+        {
+            public float scrollPoint;
+            public float scrollTime;
+            public LocalizedString[] context;
+            /// <summary>
+            /// 변수 타입: EventReference
+            /// 변수 명: CurrentAudioClips
+            /// 작업자: 성지훈
+            /// 추가사유 - 임시로 음원 출력하기 위한 발버둥
+            /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
+            /// </summary>
+            [LabelText("음원")] public EventReference[] narration;
+        }
+
+        public LongCutsceneElement[] elements;
+    }
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        yield return null;
+        yield return UI_ImageCutscene.Instance.StartCutsceneProgress(subsequences);
+    }
+
+}
+
+public class Sequence_FixPlayerPosition : Sequence_Base
+{
+    [InfoBox("플레이어가 그자리에서 고정되어 물리가 비활성화됩니다. 고정 위치를 지정하면 해당 월드 좌표 위치/회전에 플레이어가 이동되고 고정됩니다.")]
+    [LabelText("해당 오브젝트 위치로 설정")] public bool hasTransform;
+    [LabelText("오브젝트 이름"), ShowIf("hasTransform")] public string transformName;
+    [LabelText("플레이어 위치 설정 여부")] public bool hasVector;
+    [LabelText("플레이어 위치 좌표"),ShowIf("hasVector")]public Vector3 fixPlayerTo_Absolute;
+    [LabelText("플레이어 회전 설정 여부")] public bool hasRotation;
+    [LabelText("플레이어 회전"), ShowIf("hasRotation")] public Vector3 rotatePlayerTo_Absolute;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.isPlayerFixedBySequence = true;
+
+        if (hasTransform)
+        {
+            Transform target = GameObject.Find(transformName).transform;
+
+            if (target == null)
+            {
+                Debug.LogError(target + " : 오브젝트를 찾을 수 없었습니다.");
+            }
+            else
+            {
+                PlayerCore.Instance.transform.position = target.position;
+                PlayerCore.Instance.transform.localRotation = target.localRotation;
+            }
+        }
+        else
+        {
+            if (hasVector)
+                PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
+
+            if (hasRotation)
+                PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
+        }
+
+
+        if (PlayerCore.IsInstanceValid)
+        {
+            PlayerCore.Instance.Rigidbody.isKinematic = true;
+        }
+        yield return null;
+    }
+}
+
+public class Sequence_UnfixPlayerPosition : Sequence_Base
+{
+    [InfoBox("FixPlayerPosition에 의해 고정된 플레이어를 해제하고 물리를 다시 활성화합니다.")]
+    [HideLabel()]public string fakeData;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        invoker.isPlayerFixedBySequence = false;
+
+        if(PlayerCore.IsInstanceValid)
+        {
+            PlayerCore.Instance.Rigidbody.isKinematic = false;
+        }
+
+        yield return null;
+    }
+}
+
+public class Sequence_Blackout : Sequence_Base
+{
+    public enum FadeMode
+    {
+        FadeOut,
+        FadeIn
+    }
+
+    [InfoBox("페이드 아웃/페이드 인을 합니다.")]
+    [LabelText("모드")] public FadeMode fademode;
+    [LabelText("시간")] public float duration = 1.0f;
+    [LabelText("페이드 까지 기다림")] public bool waitWhileFade;
+    [LabelText("(선택) 애니메이션 커브")] public AnimationCurve curve;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        UI_Blackout.Instance.StopAllCoroutines();
+
+        if (waitWhileFade)
+        {
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeOut(duration, curve));
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration));
+                else
+                    yield return UI_Blackout.Instance.StartCoroutine(UI_Blackout.Instance.Cor_FadeIn(duration, curve));
+            }
+        }
+        else
+        {
+            if (fademode == FadeMode.FadeOut)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeOut(duration);
+                else
+                    UI_Blackout.Instance.FadeOut(duration,curve);
+            }
+            else if (fademode == FadeMode.FadeIn)
+            {
+                if (curve.IsUnityNull())
+                    UI_Blackout.Instance.FadeIn(duration);
+                else
+                    UI_Blackout.Instance.FadeIn(duration, curve);
+            }
+        }
+    }
+}
+
+
+public class Sequence_ShowTutorial : Sequence_Base
+{
+    public string tutorialKey;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!UI_Tutorials.IsInstanceValid) yield break;
+
+        UI_Tutorials.Instance.OpenTutorial(tutorialKey);
+
+        yield return null;
+    }
+}
+
+public class Sequence_ChangePlayerState : Sequence_Base
+{
+    public PlayerMovementState state;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!PlayerCore.IsInstanceValid) yield break;
+
+        PlayerCore.Instance.SetMovementState(state);
+        yield return null;
+    }
+
+}
+
+public class Sequence_ChangeWeatherProfile : Sequence_Base
+{
+    [InfoBox("날씨 프로필 파일 정보대로 날씨를 바꿉니다.")]
+    [LabelText("날씨 프로필 파일")] public AzfAtmosProfile profile;
+    [LabelText("전환 시간")] public float transitionTime = 5.0f;
+    [LabelText("전환 까지 시퀀스 대기")] public bool waitForTransitionEnd = false;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        AtmosphereManager.ChangeAtmosphere(profile, transitionTime);
+        
+        if(waitForTransitionEnd) yield return new WaitForSeconds(transitionTime);
+        
+        yield return null;
+        
+    }
+}
+
+public class Sequence_MovePlayerTo : Sequence_Base
+{
+    [InfoBox("플레이어를 해당 위치까지 힘에 따라 움직이게 만듭니다.")]
+    [LabelText("위치")] public Vector3 position;
+    [LabelText("힘")] public float force;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        if (!PlayerCore.IsInstanceValid) yield break;
+
+        Debug.Log("playerValid");
+
+        yield return PlayerCore.Instance.StartCoroutine(PlayerCore.Instance.MovePlayerContrainedSequence(position, force));
+    }
+}
+
+public class Sequence_ChangeOceanProfile : Sequence_Base
+{
+    [InfoBox("해당 OceanProfile로 바다의 형태를 시간동안 바꿉니다.")]
+    [LabelText("오션 프로필")] public OceanProfile oceanProfile;
+    [LabelText("전환 시간")] public float transitionTime = 10f;
+
+    public override IEnumerator Sequence(SequenceInvoker invoker)
+    {
+        GlobalOceanManager.Instance.SetWave(oceanProfile, transitionTime);
+        yield return null;
     }
 }

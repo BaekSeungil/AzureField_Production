@@ -33,6 +33,9 @@ public class SailboatBehavior : MonoBehaviour
     {
 
         RaycastHit hitWater;
+
+        submergeRate = float.PositiveInfinity;
+
         if ( Physics.Raycast(transform.position + Vector3.up*5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
         {
             surfacePlane = new Plane(Vector3.up, 0f);
@@ -41,24 +44,30 @@ public class SailboatBehavior : MonoBehaviour
             distance = transform.position.y - hitWater.point.y;
             submergeRate = distance;
         }
-        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
+        if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
             Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, oceanLayerMask))
         {
 
+            float average = 0;
             float[] surface = new float[3];
 
             surface[0] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint1.position);
             surface[1] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint2.position);
             surface[2] = GlobalOceanManager.Instance.GetWaveHeight(floatingPoint3.position);
 
-            submergeRate = (floatingPoint1.position.y - surface[0] + floatingPoint2.position.y - surface[1] + floatingPoint3.position.y - surface[2]) / 3f;
-
-            surfacePlane = new Plane(
-                new Vector3(floatingPoint1.position.x, surface[0], floatingPoint1.position.z),
-                new Vector3(floatingPoint2.position.x, surface[1], floatingPoint2.position.z),
-                new Vector3(floatingPoint3.position.x, surface[2], floatingPoint3.position.z));
+            average = (floatingPoint1.position.y - surface[0] + floatingPoint2.position.y - surface[1] + floatingPoint3.position.y - surface[2]) / 3f;
 
             if (Vector3.Dot(transform.up, Vector3.down) > 0.5f) transform.up = Vector3.up;
+
+            if (submergeRate > average)
+            {
+                submergeRate = average;
+
+                surfacePlane = new Plane(
+                    new Vector3(floatingPoint1.position.x, surface[0], floatingPoint1.position.z),
+                    new Vector3(floatingPoint2.position.x, surface[1], floatingPoint2.position.z),
+                    new Vector3(floatingPoint3.position.x, surface[2], floatingPoint3.position.z));
+            }
         }
 
     }

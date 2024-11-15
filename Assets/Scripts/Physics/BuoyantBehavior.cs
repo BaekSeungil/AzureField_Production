@@ -18,6 +18,7 @@ public class BuoyantBehavior : MonoBehaviour
 {
     [SerializeField] float bouyancyPower = 1.0f;        // 부력 세기
     [SerializeField] Transform[] floatingPoint;         // 부력을 받는 지점
+    [SerializeField] float submergeOffset = 0f;
 
     [SerializeField, ReadOnly] private float submergeRate = 0.0f;
     public float SubmergeRateZeroClamped { get { return Mathf.Clamp(submergeRate, float.NegativeInfinity, 0.0f); } }     // 물체가 얼마나 침수됐는지 표현합니다.( 0 미만으로 내려가지 않습니다. )
@@ -31,8 +32,6 @@ public class BuoyantBehavior : MonoBehaviour
     private void Awake()
     {
         rbody = GetComponent<Rigidbody>();
-
-
     }
 
     private void Start()
@@ -46,16 +45,28 @@ public class BuoyantBehavior : MonoBehaviour
 
     const int oceanLayerMask = 1 << 3;
     const int waterLayerMask = 1 << 4;
+    const float bouyancymagnitude = 50f;
 
     private void FixedUpdate()
     {
         waterDetected = false;
-
+        
         RaycastHit hitWater;
+
+        submergeRate = float.PositiveInfinity;
+        waterDetected = false;
+
         if (Physics.Raycast(transform.position + Vector3.up * 5f, Vector3.down, out hitWater, 10.0f, waterLayerMask))
         {
+            waterDetected = true;
             float distance = 0;
-            distance = transform.position.y - hitWater.point.y;
+            distance = transform.position.y - hitWater.point.y + submergeOffset;
+
+            if (distance < 0)
+            {
+                rbody.AddForce(Vector3.up * -Mathf.Clamp( distance, -1f, 0f) * bouyancymagnitude, ForceMode.Acceleration);
+            }
+
             submergeRate = distance;
         }
         if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, oceanLayerMask) ||
@@ -78,33 +89,25 @@ public class BuoyantBehavior : MonoBehaviour
             }
 
             average /= submerged.Length;
-            submergeRate = average;
-        }
-        else if (Physics.Raycast(transform.position, Vector3.up, float.PositiveInfinity, waterLayerMask) ||
-            Physics.Raycast(transform.position, Vector3.down, float.PositiveInfinity, waterLayerMask))
-        {
-            waterDetected = true;
-        }
-        else
-        {
-            submergeRate = float.PositiveInfinity;
-            waterDetected = false;
+
+            if (submergeRate > average)
+                submergeRate = average;
         }
 
     }
 
-    const float bouyancymagnitude = 20f;
+
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer == 4)
-        {
-            float distance = 0;
-            distance = other.bounds.max.y - transform.position.y;       
+        //if (other.gameObject.layer == 4)
+        //{
+        //    float distance = 0;
+        //    distance = other.bounds.max.y - transform.position.y;       
 
-            submergeRate = -Mathf.Clamp(distance,0f,5f);
-            rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
-        }   
+        //    submergeRate = -Mathf.Clamp(distance,0f,5f);
+        //    rbody.AddForceAtPosition(Vector3.up * -submergeRate * bouyancyPower * Time.deltaTime * bouyancymagnitude, transform.position, ForceMode.Acceleration);
+        //}   
     }
 }
 

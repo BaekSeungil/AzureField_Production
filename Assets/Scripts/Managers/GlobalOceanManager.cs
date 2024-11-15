@@ -329,7 +329,10 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
         {
             float evaluated = curve.Evaluate(t / time);
 
+            intensity = Mathf.Lerp(opro_origin.OceanIntensity, to.OceanIntensity, evaluated);
+
             oceanEmmision = Color.Lerp(opro_origin.OceanColor, to.OceanColor,evaluated);
+            oceanTipEmmision = Color.Lerp(opro_origin.OceanTipColor, to.OceanTipColor, evaluated);
 
             Wave1_Vector = Vector3.Lerp(opro_origin.Waveform1.vector, to.Waveform1.vector, evaluated);
             Wave1_Amplitude = Mathf.Lerp(opro_origin.Waveform1.amplitude, to.Waveform1.amplitude, evaluated);
@@ -351,7 +354,29 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
             yield return null;
         }
 
+        intensity = to.OceanIntensity;
 
+        oceanEmmision = to.OceanColor;
+        oceanTipEmmision = to.OceanTipColor;
+
+        Wave1_Vector = to.Waveform1.vector;
+        Wave1_Amplitude = to.Waveform1.amplitude;
+        Wave1_Gravity =  to.Waveform1.gravity;
+
+        Wave2_Vector = to.Waveform2.vector;
+        Wave2_Amplitude = to.Waveform2.amplitude;
+        Wave2_Gravity = to.Waveform2.gravity;
+
+        Wave3_Vector = to.Waveform3.vector;
+        Wave3_Amplitude = to.Waveform3.amplitude;
+        Wave3_Gravity = to.Waveform3.gravity;
+
+        Wave4_Vector = to.Waveform4.vector;
+        Wave4_Amplitude = to.Waveform4.amplitude;
+        Wave4_Gravity = to.Waveform4.gravity;
+        UpdateReferencingMaterials();
+
+        activeOceanProfile = to;
         wavechangeAnimationCoroutine = null;
     }
 
@@ -443,5 +468,13 @@ public class GlobalOceanManager : StaticSerializedMonoBehaviour<GlobalOceanManag
     private void GUI_ChangeProfile()
     {
         SetWaveImmedietly(defaultOceanProfile);
+    }
+
+#if UNITY_EDITOR
+    [Button(ButtonSizes.Small, Name = "DefaultOceanProfile 적용"), PropertyOrder(-1)]
+#endif
+    private void Debug_ChangeProfile(OceanProfile profile)
+    {
+        SetWaveImmedietly(profile);
     }
 }

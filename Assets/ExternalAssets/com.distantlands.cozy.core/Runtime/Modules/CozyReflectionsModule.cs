@@ -5,6 +5,10 @@
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
+
+
 #endif
 #if COZY_URP
 using UnityEngine.Rendering.Universal;
@@ -16,7 +20,7 @@ namespace DistantLands.Cozy
     public class CozyReflectionsModule : CozyModule
     {
 
-        public enum UpdateFrequency { everyFrame, onAwake, viaScripting }
+        public enum UpdateFrequency { everyFrame, onAwake, onHour, viaScripting }
         public UpdateFrequency updateFrequency;
         public Cubemap reflectionCubemap;
         public Camera reflectionCamera;
@@ -24,8 +28,13 @@ namespace DistantLands.Cozy
         [Range(0, 30)]
         public int framesBetweenRenders = 10;
         [Tooltip("What layers should be rendered into the skybox reflections?.")]
-        public LayerMask layerMask = 2048;
+        public LayerMask layerMask = 2;
+        public bool automaticallySetLayer;
         private int framesLeft;
+        public int minimumQualityLevel;
+
+        [Tooltip("Refresh the skybox reflections when the scene loads or unloads.")]
+        public bool refreshOnSceneChange;
 #if COZY_URP
         public int rendererOverride;
 #endif
@@ -37,13 +46,20 @@ namespace DistantLands.Cozy
             reflectionCubemap = Resources.Load("Materials/Reflection Cubemap") as Cubemap;
             RenderSettings.customReflection = reflectionCubemap;
             RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
-            weatherSphere.fogMesh.gameObject.layer = ToLayer(layerMask);
-            weatherSphere.skyMesh.gameObject.layer = ToLayer(layerMask);
-            weatherSphere.cloudMesh.gameObject.layer = ToLayer(layerMask);
+            if (automaticallySetLayer)
+            {
+                weatherSphere.fogMesh.gameObject.layer = ToLayer(layerMask);
+                weatherSphere.skyMesh.gameObject.layer = ToLayer(layerMask);
+                weatherSphere.cloudMesh.gameObject.layer = ToLayer(layerMask);
+            }
 
-            if (updateFrequency == UpdateFrequency.onAwake)
+            if (updateFrequency == UpdateFrequency.onAwake || updateFrequency == UpdateFrequency.onHour)
             {
                 RenderReflections();
+            }
+            if (updateFrequency == UpdateFrequency.onHour)
+            {
+                CozyWeather.Events.onNewHour += RenderReflections;
             }
         }
 
@@ -75,6 +91,22 @@ namespace DistantLands.Cozy
             }
         }
 
+        public override void OnSceneLoaded()
+        {
+            RefreshReflectionsOnSceneChange();
+        }
+        
+        public override void OnSceneUnloaded()
+        {
+            RefreshReflectionsOnSceneChange();
+        }
+
+        protected void RefreshReflectionsOnSceneChange()
+        {
+            if (refreshOnSceneChange)
+                RenderReflections();
+        }
+        
         public int ToLayer(LayerMask mask)
         {
             int value = mask.value;
@@ -100,6 +132,10 @@ namespace DistantLands.Cozy
             {
                 DestroyImmediate(reflectionCamera.gameObject);
             }
+            if (updateFrequency == UpdateFrequency.onHour)
+            {
+                CozyWeather.Events.onNewHour -= RenderReflections;
+            }
 
             RenderSettings.customReflection = null;
 
@@ -107,6 +143,9 @@ namespace DistantLands.Cozy
 
         public void RenderReflections()
         {
+
+            if (QualitySettings.GetQualityLevel() < minimumQualityLevel || reflectionCubemap == null)
+                return;
 
             if (!weatherSphere.cozyCamera)
             {
@@ -137,7 +176,7 @@ namespace DistantLands.Cozy
         {
 
 
-            GameObject i = new GameObject             
+            GameObject i = new GameObject
             {
                 name = "COZY Reflection Camera",
                 hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInHierarchy
@@ -157,6 +196,15 @@ namespace DistantLands.Cozy
     public class E_CozyReflect : E_CozyModule
     {
         private CozyReflectionsModule reflect;
+        private SerializedProperty minQLevel;
+
+        /// <summary>
+        /// This function is called when the object becomes enabled and active.
+        /// </summary>
+        void OnEnable()
+        {
+            minQLevel = serializedObject.FindProperty("minimumQualityLevel");
+        }
 
         public override GUIContent GetGUIContent()
         {
@@ -188,12 +236,17 @@ namespace DistantLands.Cozy
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("framesBetweenRenders"));
             }
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("refreshOnSceneChange"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("reflectionCubemap"));
-
+            EditorGUILayout.Space();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("layerMask"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("automaticallySetLayer"));
+            EditorGUILayout.Space();
 #if COZY_URP
             EditorGUILayout.PropertyField(serializedObject.FindProperty("rendererOverride"));
 #endif
+            string[] qualityLevels = QualitySettings.names;
+            minQLevel.intValue = EditorGUILayout.Popup("Minimum Quality Level", minQLevel.intValue, qualityLevels);
 
 
 
