@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,6 +53,8 @@ public class RandomFlyObj : MonoBehaviour
     {
         if (BoolSpawnbird && Random.Range(0f, 1f) < spawnRate)
         {
+            if (ObjectToSpawn.IsNullOrEmpty()) return;
+
             // 배열에서 무작위로 오브젝트 선택
             int randomIndex = Random.Range(0, ObjectToSpawn.Length);
             GameObject objToSpawn = ObjectToSpawn[randomIndex];
