@@ -23,7 +23,13 @@ public class UI_EndingCutscene : StaticSerializedMonoBehaviour<UI_EndingCutscene
     {
         playable.Play();
 
-        while (Mathf.Abs((float)(playable.time - playable.duration)) > 0.01f)
+        if (FieldMusicManager.IsInstanceValid)
+        {
+            FieldMusicManager.Instance.StopActiveMusic(1f);
+            FieldMusicManager.Instance.DoNotPlayFieldmusic = true;
+        }
+
+            while (Mathf.Abs((float)(playable.time - playable.duration)) > 0.01f)
         {
             yield return new WaitUntil(() => playable.state != PlayState.Playing);
 
@@ -34,5 +40,10 @@ public class UI_EndingCutscene : StaticSerializedMonoBehaviour<UI_EndingCutscene
     public void PauseForTimeline()
     {
         playable.Pause();
+    }
+
+    public void LoadFirstScene()
+    {
+        AlphaSceneloader.Instance.LoadNewScene(0);
     }
 }
