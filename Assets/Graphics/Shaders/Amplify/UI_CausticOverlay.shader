@@ -65,6 +65,7 @@ Shader "UI_CausticOverlay"
             #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
 
             #include "UnityShaderVariables.cginc"
+            #define ASE_NEEDS_FRAG_COLOR
 
 
             struct appdata_t
@@ -230,7 +231,7 @@ Shader "UI_CausticOverlay"
                 float4 blendOpSrc94 = appendResult95;
                 float4 blendOpDest94 = ( saturate( lerpBlendMode28 ));
                 float4 break79 = ( saturate( max( blendOpSrc94, blendOpDest94 ) ));
-                float4 appendResult78 = (float4(break79.r , break79.g , break79.b , tex2DNode4.a));
+                float4 appendResult78 = (float4(break79.r , break79.g , break79.b , ( tex2DNode4.a * IN.color.a )));
                 
 
                 half4 color = appendResult78;
@@ -288,9 +289,11 @@ Node;AmplifyShaderEditor.SimpleMultiplyOpNode;89;226.9782,-434.0927;Inherit;True
 Node;AmplifyShaderEditor.BlendOpsNode;28;371.7692,-36.29346;Inherit;False;Lighten;True;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0.5;False;1;COLOR;0
 Node;AmplifyShaderEditor.DynamicAppendNode;95;449.4187,-401.065;Inherit;False;FLOAT4;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;1;False;1;FLOAT4;0
 Node;AmplifyShaderEditor.BlendOpsNode;94;647.4187,-202.065;Inherit;True;Lighten;True;3;0;FLOAT4;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;1;False;1;COLOR;0
+Node;AmplifyShaderEditor.VertexColorNode;103;524.8019,279.3538;Inherit;False;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.BreakToComponentsNode;79;921.2552,-34.47245;Inherit;False;COLOR;1;0;COLOR;0,0,0,0;False;16;FLOAT;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT;5;FLOAT;6;FLOAT;7;FLOAT;8;FLOAT;9;FLOAT;10;FLOAT;11;FLOAT;12;FLOAT;13;FLOAT;14;FLOAT;15
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;102;818.4635,195.4917;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.DynamicAppendNode;78;1097.255,89.52754;Inherit;False;FLOAT4;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT4;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;1328.069,95.90654;Float;False;True;-1;2;ASEMaterialInspector;0;3;UI_CausticOverlay;5056123faa0c79b47ab6ad7e8bf059a4;True;Default;0;0;Default;2;False;True;3;1;False;;10;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;True;True;True;True;True;0;True;_ColorMask;False;False;False;False;False;False;False;True;True;0;True;_Stencil;255;True;_StencilReadMask;255;True;_StencilWriteMask;0;True;_StencilComp;0;True;_StencilOp;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;2;False;;True;0;True;unity_GUIZTestMode;False;True;5;Queue=Transparent=Queue=0;IgnoreProjector=True;RenderType=Transparent=RenderType;PreviewType=Plane;CanUseSpriteAtlas=True;False;False;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;0;;0;0;Standard;0;0;1;True;False;;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;1341.069,89.90654;Float;False;True;-1;2;ASEMaterialInspector;0;3;UI_CausticOverlay;5056123faa0c79b47ab6ad7e8bf059a4;True;Default;0;0;Default;2;False;True;3;1;False;;10;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;True;True;True;True;True;0;True;_ColorMask;False;False;False;False;False;False;False;True;True;0;True;_Stencil;255;True;_StencilReadMask;255;True;_StencilWriteMask;0;True;_StencilComp;0;True;_StencilOp;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;2;False;;True;0;True;unity_GUIZTestMode;False;True;5;Queue=Transparent=Queue=0;IgnoreProjector=True;RenderType=Transparent=RenderType;PreviewType=Plane;CanUseSpriteAtlas=True;False;False;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;0;;0;0;Standard;0;0;1;True;False;;False;0
 WireConnection;24;0;19;0
 WireConnection;24;1;25;0
 WireConnection;20;0;21;0
@@ -329,10 +332,12 @@ WireConnection;95;2;89;0
 WireConnection;94;0;95;0
 WireConnection;94;1;28;0
 WireConnection;79;0;94;0
+WireConnection;102;0;4;4
+WireConnection;102;1;103;4
 WireConnection;78;0;79;0
 WireConnection;78;1;79;1
 WireConnection;78;2;79;2
-WireConnection;78;3;4;4
+WireConnection;78;3;102;0
 WireConnection;0;0;78;0
 ASEEND*/
-//CHKSM=A60DCF4CFE3B685A4E1163C49F5421D4DB8576B7
+//CHKSM=B5D93D8E7BEECAE5592C710447CACCC3F8CD338B
