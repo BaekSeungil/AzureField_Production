@@ -26,13 +26,22 @@ MonoBehaviour:
       Data: 0|Sequence_Base[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 6
     - Name: 
       Entry: 7
-      Data: 1|Sequence_EnableVCam, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Virtual Camera_Ruin3_Middle_Light01
+      Data: 1|Sequence_Blackout, Assembly-CSharp
+    - Name: fademode
+      Entry: 3
+      Data: 0
+    - Name: duration
+      Entry: 4
+      Data: 2
+    - Name: waitWhileFade
+      Entry: 5
+      Data: false
+    - Name: curve
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -41,141 +50,103 @@ MonoBehaviour:
       Data: 2|Sequence_WaitForSeconds, Assembly-CSharp
     - Name: time
       Entry: 4
-      Data: 3
+      Data: 5
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 3|Sequence_Dialogue, Assembly-CSharp
-    - Name: dialogues
-      Entry: 7
-      Data: 4|DialogueData[], Assembly-CSharp
+      Data: 3|Sequence_EnableVCam, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Virtual Camera_Ruin3_Middle_Light01
     - Name: 
-      Entry: 12
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 4|Sequence_Blackout, Assembly-CSharp
+    - Name: fademode
+      Entry: 3
       Data: 1
-    - Name: 
-      Entry: 7
-      Data: 5|DialogueData, Assembly-CSharp
-    - Name: speecher
-      Entry: 7
-      Data: 6|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:aa4d0ba3010f5f4499964694e63667e2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 5248209350657
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
+    - Name: duration
+      Entry: 4
+      Data: 2
+    - Name: waitWhileFade
       Entry: 5
       Data: false
-    - Name: m_LocalVariables
+    - Name: curve
       Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
+      Data: 5|UnityEngine.AnimationCurve, UnityEngine.CoreModule
+    - Name: 
+      Entry: 7
+      Data: 6|UnityEngine.Keyframe[], UnityEngine.CoreModule
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 2
     - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: context
       Entry: 7
-      Data: 8|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:6faf168416139814fb59ed56f467cdf8
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
+      Data: UnityEngine.Keyframe, UnityEngine.CoreModule
+    - Name: ver
       Entry: 3
-      Data: 30930038993842209
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
+      Data: 1
+    - Name: m_Time
+      Entry: 4
+      Data: 0
+    - Name: m_Value
+      Entry: 4
+      Data: 0
+    - Name: m_InTangent
+      Entry: 4
+      Data: 0
+    - Name: m_OutTangent
+      Entry: 4
+      Data: 0
+    - Name: m_TangentMode
       Entry: 3
       Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
+    - Name: m_WeightedMode
+      Entry: 3
+      Data: 0
+    - Name: m_InWeight
+      Entry: 4
+      Data: 0
+    - Name: m_OutWeight
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: audio
-      Entry: 7
-      Data: FMODUnity.EventReference, FMODUnity
-    - Name: Guid
-      Entry: 7
-      Data: FMOD.GUID, FMODUnity
-    - Name: Data1
+      Data: UnityEngine.Keyframe, UnityEngine.CoreModule
+    - Name: ver
+      Entry: 3
+      Data: 1
+    - Name: m_Time
+      Entry: 4
+      Data: 1
+    - Name: m_Value
+      Entry: 4
+      Data: 1
+    - Name: m_InTangent
+      Entry: 4
+      Data: 2
+    - Name: m_OutTangent
+      Entry: 4
+      Data: 2
+    - Name: m_TangentMode
       Entry: 3
       Data: 0
-    - Name: Data2
+    - Name: m_WeightedMode
       Entry: 3
       Data: 0
-    - Name: Data3
-      Entry: 3
+    - Name: m_InWeight
+      Entry: 4
       Data: 0
-    - Name: Data4
-      Entry: 3
+    - Name: m_OutWeight
+      Entry: 4
       Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Path
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -185,15 +156,30 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: CloseDialogueAfterFinish
-      Entry: 5
-      Data: true
+    - Name: 
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 10|Sequence_DisableVCam, Assembly-CSharp
+      Data: 7|Sequence_WaitForSeconds, Assembly-CSharp
+    - Name: time
+      Entry: 4
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 8|Sequence_DisableVCam, Assembly-CSharp
     - Name: name
       Entry: 1
       Data: Virtual Camera_Ruin3_Middle_Light01
