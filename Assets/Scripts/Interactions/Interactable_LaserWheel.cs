@@ -36,13 +36,17 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
 
     public bool IsDesired
     {
-        get { return angleSets[currentIndex].isDesiredAngle; }
+        get
+        {
+            return angleSets[currentIndex].isDesiredAngle && !obstructed;
+        }
     }
 
     public delegate void ONLaserWheelRotated();
     [HideInInspector] public ONLaserWheelRotated OnLaserWheelRotated;
 
     private bool isEnabled = true;
+    private bool obstructed = false;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
 
     ParticleSystem endParticlePS;
@@ -80,10 +84,13 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
                 rhit = rhit.OrderBy(i => i.distance).ToArray();
 
                 debug_hitpoint = rhit[0].point;
+
                 float laserLength = Vector3.Distance(rhit[0].point, laserStartPoint.position);
                 laserRay.transform.localScale = new Vector3(laserScale.x, laserScale.y, laserLength/transform.localScale.z);
                 endParticle.SetActive(true);
                 endParticle.transform.localPosition = Vector3.forward * laserLength / transform.localScale.z;
+
+                obstructed = rhit[0].collider.CompareTag("LaserObstruction");
             }
             else
             {
@@ -111,7 +118,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         else nextIndex++;
 
         rotateProgress = StartCoroutine(Cor_RotateWheel(angleSets[currentIndex].rotationAngle,angleSets[nextIndex].rotationAngle,nextIndex));
-        currentIndex = nextIndex;
+
     }
 
     IEnumerator Cor_RotateWheel(float prev, float next, int index)
@@ -126,6 +133,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         }
 
         transform.localRotation = initialRotation * Quaternion.AngleAxis(next, transform.up);
+
+        currentIndex = index;
 
         if (OnLaserWheelRotated != null)
             OnLaserWheelRotated();
