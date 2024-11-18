@@ -42,9 +42,6 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
         }
     }
 
-    public delegate void ONLaserWheelRotated();
-    [HideInInspector] public ONLaserWheelRotated OnLaserWheelRotated;
-
     private bool isEnabled = true;
     private bool obstructed = false;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
@@ -136,8 +133,6 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
 
         currentIndex = index;
 
-        if (OnLaserWheelRotated != null)
-            OnLaserWheelRotated();
 
         rotateProgress = null;
     }
