@@ -477,6 +477,10 @@ MonoBehaviour:
   - {fileID: 4122996712417859797}
   - {fileID: 622979526538714509}
   objmove: {fileID: 4444511606381367469}
+  eventOnAllActive:
+    m_PersistentCalls:
+      m_Calls: []
+  sequenceAsset: {fileID: 0}
 --- !u!114 &4444511606381367469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,9 +811,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   my: {fileID: 602243324263045474}
-  stoneRenderer: {fileID: 4072999630253117455}
-  originStone: {fileID: 2100000, guid: 0c606b363647b714a82b1818eda9b780, type: 2}
-  changeStone: {fileID: 2100000, guid: 934aedd367aced54badb9b7f49729ef3, type: 2}
+  bellAnimator: {fileID: 0}
+  lampAnimatior: {fileID: 0}
+  particle: {fileID: 0}
+  sound: {fileID: 0}
   ringbellSystem: {fileID: 3644506630464224808}
   myNumber: 3
   onoff: 0
@@ -951,9 +956,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   my: {fileID: 3821231359936661057}
-  stoneRenderer: {fileID: 1217713619237979230}
-  originStone: {fileID: 2100000, guid: 0c606b363647b714a82b1818eda9b780, type: 2}
-  changeStone: {fileID: 2100000, guid: 934aedd367aced54badb9b7f49729ef3, type: 2}
+  bellAnimator: {fileID: 0}
+  lampAnimatior: {fileID: 0}
+  particle: {fileID: 0}
+  sound: {fileID: 0}
   ringbellSystem: {fileID: 3644506630464224808}
   myNumber: 2
   onoff: 0
@@ -1101,9 +1107,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   my: {fileID: 4718067842495409985}
-  stoneRenderer: {fileID: 1061467676696096726}
-  originStone: {fileID: 2100000, guid: 0c606b363647b714a82b1818eda9b780, type: 2}
-  changeStone: {fileID: 2100000, guid: 934aedd367aced54badb9b7f49729ef3, type: 2}
+  bellAnimator: {fileID: 0}
+  lampAnimatior: {fileID: 0}
+  particle: {fileID: 0}
+  sound: {fileID: 0}
   ringbellSystem: {fileID: 3644506630464224808}
   myNumber: 1
   onoff: 0
@@ -1226,6 +1233,24 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8345775468459273882}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4456305451540372123 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5622142291828044801, guid: 588e25e1ed1d24241bc45587269bc1e4,
+    type: 3}
+  m_PrefabInstance: {fileID: 8345775468459273882}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &5396920348482867071 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4122923294431715813, guid: 588e25e1ed1d24241bc45587269bc1e4,
+    type: 3}
+  m_PrefabInstance: {fileID: 8345775468459273882}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7956532826582834148 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2141865011924661630, guid: 588e25e1ed1d24241bc45587269bc1e4,
@@ -1245,13 +1270,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   my: {fileID: 7956532826582834148}
-  stoneRenderer: {fileID: 5557815822365603273}
-  originStone: {fileID: 2100000, guid: 0c606b363647b714a82b1818eda9b780, type: 2}
-  changeStone: {fileID: 2100000, guid: 934aedd367aced54badb9b7f49729ef3, type: 2}
+  bellAnimator: {fileID: 5396920348482867071}
+  lampAnimatior: {fileID: 0}
+  particle: {fileID: 8817504608420567154}
+  sound: {fileID: 4456305451540372123}
   ringbellSystem: {fileID: 3644506630464224808}
   myNumber: 0
   onoff: 0
-  connectionNumber: 0300000001000000
+  connectionNumber: 01000000
 --- !u!54 &6713312245372422713
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1279,3 +1305,9 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!198 &8817504608420567154 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 687985502966003432, guid: 588e25e1ed1d24241bc45587269bc1e4,
+    type: 3}
+  m_PrefabInstance: {fileID: 8345775468459273882}
+  m_PrefabAsset: {fileID: 0}

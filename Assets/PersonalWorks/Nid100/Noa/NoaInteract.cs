@@ -16,7 +16,7 @@ public class NoaInteract : Interactable_Base
     [SerializeField, LabelText("시작할 시퀀스")] private SequenceBundleAsset sequenceAsset;     // Interact 됐을 때 시작하는 시퀀스 입니다.
     [SerializeField, LabelText("대화 시 카메라(선택)")] private CinemachineVirtualCamera virtualCamera;
     [SerializeField, LabelText("노아 UI")] private GameObject noahUI;
-
+    [SerializeField, LabelText("노아 UI")] private GameObject playUI;
     public override void Interact()
     {
         if (eventsOnStartInteract != null)
@@ -42,9 +42,11 @@ public class NoaInteract : Interactable_Base
     public void NoahUIOn()
     {
         noahUI.SetActive(true);
+        playUI.SetActive(true);
     }
     public void NoahUIOff()
     {
         noahUI.SetActive(false);
+        playUI.SetActive(false);
     }
 }

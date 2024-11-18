@@ -35,14 +35,14 @@ public class NoahUI : MonoBehaviour
     [SerializeField, LabelText("업그레이드 창")] private GameObject upgradeWindow;   // 업그레이드 UI 창
     [SerializeField, LabelText("타이틀 텍스트")] private TMP_Text titleText;          // 업그레이드 창의 타이틀 텍스트
     [SerializeField, LabelText("보유 아이템 텍스트")] private TMP_Text currentItemText; // 현재 보유한 아이템 수 텍스트
-    [SerializeField, LabelText("필요 아이템 텍스트")] private TMP_Text requiredItemText; // 필요한 아이템 수 텍스트
-    [SerializeField, LabelText("업글 전 수치")] private TMP_Text beforeValueText;     // 업그레이드 전 수치 텍스트
-    [SerializeField, LabelText("업글 후 수치")] private TMP_Text afterValueText;      // 업그레이드 후 수치 텍스트
+    //[SerializeField, LabelText("필요 아이템 텍스트")] private TMP_Text requiredItemText; // 필요한 아이템 수 텍스트
+    //[SerializeField, LabelText("업글 전 수치")] private TMP_Text beforeValueText;     // 업그레이드 전 수치 텍스트
+    //[SerializeField, LabelText("업글 후 수치")] private TMP_Text afterValueText;      // 업그레이드 후 수치 텍스트
 
-    [SerializeField, LabelText("필요 아이템 아이콘")] private GameObject itemIcon;      // 이동속도 아이콘
-    [SerializeField, LabelText("이동속도 아이콘")] private GameObject speedIcon;      // 이동속도 아이콘
-    [SerializeField, LabelText("점프 아이콘")] private GameObject jumpIcon;           // 점프 아이콘
-    [SerializeField, LabelText("에테르 아이콘")] private GameObject etherIcon;         // 에테르 아이콘
+    //[SerializeField, LabelText("필요 아이템 아이콘")] private GameObject itemIcon;      // 이동속도 아이콘
+    //[SerializeField, LabelText("이동속도 아이콘")] private GameObject speedIcon;      // 이동속도 아이콘
+    //[SerializeField, LabelText("점프 아이콘")] private GameObject jumpIcon;           // 점프 아이콘
+    //[SerializeField, LabelText("에테르 아이콘")] private GameObject etherIcon;         // 에테르 아이콘
 
     [SerializeField, LabelText("소비 아이템")] private ItemData requiredItem;          // 업그레이드에 필요한 아이템 데이터
     [SerializeField, LabelText("기본 소비 아이템 수")] private int baseItemCost;       // 기본적으로 필요한 아이템 수
@@ -55,7 +55,7 @@ public class NoahUI : MonoBehaviour
 
     [SerializeField, LabelText("업글 제한 메시지")] private GameObject limitMessage;    // 업그레이드 제한 메시지 UI
     [SerializeField, LabelText("아이템 요구 메시지")] private GameObject itemTitle;     // 아이템 요구 메시지 UI
-    [SerializeField, LabelText("업글 종류 텍스트")] private TMP_Text upgradeTypeText;   // 업그레이드 종류 텍스트
+    //[SerializeField, LabelText("업글 종류 텍스트")] private TMP_Text upgradeTypeText;   // 업그레이드 종류 텍스트
 
     // 업그레이드 종류별 텍스트 (지역화된 문자열)
     [SerializeField, LabelText("이동속도 업글 텍스트")] private LocalizedString speedUpgradeText;
@@ -147,8 +147,8 @@ public class NoahUI : MonoBehaviour
     // 현재 값과 업그레이드 후 값을 UI에 표시
     private void UpdateView(float currentValue, float increaseValue)
     {
-        beforeValueText.text = currentValue.ToString("F1");         // 현재 값 표시
-        afterValueText.text = (currentValue + increaseValue).ToString("F1");  // 업그레이드 후 값 표시
+        //beforeValueText.text = currentValue.ToString("F1");         // 현재 값 표시
+        //afterValueText.text = (currentValue + increaseValue).ToString("F1");  // 업그레이드 후 값 표시
     }
 
     // 업그레이드 시작
@@ -227,8 +227,8 @@ public class NoahUI : MonoBehaviour
     // 업그레이드 제한 메시지 숨김
     private void HideLimitMessage()
     {
-        limitMessage.SetActive(false);
-        itemTitle.SetActive(true);
+        //limitMessage.SetActive(false);
+        //itemTitle.SetActive(true);
     }
 
     // 텍스트 깜빡임 코루틴 시작
@@ -260,10 +260,10 @@ public class NoahUI : MonoBehaviour
         upgradeWindow.SetActive(true);
 
         // 업그레이드 종류에 따라 아이콘과 텍스트 설정
-        jumpIcon.SetActive(type == PlayerUpgradeType.JumpPower);
-        speedIcon.SetActive(type == PlayerUpgradeType.MoveSpeed);
-        etherIcon.SetActive(type == PlayerUpgradeType.EtherTime);
-
+        //jumpIcon.SetActive(type == PlayerUpgradeType.JumpPower);
+        //speedIcon.SetActive(type == PlayerUpgradeType.MoveSpeed);
+        //etherIcon.SetActive(type == PlayerUpgradeType.EtherTime);
+        /*
         upgradeTypeText.text = type switch
         {
             PlayerUpgradeType.JumpPower => jumpUpgradeText.GetLocalizedString(),
@@ -271,6 +271,7 @@ public class NoahUI : MonoBehaviour
             PlayerUpgradeType.EtherTime => etherUpgradeText.GetLocalizedString(),
             _ => ""
         };
+        */
     }
 
     // 업그레이드 창 닫기
