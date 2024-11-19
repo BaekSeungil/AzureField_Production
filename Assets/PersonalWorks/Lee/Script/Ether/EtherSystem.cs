@@ -20,7 +20,10 @@ public class EtherSystem : MonoBehaviour
     private Vector3 targetPosition;
 
     private float currentSpeed = 0;
-    
+    [SerializeField] private float SearchRange = 0;
+    [SerializeField] private LayerMask targetMask;
+
+
     public static EtherSystem Instance { get; private set; }
 
     public float ViewDeletTime{get{return DeletTime;}}
@@ -41,7 +44,7 @@ public class EtherSystem : MonoBehaviour
 
     private void Start()
     {
-        Initialized();
+        //Initialized();
     }
     
     // Update is called once per frame
@@ -68,13 +71,18 @@ public class EtherSystem : MonoBehaviour
             // 도착 여부 확인
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
-                callEther.IsCreat = false;
-#if UNITY_EDITOR
-                Debug.Log("파도소멸");
-#endif
-                gameObject.SetActive(false);
+                HideWave();
             }
         }
+    }
+
+    public void HideWave()
+    {
+        callEther.IsCreat = false;
+#if UNITY_EDITOR
+        Debug.Log("파도소멸");
+#endif
+        gameObject.SetActive(false);
     }
 
     public void EtherUpgradeState(float upgrdestate)
@@ -90,6 +98,7 @@ public class EtherSystem : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+
 
     private IEnumerator DestroyAfterTime()
     {
@@ -109,30 +118,75 @@ public class EtherSystem : MonoBehaviour
     private void OnEnable()
     {
         //SetTransform();
-        Initialized();
     }
-    private void Initialized()
+    public void Initialized(float searchRange, LayerMask targetMask)
     {
         Idleparticl.Play();
         currentSpeed = MoveSpeed;
 
-        SetTransform();
+        SetTransform(searchRange, targetMask);
 
         StartCoroutine(DestroyAfterTime());
     }
 
-    private void SetTransform()
+    public void SetTransform(float searchRange, LayerMask targetMask)
     {
         startPosition = (callEther.transform.forward * callEther.SpawnPoint.z) + callEther.transform.position;
         transform.position = new Vector3(startPosition.x, 0, startPosition.z);
 
         Vector3 playerForward = PlayerCore.Instance.transform.forward;
 
-        targetPosition = startPosition + playerForward.normalized * FinalDistance;
-
         // 목표 지점을 향하도록 오브젝트 회전 설정
-        Quaternion rotation = Quaternion.LookRotation(playerForward);
+        GameObject temp = FindTarget(PlayerCore.Instance.transform.position, searchRange, targetMask);
+        targetPosition = temp == null ? playerForward : TargetDir(temp.transform.position);
+
+        Quaternion rotation = Quaternion.LookRotation(targetPosition);
+
         transform.rotation = rotation;
+        targetPosition = targetPosition * FinalDistance + startPosition;
+    }
+
+    private Vector3 TargetDir(Vector3 targetObj)
+    {
+        Vector3 temp = targetObj - PlayerCore.Instance.transform.position;
+        temp.y = 0;
+        return temp.normalized;
+    }
+
+    private GameObject FindTarget(Vector3 pos, float searchRange, LayerMask targetMask)
+    {
+        Vector3 targetPos, dir, lookDir;
+        Vector3 originPos = pos;
+
+        Collider[] hitedTargets = Physics.OverlapSphere(originPos, searchRange, targetMask);
+
+        float dot, angle;
+
+        //GameObject temp;
+
+        foreach (var target in hitedTargets)
+        {
+            targetPos = target.transform.position;
+            dir = (targetPos - originPos).normalized;
+            lookDir = AngleToDirY(PlayerCore.Instance.transform.eulerAngles, 0);
+
+            dot = Vector3.Dot(lookDir, dir);
+            angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+            if (angle <= 45f)
+            {
+                Debug.Log($"Target = {target.name}");
+                return target.gameObject;
+            }
+        }
+        Debug.Log("Not target");
+        return null;
+    }
+
+    private Vector3 AngleToDirY(Vector3 pos, float angleInDegree )
+    {
+        float radian = (angleInDegree + pos.y) * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(radian), 0f, Mathf.Cos(radian));
 
     }
 
@@ -144,6 +198,7 @@ public class EtherSystem : MonoBehaviour
         
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(targetPosition, 0.2f);
-        
+
+
     }
 }
