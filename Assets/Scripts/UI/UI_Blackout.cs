@@ -57,7 +57,6 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
 
     public IEnumerator Cor_FadeOut(float duration, AnimationCurve curve)
     {
-        Debug.Log(curve == null);
         for (float time = 0f; time < duration; time += Time.fixedDeltaTime)
         {
             float t = time / duration;
