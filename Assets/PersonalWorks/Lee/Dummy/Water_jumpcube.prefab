@@ -14865,10 +14865,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1334098969054108551}
-  - component: {fileID: 2061361646228270769}
   - component: {fileID: 3005556600401691091}
   - component: {fileID: 5340851298212597025}
   - component: {fileID: 4685760897214670276}
+  - component: {fileID: 8122841735495244128}
   m_Layer: 4
   m_Name: Water_jumpcube
   m_TagString: WaterReaction
@@ -14892,23 +14892,6 @@ Transform:
   - {fileID: 5274275734638162964}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &2061361646228270769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7762785597541677280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92f243a7d15bb814ca34ef5e209906e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CalledWave: 0
-  MoveSpeed: 15
-  FinalDistance: 32
-  DeletTime: 4.5
-  Idleparticl: {fileID: 6125733276043746775}
 --- !u!114 &3005556600401691091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15065,3 +15048,48 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &8122841735495244128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7762785597541677280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a41ec7aa86aea4d97790dee0797de9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  speed: 15
+  height: 6
+  Range: 50
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  offset: {x: 0, y: 2.5, z: 0}
+  radius: 0
+  size: {x: 5, y: 2.5, z: 5}
