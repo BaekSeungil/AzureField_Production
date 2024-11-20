@@ -10,29 +10,33 @@ public class LaserWheelsPuzzle : MonoBehaviour
     [SerializeField,LabelText("퍼즐 완료시 이벤트")] private UnityEvent OnPassedPuzzle;
     [SerializeField, LabelText("퍼즐 완료시 시퀀스")] private SequenceBundleAsset sequenceBundle;
 
-    private void Start()
-    {
-        foreach (var wheels in assignedLaserWheels)
-        {
-            wheels.OnLaserWheelRotated += LaserWheelRotated;
-        }
-    }
+    private bool puzzleDone = false;
+    public bool IsPuzzleDone { get { return puzzleDone; } }
 
-    public void LaserWheelRotated()
+    private float checkInterval = 0.5f;
+    private float timer = 0f;
+    public void Update()
     {
-        bool result = true;
+        if(puzzleDone) return;
 
-        foreach (Interactable_LaserWheel wheel in assignedLaserWheels)
+        timer += Time.deltaTime;
+
+        if (timer > checkInterval)
         {
-            if(!wheel.IsDesired)
+            checkInterval = 0f;
+            bool result = true;
+
+            foreach (Interactable_LaserWheel wheel in assignedLaserWheels)
             {
-                result = false;
-                break;
+                if (!wheel.IsDesired)
+                {
+                    result = false;
+                    break;
+                }
             }
+
+            if (result) OnPassed();
         }
-
-        if(result) OnPassed();
-
     }
 
     public void OnPassed()
@@ -42,6 +46,7 @@ public class LaserWheelsPuzzle : MonoBehaviour
         {
             SequenceInvoker.Instance.StartSequence(sequenceBundle.SequenceBundles);
         }
+        puzzleDone = true;
         DisableLaserWheels();
     }
 
@@ -50,7 +55,6 @@ public class LaserWheelsPuzzle : MonoBehaviour
         foreach(Interactable_LaserWheel wheel in assignedLaserWheels)
         {
             wheel.IsEnabled = false;
-            wheel.OnLaserWheelRotated -= LaserWheelRotated;
         }
     }
 }

@@ -27,6 +27,8 @@ public class CallEther : MonoBehaviour
 
     public bool OnSpawn = false;
     public bool IsCreat = false;
+    public float SearchRange;
+    public LayerMask TargetMask;
     public EEtherCount EtherCount = EEtherCount.ETHERSPAWN; //에테르 입력 값 1번누르면 스폰, 2번누르면 에테르 정면이동
     private void Start()
     {
@@ -56,7 +58,6 @@ public class CallEther : MonoBehaviour
         {
             EtherCount = EEtherCount.ETHERMOVE;  // 상태를 2로 설정하여 이동 신호를 보냅니다.
             PrintDebug("파도 이동 신호 전송");
-
         }
         else if (IsCreat && EtherCount == EEtherCount.ETHERMOVE)
         {
@@ -67,12 +68,12 @@ public class CallEther : MonoBehaviour
 
     private void SpawnWave()
     {
+        // 스폰 위치를 결정하고 앞을 바라보게 함.
         etherWave.SetActive(true);
-        //Physics.Raycast(transform.position, Vector3.down, out RaycastHit ray, layerMask);
-        //etherWave.transform.position = new Vector3(ray.point.x, 0, ray.point.z);
         IsCreat = true;
         EtherCount = EEtherCount.ETHERSPAWN;  // 상태를 1로 설정하여 생성된 상태로 표시합니다.
         PrintDebug("파도 생성 (범위 내에 객체 감지)");
+        etherWave.GetComponent<EtherSystem>().Initialized(SearchRange, TargetMask);
     }
 
     private void Initialized()
@@ -89,13 +90,60 @@ public class CallEther : MonoBehaviour
         etherWave.SetActive(false);
     }
 
+    public bool isCarry;
+    public float m_horizontalViewHalfAngle;
+    public float HorizontalViewAngle;
+    public float m_viewRotateZ;
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         if(transform != null)
             Gizmos.DrawWireSphere(transform.position + transform.forward * SpawnPoint.z, detectionRadius);  // 감지 반경을 시각화
-    }   
+
+        Gizmos.color = Color.blue;
+        //Gizmos.DrawWireSphere(transform.position, SearchRange * 0.5f);
+
+        if (!isCarry)
+        {
+            m_horizontalViewHalfAngle = HorizontalViewAngle * 0.5f;
+
+            Vector3 originPos = transform.position;
+
+            Gizmos.DrawWireSphere(originPos, SearchRange);
+
+            Vector3 horizontalRightDir = AngleToDirY(PlayerCore.Instance.transform.position, -m_horizontalViewHalfAngle + m_viewRotateZ);
+            Vector3 horizontalLeftDir = AngleToDirY(PlayerCore.Instance.transform.position, m_horizontalViewHalfAngle + m_viewRotateZ);
+            Vector3 lookDir = AngleToDirY(PlayerCore.Instance.transform.position, m_viewRotateZ);
+
+            Debug.DrawRay(originPos, horizontalLeftDir * SearchRange, Color.cyan);
+            Debug.DrawRay(originPos, lookDir * SearchRange, Color.green);
+            Debug.DrawRay(originPos, horizontalRightDir * SearchRange, Color.cyan);
+        }
+
+        else
+        {
+            //m_horizontalViewHalfAngle = HorizontalViewAngle * 0.5f;
+
+            //Vector3 originPos = transform.position;
+
+            ////Gizmos.DrawWireSphere(originPos, throwRange);
+
+            //Vector3 horizontalRightDir = AngleToDirY(PlayerCore.Instance.transform.position, -m_horizontalViewHalfAngle + m_viewRotateZ);
+            //Vector3 horizontalLeftDir = AngleToDirY(PlayerCore.Instance.transform.position, m_horizontalViewHalfAngle + m_viewRotateZ);
+            //Vector3 lookDir = AngleToDirY(PlayerCore.Instance.transform.position, m_viewRotateZ);
+
+            //Debug.DrawRay(originPos, horizontalLeftDir * throwRange, Color.cyan);
+            //Debug.DrawRay(originPos, lookDir * throwRange, Color.green);
+            //Debug.DrawRay(originPos, horizontalRightDir * throwRange, Color.cyan);
+        }
+    }
+    private Vector3 AngleToDirY(Vector3 pos, float angleInDegree)
+    {
+        float radian = (angleInDegree + pos.y) * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(radian), 0f, Mathf.Cos(radian));
+
+    }
 
     private void PrintDebug(string str)
     {

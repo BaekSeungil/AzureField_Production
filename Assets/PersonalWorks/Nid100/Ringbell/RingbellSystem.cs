@@ -7,12 +7,12 @@ using UnityEngine.Events;
 public class RingbellSystem : MonoBehaviour
 {
     [SerializeField] private RingbellInteract[] bell;
-    [SerializeField] private ObjMove objmove;  // ObjMove 스크립트와 연결된 오브젝트
     [SerializeField] private UnityEvent eventOnAllActive;
     [SerializeField, LabelText("시작할 시퀀스")] private SequenceBundleAsset sequenceAsset;
     private int checknum = 0;
 
     private bool isOnceActived;
+    public bool IsOnceActived { get { return isOnceActived; } }
 
     // num번의 종이 활성화/비활성화 되면 해당 종과 연동된 종의 활성화/비활성화 
     public void connectionBellActive(int num)
@@ -25,7 +25,7 @@ public class RingbellSystem : MonoBehaviour
         {
             int connectedBellIndex = bell[num].connectionNumber[i];
             bell[connectedBellIndex].onoff = !bell[connectedBellIndex].onoff;
-            bell[connectedBellIndex].UpdateStoneMaterial();
+            bell[connectedBellIndex].UpdateStoneStatus();
         }
 
         // 모든 종의 onoff 상태를 확인
@@ -49,18 +49,26 @@ public class RingbellSystem : MonoBehaviour
         // 모든 종이 활성화 상태이면 objmove의 moveOnoff를 true로 설정
         if (allBellsActive)
         {
-            objmove.moveOnoff = true;
 
             if(!isOnceActived) // 등록된 이벤트 발동
             {
-                SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+                if (sequenceAsset != null)
+                {
+                    SequenceInvoker.Instance.StartSequence(sequenceAsset.SequenceBundles);
+                }
+
+                if (eventOnAllActive != null)
+                {
+                    eventOnAllActive.Invoke();
+                }
+
                 isOnceActived = true;
-                eventOnAllActive.Invoke();
+
             }
         }
         else
         {
-            objmove.moveOnoff = false;
+
         }
     }
 }

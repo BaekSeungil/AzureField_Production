@@ -1,19 +1,16 @@
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RingbellInteract : MonoBehaviour
 {
-    // 오브젝트 본인
-    [SerializeField] private GameObject my;
-    // 비석 머테리얼이 적용될 오브젝트
-    [SerializeField] private Renderer stoneRenderer;  // stone 오브젝트의 Renderer
-    // 비활성화 시 적용될 머테리얼
-    [SerializeField] private Material originStone;
-    // 활성화 시 적용될 머테리얼
-    [SerializeField] private Material changeStone;
-    // 메인이 되는 링벨 시스템
-    [SerializeField] private RingbellSystem ringbellSystem;
+    [SerializeField] private Animator bellAnimator;
+    [SerializeField, Required(InfoMessageType.Warning)] private Animator lampAnimatior;
+    [SerializeField] private ParticleSystem particle;
+    [SerializeField] private StudioEventEmitter sound;
+
+    [SerializeField,Required(InfoMessageType.Warning)] private RingbellSystem ringbellSystem;
     // 본인의 번호
     [SerializeField] private int myNumber;
     // 본인의 활성화 여부
@@ -30,7 +27,7 @@ public class RingbellInteract : MonoBehaviour
     void Start()
     {
         // 초기화 시 머테리얼 설정
-        UpdateStoneMaterial();
+        UpdateStoneStatus();
     }
 
     // Update is called once per frame
@@ -44,30 +41,33 @@ public class RingbellInteract : MonoBehaviour
     {
         if (other.gameObject.tag == "WaterReaction" && !isInCooldown)
         {
+            if (ringbellSystem.IsOnceActived) return;
+
             // 연결된 종의 활성화/비활성화 함수 호출
             ringbellSystem.connectionBellActive(myNumber);
             Debug.Log(myNumber + "번 종 활성화");
 
             // 종 활성화 상태에 따른 머테리얼 업데이트
-            UpdateStoneMaterial();
+            UpdateStoneStatus();
 
+            StopAllCoroutines();
             // 쿨다운 시작
             StartCoroutine(StartCooldown());
         }
     }
 
     // onoff 상태에 따라 stone 오브젝트의 머테리얼을 업데이트하는 함수
-    public void UpdateStoneMaterial()
+    public void UpdateStoneStatus()
     {
         if (onoff)
         {
-            // 활성화 상태일 경우 changeStone 머테리얼 적용
-            stoneRenderer.material = changeStone;
+            lampAnimatior.SetBool("Litup", true);
+            sound.Play();
+            particle.Play();
         }
         else
         {
-            // 비활성화 상태일 경우 originStone 머테리얼 적용
-            stoneRenderer.material = originStone;
+            lampAnimatior.SetBool("Litup", false);
         }
     }
 
