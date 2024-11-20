@@ -1598,6 +1598,12 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
         interestPoint = target;
     }
 
+    public void ResetSailboatRotation()
+    {
+        sailboat.ResetRoatation();
+        sailboatModelPivot.localRotation = Quaternion.Euler(Vector3.zero);
+    }
+
     bool holdItemCoroutineFlag = false;
 
     public void EnableIsamel()
