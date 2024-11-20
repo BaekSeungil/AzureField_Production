@@ -101,6 +101,5 @@ namespace InteractSystem.Manager
                 //DicRings[num].RingObject.PlaySoundAndsParticles(); 
             }
         }
-
     }
 }

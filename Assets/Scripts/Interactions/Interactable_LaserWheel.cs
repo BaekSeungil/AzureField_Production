@@ -1,4 +1,5 @@
 using FMODUnity;
+using InteractSystem;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class Interactable_LaserWheel : SerializedMonoBehaviour
+public class Interactable_LaserWheel : SerializedMonoBehaviour, IInteract
 {
     [Serializable]
     public struct AngleSet
@@ -166,4 +167,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
 
     }
 
+    public void Interact()
+    {
+        RotateWheel();
+    }
 }

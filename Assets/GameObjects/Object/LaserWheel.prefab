@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4504545271117163062}
   - component: {fileID: 4762926672196380546}
-  m_Layer: 0
+  - component: {fileID: 629662494669318365}
+  m_Layer: 15
   m_Name: LaserWheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,10 +56,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: OnLaserWheelRotated
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   angleSets: []
   rotateCurve:
     serializedVersion: 2
@@ -115,6 +113,27 @@ MonoBehaviour:
   flare: {fileID: 8712937789313719797}
   endParticle: {fileID: 6205695638388588711}
   spinSound: {fileID: 3598165153266846798}
+--- !u!135 &629662494669318365
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784750730419716171}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.43
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!1 &2750734148998917171
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,7 +425,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4657664683502245082}
   - component: {fileID: 1892581932575578131}
-  - component: {fileID: 6723496216590244120}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -450,8 +468,8 @@ MonoBehaviour:
       Data4: -1198366124
     Path: event:/SoundEffect/LaserHumming
   Event: 
-  PlayEvent: 3
-  StopEvent: 4
+  PlayEvent: 1
+  StopEvent: 2
   AllowFadeout: 1
   TriggerOnce: 0
   Preload: 0
@@ -460,27 +478,6 @@ MonoBehaviour:
   OverrideAttenuation: 1
   OverrideMinDistance: 5
   OverrideMaxDistance: 10
---- !u!135 &6723496216590244120
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5579680820480290131}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 7
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5826751322622205668
 GameObject:
   m_ObjectHideFlags: 0
