@@ -57,6 +57,8 @@ public class NoahUI : MonoBehaviour
     [SerializeField, LabelText("아이템 요구 메시지")] private GameObject itemTitle;     // 아이템 요구 메시지 UI
     //[SerializeField, LabelText("업글 종류 텍스트")] private TMP_Text upgradeTypeText;   // 업그레이드 종류 텍스트
 
+    [SerializeField, LabelText("업그레이드 텍스트")] private TMP_Text upgradeText;
+    [SerializeField, LabelText("노아 대화창")] private TMP_Text noahText;
     // 업그레이드 종류별 텍스트 (지역화된 문자열)
     [SerializeField, LabelText("이동속도 업글 텍스트")] private LocalizedString speedUpgradeText;
     [SerializeField, LabelText("점프 업글 텍스트")] private LocalizedString jumpUpgradeText;
@@ -87,7 +89,7 @@ public class NoahUI : MonoBehaviour
     void FixedUpdate()
     {
         UpdateItemCount();  // 보유한 아이템 수를 업데이트
-        UpdateUpgradeUI();  // 업그레이드 UI를 업데이트
+        //UpdateUpgradeUI();  // 업그레이드 UI를 업데이트
     }
 
     // 현재 보유한 아이템 수를 업데이트
@@ -115,7 +117,7 @@ public class NoahUI : MonoBehaviour
             _ => 0
         };
     }
-
+    /*
     // 업그레이드 UI를 업데이트
     private void UpdateUpgradeUI()
     {
@@ -143,7 +145,7 @@ public class NoahUI : MonoBehaviour
             HideLimitMessage();  // 제한 메시지 숨김
         }
     }
-
+    */
     // 현재 값과 업그레이드 후 값을 UI에 표시
     private void UpdateView(float currentValue, float increaseValue)
     {
@@ -283,15 +285,19 @@ public class NoahUI : MonoBehaviour
     public void SetJumpPowerUpgrade()
     {
         SetUpgradeType(PlayerUpgradeType.JumpPower);
+        upgradeText.text = jumpUpgradeText.GetLocalizedString();
     }
 
     public void SetMoveSpeedUpgrade()
     {
         SetUpgradeType(PlayerUpgradeType.MoveSpeed);
+        upgradeText.text = speedUpgradeText.GetLocalizedString();
     }
 
     public void SetEtherTimeUpgrade()
     {
         SetUpgradeType(PlayerUpgradeType.EtherTime);
+        upgradeText.text = etherUpgradeText.GetLocalizedString();
+        
     }
 }
