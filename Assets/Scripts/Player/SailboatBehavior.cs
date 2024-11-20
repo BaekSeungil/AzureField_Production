@@ -16,6 +16,12 @@ public class SailboatBehavior : MonoBehaviour
     [SerializeField,ReadOnly] private float submergeRate = 0.0f;
     public float SubmergeRate { get { return submergeRate; } }
 
+    public void ResetRoatation()
+    {
+        transform.localRotation = Quaternion.Euler(Vector3.zero);
+        
+    }
+
     private void Start()
     {
         if (GlobalOceanManager.Instance == null)

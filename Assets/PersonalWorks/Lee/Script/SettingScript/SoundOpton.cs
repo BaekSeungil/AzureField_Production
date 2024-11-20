@@ -2,11 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FMOD.Studio;
-using FMODUnity;
 using UnityEngine.UI;
-using UnityEngine.Localization.SmartFormat.Utilities;
-using UnityEngine.EventSystems;
-using UnityEditor.ShaderGraph.Internal;
 
 public class SoundOpton : MonoBehaviour
 {

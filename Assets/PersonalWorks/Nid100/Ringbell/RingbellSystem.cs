@@ -20,12 +20,11 @@ public class RingbellSystem : MonoBehaviour
         // num번 종의 onoff 값을 토글
         //bell[num].onoff = !bell[num].onoff;
 
-        // num번 종과 연동된 종들의 onoff 값을 토글
-        for (int i = 0; i < bell[num].connectionNumber.Length; i++)
+        RingbellInteract currentBell = bell[num];
+        for (int i = 0; i < currentBell.connectionNumber.Length; i++)
         {
-            int connectedBellIndex = bell[num].connectionNumber[i];
-            bell[connectedBellIndex].onoff = !bell[connectedBellIndex].onoff;
-            bell[connectedBellIndex].UpdateStoneStatus();
+            bell[currentBell.connectionNumber[i]].onoff = !bell[currentBell.connectionNumber[i]].onoff;
+            bell[currentBell.connectionNumber[i]].UpdateStoneStatus();
         }
 
         // 모든 종의 onoff 상태를 확인

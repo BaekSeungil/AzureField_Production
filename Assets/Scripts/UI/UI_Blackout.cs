@@ -35,10 +35,12 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
 
     public IEnumerator Cor_FadeOut(float duration)
     {
+        float start = visualGroup.alpha;
+
         for(float time = 0f; time < duration; time += Time.fixedDeltaTime)
         {
             float t = time / duration;
-            visualGroup.alpha = defaultCurve.Evaluate(t);
+            visualGroup.alpha = Mathf.Lerp(start, 1f, defaultCurve.Evaluate(t));
             yield return new WaitForFixedUpdate();
         }
         visualGroup.alpha = 1f;
@@ -46,10 +48,12 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
 
     public IEnumerator Cor_FadeIn(float duration)
     {
-        for(float time = 0f; time < duration; time += Time.fixedDeltaTime)
+        float start = visualGroup.alpha;
+
+        for (float time = 0f; time < duration; time += Time.fixedDeltaTime)
         {
             float t = time / duration;
-            visualGroup.alpha = defaultCurve.Evaluate(1f-t);
+            visualGroup.alpha = Mathf.Lerp(start, 0f, defaultCurve.Evaluate(t));
             yield return new WaitForFixedUpdate();
         }
         visualGroup.alpha = 0f;
@@ -57,11 +61,12 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
 
     public IEnumerator Cor_FadeOut(float duration, AnimationCurve curve)
     {
-        Debug.Log(curve == null);
+        float start = visualGroup.alpha;
+
         for (float time = 0f; time < duration; time += Time.fixedDeltaTime)
         {
             float t = time / duration;
-            visualGroup.alpha = curve.Evaluate(t);
+            visualGroup.alpha = Mathf.Lerp(start, 1f, defaultCurve.Evaluate(t));
             yield return new WaitForFixedUpdate();
         }
         visualGroup.alpha = 1f;
@@ -69,10 +74,12 @@ public class UI_Blackout : StaticSerializedMonoBehaviour<UI_Blackout>
 
     public IEnumerator Cor_FadeIn(float duration, AnimationCurve curve)
     {
+        float start = visualGroup.alpha;
+
         for (float time = 0f; time < duration; time += Time.fixedDeltaTime)
         {
             float t = time / duration;
-            visualGroup.alpha = curve.Evaluate(1f-t);
+            visualGroup.alpha = Mathf.Lerp(start, 0f, defaultCurve.Evaluate(t));
             yield return new WaitForFixedUpdate();
         }
         visualGroup.alpha = 0f;

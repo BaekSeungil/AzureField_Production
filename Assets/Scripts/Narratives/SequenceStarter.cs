@@ -30,8 +30,11 @@ public class SequenceStarter : MonoBehaviour
         if (!SequenceInvoker.IsInstanceValid) return;
 
 #if UNITY_EDITOR
-        if(skipOnEditor)
-            SequenceInvoker.Instance.StartSequence(skipSequence.SequenceBundles);
+        if (skipOnEditor)
+        {
+            if (skipSequence != null)
+                SequenceInvoker.Instance.StartSequence(skipSequence.SequenceBundles);
+        }
         else
             SequenceInvoker.Instance.StartSequence(SequenceToStart.SequenceBundles);
 #else
