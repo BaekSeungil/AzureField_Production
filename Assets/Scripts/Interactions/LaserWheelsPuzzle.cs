@@ -10,11 +10,11 @@ public class LaserWheelsPuzzle : MonoBehaviour
     [SerializeField,LabelText("퍼즐 완료시 이벤트")] private UnityEvent OnPassedPuzzle;
     [SerializeField, LabelText("퍼즐 완료시 시퀀스")] private SequenceBundleAsset sequenceBundle;
 
-    private bool puzzleDone = false;
+    [SerializeField, ReadOnly()] private bool puzzleDone = false;
     public bool IsPuzzleDone { get { return puzzleDone; } }
 
     private float checkInterval = 0.5f;
-    private float timer = 0f;
+    [SerializeField,ReadOnly()]private float timer = 0f;
     public void Update()
     {
         if(puzzleDone) return;
@@ -23,7 +23,7 @@ public class LaserWheelsPuzzle : MonoBehaviour
 
         if (timer > checkInterval)
         {
-            checkInterval = 0f;
+            timer = 0f;
             bool result = true;
 
             foreach (Interactable_LaserWheel wheel in assignedLaserWheels)

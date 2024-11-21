@@ -44,7 +44,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour, IInteract
     }
 
     private bool isEnabled = true;
-    private bool obstructed = false;
+    [SerializeField,ReadOnly()]private bool obstructed = false;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
 
     ParticleSystem endParticlePS;
