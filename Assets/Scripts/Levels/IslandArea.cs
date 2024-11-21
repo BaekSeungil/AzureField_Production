@@ -34,6 +34,7 @@ public class IslandArea : MonoBehaviour
 
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
     private bool supressWave = true;                        // true일 시 섬 구역 진입시 파도를 잦아들게함
+    public bool SupressWave { get { return supressWave; } set { supressWave = value; } }
     [FoldoutGroup("EnvoirmentSettings"), SerializeField]
     private float waveIntensity = 0.1f;                     // 섬 구역 진입시 파도가 얼마나 잦아들지 설정
 
@@ -136,6 +137,17 @@ public class IslandArea : MonoBehaviour
                     else if (value > 0.99f) value = 1f;
 
                     GlobalOceanManager.Instance.IslandregionIntensityFactor = value;
+                }
+                else
+                {
+                    GlobalOceanManager.Instance.IslandregionIntensityFactor = 1.0f;
+                }
+            }
+            else
+            {
+                if (!supressWave)
+                {
+                    GlobalOceanManager.Instance.IslandregionIntensityFactor = 1.0f;
                 }
             }
         }

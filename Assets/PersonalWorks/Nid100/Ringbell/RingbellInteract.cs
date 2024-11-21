@@ -45,6 +45,7 @@ public class RingbellInteract : MonoBehaviour
 
             // 연결된 종의 활성화/비활성화 함수 호출
             ringbellSystem.connectionBellActive(myNumber);
+            RingThisBell();
             Debug.Log(myNumber + "번 종 활성화");
 
             // 종 활성화 상태에 따른 머테리얼 업데이트
@@ -62,13 +63,18 @@ public class RingbellInteract : MonoBehaviour
         if (onoff)
         {
             lampAnimatior.SetBool("Litup", true);
-            sound.Play();
-            particle.Play();
         }
         else
         {
             lampAnimatior.SetBool("Litup", false);
         }
+    }
+
+    public void RingThisBell()
+    {
+        bellAnimator.Play("BellBody");
+        sound.Play();
+        particle.Play();
     }
 
     // 쿨다운을 처리하는 코루틴

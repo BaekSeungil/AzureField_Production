@@ -49,6 +49,14 @@ namespace InteractSystem
         public void Interact()
         {
             // 상호작용 시 작동하는 시스템
+            PlaySoundAndsParticles();
+            // 연결된 종의 활성/비활성
+            BellSystem.HittedWaves(RingNumber);
+            BellSystem.SetActiveLamp(RingNumber, Active);
+
+            StopAllCoroutines();
+
+            StartCoroutine(HittedCollDown());
 
         }
 
@@ -65,22 +73,22 @@ namespace InteractSystem
         private void OnTriggerEnter(Collider other)
         {
 
-            if (other.CompareTag("WaterReaction") && !Ring)
-            {
-                if (!BellSystem.Running) return;
+            //if (other.CompareTag("WaterReaction") && !Ring)
+            //{
+            //    if (!BellSystem.Running) return;
 
-                PlaySoundAndsParticles();
-                // 연결된 종의 활성/비활성
-                BellSystem.HittedWaves(RingNumber);
-                BellSystem.SetActiveLamp(RingNumber, Active);
+            //    PlaySoundAndsParticles();
+            //    // 연결된 종의 활성/비활성
+            //    BellSystem.HittedWaves(RingNumber);
+            //    BellSystem.SetActiveLamp(RingNumber, Active);
                 
-                StopAllCoroutines();
+            //    StopAllCoroutines();
 
-                StartCoroutine(HittedCollDown());
+            //    StartCoroutine(HittedCollDown());
 
-                other.GetComponent<EtherSystem>().HideWave();
+            //    //other.GetComponent<EtherSystem>().HideWave();
 
-            }
+            //}
         }
 
     }
