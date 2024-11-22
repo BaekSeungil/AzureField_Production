@@ -620,7 +620,8 @@ public class Sequence_FixPlayerPosition : Sequence_Base
             else
             {
                 PlayerCore.Instance.transform.position = target.position;
-                PlayerCore.Instance.transform.localRotation = target.localRotation;
+                PlayerCore.Instance.transform.rotation = target.rotation;
+                PlayerCore.Instance.ResetSailboatRotation();
             }
         }
         else
@@ -629,7 +630,10 @@ public class Sequence_FixPlayerPosition : Sequence_Base
                 PlayerCore.Instance.transform.position = fixPlayerTo_Absolute;
 
             if (hasRotation)
-                PlayerCore.Instance.transform.localRotation = Quaternion.Euler(rotatePlayerTo_Absolute);
+            {
+                PlayerCore.Instance.ResetSailboatRotation();
+                PlayerCore.Instance.transform.rotation = Quaternion.Euler(rotatePlayerTo_Absolute);
+            }
         }
 
 

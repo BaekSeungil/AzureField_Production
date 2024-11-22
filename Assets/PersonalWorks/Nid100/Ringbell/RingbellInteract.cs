@@ -1,9 +1,10 @@
 using FMODUnity;
+using InteractSystem;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
 
-public class RingbellInteract : MonoBehaviour
+public class RingbellInteract : MonoBehaviour, IInteract
 {
     [SerializeField] private Animator bellAnimator;
     [SerializeField, Required(InfoMessageType.Warning)] private Animator lampAnimatior;
@@ -26,34 +27,27 @@ public class RingbellInteract : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // 초기화 시 머테리얼 설정
         UpdateStoneStatus();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     // 충돌 처리
-    private void OnTriggerEnter(Collider other)
+    private void OnBellRinged()
     {
-        if (other.gameObject.tag == "WaterReaction" && !isInCooldown)
-        {
-            if (ringbellSystem.IsOnceActived) return;
+        if (ringbellSystem.IsOnceActived) return;
+        if (isInCooldown) return;
 
-            // 연결된 종의 활성화/비활성화 함수 호출
-            ringbellSystem.connectionBellActive(myNumber);
-            Debug.Log(myNumber + "번 종 활성화");
+        // 연결된 종의 활성화/비활성화 함수 호출
+        ringbellSystem.connectionBellActive(myNumber);
 
-            // 종 활성화 상태에 따른 머테리얼 업데이트
-            UpdateStoneStatus();
+        bellAnimator.Play("BellBody");
+        sound.Play();
+        particle.Play();
 
-            StopAllCoroutines();
-            // 쿨다운 시작
-            StartCoroutine(StartCooldown());
-        }
+        UpdateStoneStatus();
+
+        StopAllCoroutines();
+        StartCoroutine(StartCooldown());
+
     }
 
     // onoff 상태에 따라 stone 오브젝트의 머테리얼을 업데이트하는 함수
@@ -62,8 +56,6 @@ public class RingbellInteract : MonoBehaviour
         if (onoff)
         {
             lampAnimatior.SetBool("Litup", true);
-            sound.Play();
-            particle.Play();
         }
         else
         {
@@ -80,5 +72,10 @@ public class RingbellInteract : MonoBehaviour
         yield return new WaitForSeconds(cooldownTime);
         // 쿨다운 비활성화
         isInCooldown = false;
+    }
+
+    public void Interact()
+    {
+        OnBellRinged();
     }
 }
