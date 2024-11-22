@@ -60,11 +60,14 @@ public class EtherWave : MonoBehaviour
         }
     }
 
+
     private void Movement()
     {
         if(GetDistance() < Range)
         {
-            curCurve = Mathf.Clamp(GetDistance() / Range ,0 ,1);
+            //curCurve = Mathf.Clamp(GetDistance() / Range ,0 ,1);
+            curCurve = Mathf.InverseLerp(0f, Range, GetDistance());
+
             transform.position = Vector3.MoveTowards(transform.position, transform.position + transform.forward, speed * Time.deltaTime);
             transform.position = new Vector3(transform.position.x, startPoint.y + height * animationCurve.Evaluate(curCurve), transform.position.z);
         }
@@ -102,7 +105,8 @@ public class EtherWave : MonoBehaviour
         Gizmos.color = Color.blue;
 
         Gizmos.DrawWireCube(transform.position + offset, size);
-
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(startPoint, 1f);
 
     }
 }

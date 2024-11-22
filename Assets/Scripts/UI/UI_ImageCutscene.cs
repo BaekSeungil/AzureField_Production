@@ -100,6 +100,18 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
         fixedImageObject.SetActive(false);
         textObject.SetActive(true);
 
+        CanvasGroup canvasGroup = visualGroup.GetComponent<CanvasGroup>();
+
+        if (canvasGroup.alpha == 0f)
+        {
+            for (float time = 0f; time < 1f; time += Time.fixedDeltaTime)
+            {
+                canvasGroup.alpha = time;
+                yield return new WaitForFixedUpdate();
+            }
+            canvasGroup.alpha = 1f;
+        }
+
         skipFlag = false;
 
         for (int i = 0; i < subsequences.Length; i++)
@@ -161,9 +173,12 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             /// 비고: FMOD 스튜디오를 제공 받은 것이 아니기 때문에 MainCamera에 Audio Source를 넣어 직접적으로 Audio Clip을 출력하는 방식을 채택함.
             /// </summary>
             #endregion
+
             if (subsequence.narration.Length > 0)
+            {
                 sound.ChangeEvent(subsequence.narration[textIndex]);
-            sound.Play();
+                sound.Play();
+            }
 
 
             textMesh.text = subsequence.context[textIndex].GetLocalizedString();

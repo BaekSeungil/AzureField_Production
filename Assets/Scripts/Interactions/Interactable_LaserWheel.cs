@@ -1,4 +1,5 @@
 using FMODUnity;
+using InteractSystem;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class Interactable_LaserWheel : SerializedMonoBehaviour
+public class Interactable_LaserWheel : SerializedMonoBehaviour, IInteract
 {
     [Serializable]
     public struct AngleSet
@@ -43,7 +44,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
     }
 
     private bool isEnabled = true;
-    private bool obstructed = false;
+    [SerializeField,ReadOnly()]private bool obstructed = false;
     public bool IsEnabled { get { return isEnabled; } set { isEnabled = value; } }
 
     ParticleSystem endParticlePS;
@@ -166,4 +167,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour
 
     }
 
+    public void Interact()
+    {
+        RotateWheel();
+    }
 }
