@@ -174,8 +174,11 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
             if (subsequence.narration.Length > textIndex)
             {
-                sound.ChangeEvent(subsequence.narration[textIndex]);
-                sound.Play();
+                if (!subsequence.narration[textIndex].IsNull)
+                {
+                    sound.ChangeEvent(subsequence.narration[textIndex]);
+                    sound.Play();
+                }
             }
 
 
