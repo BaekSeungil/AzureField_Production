@@ -116,6 +116,12 @@ public class IslandArea : MonoBehaviour
                     {
                         OnInnerAreaEnter();
                     }
+
+                    if(IslandID == "Pandora")
+                    {
+                        RenderSettings.fog = false;
+                        Debug.Log("A");
+                    }
                 }
             }
             else
@@ -124,6 +130,12 @@ public class IslandArea : MonoBehaviour
                 {
                     enteredArea.Remove(this);
                     playerEnterFlag = false;
+
+                    if (IslandID == "Pandora")
+                    {
+                        RenderSettings.fog = true;
+                        Debug.Log("B");
+                    }
                 }
             }
         

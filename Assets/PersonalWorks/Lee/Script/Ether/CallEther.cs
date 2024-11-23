@@ -112,9 +112,9 @@ public class CallEther : MonoBehaviour
 
             Gizmos.DrawWireSphere(originPos, SearchRange);
 
-            Vector3 horizontalRightDir = AngleToDirY(PlayerCore.Instance.transform.position, -m_horizontalViewHalfAngle + m_viewRotateZ);
-            Vector3 horizontalLeftDir = AngleToDirY(PlayerCore.Instance.transform.position, m_horizontalViewHalfAngle + m_viewRotateZ);
-            Vector3 lookDir = AngleToDirY(PlayerCore.Instance.transform.position, m_viewRotateZ);
+            Vector3 horizontalRightDir = AngleToDirY(transform.position, -m_horizontalViewHalfAngle + m_viewRotateZ);
+            Vector3 horizontalLeftDir = AngleToDirY(transform.position, m_horizontalViewHalfAngle + m_viewRotateZ);
+            Vector3 lookDir = AngleToDirY(transform.position, m_viewRotateZ);
 
             Debug.DrawRay(originPos, horizontalLeftDir * SearchRange, Color.cyan);
             Debug.DrawRay(originPos, lookDir * SearchRange, Color.green);

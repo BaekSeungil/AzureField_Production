@@ -27,8 +27,8 @@ Transform:
   m_GameObject: {fileID: 1320386403004796360}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -11.52, y: -0.08, z: 7}
-  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
+  m_LocalPosition: {x: -9.07, y: 0.34, z: 6.23}
+  m_LocalScale: {x: 0.5, y: 0.7, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5274275734638162964}
@@ -4915,7 +4915,7 @@ Transform:
   m_GameObject: {fileID: 1552434420154239688}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 0, z: -4.68}
+  m_LocalPosition: {x: -0, y: 0, z: 0.58}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4924,6 +4924,8 @@ Transform:
   - {fileID: 8985196270020049271}
   - {fileID: 9096496192970743782}
   - {fileID: 4133338433509740167}
+  - {fileID: 4827288747152981223}
+  - {fileID: 4498209840542170060}
   m_Father: {fileID: 1334098969054108551}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!198 &6125733276043746775
@@ -9915,6 +9917,69 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4.17, y: 7.62, z: 5.6}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5857031391841801130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4498209840542170060}
+  - component: {fileID: 7290587167958583018}
+  m_Layer: 4
+  m_Name: Audio_Loop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4498209840542170060
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5857031391841801130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5274275734638162964}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7290587167958583018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5857031391841801130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1003260364
+      Data2: 1273141855
+      Data3: 457128856
+      Data4: -1626296844
+    Path: event:/SoundEffect/GeyserLift_Idle
+  Event: 
+  PlayEvent: 11
+  StopEvent: 12
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &7063942402426481218
 GameObject:
   m_ObjectHideFlags: 0
@@ -14856,6 +14921,69 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10.87, y: 8.52, z: 7.08}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7122383640971990681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4827288747152981223}
+  - component: {fileID: 7978086600295899625}
+  m_Layer: 4
+  m_Name: Audio_Start
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4827288747152981223
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122383640971990681}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5274275734638162964}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7978086600295899625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122383640971990681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -692859068
+      Data2: 1238085431
+      Data3: -1518301045
+      Data4: -1832718575
+    Path: event:/SoundEffect/GeyserLift_Active
+  Event: 
+  PlayEvent: 11
+  StopEvent: 12
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &7762785597541677280
 GameObject:
   m_ObjectHideFlags: 0
@@ -15044,9 +15172,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &8122841735495244128
 MonoBehaviour:
@@ -15065,21 +15193,39 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
+      value: 0
+      inSlope: 4.2756143
+      outSlope: 4.2756143
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.05737647
+    - serializedVersion: 3
+      time: 0.1666789
+      value: 0.9952896
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.76970893
+      value: 0.99502826
+      inSlope: -0.013559013
+      outSlope: -0.013559013
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.6743252
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
+      value: 0
+      inSlope: -9.16982
+      outSlope: -9.16982
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.090465136
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -15090,6 +15236,6 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 32768
-  offset: {x: 0, y: 2.5, z: 0}
+  offset: {x: 5, y: 2.5, z: 0}
   radius: 0
   size: {x: 5, y: 2.5, z: 5}
