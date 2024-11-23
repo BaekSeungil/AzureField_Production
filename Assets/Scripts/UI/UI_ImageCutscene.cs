@@ -161,8 +161,6 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
 
         for (int textIndex = 0; textIndex < subsequence.context.Length; textIndex++)
         {
-            if (skipFlag) yield break;
-
             textObject.SetActive(false);
             textObject.SetActive(true);
 
@@ -174,7 +172,7 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             /// </summary>
             #endregion
 
-            if (subsequence.narration.Length > 0)
+            if (subsequence.narration.Length > textIndex)
             {
                 sound.ChangeEvent(subsequence.narration[textIndex]);
                 sound.Play();
@@ -193,6 +191,8 @@ public class UI_ImageCutscene : StaticSerializedMonoBehaviour<UI_ImageCutscene>
             /// </summary>
             #endregion
             sound.Stop();
+
+            if (skipFlag) yield break;
         }
 
         fixedAnimator.Play("OUT");
