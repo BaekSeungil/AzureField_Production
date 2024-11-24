@@ -17,8 +17,8 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour, IInteract
         [LabelText("정지 각도"), Range(0, 360)] public float rotationAngle;
         [LabelText("정답 여부")] public bool isDesiredAngle;
     }
-    [SerializeField, LabelText("활성화 됨")] private bool enabled = true;
-    public bool Enabled { get { return enabled; } set { enabled = value; } }
+    [SerializeField, LabelText("활성화 됨")] private bool laserWheelEnabled = true;
+    public bool Enabled { get { return laserWheelEnabled; } set { laserWheelEnabled = value; } }
     [SerializeField, LabelText("각도 세팅")] private AngleSet[] angleSets;
     [SerializeField, LabelText("회전 커브")] private AnimationCurve rotateCurve;
     [SerializeField, LabelText("회전 시간")] private float rotateTime = 1.0f;
@@ -106,7 +106,7 @@ public class Interactable_LaserWheel : SerializedMonoBehaviour, IInteract
     [HideInEditorMode(),Button()]
     public void RotateWheel()
     {
-        if (!enabled) return;
+        if (!laserWheelEnabled) return;
 
         if (rotateProgress != null) return;
         if (!laserObject.activeInHierarchy) return;
