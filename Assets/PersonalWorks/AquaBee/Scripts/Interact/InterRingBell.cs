@@ -27,12 +27,6 @@ namespace InteractSystem
 
         }
 
-        //public void UpdateStoneStatus()
-        //{
-        //    //BellSystem
-        //     BellSystem.SetActiveLamp(RingNumber, Active);
-        //}
-
         public void PlaySoundAndsParticles()
         {
             try
