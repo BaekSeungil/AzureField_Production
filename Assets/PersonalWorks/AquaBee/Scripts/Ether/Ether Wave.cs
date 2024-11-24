@@ -37,26 +37,24 @@ public class EtherWave : MonoBehaviour
 
     public void CustomOnCollisionEnter()
     {
-        int i = Physics.OverlapBoxNonAlloc(transform.position + offset, size, colliders, Quaternion.identity, layerMask);
-        if(i > 0)
+        // Box의 절반 크기(Half-Extent)로 정의
+        Vector3 halfSize = new Vector3(size.x / 2, size.y / 2, size.z / 2);
+
+        // 월드 공간에서의 정확한 위치 계산
+        Vector3 boxCenter = transform.position + transform.rotation * offset;
+
+        // 충돌 체크
+        int hitCount = Physics.OverlapBoxNonAlloc(boxCenter, halfSize, colliders, transform.rotation, layerMask);
+
+        if (hitCount > 0)
         {
-            for(int n = 0; n < i; n++)
+            for (int n = 0; n < hitCount; n++)
             {
-                //InterRingBell inter = 
-                colliders[n].GetComponent<IInteract>().Interact();
-                //inter.Interact();
+                // 충돌한 오브젝트의 상호작용 처리
+                colliders[n].GetComponent<IInteract>()?.Interact();
             }
+            // 충돌 후 오브젝트 비활성화
             gameObject.SetActive(false);
-            // 이제 작동 했으니 여긴 없어져야함.
-        }
-        else
-        {
-            //i = Physics.OverlapBoxNonAlloc(transform.position + offset, size, colliders, Quaternion.identity, ~(1 << 3 << 4 << 6));
-            //if(i > 0)
-            //{
-            //    // 삭제!
-            //    gameObject.SetActive(false);
-            //}
         }
     }
 
@@ -65,7 +63,6 @@ public class EtherWave : MonoBehaviour
     {
         if(GetDistance() < Range)
         {
-            //curCurve = Mathf.Clamp(GetDistance() / Range ,0 ,1);
             curCurve = Mathf.InverseLerp(0f, Range, GetDistance());
 
             transform.position = Vector3.MoveTowards(transform.position, transform.position + transform.forward, speed * Time.deltaTime);
@@ -73,14 +70,12 @@ public class EtherWave : MonoBehaviour
         }
         else
         {
-            // 거리를 벗어났을 때 사용
-            //Debug.Log("AA");
+            gameObject.SetActive(false);
         }
     }
 
     private float GetDistance()
     {
-        //Debug.Log(Vector3.Distance(startPoint, transform.position));
         return Vector3.Distance(startPoint, transform.position);
     }
 
@@ -93,20 +88,19 @@ public class EtherWave : MonoBehaviour
     private void Initialized()
     {
         curCurve = 0;
-        //transform.position = new Vector3(transform.position.x, transform.position.y - height , transform.position.z);
         startPoint = transform.position;
     }
 
     [SerializeField] private float radius = 0;
-    [SerializeField] private Vector3 size ;
+    [SerializeField] private Vector3 size;
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.blue;
-
-        Gizmos.DrawWireCube(transform.position + offset, size);
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(startPoint, 1f);
+        Gizmos.color = Color.red;
+        Vector3 halfSize = new Vector3(size.x / 2, size.y / 2, size.z / 2);
+        Vector3 boxCenter = transform.position + transform.rotation * offset;
+        Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, halfSize * 2); // 크기 원복
 
     }
 }
