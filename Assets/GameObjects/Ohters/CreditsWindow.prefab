@@ -401,19 +401,7 @@ MonoBehaviour:
     m_ActionId: 10c12a1d-91f8-4b2a-aeee-03b1c42f98e4
     m_ActionName: UI/Submit[/Keyboard/enter]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7539775653135742787}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 6627baf3-a07f-46be-b4e4-c502b7b574ea
     m_ActionName: UI/Cancel[/Keyboard/escape]
   - m_PersistentCalls:
@@ -456,6 +444,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 83687b2c-eeb1-4a86-9a61-8ce0924e01ee
     m_ActionName: UI/MapToggle[/Keyboard/m]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5fe96fda-655d-4b6d-912e-1f54be0d299e
+    m_ActionName: Player/Ether[/Keyboard/r,/XInputControllerWindows/buttonNorth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6d85dc99-f5e5-423d-a28f-d5ff3f801ae6
+    m_ActionName: UI/Negative[/XInputControllerWindows/buttonEast,/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fa551193-4cf6-4011-ab50-008213a317fb
+    m_ActionName: UI/SecondaryNav[/Keyboard/e,/Keyboard/q]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 60d20267-6981-4167-bac9-f3d267bc75e8
+    m_ActionName: UI/Skip[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -473,7 +477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7a0dc9f904d5449a3e9c32f34a900f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FirstButton: {fileID: 0}
+  FirstButton: {fileID: 7495630111248701651}
   SelectOnDisable: {fileID: 0}
   OnCancel:
     m_PersistentCalls:
@@ -486,16 +490,72 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9061522933286083935}
     m_Modifications:
+    - target: {fileID: 512861492189988283, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -4187
+      objectReference: {fileID: 0}
+    - target: {fileID: 1722073741297309425, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 7300
+      objectReference: {fileID: 0}
     - target: {fileID: 2700712728058871133, guid: 4205f8d861661ac47b97a1cf96d3a8af,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7539775653135742787}
+    - target: {fileID: 3318096129246629879, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929923927901650043, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -5013
+      objectReference: {fileID: 0}
     - target: {fileID: 4391909365230145192, guid: 4205f8d861661ac47b97a1cf96d3a8af,
         type: 3}
       propertyPath: m_Name
       value: CreditsView
       objectReference: {fileID: 0}
+    - target: {fileID: 4561184020615611953, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 381.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4561184020615611953, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -91
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054105936130830327, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -4645
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714752064658912260, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -27
+      objectReference: {fileID: 0}
+    - target: {fileID: 5930929679734821338, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -3302
+      objectReference: {fileID: 0}
+    - target: {fileID: 6967621608972455667, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -495
+      objectReference: {fileID: 0}
+    - target: {fileID: 7061543362196610290, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b8ac0eaa7e3852146829b7e766f7f06a,
+        type: 3}
     - target: {fileID: 7161866456637723876, guid: 4205f8d861661ac47b97a1cf96d3a8af,
         type: 3}
       propertyPath: m_Pivot.x
@@ -596,8 +656,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7377731857598615739, guid: 4205f8d861661ac47b97a1cf96d3a8af,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 41
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8337766092900947587, guid: 4205f8d861661ac47b97a1cf96d3a8af, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4205f8d861661ac47b97a1cf96d3a8af, type: 3}
