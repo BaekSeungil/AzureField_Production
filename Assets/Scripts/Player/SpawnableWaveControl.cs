@@ -47,7 +47,8 @@ public class SpawnableWaveControl : MonoBehaviour
     private void PressedUpdate()
     {
         timer += Time.deltaTime;
-
+        //if (activeWavePrefab.activeSelf)
+        //    return;
         if (!isPressed)
         {
             if (inputActions.Player.Ether.IsPressed())
