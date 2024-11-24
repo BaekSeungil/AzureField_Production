@@ -110,20 +110,23 @@ public class SpawnableWaveControl : MonoBehaviour
         RaycastHit first = hits[0];
         searchHitPoint = first.point;
 
-        if (((1 << first.collider.gameObject.layer) & SpawnMask) != 0)
+        if (!first.collider.CompareTag("WaterReaction"))
         {
-            if (first.collider.gameObject.layer == 3)
+            if (((1 << first.collider.gameObject.layer) & SpawnMask) != 0)
             {
-                if (GlobalOceanManager.IsInstanceValid)
+                if (first.collider.gameObject.layer == 3)
                 {
-                    searchHitPoint = new Vector3(searchHitPoint.x, GlobalOceanManager.Instance.GetWaveHeight(searchHitPoint), searchHitPoint.z);
+                    if (GlobalOceanManager.IsInstanceValid)
+                    {
+                        searchHitPoint = new Vector3(searchHitPoint.x, GlobalOceanManager.Instance.GetWaveHeight(searchHitPoint), searchHitPoint.z);
+                    }
                 }
+                return true;
             }
-            return true;
-        }
-        else
-        {
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
 
