@@ -1,4 +1,4 @@
-﻿// Distant Lands 2022.
+// Distant Lands 2022.
 
 
 
@@ -12,8 +12,6 @@ namespace DistantLands.Cozy
 {
     public class CozyThunder : MonoBehaviour
     {
-
-
         [SerializeField]
         private AudioClip[] m_ThunderSounds;
         [SerializeField]
@@ -23,7 +21,6 @@ namespace DistantLands.Cozy
 
 
         private Light m_Light;
-        private AudioSource m_AudioSource;
 
         private float m_WakeTime;
         private float m_WakeAmount;
@@ -37,10 +34,7 @@ namespace DistantLands.Cozy
 
             m_WakeTime = Time.time;
             m_Light = GetComponentInChildren<Light>();
-            m_AudioSource = GetComponentInChildren<AudioSource>();
 
-
-            m_AudioSource.clip = m_ThunderSounds[Random.Range(0, m_ThunderSounds.Length)];
             m_ThunderDelay = Random.Range(m_ThunderDelayRange.x, m_ThunderDelayRange.y);
 
         }
@@ -53,14 +47,11 @@ namespace DistantLands.Cozy
 
             m_Light.intensity = m_LightIntensity.Evaluate(m_WakeAmount);
 
-            if (m_WakeAmount > m_AudioSource.clip.length + m_ThunderDelay)
+            if (m_WakeAmount > 2f + m_ThunderDelay)
             {
                 Destroy(gameObject);
                 return;
             }
-
-            if (m_WakeAmount > m_ThunderDelay && !m_AudioSource.isPlaying)
-                m_AudioSource.Play();
 
         }
     }

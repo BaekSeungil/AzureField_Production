@@ -1287,7 +1287,7 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
             }
 
 
-            if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 5.0f)
+            if (Vector3.ProjectOnPlane(player.rBody.velocity, Vector3.up).magnitude > 2.0f)
             {
                 Vector3 pivotEuler = Vector3.zero;
 

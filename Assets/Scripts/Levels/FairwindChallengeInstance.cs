@@ -220,6 +220,7 @@ public class FairwindChallengeInstance : MonoBehaviour
         if(!musicOnPlay.IsNull)
         {
             musicEnabled = true;
+            FieldMusicManager.Instance.ChangeActiveMusic(musicOnPlay);
             FieldMusicManager.Instance.ChangeActiveMusic(musicOnPlay, 3f, 0f);
         }
 
