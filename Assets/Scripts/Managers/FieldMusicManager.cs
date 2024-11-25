@@ -62,6 +62,10 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
 
         transitionCoroutine = StartCoroutine(Cor_ChangeMusic(music, fade, waitTime));
 
+#if UNITY_EDITOR
+        Debug.Log("MusicChanged : " + music.ToString());
+#endif
+
     }
 
     public void ChangeActiveMusic(string music)
@@ -70,6 +74,9 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
         {
             transitionCoroutine = StartCoroutine(Cor_ChangeMusic(RuntimeManager.PathToEventReference(music), 1.0f, 0f));
         }
+#if UNITY_EDITOR
+        Debug.Log("MusicChanged : " + music);
+#endif
     }
 
     public void StopActiveMusic(float fade = 0f)
@@ -84,6 +91,11 @@ public class FieldMusicManager : StaticSerializedMonoBehaviour<FieldMusicManager
             StopAllCoroutines();
             transitionCoroutine = StartCoroutine(Cor_StopMusic(fade));
         }
+
+#if UNITY_EDITOR
+        Debug.Log("MusicStopped : " + sound.EventInstance.ToString());
+#endif
+
     }
 
     private IEnumerator Cor_ChangeMusic(EventReference music, float fade, float waitTime)
