@@ -33,7 +33,6 @@ public class SpawnableWaveControl : MonoBehaviour
 
         activeWavePrefab = Instantiate(wavePrefab);
         activeWavePrefab.SetActive(false);
-
     }
     // on off로 해주기
 
@@ -49,9 +48,10 @@ public class SpawnableWaveControl : MonoBehaviour
         timer += Time.deltaTime;
         //if (activeWavePrefab.activeSelf)
         //    return;
+
         if (!isPressed)
         {
-            if (inputActions.Player.Ether.IsPressed())
+            if (PlayerCore.Instance.IsControlEnabled && inputActions.Player.Ether.IsPressed())
             {
                 // 누르고 있을 땐 범위 체크로 계속해서 
                 //PrintDebug("Press True");
@@ -128,14 +128,16 @@ public class SpawnableWaveControl : MonoBehaviour
                 return false;
             }
         }
+        else
+        {
+            return false;
+        }
 
 
         //colliders = Physics.OverlapSphere(waveSpawnPoint.position, SearchRedius, SpawnMask);
         //if (colliders.Length > 0)
         //    return false;
         //return true;
-
-        return true;
     }
 
     private void PrintDebug(string str)

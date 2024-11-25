@@ -22,9 +22,12 @@ public class TitleUI : StaticSerializedMonoBehaviour<TitleUI>
 
     public void SelectFirstButton()
     {
-        if (PlayerInput.all[0].currentControlScheme != gamepadSchemeName) return;
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(firstButton);
+        if (PlayerInput.all.Count > 0)
+        {
+            if (PlayerInput.all[0].currentControlScheme != gamepadSchemeName) return;
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstButton);
+        }
     }
     
 }

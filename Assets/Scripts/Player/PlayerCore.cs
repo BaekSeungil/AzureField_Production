@@ -179,6 +179,8 @@ public class PlayerCore : StaticSerializedMonoBehaviour<PlayerCore>
     /// </summary>
     public bool Grounding { get { return grounding; } }
 
+    public bool IsControlEnabled { get { return input.Player.enabled; } }
+
     public IEnumerator MovePlayerContrainedSequence(Vector3 target, float speed)
     {
         Vector3 toward = Vector3.zero;

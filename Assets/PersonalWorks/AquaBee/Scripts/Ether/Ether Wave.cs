@@ -5,11 +5,11 @@ using InteractSystem;
 public class EtherWave : MonoBehaviour
 {
     [SerializeField] private AnimationCurve animationCurve;
+    [SerializeField] private GameObject splashObject;
     [SerializeField] private float speed;
     [SerializeField] private float height;
     [SerializeField] private float Range;
     [Range(0, 1)] private float curCurve;
-
 
     private Vector3 startPoint;
 
@@ -53,7 +53,11 @@ public class EtherWave : MonoBehaviour
                 // 충돌한 오브젝트의 상호작용 처리
                 colliders[n].GetComponent<IInteract>()?.Interact();
             }
+
+            Instantiate(splashObject, new Vector3(transform.position.x,startPoint.y + height, transform.position.z),Quaternion.identity);
+
             // 충돌 후 오브젝트 비활성화
+
             gameObject.SetActive(false);
         }
     }
@@ -84,6 +88,7 @@ public class EtherWave : MonoBehaviour
         // 출발 
         Initialized();
     }
+
 
     private void Initialized()
     {
